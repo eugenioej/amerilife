@@ -1,17 +1,24 @@
 // lib/wp-client.ts
 
-const endpoint = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT;
-
-if (!endpoint) {
-  throw new Error("NEXT_PUBLIC_GRAPHQL_ENDPOINT is not defined.");
+function getGraphQLEndpoint(): string {
+  const endpoint =
+    process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ??
+    (process.env.NEXT_PUBLIC_WORDPRESS_URL
+      ? `${process.env.NEXT_PUBLIC_WORDPRESS_URL.replace(/\/$/, "")}/graphql`
+      : "");
+  if (!endpoint) {
+    throw new Error(
+      "NEXT_PUBLIC_GRAPHQL_ENDPOINT or NEXT_PUBLIC_WORDPRESS_URL is not defined."
+    );
+  }
+  return endpoint;
 }
-
-const graphqlEndpoint = endpoint;
 
 export async function fetchGraphQL<T>(
   query: string,
   variables?: Record<string, any>
 ): Promise<T> {
+  const graphqlEndpoint = getGraphQLEndpoint();
   const res = await fetch(graphqlEndpoint, {
     method: "POST",
     headers: {
