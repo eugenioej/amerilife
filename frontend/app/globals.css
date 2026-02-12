@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   AmeriLife Design Tokens (extracted from amerilife.com / Divi-Child)
+   ========================================================================== */
+
+:root {
+  /* Fonts */
+  --font-sans: "Open Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: Georgia, ui-serif, serif;
+  --font-mono: ui-monospace, monospace;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --tracking-tight: 0.02em;
+  --tracking-normal: 0.06em;
+  --tracking-wide: 0.08em;
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* Colors - Brand */
+  --color-brand-primary: #3fa590;
+  --color-topbar: #3FA590;
+  --color-brand-primary-hover: #008066;
+  --color-brand-secondary: #00cca3;
+  --color-brand-dark: #244260;
+  --color-footer-bg: rgb(36, 66, 96);
+
+  /* Colors - Neutrals */
+  --color-bg: #ffffff;
+  --color-fg: #2b3e50;
+  --color-muted: #52606d;
+  --color-border: #e8ede8;
+
+  /* Colors - Links */
+  --color-link: #3fa590;
+  --color-link-hover: #008066;
+
+  /* Colors - Gradient stops (for header/footer/sections) */
+  --color-gradient-start: #0e3250;
+  --color-gradient-mid: #003a74;
+  --color-gradient-mid2: #009b7c;
+  --color-gradient-end: #67c084;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(
+    86.01deg,
+    var(--color-gradient-start) -74.41%,
+    var(--color-gradient-mid) 7.86%,
+    var(--color-gradient-mid2) 104.48%,
+    var(--color-gradient-end) 142.38%
+  );
+  --gradient-header: var(--gradient-primary);
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Layout */
+  --container-max: 1280px;
+  --container-padding-x: 1.5rem;
+  --header-height: 4rem;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-full: 32px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+
+  /* Z-index */
+  --z-header: 100;
+  --z-overlay: 200;
+  --z-drawer: 300;
+}
+
+/* Tailwind v4 @theme inline - map tokens to Tailwind utilities */
+@theme inline {
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-fg);
+  --color-muted: var(--color-muted);
+  --color-border: var(--color-border);
+  --color-primary: var(--color-brand-primary);
+  --color-primary-hover: var(--color-brand-primary-hover);
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+}
