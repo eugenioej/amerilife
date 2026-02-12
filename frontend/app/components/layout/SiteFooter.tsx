@@ -4,7 +4,7 @@ import { Link as UiLink } from "../ui/Link";
 import type { NavItem } from "@/lib/wp-menus";
 
 const BOTTOM_LINKS = [
-  { label: "Privacy Policy.", href: "/privacy/" },
+  { label: "Privacy Policy", href: "/privacy/" },
   { label: "Terms & Conditions", href: "/terms/" },
   { label: "SMS Terms & Conditions", href: "/sms-terms/" },
 ];

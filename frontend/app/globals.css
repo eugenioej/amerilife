@@ -113,3 +113,10 @@ body {
   color: var(--color-fg);
   font-family: var(--font-sans);
 }
+
+/* Buttons: never underline on hover */
+button,
+button:hover,
+button:focus {
+  text-decoration: none;
+}

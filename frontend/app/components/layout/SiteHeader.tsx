@@ -40,7 +40,7 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
           className="mx-auto flex h-[var(--header-height)] max-w-[var(--container-max)] items-center justify-between px-[var(--container-padding-x)]"
           style={{ height: "var(--header-height)" }}
         >
-          <Link href="/" className="flex items-center shrink-0" aria-label="AmeriLife Home">
+          <Link href="/" variant="button" className="flex items-center shrink-0" aria-label="AmeriLife Home">
             <Image
               src="https://amerilife.com/wp-content/uploads/2022/01/amerilife.svg"
               alt="AmeriLife"
@@ -56,7 +56,8 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
               <div key={item.href + item.label} className="relative group">
                 <Link
                   href={item.href}
-                  className="inline-flex items-center gap-1 px-2 py-1 text-sm font-semibold text-[#244260] transition-colors hover:text-[var(--color-brand-primary)]"
+                  variant="button"
+                  className="inline-flex items-center gap-1 px-2 py-1 text-base font-semibold text-[var(--color-brand-dark)] transition-colors hover:text-[var(--color-brand-primary)]"
                 >
                   {item.label}
                 </Link>
@@ -67,7 +68,8 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
                         <li key={child.href + child.label}>
                           <Link
                             href={child.href}
-                            className="block px-4 py-2 text-sm text-[#244260] hover:bg-black/5"
+                            variant="button"
+                            className="block px-4 py-2 text-base text-[var(--color-brand-dark)] transition-colors hover:bg-black/5 hover:text-[var(--color-brand-primary)]"
                           >
                             {child.label}
                           </Link>

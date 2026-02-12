@@ -66,7 +66,8 @@ export function StatBannerSection({
         </p>
         <Link
           href={ctaHref}
-          className="inline-flex w-fit items-center justify-center rounded-[var(--radius-full)] border-2 border-white bg-white px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-white/95 hover:text-[var(--color-brand-primary-hover)] hover:no-underline"
+          variant="button"
+          className="inline-flex w-fit items-center justify-center rounded-[var(--radius-full)] border-2 border-white bg-white px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-white/95 hover:text-[var(--color-brand-primary-hover)]"
         >
           {ctaText}
         </Link>
