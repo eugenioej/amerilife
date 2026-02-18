@@ -14,14 +14,14 @@ const ABOUT_US_LINKS = [
   { label: "AmeriLife Gives Back Foundation", href: "/givesback/" },
 ] as const;
 
-const OUR_SOLUTIONS_LINKS = [
+const OUR_SOLUTIONS_LINKS: { label: string; href: string; sublabel?: string }[] = [
   { label: "For Affiliates", href: "/our-solutions/affiliates/" },
   { label: "For Agents & Advisors", href: "/our-solutions/agents-and-advisors/" },
   { label: "For Carrier Partners", href: "/our-solutions/carriers/" },
   { label: "For Consumers", href: "/our-solutions/consumers/" },
   { label: "For Our Employees", href: "/our-solutions/employees/" },
   { label: "For Future Partners", href: "/acquisition-partner-program/", sublabel: "Acquisition Partner Program" },
-] as const;
+];
 
 export default function OurSolutionsPage() {
   return (
