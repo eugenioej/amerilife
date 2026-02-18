@@ -10,7 +10,32 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "www.amerilife.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "headlessameril.wpenginepowered.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "uatamerilife.wpengine.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "headlessameril.wpenginepowered.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "www.greatplacetowork.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "i.ytimg.com",
         pathname: "/**",
       },
     ],
@@ -83,8 +108,13 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/acquisition-partner-program/",
+        destination: "https://amerilife.com/acquisition-partner-program/",
+        permanent: true,
+      },
+      {
         source: "/about/history/",
-        destination: "https://amerilife.com/about-us/who-we-are/",
+        destination: "/about-us/who-we-are",
         permanent: true,
       },
       {
@@ -114,7 +144,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/community/",
-        destination: "https://amerilife.com/givesback/",
+        destination: "/givesback",
         permanent: true,
       },
       {
@@ -194,7 +224,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/about/",
-        destination: "https://amerilife.com/about-us/who-we-are/",
+        destination: "/about-us/who-we-are",
         permanent: true,
       },
       {
@@ -264,17 +294,17 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/hispanic-heritage/",
-        destination: "https://amerilife.com/givesback/",
+        destination: "/givesback",
         permanent: true,
       },
       {
         source: "/thank-you-st-jude-radiothon/",
-        destination: "https://amerilife.com/givesback/",
+        destination: "/givesback",
         permanent: true,
       },
       {
         source: "/st-jude-radiothon/",
-        destination: "https://amerilife.com/givesback/",
+        destination: "/givesback",
         permanent: true,
       },
       {

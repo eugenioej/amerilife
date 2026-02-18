@@ -1,14 +1,16 @@
 import Image from "next/image";
+import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 const BANNER_URL = "https://amerilife.com/wp-content/uploads/2021/12/banner-image.png";
 
 export function HeroSection() {
+  const bannerUrl = rewriteUploadsUrl(BANNER_URL);
   return (
     <section className="relative flex min-h-[85vh] flex-col items-start justify-center overflow-hidden lg:min-h-[100vh]">
       {/* Background image */}
       <div className="absolute inset-0">
         <Image
-          src={BANNER_URL}
+          src={bannerUrl}
           alt=""
           fill
           className="object-cover"

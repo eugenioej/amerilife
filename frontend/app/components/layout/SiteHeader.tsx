@@ -6,6 +6,7 @@ import { Link } from "../ui/Link";
 import { MobileNav } from "./MobileNav";
 import { HeaderSearch } from "./HeaderSearch";
 import type { NavItem } from "@/lib/wp-menus";
+import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 type SiteHeaderProps = {
   primaryMenu: NavItem[];
@@ -29,6 +30,7 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = primaryMenu;
+  const logoUrl = rewriteUploadsUrl("https://amerilife.com/wp-content/uploads/2022/01/amerilife.svg");
 
   return (
     <>
@@ -42,7 +44,7 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
         >
           <Link href="/" variant="button" className="flex items-center shrink-0" aria-label="AmeriLife Home">
             <Image
-              src="https://amerilife.com/wp-content/uploads/2022/01/amerilife.svg"
+              src={logoUrl}
               alt="AmeriLife"
               width={140}
               height={40}

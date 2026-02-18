@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Link as UiLink } from "../ui/Link";
 import type { NavItem } from "@/lib/wp-menus";
+import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 const BOTTOM_LINKS = [
   { label: "Privacy Policy", href: "/privacy/" },
@@ -19,6 +20,11 @@ type SiteFooterProps = {
 export function SiteFooter({ primaryMenu }: SiteFooterProps) {
   const aboutUs = primaryMenu.find((i) => i.label.toLowerCase().includes("about"));
   const ourSolutions = primaryMenu.find((i) => i.label.toLowerCase().includes("solutions"));
+  // Use an uploads-hosted logo so it can be synced to headless.
+  const footerLogoUrl = rewriteUploadsUrl(
+    "https://amerilife.com/wp-content/uploads/2022/01/amerilife.svg"
+  );
+  const certificationBadgeUrl = rewriteUploadsUrl(CERTIFICATION_BADGE_URL);
 
   return (
     <footer
@@ -30,7 +36,7 @@ export function SiteFooter({ primaryMenu }: SiteFooterProps) {
         <div className="flex items-center">
           <Link href="/" className="flex items-center" aria-label="AmeriLife Home">
             <Image
-              src="https://amerilife.com/wp-content/themes/Divi-Child/assets/img/white-logo.svg"
+              src={footerLogoUrl}
               alt="AmeriLife"
               width={140}
               height={40}
@@ -117,7 +123,7 @@ export function SiteFooter({ primaryMenu }: SiteFooterProps) {
               aria-label="AmeriLife - 2025 Certification Badge"
             >
               <Image
-                src={CERTIFICATION_BADGE_URL}
+                src={certificationBadgeUrl}
                 alt="AmeriLife US English 2025 Certification Badge"
                 width={140}
                 height={180}
