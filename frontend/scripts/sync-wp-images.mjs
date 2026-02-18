@@ -910,7 +910,7 @@ async function main() {
   for (const f of downloaded) {
     const relFromUploads = f.rel.replace(/^wp-content\/uploads\/?/, "");
     const remotePath =
-      (wpRootPrefix ? `${wpRootPrefix}/` : "") + `${uploadsPrefix}/${relFromUploads}`;
+      (wpRootPrefixRaw ? `${wpRootPrefixRaw}/` : "") + `${uploadsPrefix}/${relFromUploads}`;
 
     // mkdir chain for remote directory
     const parts = remotePath.split("/").slice(0, -1);
@@ -931,9 +931,8 @@ async function main() {
   }
 
   // Ensure MU plugin exists in key-mode too (may still fail depending on permissions).
-  const wpRootPrefix = wpRootPrefixRaw;
   const muPluginRemotePath =
-    (wpRootPrefix ? `${wpRootPrefix}/` : "") + "wp-content/mu-plugins/amerilife-media-importer.php";
+    (wpRootPrefixRaw ? `${wpRootPrefixRaw}/` : "") + "wp-content/mu-plugins/amerilife-media-importer.php";
   batchLines.push(`mkdir ${path.posix.dirname(muPluginRemotePath)}`);
   batchLines.push(`put ${muPluginLocalPath} ${muPluginRemotePath}`);
 
