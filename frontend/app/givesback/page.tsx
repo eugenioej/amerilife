@@ -141,6 +141,7 @@ export default function GivesBackPage() {
                     alt={logo.alt}
                     width={128}
                     height={64}
+                    unoptimized
                     className="max-h-16 w-auto object-contain"
                   />
                 </Link>

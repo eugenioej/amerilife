@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { Readable } from "node:stream";
+import SftpClient from "ssh2-sftp-client";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -577,6 +578,68 @@ function listLftpDir({ host, port, user, password, dir }) {
     .filter(Boolean);
 }
 
+/** Node-based SFTP (no lftp required). Used in CI/Atlas where lftp is not installed. */
+async function withSftpNode({ host, port, user, password }, fn) {
+  const sftp = new SftpClient();
+  try {
+    await sftp.connect({
+      host: String(host ?? "").trim(),
+      port: Number(port ?? 22),
+      username: String(user ?? "").trim(),
+      password: String(password ?? "").trim(),
+    });
+    return await fn(sftp);
+  } finally {
+    await sftp.end();
+  }
+}
+
+async function listSftpDirNode(sftp, dir) {
+  assertSafeRemotePath(dir, "dir");
+  try {
+    const list = await sftp.list(dir);
+    return (list ?? []).map((e) => (e && e.name ? e.name : "")).filter(Boolean);
+  } catch {
+    return null;
+  }
+}
+
+async function probeSftpRemoteDirNode(sftp, remoteDir) {
+  assertSafeRemotePath(remoteDir, "remoteDir");
+  try {
+    const ex = await sftp.exists(remoteDir);
+    if (ex === "d") return true;
+    if (!ex) {
+      await sftp.mkdir(remoteDir, true);
+      const ex2 = await sftp.exists(remoteDir);
+      return ex2 === "d";
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+async function runSftpMirrorUploadNode(sftp, localUploadsDir, remoteUploadsDir) {
+  assertSafeRemotePath(remoteUploadsDir, "remoteUploadsDir");
+  assertSafeLocalPath(localUploadsDir, "localUploadsDir");
+  await sftp.uploadDir(localUploadsDir, remoteUploadsDir, { useFastRead: true });
+}
+
+async function runSftpPutFileNode(sftp, localPath, remotePath) {
+  assertSafeRemotePath(remotePath, "remotePath");
+  assertSafeLocalPath(localPath, "localPath");
+  const remoteDir = path.posix.dirname(remotePath);
+  try {
+    const ex = await sftp.exists(remoteDir);
+    if (ex !== "d") await sftp.mkdir(remoteDir, true);
+    await sftp.fastPut(localPath, remotePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function basicAuthHeader(user, appPassword) {
   // WP Application Passwords are often displayed with spaces; strip them.
   const pass = String(appPassword).replace(/\s+/g, "");
@@ -749,97 +812,67 @@ async function main() {
     "amerilife-media-importer.php"
   );
 
-  // If password mode is enabled, use lftp mirror for non-interactive auth.
+  // If password mode is enabled, use Node SFTP client (no lftp required; works in CI/Atlas).
   if (sftpPassword) {
     const localUploadsDir = path.join(cacheRoot, "wp-content", "uploads");
-    // Auto-detect a writable uploads dir. Some WP Engine users are chrooted into the install already.
-    // Strategy:
-    // - Try explicit HEADLESS_SFTP_WP_ROOT (if provided)
-    // - Try relative uploadsPrefix (chrooted case)
-    // - If a "sites" dir exists, enumerate `sites/*/` and try each `sites/<site>/<uploadsPrefix>`
-    const tried = [];
-    const candidates = [];
-    if (wpRootPrefixRaw) candidates.push(`${wpRootPrefixRaw}/${uploadsPrefix}`);
-    candidates.push(uploadsPrefix);
-
-    const rootEntries = listLftpDir({
+    const sftpConfig = {
       host: sftpHost,
       port: sftpPort,
       user: sftpUser,
       password: sftpPassword,
-      dir: ".",
-    });
-
-    if (rootEntries?.includes("sites")) {
-      const siteEntries = listLftpDir({
-        host: sftpHost,
-        port: sftpPort,
-        user: sftpUser,
-        password: sftpPassword,
-        dir: "sites",
-      });
-      if (siteEntries?.length) {
-        for (const site of siteEntries) {
-          if (!/^[a-zA-Z0-9._-]+$/.test(site)) continue;
-          candidates.push(`sites/${site}/${uploadsPrefix}`);
-        }
-      }
-    }
+    };
 
     let chosenPrefix = "";
     let remoteUploadsDir = null;
-    for (const candidate of candidates) {
-      tried.push(candidate);
-      try {
-        if (
-          probeLftpRemoteDir({
-            host: sftpHost,
-            port: sftpPort,
-            user: sftpUser,
-            password: sftpPassword,
-            remoteDir: candidate,
-          })
-        ) {
+
+    const result = await withSftpNode(sftpConfig, async (sftp) => {
+      // Auto-detect a writable uploads dir. Some WP Engine users are chrooted into the install already.
+      const tried = [];
+      const candidates = [];
+      if (wpRootPrefixRaw) candidates.push(`${wpRootPrefixRaw}/${uploadsPrefix}`);
+      candidates.push(uploadsPrefix);
+
+      const rootEntries = await listSftpDirNode(sftp, ".");
+
+      if (rootEntries?.includes("sites")) {
+        const siteEntries = await listSftpDirNode(sftp, "sites");
+        if (siteEntries?.length) {
+          for (const site of siteEntries) {
+            if (!/^[a-zA-Z0-9._-]+$/.test(site)) continue;
+            candidates.push(`sites/${site}/${uploadsPrefix}`);
+          }
+        }
+      }
+
+      for (const candidate of candidates) {
+        tried.push(candidate);
+        if (await probeSftpRemoteDirNode(sftp, candidate)) {
           remoteUploadsDir = candidate;
-          // chosenPrefix is only used to compute mu-plugin path; we can derive it from candidate.
           chosenPrefix = candidate.endsWith(`/${uploadsPrefix}`)
             ? candidate.slice(0, -(`/${uploadsPrefix}`.length))
             : "";
           break;
         }
-      } catch (e) {
-        // ignore and try next candidate
       }
-    }
 
-    if (!remoteUploadsDir) {
-      throw new Error(
-        `Could not find a writable remote uploads directory. Tried: ${tried.join(", ")}\n` +
-          `Set HEADLESS_SFTP_WP_ROOT correctly, or ensure your SFTP user has access to the WP install directory.`
-      );
-    }
+      if (!remoteUploadsDir) {
+        throw new Error(
+          `Could not find a writable remote uploads directory. Tried: ${tried.join(", ")}\n` +
+            `Set HEADLESS_SFTP_WP_ROOT correctly, or ensure your SFTP user has access to the WP install directory.`
+        );
+      }
 
-    runLftpMirrorUpload({
-      host: sftpHost,
-      port: sftpPort,
-      user: sftpUser,
-      password: sftpPassword,
-      localUploadsDir,
-      remoteUploadsDir,
+      await runSftpMirrorUploadNode(sftp, localUploadsDir, remoteUploadsDir);
+
+      // Try to upload MU plugin; this may be blocked by WP Engine permissions/chroot.
+      const muPluginRemotePath =
+        (chosenPrefix ? `${chosenPrefix}/` : "") +
+        "wp-content/mu-plugins/amerilife-media-importer.php";
+      const muOk = await runSftpPutFileNode(sftp, muPluginLocalPath, muPluginRemotePath);
+      return { muOk, muPluginRemotePath };
     });
 
-    // Try to upload MU plugin; this may be blocked by WP Engine permissions/chroot.
-    const muPluginRemotePath =
-      (chosenPrefix ? `${chosenPrefix}/` : "") +
-      "wp-content/mu-plugins/amerilife-media-importer.php";
-    const muOk = runLftpPutFile({
-      host: sftpHost,
-      port: sftpPort,
-      user: sftpUser,
-      password: sftpPassword,
-      localPath: muPluginLocalPath,
-      remotePath: muPluginRemotePath,
-    });
+    const { muOk, muPluginRemotePath } = result;
 
     if (importMediaLibrary) {
       if (!muOk) {
@@ -868,7 +901,6 @@ async function main() {
         });
       }
     }
-    return;
   }
 
   // Build an SFTP batch file that creates directories and uploads only the referenced files.
