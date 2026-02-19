@@ -25,6 +25,14 @@ Configure these in **WP Engine Atlas** → **Settings** → **Environment Variab
 4. After deploy, verify images at `https://ha5z0...js.wpenginepowered.com/about-us/who-we-are`.
 5. Check Media Library at `https://headlessameril.wpenginepowered.com/wp-admin/upload.php`.
 
+### Verify import endpoint and auth (local)
+
+```bash
+pnpm -C frontend run verify:media-import
+```
+
+Requires `HEADLESS_WP_APP_USER` and `HEADLESS_WP_APP_PASSWORD` in `frontend/.env.local`. If this fails, Media Library import will fail during build.
+
 ### Verify headless images (local)
 
 ```bash
