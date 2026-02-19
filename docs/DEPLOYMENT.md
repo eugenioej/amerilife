@@ -1,37 +1,36 @@
 # Deployment Guide – WP Engine Atlas
 
-## Atlas environment variables (required for images)
+## Atlas environment variables (required for production)
 
-Configure these in **WP Engine Atlas** → **Settings** → **Environment Variables** (use **Secrets** for credentials).
+The **build does not upload images**. You upload images to headless WordPress yourself (e.g. via wp-admin Media Library or SFTP). Configure these in **WP Engine Atlas** → **Settings** → **Environment Variables** (use **Secrets** for credentials).
 
 | Variable | Value | Notes |
 |---------|-------|-------|
 | `NEXT_PUBLIC_GRAPHQL_ENDPOINT` | `https://headlessameril.wpenginepowered.com/graphql` | Headless WordPress GraphQL |
 | `NEXT_PUBLIC_USE_LIVE_IMAGES` | `0` | Use headless images (not live amerilife.com) |
-| `SYNC_WP_IMAGES` | `1` | Enable image sync during build |
-| `HEADLESS_SFTP_HOST` | `headlessameril.sftp.wpengine.com` | SFTP host for uploads |
-| `HEADLESS_SFTP_PORT` | `2222` | SFTP port |
-| `HEADLESS_SFTP_USER` | *(your SFTP user)* | Set as secret |
-| `HEADLESS_SFTP_PASSWORD` | *(your SFTP password)* | Set as secret |
-| `SYNC_WP_IMPORT_MEDIA_LIBRARY` | `1` | Register files in wp-admin Media Library |
-| `HEADLESS_WP_APP_USER` | `mediauploader` | WP user with upload_files capability |
-| `HEADLESS_WP_APP_PASSWORD` | *(WordPress Application Password)* | Generate at Users → Profile → Application Passwords |
+
+Optional (only if you use the sync script manually):
+
+| Variable | Value | Notes |
+|---------|-------|-------|
+| `SYNC_WP_IMAGES` | `1` | Only for `pnpm sync:wp-images`; not used during build |
+| `HEADLESS_SFTP_*` / `HEADLESS_WP_APP_*` | *(see .env.example)* | For script `pnpm sync:wp-images` |
 
 ### Steps
 
-1. In Atlas, add each variable above. Mark sensitive ones as **Secret**.
-2. Generate a WordPress Application Password: headless WP admin → Users → Your user → Application Passwords → Add new.
-3. Trigger a new deploy: push to `main` (if Atlas is wired to your repo) or use Atlas dashboard **Redeploy**.
-4. After deploy, verify images at `https://ha5z0...js.wpenginepowered.com/about-us/who-we-are`.
-5. Check Media Library at `https://headlessameril.wpenginepowered.com/wp-admin/upload.php`.
+1. In Atlas, set `NEXT_PUBLIC_GRAPHQL_ENDPOINT` and `NEXT_PUBLIC_USE_LIVE_IMAGES=0`.
+2. Ensure images are present on headless WP (you upload them manually or run `pnpm -C frontend sync:wp-images` locally when needed).
+3. Trigger a deploy: push to `main` or use Atlas **Redeploy**.
+4. After deploy, verify images at your frontend URL (e.g. `https://ha5z0...js.wpenginepowered.com/about-us/who-we-are`).
+5. Media Library: `https://headlessameril.wpenginepowered.com/wp-admin/upload.php`.
 
-### Verify import endpoint and auth (local)
+### Verify import endpoint and auth (local, optional)
 
 ```bash
 pnpm -C frontend run verify:media-import
 ```
 
-Requires `HEADLESS_WP_APP_USER` and `HEADLESS_WP_APP_PASSWORD` in `frontend/.env.local`. If this fails, Media Library import will fail during build.
+Only needed if you use `pnpm sync:wp-images` and Media Library registration. Requires `HEADLESS_WP_APP_USER` and `HEADLESS_WP_APP_PASSWORD` in `frontend/.env.local`.
 
 ### Verify headless images (local)
 

@@ -3,9 +3,9 @@ import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
-// Image of AmeriLife professionals (matches original thank you page)
+// Image on headless: /wp-content/uploads/2017/10/Thank-You-IMG.jpg
 const THANK_YOU_IMAGE_URL = rewriteUploadsUrl(
-  "https://amerilife.com/wp-content/uploads/2022/01/Join_Agent_VideoPreview.png"
+  "https://amerilife.com/wp-content/uploads/2017/10/Thank-You-IMG.jpg"
 );
 
 export const metadata: Metadata = {

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "sync:wp-images": "node scripts/sync-wp-images.mjs",
-    "build": "node scripts/sync-wp-images.mjs && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "verify:headless-images": "node scripts/verify-headless-images.mjs",

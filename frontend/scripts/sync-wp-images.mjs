@@ -124,6 +124,47 @@ function extractUploadsUrlsFromText(text) {
   return out;
 }
 
+function sanitizeUrlToken(u) {
+  // Some payloads include escaped line continuations like "...png\".
+  return String(u ?? "")
+    .trim()
+    .replace(/[\\]+$/g, "")
+    .replace(/[\u0000-\u001F]+/g, "");
+}
+
+async function collectFromPageUrl(pageUrl) {
+  const u = String(pageUrl ?? "").trim();
+  if (!u) return new Set();
+
+  const res = await fetch(u, { redirect: "follow" });
+  if (!res.ok) {
+    throw new Error(`Page fetch failed: ${res.status} ${res.statusText} (${u})`);
+  }
+  const html = await res.text();
+
+  const urls = new Set();
+
+  // Direct uploads URLs.
+  for (const raw of extractUploadsUrlsFromText(html)) {
+    const cleaned = sanitizeUrlToken(raw);
+    if (cleaned) urls.add(cleaned);
+  }
+
+  // Next/image upstream URLs, encoded as `/_next/image?url=<encoded>`.
+  const reNext = /\/_next\/image\?url=([^&"'<>]+)/g;
+  let m;
+  while ((m = reNext.exec(html)) !== null) {
+    try {
+      const decoded = sanitizeUrlToken(decodeURIComponent(m[1]));
+      if (decoded.includes("/wp-content/uploads/")) urls.add(decoded);
+    } catch {
+      // ignore malformed encodings
+    }
+  }
+
+  return urls;
+}
+
 function extractUploadsUrlsFromWpImageSourcesTs(text) {
   // Heuristic for `lib/wp-image-sources.ts` where URLs are composed like:
   //   const UPLOADS = "https://amerilife.com/wp-content/uploads";
@@ -343,6 +384,9 @@ async function downloadToCache(url, cacheRoot) {
 }
 
 function runSftpBatch({ host, port, user, keyPath, batchPath }) {
+  if (!keyPath) {
+    throw new Error("Key mode requires HEADLESS_SFTP_KEY_PATH (path to your private key).");
+  }
   const args = [
     "-i",
     keyPath,
@@ -773,6 +817,18 @@ async function main() {
     }
   }
 
+  // Optional: scrape a specific rendered frontend page and sync the uploads it references.
+  // Example:
+  //   SYNC_WP_PAGE_URL=https://ha5z0...wpenginepowered.com/about-us/who-we-are
+  const pageUrl = env("SYNC_WP_PAGE_URL");
+  if (pageUrl) {
+    try {
+      for (const u of await collectFromPageUrl(pageUrl)) urls.add(u);
+    } catch (e) {
+      console.warn(`WARN: ${String(e)}`);
+    }
+  }
+
   // Normalize to absolute https URLs (protocol-relative -> https).
   const normalized = [...urls]
     .map((u) => {
@@ -901,6 +957,9 @@ async function main() {
         });
       }
     }
+
+    // Critical: do NOT fall through into key-mode batch upload.
+    return;
   }
 
   // Build an SFTP batch file that creates directories and uploads only the referenced files.
