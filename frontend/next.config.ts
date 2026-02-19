@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { getRedirectsFromWP } from "./lib/wp-redirects";
 
 const nextConfig: NextConfig = {
   images: {
@@ -41,6 +42,7 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
+    const wpRedirects = await getRedirectsFromWP();
     return [
       {
         source: "/home/",
@@ -134,7 +136,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/jobs/",
-        destination: "https://amerilife.com/join-our-team/",
+        destination: "/join-our-team/",
         permanent: true,
       },
       {
@@ -289,7 +291,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/join-our-talent-community/",
-        destination: "https://amerilife.com/join-our-team/",
+        destination: "/join-our-team/",
         permanent: true,
       },
       {
@@ -317,6 +319,7 @@ const nextConfig: NextConfig = {
         destination: "https://amerilife.sharepoint.com/sites/LifeAmeriLife",
         permanent: true,
       },
+      ...wpRedirects,
     ];
   },
 };

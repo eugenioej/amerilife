@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { fetchGraphQL } from "@/lib/wp-client";
-import { GET_NODE_BY_URI } from "@/lib/queries";
+import { GET_NODE_BY_URI, type PageWithSeo } from "@/lib/queries";
+import { yoastSeoToMetadata } from "@/lib/seo";
 import { rewriteUploadsInHtml } from "@/lib/wp-media";
 
 type PageParams = Promise<{ slug: string[] }>;
@@ -8,13 +9,18 @@ type PageParams = Promise<{ slug: string[] }>;
 export async function generateMetadata({ params }: { params: PageParams }) {
   const { slug } = await params;
   const uri = "/" + slug.join("/") + "/";
-  const data = await fetchGraphQL<{
-    nodeByUri?: { __typename: string; title?: string } | null;
-  }>(GET_NODE_BY_URI, { uri });
+  const data = await fetchGraphQL<{ nodeByUri?: PageWithSeo | null }>(
+    GET_NODE_BY_URI,
+    { uri }
+  );
   const node = data?.nodeByUri;
   if (!node || node.__typename !== "Page") return {};
+  const page = node as PageWithSeo;
+  if (page.seo) {
+    return yoastSeoToMetadata(page.seo, page.title ?? "Page");
+  }
   return {
-    title: `${(node as { title?: string }).title} | AmeriLife`,
+    title: `${page.title ?? "Page"} | AmeriLife`,
   };
 }
 
@@ -22,18 +28,17 @@ export default async function SlugPage({ params }: { params: PageParams }) {
   const { slug } = await params;
   const uri = "/" + slug.join("/") + "/";
 
-  const data = await fetchGraphQL<{
-    nodeByUri?:
-      | { __typename: string; title?: string; slug?: string; content?: string }
-      | null;
-  }>(GET_NODE_BY_URI, { uri });
+  const data = await fetchGraphQL<{ nodeByUri?: PageWithSeo | null }>(
+    GET_NODE_BY_URI,
+    { uri }
+  );
 
   const node = data?.nodeByUri;
   if (!node || node.__typename !== "Page") {
     notFound();
   }
 
-  const page = node as { title?: string; slug?: string; content?: string };
+  const page = node as PageWithSeo;
   const html = page.content ? rewriteUploadsInHtml(page.content) : "";
 
   return (
