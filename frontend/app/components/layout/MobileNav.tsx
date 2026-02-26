@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "../ui/Link";
 import { Sheet } from "../ui/Sheet";
+import { ChevronDownIcon } from "../ui/ChevronDownIcon";
 import type { NavItem } from "@/lib/wp-menus";
 
 type MobileNavProps = {
@@ -11,48 +12,55 @@ type MobileNavProps = {
   items: NavItem[];
 };
 
+function MobileNavItem({ item, onClose, level = 0 }: { item: NavItem; onClose: () => void; level?: number }) {
+  const [expanded, setExpanded] = useState(false);
+  const hasChildren = item.children && item.children.length > 0;
+  const paddingLeft = level === 0 ? 24 : 24 + level * 32;
+
+  return (
+    <li>
+      <div className="flex items-center justify-between gap-2">
+        <Link
+          href={item.href}
+          variant="nav"
+          className="flex-1 px-6 py-3 text-base font-semibold"
+          style={{ paddingLeft }}
+          onClick={onClose}
+        >
+          {item.label}
+        </Link>
+        {hasChildren && (
+          <button
+            type="button"
+            onClick={() => setExpanded((e) => !e)}
+            className="flex h-12 w-12 shrink-0 items-center justify-center text-white/80"
+            aria-expanded={expanded}
+            aria-label={expanded ? "Collapse submenu" : "Expand submenu"}
+          >
+            <ChevronDownIcon size={18} open={expanded} />
+          </button>
+        )}
+      </div>
+      {hasChildren && (
+        <ul
+          className={`ml-4 flex flex-col gap-1 border-l-2 border-white/30 pl-4 overflow-hidden transition-[max-height,opacity] duration-200 ${
+            expanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          {item.children!.map((child) => (
+            <MobileNavItem key={child.href + child.label} item={child} onClose={onClose} level={level + 1} />
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+}
+
 function NavItemList({ items, onClose }: { items: NavItem[]; onClose: () => void }) {
   return (
     <ul className="flex flex-col gap-1">
       {items.map((item) => (
-        <li key={item.href + item.label}>
-          <Link
-            href={item.href}
-            variant="nav"
-            className="block px-6 py-3 text-base font-semibold"
-            onClick={onClose}
-          >
-            {item.label}
-          </Link>
-          {item.children && item.children.length > 0 && (
-            <ul className="ml-6 mt-1 flex flex-col gap-1 border-l-2 border-white/30 pl-4">
-              {item.children.map((child) => (
-                <li key={child.href + child.label}>
-                  <Link
-                    href={child.href}
-                    variant="nav"
-                    className="block py-2 text-sm"
-                    onClick={onClose}
-                  >
-                    {child.label}
-                  </Link>
-                  {child.children?.map((grand) => (
-                    <li key={grand.href + grand.label}>
-                      <Link
-                        href={grand.href}
-                        variant="nav"
-                        className="block py-1.5 pl-4 text-sm opacity-90"
-                        onClick={onClose}
-                      >
-                        {grand.label}
-                      </Link>
-                    </li>
-                  ))}
-                </li>
-              ))}
-            </ul>
-          )}
-        </li>
+        <MobileNavItem key={item.href + item.label} item={item} onClose={onClose} />
       ))}
     </ul>
   );

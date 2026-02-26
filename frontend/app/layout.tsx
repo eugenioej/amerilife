@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
-import { LayoutShell } from "./components/layout/LayoutShell";
 import "./globals.css";
 
 const openSans = Open_Sans({
@@ -25,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${openSans.variable} antialiased`} style={{ fontFamily: "var(--font-sans)" }}>
-        <LayoutShell>{children}</LayoutShell>
+        {children}
       </body>
     </html>
   );

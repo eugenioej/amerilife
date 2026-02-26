@@ -16,7 +16,7 @@ function getGraphQLEndpoint(): string {
 
 export async function fetchGraphQL<T>(
   query: string,
-  variables?: Record<string, any>
+  variables?: Record<string, unknown>
 ): Promise<T> {
   const graphqlEndpoint = getGraphQLEndpoint();
   const res = await fetch(graphqlEndpoint, {
@@ -35,7 +35,7 @@ export async function fetchGraphQL<T>(
     throw new Error(`GraphQL request failed: ${res.statusText}`);
   }
 
-  const json = await res.json();
+  const json: { data: T; errors?: { message?: string }[] } = await res.json();
 
   if (json.errors) {
     const msg = json.errors.map((e: { message?: string }) => e.message).join("; ");

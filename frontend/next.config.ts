@@ -1,7 +1,18 @@
 import type { NextConfig } from "next";
 import { getRedirectsFromWP } from "./lib/wp-redirects";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const turbopackRoot =
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  typeof __dirname !== "undefined"
+    ? __dirname
+    : path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    root: turbopackRoot,
+  },
   images: {
     remotePatterns: [
       {
@@ -69,11 +80,7 @@ const nextConfig: NextConfig = {
         destination: "https://amerilife.com/our-solutions/affiliates/",
         permanent: true,
       },
-      {
-        source: "/career/",
-        destination: "https://amerilife.com/our-solutions/employees/",
-        permanent: true,
-      },
+      // /career/ and /career/agents/ served locally - no redirect
       {
         source: "/career/consumers/",
         destination: "https://amerilife.com/our-solutions/consumers/",
@@ -176,7 +183,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/agent/",
-        destination: "https://amerilife.com/career/agents/",
+        destination: "/career/agents/",
         permanent: true,
       },
       {

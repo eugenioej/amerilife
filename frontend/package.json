@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "sync:wp-images": "node scripts/sync-wp-images.mjs",
+    "sync:wp-images:download": "SYNC_WP_IMAGES=1 SYNC_WP_DOWNLOAD_ONLY=1 node scripts/sync-wp-images.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

@@ -783,13 +783,16 @@ async function main() {
   const wpRootPrefixRaw = env("HEADLESS_SFTP_WP_ROOT", "").replace(/\/$/, "");
   const uploadsPrefix = env("HEADLESS_SFTP_UPLOADS_PREFIX", "wp-content/uploads").replace(/\/$/, "");
 
-  if (!sftpUser) throw new Error("Set HEADLESS_SFTP_USER.");
-  if (!sftpPassword && !sftpKeyPath) {
-    throw new Error(
-      "Set HEADLESS_SFTP_PASSWORD (password mode) or HEADLESS_SFTP_KEY_PATH (SSH key mode)."
-    );
+  const downloadOnly = env("SYNC_WP_DOWNLOAD_ONLY", "0") === "1";
+  if (!downloadOnly) {
+    if (!sftpUser) throw new Error("Set HEADLESS_SFTP_USER.");
+    if (!sftpPassword && !sftpKeyPath) {
+      throw new Error(
+        "Set HEADLESS_SFTP_PASSWORD (password mode) or HEADLESS_SFTP_KEY_PATH (SSH key mode)."
+      );
+    }
   }
-  if (importMediaLibrary) {
+  if (!downloadOnly && importMediaLibrary) {
     if (!wpAppUser || !wpAppPassword) {
       throw new Error(
         "To import into Media Library, set HEADLESS_WP_APP_USER and HEADLESS_WP_APP_PASSWORD (an Application Password)."
@@ -860,6 +863,12 @@ async function main() {
   }
 
   if (downloaded.length === 0) return;
+
+  if (downloadOnly) {
+    console.log(`Downloaded ${downloaded.length} images to .cache/wp-image-sync/`);
+    console.log("Run with HEADLESS_SFTP_USER and HEADLESS_SFTP_PASSWORD to upload to headless.");
+    return;
+  }
 
   const muPluginLocalPath = path.join(
     PROJECT_ROOT,
