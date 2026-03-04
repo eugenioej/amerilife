@@ -4,7 +4,7 @@ import { GET_REDIRECTS } from "./queries";
 type WpRedirect = {
   origin: string;
   target: string;
-  type: number;
+  type: string;
   matchType?: string;
 };
 
@@ -58,7 +58,10 @@ export async function getRedirectsFromWP(): Promise<NextRedirect[]> {
         if (!dest) return null;
         const source = normalizePath(r.origin);
         const destination = normalizeTarget(dest);
-        const permanent = r.type === 301 || r.type === 308;
+        // WPGraphQL Redirection Addon does not expose the HTTP status code field;
+        // the `type` field is the match strategy ("url", "regex"), not a status code.
+        // All redirects managed via WordPress are treated as permanent (301).
+        const permanent = true;
         return { source, destination, permanent };
       })
       .filter((r): r is NextRedirect => r !== null);
