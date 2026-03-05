@@ -59,6 +59,84 @@ export const GET_NODE_BY_URI = `
   }
 `;
 
+export type PostByUri = {
+  __typename: "Post";
+  id: string;
+  title?: string | null;
+  content?: string | null;
+  date?: string | null;
+  excerpt?: string | null;
+  uri?: string | null;
+  seo?: YoastSeoData | null;
+  author?: {
+    node?: {
+      name?: string | null;
+    };
+  } | null;
+  categories?: {
+    nodes?: Array<{
+      name?: string | null;
+      slug?: string | null;
+    }>;
+  } | null;
+  featuredImage?: {
+    node?: {
+      sourceUrl?: string | null;
+      altText?: string | null;
+    };
+  } | null;
+};
+
+export const GET_POST_BY_URI = `
+  query GetPostByUri($uri: String!) {
+    nodeByUri(uri: $uri) {
+      __typename
+      ... on Post {
+        id
+        title
+        content
+        date
+        excerpt
+        uri
+        seo {
+          title
+          metaDesc
+          canonical
+          opengraphTitle
+          opengraphDescription
+          opengraphUrl
+          opengraphImage {
+            sourceUrl
+            altText
+          }
+          twitterTitle
+          twitterDescription
+          twitterImage {
+            sourceUrl
+          }
+        }
+        author {
+          node {
+            name
+          }
+        }
+        categories {
+          nodes {
+            name
+            slug
+          }
+        }
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const GET_MENUS = `
   query GetMenus {
     menus {
@@ -136,6 +214,115 @@ export const GET_MENU_ITEMS_HEADER = `
         url
         path
         parentId
+      }
+    }
+  }
+`;
+
+export type SearchResultNode = {
+  __typename: string;
+  id: string;
+  title?: string;
+  uri?: string;
+  date?: string;
+  excerpt?: string;
+  featuredImage?: {
+    node?: {
+      sourceUrl?: string;
+      altText?: string;
+    };
+  } | null;
+};
+
+export type SearchResults = {
+  contentNodes: {
+    nodes: SearchResultNode[];
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+  };
+};
+
+export const SEARCH_CONTENT = `
+  query SearchContent($search: String!, $first: Int!, $after: String) {
+    contentNodes(
+      where: { search: $search, contentTypes: [PAGE, POST] }
+      first: $first
+      after: $after
+    ) {
+      nodes {
+        __typename
+        id
+        ... on Page {
+          title
+          uri
+          date
+          excerpt
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+        }
+        ... on Post {
+          title
+          uri
+          date
+          excerpt
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`;
+
+export type PostSearchNode = {
+  id: string;
+  title?: string | null;
+  uri?: string | null;
+  date?: string | null;
+  excerpt?: string | null;
+  featuredImage?: {
+    node?: {
+      sourceUrl?: string | null;
+      altText?: string | null;
+    };
+  } | null;
+};
+
+export type PostsSearchResult = {
+  posts: {
+    nodes: PostSearchNode[];
+  };
+};
+
+/** Search only blog posts (WP Post type). Use with static page search for hybrid results. */
+export const SEARCH_POSTS = `
+  query SearchPosts($search: String!, $first: Int!) {
+    posts(where: { search: $search }, first: $first) {
+      nodes {
+        id
+        title
+        uri
+        date
+        excerpt
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
       }
     }
   }
