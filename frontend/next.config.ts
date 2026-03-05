@@ -53,14 +53,7 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
-    const wpRedirects = await getRedirectsFromWP();
-    console.error(`[next.config] Redirects loaded: ${wpRedirects.length} from WordPress`);
-    return [
-      // Canary: static redirect to verify Next.js redirects work on Atlas.
-      // Remove after confirmed working.
-      { source: "/redirect-test", destination: "/about-us/who-we-are", permanent: false },
-      ...wpRedirects,
-    ];
+    return getRedirectsFromWP();
   },
 };
 
