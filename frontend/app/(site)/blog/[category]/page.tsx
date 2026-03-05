@@ -3,9 +3,13 @@ import { notFound } from "next/navigation";
 import { fetchGraphQL } from "@/lib/wp-client";
 import { GET_POSTS, type PostsListResult } from "@/lib/queries";
 import { BlogPostCard } from "@/app/components/blog/BlogPostCard";
+import { BlogPagination } from "@/app/components/blog/BlogPagination";
 import { Link } from "@/app/components/ui/Link";
 
+const PAGE_SIZE = 12;
+
 type PageParams = Promise<{ category: string }>;
+type SearchParams = Promise<{ stack?: string }>;
 
 // Category slugs from the old amerilife.com URL structure that map to
 // "show all posts" rather than filtering by a specific WP taxonomy category.
@@ -33,23 +37,31 @@ export async function generateMetadata({
 
 export default async function BlogCategoryPage({
   params,
+  searchParams,
 }: {
   params: PageParams;
+  searchParams: SearchParams;
 }) {
   const { category } = await params;
+  const { stack = "" } = await searchParams;
 
   // Legacy URL segments (announcements, blog, partnerships) → show all posts.
   // Actual WP category slugs (leadership, mergers-and-acquisitions, etc.) → filter.
   const isLegacy = LEGACY_CATEGORY_SLUGS.has(category);
   const categoryFilter = isLegacy ? undefined : category;
 
+  const cursors = stack ? stack.split(",") : [];
+  const after = cursors[cursors.length - 1] ?? null;
+  const page = cursors.length + 1;
+
   const data = await fetchGraphQL<PostsListResult>(GET_POSTS, {
-    first: 48,
-    after: null,
+    first: PAGE_SIZE,
+    after,
     categorySlug: categoryFilter ?? null,
   });
 
   const posts = data?.posts?.nodes ?? [];
+  const pageInfo = data?.posts?.pageInfo;
 
   // For non-legacy slugs that return no results, show 404.
   if (!isLegacy && posts.length === 0) notFound();
@@ -104,6 +116,14 @@ export default async function BlogCategoryPage({
           ))}
         </div>
       )}
+
+      <BlogPagination
+        hasNextPage={pageInfo?.hasNextPage ?? false}
+        endCursor={pageInfo?.endCursor ?? null}
+        stack={stack}
+        basePath={`/blog/${category}`}
+        page={page}
+      />
     </section>
   );
 }

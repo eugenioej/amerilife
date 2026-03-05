@@ -400,8 +400,12 @@ export type PostSearchNode = {
   id: string;
   title?: string | null;
   uri?: string | null;
+  slug?: string | null;
   date?: string | null;
   excerpt?: string | null;
+  categories?: {
+    nodes?: Array<{ slug?: string | null }>;
+  } | null;
   featuredImage?: {
     node?: {
       sourceUrl?: string | null;
@@ -424,8 +428,14 @@ export const SEARCH_POSTS = `
         id
         title
         uri
+        slug
         date
         excerpt
+        categories {
+          nodes {
+            slug
+          }
+        }
         featuredImage {
           node {
             sourceUrl

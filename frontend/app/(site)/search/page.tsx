@@ -52,7 +52,9 @@ function PageCard({ result }: { result: SearchResult }) {
 function PostCard({ node }: { node: PostSearchNode }) {
   const excerpt = node.excerpt ? stripTags(node.excerpt) : "";
   const truncated = excerpt.length > 200 ? excerpt.slice(0, 200) + "…" : excerpt;
-  const href = node.uri ?? "#";
+  const categorySlug = node.categories?.nodes?.[0]?.slug ?? "announcements";
+  const slug = node.slug ?? "";
+  const href = slug ? `/blog/${categorySlug}/${slug}/` : "#";
 
   return (
     <article className="group rounded-lg border border-[var(--color-border)] bg-white p-5 transition-shadow hover:shadow-md">

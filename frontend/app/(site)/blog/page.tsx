@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { fetchGraphQL } from "@/lib/wp-client";
 import { GET_POSTS, type PostsListResult } from "@/lib/queries";
 import { BlogPostCard } from "@/app/components/blog/BlogPostCard";
+import { BlogPagination } from "@/app/components/blog/BlogPagination";
 
 export const metadata: Metadata = {
   title: "Newsroom & Blog | AmeriLife",
@@ -9,13 +10,29 @@ export const metadata: Metadata = {
     "Stay up to date with the latest news, announcements, and insights from AmeriLife — America's leading health and wealth distribution company.",
 };
 
-export default async function BlogIndexPage() {
+const PAGE_SIZE = 12;
+
+type SearchParams = Promise<{ stack?: string }>;
+
+export default async function BlogIndexPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const { stack = "" } = await searchParams;
+
+  // Derive the `after` cursor: last item in the cursor stack.
+  const cursors = stack ? stack.split(",") : [];
+  const after = cursors[cursors.length - 1] ?? null;
+  const page = cursors.length + 1;
+
   const data = await fetchGraphQL<PostsListResult>(GET_POSTS, {
-    first: 24,
-    after: null,
+    first: PAGE_SIZE,
+    after,
   });
 
   const posts = data?.posts?.nodes ?? [];
+  const pageInfo = data?.posts?.pageInfo;
 
   return (
     <section className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-12">
@@ -37,6 +54,14 @@ export default async function BlogIndexPage() {
           ))}
         </div>
       )}
+
+      <BlogPagination
+        hasNextPage={pageInfo?.hasNextPage ?? false}
+        endCursor={pageInfo?.endCursor ?? null}
+        stack={stack}
+        basePath="/blog"
+        page={page}
+      />
     </section>
   );
 }

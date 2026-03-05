@@ -17,8 +17,6 @@ function formatDate(dateStr: string): string {
 
 export function BlogPostTemplate({ post, categorySlug }: Props) {
   const categoryName = post.categories?.nodes?.[0]?.name ?? "Article";
-  const authorName = post.author?.node?.name ?? "AmeriLife";
-  const image = post.featuredImage?.node;
   const html = post.content ? rewriteUploadsInHtml(post.content) : "";
   const proseClasses =
     "max-w-none text-[var(--color-fg)] [&_p]:mb-4 [&_p]:leading-relaxed [&_a]:text-[var(--color-link)] [&_a:hover]:text-[var(--color-link-hover)] [&_a]:underline [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl [&_ul]:list-disc [&_ul]:pl-6 [&_li]:mb-2";
@@ -67,23 +65,20 @@ export function BlogPostTemplate({ post, categorySlug }: Props) {
         {post.title}
       </h1>
 
-      <p className="mb-8 text-sm text-[var(--color-muted)]">
-        {post.date && formatDate(post.date)}
-        {post.date && " · "}
-        <span>{categoryName}</span>
-        {" · "}
-        By {authorName}
-      </p>
-
-      {image?.sourceUrl && (
-        <div className="mb-8 overflow-hidden rounded-lg">
-          <img
-            src={image.sourceUrl}
-            alt={image.altText ?? post.title ?? ""}
-            className="w-full object-cover"
-          />
-        </div>
-      )}
+      <div className="mb-8 flex flex-wrap items-center gap-3">
+        {post.date && (
+          <span className="text-sm text-[var(--color-muted)]">
+            {formatDate(post.date)}
+          </span>
+        )}
+        <Link
+          href={`/blog/${categorySlug}/`}
+          variant="button"
+          className="inline-block rounded-full bg-[var(--color-primary)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white"
+        >
+          {categoryName}
+        </Link>
+      </div>
 
       {html ? (
         <div

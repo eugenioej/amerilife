@@ -19,10 +19,6 @@ function stripHtml(html: string): string {
 
 export function BlogPostCard({ post }: Props) {
   const category = post.categories?.nodes?.[0];
-  const image = post.featuredImage?.node;
-
-  // Build the URL: preserve the original /blog/[category]/[slug]/ structure.
-  // Use the post's WP category slug if available, otherwise fall back to "announcements".
   const categorySlug = category?.slug ?? "announcements";
   const href = `/blog/${categorySlug}/${post.slug}/`;
 
@@ -32,30 +28,21 @@ export function BlogPostCard({ post }: Props) {
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-lg border border-[var(--color-border)] bg-white transition-shadow hover:shadow-md">
-      {image?.sourceUrl && (
-        <Link href={href} className="block aspect-[16/9] overflow-hidden bg-gray-100">
-          <img
-            src={image.sourceUrl}
-            alt={image.altText ?? post.title ?? ""}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        </Link>
-      )}
-
       <div className="flex flex-1 flex-col p-5">
         {category && (
           <Link
             href={`/blog/${categorySlug}/`}
-            className="mb-2 inline-block text-xs font-semibold uppercase tracking-[var(--tracking-wide)] text-[var(--color-brand-primary)] transition-colors hover:text-[var(--color-brand-primary-hover)]"
+            className="mb-3 inline-block self-start rounded-full bg-[var(--color-primary)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white transition-opacity hover:opacity-80"
           >
             {category.name}
           </Link>
         )}
 
-        <h2 className="mb-2 text-base font-bold leading-snug text-[var(--color-fg)]">
+        <h2 className="mb-2 text-base font-bold leading-snug text-[var(--color-brand-dark)]">
           <Link
             href={href}
-            className="transition-colors hover:text-[var(--color-brand-primary)]"
+            variant="button"
+            className="text-[var(--color-brand-dark)] transition-colors hover:text-[var(--color-brand-dark)]"
           >
             {post.title}
           </Link>
