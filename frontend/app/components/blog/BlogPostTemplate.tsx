@@ -22,7 +22,7 @@ export function BlogPostTemplate({ post, categorySlug }: Props) {
     "max-w-none text-[var(--color-fg)] [&_p]:mb-4 [&_p]:leading-relaxed [&_a]:text-[var(--color-link)] [&_a:hover]:text-[var(--color-link-hover)] [&_a]:underline [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl [&_ul]:list-disc [&_ul]:pl-6 [&_li]:mb-2";
 
   return (
-    <article className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-12">
+    <article className="mx-auto max-w-[720px] px-[var(--container-padding-x)] py-12">
       <nav
         className="mb-6 text-sm text-[var(--color-muted)]"
         aria-label="Breadcrumb"
