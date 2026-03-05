@@ -137,6 +137,115 @@ export const GET_POST_BY_URI = `
   }
 `;
 
+export const GET_POST_BY_SLUG = `
+  query GetPostBySlug($slug: ID!) {
+    post(id: $slug, idType: SLUG) {
+      __typename
+      id
+      title
+      content
+      date
+      excerpt
+      uri
+      slug
+      seo {
+        title
+        metaDesc
+        canonical
+        opengraphTitle
+        opengraphDescription
+        opengraphUrl
+        opengraphImage {
+          sourceUrl
+          altText
+        }
+        twitterTitle
+        twitterDescription
+        twitterImage {
+          sourceUrl
+        }
+      }
+      author {
+        node {
+          name
+        }
+      }
+      categories {
+        nodes {
+          name
+          slug
+        }
+      }
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+    }
+  }
+`;
+
+export type PostsListItem = {
+  id: string;
+  title?: string | null;
+  uri?: string | null;
+  slug?: string | null;
+  date?: string | null;
+  excerpt?: string | null;
+  categories?: {
+    nodes?: Array<{ name?: string | null; slug?: string | null }>;
+  } | null;
+  featuredImage?: {
+    node?: { sourceUrl?: string | null; altText?: string | null };
+  } | null;
+};
+
+export type PostsListResult = {
+  posts: {
+    nodes: PostsListItem[];
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+  };
+};
+
+export const GET_POSTS = `
+  query GetPosts($first: Int!, $after: String, $categorySlug: String) {
+    posts(
+      first: $first
+      after: $after
+      where: { status: PUBLISH, categoryName: $categorySlug, orderby: { field: DATE, order: DESC } }
+    ) {
+      nodes {
+        id
+        title
+        uri
+        slug
+        date
+        excerpt
+        categories {
+          nodes {
+            name
+            slug
+          }
+        }
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`;
+
 export const GET_MENUS = `
   query GetMenus {
     menus {

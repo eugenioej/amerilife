@@ -10,7 +10,10 @@
     "start": "next start",
     "lint": "eslint",
     "verify:headless-images": "node scripts/verify-headless-images.mjs",
-    "verify:media-import": "node scripts/verify-media-import.mjs"
+    "verify:media-import": "node scripts/verify-media-import.mjs",
+    "migrate:extract": "node scripts/migrate-posts.mjs extract",
+    "migrate:upload": "node scripts/migrate-posts.mjs upload",
+    "migrate:posts": "node scripts/migrate-posts.mjs migrate"
   },
   "dependencies": {
     "lucide-react": "^0.574.0",
