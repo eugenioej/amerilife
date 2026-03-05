@@ -16,7 +16,8 @@ function getGraphQLEndpoint(): string {
 
 export async function fetchGraphQL<T>(
   query: string,
-  variables?: Record<string, unknown>
+  variables?: Record<string, unknown>,
+  signal?: AbortSignal,
 ): Promise<T> {
   const graphqlEndpoint = getGraphQLEndpoint();
   const res = await fetch(graphqlEndpoint, {
@@ -29,6 +30,7 @@ export async function fetchGraphQL<T>(
       variables,
     }),
     cache: "no-store",
+    ...(signal ? { signal } : {}),
   });
 
   if (!res.ok) {
