@@ -411,6 +411,27 @@ const SEARCH_INDEX: SearchEntry[] = [
       "AmeriLife leverages technology and analytics to drive growth and innovation across our distribution network.",
     keywords: ["technology", "analytics", "innovation", "distribution"],
   },
+  {
+    path: "/find-an-agent/",
+    title: "Find An Agent",
+    description:
+      "Find an AmeriLife agent near you. Connect with licensed agents for Medicare, life insurance, annuities, and retirement solutions.",
+    keywords: ["find agent", "agent locator", "Medicare", "insurance", "local agent"],
+  },
+  {
+    path: "/polk-county/",
+    title: "AmeriLife of Polk County, LLC",
+    description:
+      "AmeriLife of Polk County - Winter Haven, FL. Connect with an AmeriLife agent for insurance and retirement solutions.",
+    keywords: [
+      "Polk County",
+      "Winter Haven",
+      "agent",
+      "Medicare",
+      "insurance",
+      "annuities",
+    ],
+  },
 ];
 
 export type SearchResult = SearchEntry & {

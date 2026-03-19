@@ -1,4 +1,5 @@
 import { Link } from "@/app/components/ui/Link";
+import { getCategoryPillColor } from "@/lib/category-colors";
 import type { PostByUri } from "@/lib/queries";
 import { rewriteUploadsInHtml } from "@/lib/wp-media";
 
@@ -39,10 +40,10 @@ export function BlogPostTemplate({ post, categorySlug }: Props) {
           <li aria-hidden="true">/</li>
           <li>
             <Link
-              href="/blog/"
+              href="/newsroom/"
               className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
             >
-              Blog
+              Newsroom
             </Link>
           </li>
           <li aria-hidden="true">/</li>
@@ -74,7 +75,8 @@ export function BlogPostTemplate({ post, categorySlug }: Props) {
         <Link
           href={`/blog/${categorySlug}/`}
           variant="button"
-          className="inline-block rounded-full bg-[var(--color-primary)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white"
+          className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white"
+          style={{ backgroundColor: getCategoryPillColor(categorySlug) }}
         >
           {categoryName}
         </Link>

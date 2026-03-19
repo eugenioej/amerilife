@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
+import { BlogPostCard } from "@/app/components/blog/BlogPostCard";
 import { LogoCarousel } from "@/app/components/ui/LogoCarousel";
+import { relatedNewsToPost } from "@/lib/related-news";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { WP_IMAGE_SOURCES } from "@/lib/wp-image-sources";
 import { Network, Package, Cpu, Megaphone, DollarSign } from "lucide-react";
@@ -305,39 +307,18 @@ export default function HealthDistributionPage() {
           <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
             Related News
           </h2>
-          <div className="grid gap-8 sm:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {RELATED_NEWS.map((item, i) => (
-              <article
+              <BlogPostCard
                 key={i}
-                className="flex flex-col overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-sm"
-              >
-                <div className="flex items-center justify-between gap-2 border-b border-[var(--color-border)] px-4 py-3">
-                  <span className="rounded bg-[#e67e22] px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
-                    {item.category}
-                  </span>
-                  <span className="text-sm text-[var(--color-muted)]">{item.date}</span>
-                </div>
-                <div className="flex flex-1 flex-col p-4">
-                  <h3 className="mb-4 flex-1 text-base font-bold leading-snug text-[var(--color-fg)] sm:text-lg">
-                    {item.title}
-                  </h3>
-                  <Link
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-auto text-sm font-medium uppercase tracking-wide text-[var(--color-brand-primary)] underline underline-offset-2 transition-colors hover:text-[var(--color-brand-primary-hover)]"
-                  >
-                    READ ARTICLE
-                  </Link>
-                </div>
-              </article>
+                post={relatedNewsToPost(item, i)}
+                hideCategoryPill={RELATED_NEWS.every((x) => x.category === RELATED_NEWS[0].category)}
+              />
             ))}
           </div>
           <div className="mt-10 flex justify-center">
             <Link
-              href="https://amerilife.com/newsroom/"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/newsroom/"
               variant="button"
               className="inline-flex items-center gap-2 rounded-[var(--radius-full)] border-2 border-[var(--color-brand-primary)] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary)] hover:text-white"
             >

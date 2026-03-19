@@ -1,8 +1,13 @@
+"use client";
+
 import { Link } from "@/app/components/ui/Link";
+import { getCategoryPillColor } from "@/lib/category-colors";
 import type { PostsListItem } from "@/lib/queries";
 
 type Props = {
   post: PostsListItem;
+  /** Hide the category pill (e.g. when all cards in a grid are the same category) */
+  hideCategoryPill?: boolean;
 };
 
 function formatDate(dateStr: string): string {
@@ -17,7 +22,7 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]+>/g, "").replace(/&[a-z#0-9]+;/gi, " ").trim();
 }
 
-export function BlogPostCard({ post }: Props) {
+export function BlogPostCard({ post, hideCategoryPill = false }: Props) {
   const category = post.categories?.nodes?.[0];
   const categorySlug = category?.slug ?? "announcements";
   const href = `/blog/${categorySlug}/${post.slug}/`;
@@ -29,10 +34,12 @@ export function BlogPostCard({ post }: Props) {
   return (
     <article className="group flex flex-col overflow-hidden rounded-lg border border-[var(--color-border)] bg-white transition-shadow hover:shadow-md">
       <div className="flex flex-1 flex-col p-5">
-        {category && (
+        {category && !hideCategoryPill && (
           <Link
             href={`/blog/${categorySlug}/`}
-            className="mb-3 inline-block self-start rounded-full bg-[var(--color-primary)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white transition-opacity hover:opacity-80"
+            variant="button"
+            className="mb-3 inline-block self-start rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white"
+            style={{ backgroundColor: getCategoryPillColor(categorySlug) }}
           >
             {category.name}
           </Link>

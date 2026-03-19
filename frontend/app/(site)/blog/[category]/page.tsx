@@ -13,7 +13,12 @@ type SearchParams = Promise<{ stack?: string }>;
 
 // Category slugs from the old amerilife.com URL structure that map to
 // "show all posts" rather than filtering by a specific WP taxonomy category.
-const LEGACY_CATEGORY_SLUGS = new Set(["announcements", "blog", "partnerships"]);
+const LEGACY_CATEGORY_SLUGS = new Set([
+  "announcements",
+  "blog",
+  "partnerships",
+  "in-the-news",
+]);
 
 function toTitleCase(slug: string): string {
   return slug
@@ -83,7 +88,7 @@ export default async function BlogCategoryPage({
           <li aria-hidden="true">/</li>
           <li>
             <Link
-              href="/blog/"
+              href="/newsroom/"
               className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
             >
               Newsroom
@@ -112,7 +117,7 @@ export default async function BlogCategoryPage({
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
-            <BlogPostCard key={post.id} post={post} />
+            <BlogPostCard key={post.id} post={post} hideCategoryPill />
           ))}
         </div>
       )}

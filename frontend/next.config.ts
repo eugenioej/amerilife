@@ -53,7 +53,12 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
-    return getRedirectsFromWP();
+    const wp = await getRedirectsFromWP();
+    return [
+      { source: "/blog", destination: "/newsroom", permanent: false },
+      { source: "/blog/", destination: "/newsroom", permanent: false },
+      ...wp,
+    ];
   },
 };
 

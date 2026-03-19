@@ -1,0 +1,31 @@
+---
+description: Keep the static search index in sync when adding or removing pages
+globs: frontend/app/(site)/**/page.tsx
+alwaysApply: false
+---
+
+# Search Index Sync
+
+Whenever you create, rename, or delete a page under `frontend/app/(site)/`, you **must** update `frontend/lib/search-index.ts` in the same change.
+
+## What to update
+
+Each entry in `SEARCH_INDEX` maps to one page:
+
+```ts
+{
+  path: "/our-solutions/affiliates/",   // URL path, trailing slash required
+  title: "Affiliates",                  // Human-readable title (without "| AmeriLife")
+  description: "...",                   // Page meta description
+  keywords: ["partnership", "network"], // 3–8 key topics from the page content
+}
+```
+
+## Rules
+
+- **New page** → add a new entry. Use the `metadata.description` export (or the page's `<h1>` / opening paragraph if there is no metadata).
+- **Deleted page** → remove its entry.
+- **Renamed/moved page** → update the `path` field.
+- Exclude utility/redirect pages that have no real content: `thankyou`, `findanagentthankyou`, `about/affiliates/thank-you`, `test`, `existinglead`, `worksite/lead`, `connect`, `broker-contact-page`, `sma-amerilife-video`, `valspar`, `sms-terms`.
+- `path` must be the actual Next.js route, e.g. `app/(site)/our-solutions/affiliates/page.tsx` → `/our-solutions/affiliates/`.
+- **Blog posts** are not in this index: they come from WordPress (GraphQL) and are searched automatically on the search page. Only add static Next.js pages here.
