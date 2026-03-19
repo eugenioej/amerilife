@@ -19,7 +19,7 @@ function FeatureCard({ feature }: { feature: FeatureBlock }) {
   const IconComponent = feature.icon ? FEATURE_ICONS[feature.icon] : null;
 
   return (
-    <div className="flex gap-4 rounded-lg border border-[var(--color-border)] bg-[#f7f8f9] p-6">
+    <div className="flex gap-3 rounded-lg border border-[var(--color-border)] bg-[#f7f8f9] p-4 sm:gap-4 sm:p-6">
       {IconComponent && (
         <div
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)]"
@@ -52,16 +52,16 @@ export function FeaturesGrid({
   if (features.length === 0) return null;
 
   return (
-    <section className="bg-white py-12 lg:py-16">
+    <section className="bg-white py-8 sm:py-12 lg:py-16">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
         <h2 className="mb-2 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
           {sectionHeading}
         </h2>
-        <p className="mb-10 text-center italic text-[var(--color-fg)]">
+        <p className="mb-8 text-center italic text-[var(--color-fg)] sm:mb-10">
           Helping you live a longer, healthier life.
         </p>
 
-        <div className="grid gap-8 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2 sm:gap-8">
           {features.map((feature, i) => (
             <FeatureCard key={i} feature={feature} />
           ))}

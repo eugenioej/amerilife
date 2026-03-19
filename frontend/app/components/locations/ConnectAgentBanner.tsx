@@ -43,16 +43,16 @@ export function ConnectAgentBanner({ location }: ConnectAgentBannerProps) {
   return (
     <section
       id="connect-with-agent"
-      className="bg-[#f7f8f9] py-12 lg:py-16"
+      className="bg-[#f7f8f9] py-8 sm:py-12 lg:py-16"
     >
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-        <h2 className="mb-8 text-center text-lg font-bold uppercase text-[var(--color-fg)]">
+        <h2 className="mb-6 text-center text-lg font-bold uppercase text-[var(--color-fg)] sm:mb-8">
           Connect With An Agent
         </h2>
 
-        <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
+        <div className="grid gap-6 lg:grid-cols-[1fr_1fr] lg:gap-8">
           {/* Left: Map */}
-          <div className="relative aspect-[4/3] min-h-[280px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[#e8e9eb] lg:aspect-square">
+          <div className="relative aspect-[4/3] min-h-[200px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[#e8e9eb] sm:min-h-[280px] lg:aspect-square">
             <iframe
               src={mapsUrl}
               title="Office location map"
@@ -68,7 +68,7 @@ export function ConnectAgentBanner({ location }: ConnectAgentBannerProps) {
             className="space-y-6"
             onSubmit={(e) => e.preventDefault()}
           >
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label
                   htmlFor="agent-first"

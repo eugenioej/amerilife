@@ -24,7 +24,7 @@ export function OfficeInfoHero({ location }: OfficeInfoHeroProps) {
 
   return (
     <section className="bg-white">
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-8 lg:py-12">
+      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-6 sm:py-8 lg:py-12">
         {/* Breadcrumb */}
         <nav className="mb-6 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -48,15 +48,14 @@ export function OfficeInfoHero({ location }: OfficeInfoHeroProps) {
 
         {/*
           Grid layout matching the reference:
-          - Left column (row-span-2): office image, spans green + about sections
-          - Right column row 1: green background with contact info
-          - Right column row 2: white background with about text
+          - Mobile: stack image, contact, about
+          - Desktop: left column (row-span-2) office image, right column contact + about
         */}
-        <div className="grid overflow-hidden rounded-lg [grid-template-columns:2fr_3fr] [grid-template-rows:auto_auto]">
+        <div className="grid overflow-hidden rounded-lg grid-cols-1 lg:grid-cols-[2fr_3fr] lg:[grid-template-rows:auto_auto]">
 
-          {/* LEFT: square image spanning both rows */}
-          <div className="relative row-span-2 flex w-full min-w-0 self-start">
-            <div className="relative aspect-square w-full">
+          {/* LEFT: square image spanning both rows on desktop */}
+          <div className="relative flex w-full min-w-0 self-start lg:row-span-2">
+            <div className="relative aspect-[4/3] w-full lg:aspect-square">
             {location.officeImageUrl ? (
               <Image
                 src={rewriteUploadsUrl(location.officeImageUrl)}
@@ -90,7 +89,7 @@ export function OfficeInfoHero({ location }: OfficeInfoHeroProps) {
           </div>
 
           {/* RIGHT ROW 1: green contact info */}
-          <div className="bg-[var(--color-brand-primary)] px-8 py-6">
+          <div className="bg-[var(--color-brand-primary)] px-4 py-3 sm:px-6 sm:py-6 lg:px-8">
             <h1 className="mb-3 text-2xl font-bold text-white sm:text-3xl">
               {location.officeName}
             </h1>
@@ -102,7 +101,7 @@ export function OfficeInfoHero({ location }: OfficeInfoHeroProps) {
             </a>
 
             {/* Address | Divider | Hours */}
-            <div className="flex items-start gap-6 border-t border-white/30 pt-3">
+            <div className="flex flex-col gap-4 border-t border-white/30 pt-3 sm:flex-row sm:items-start sm:gap-6 lg:flex-row">
               <address className="not-italic text-sm leading-relaxed text-white">
                 {addressLines.map((line, i) => (
                   <span key={i}>
@@ -112,7 +111,7 @@ export function OfficeInfoHero({ location }: OfficeInfoHeroProps) {
                 ))}
               </address>
 
-              <div className="w-px self-stretch bg-white/50" aria-hidden />
+              <div className="hidden w-px self-stretch bg-white/50 sm:block" aria-hidden />
 
               <div className="text-sm text-white">
                 <p className="mb-1 font-bold">Hours:</p>
@@ -123,7 +122,7 @@ export function OfficeInfoHero({ location }: OfficeInfoHeroProps) {
           </div>
 
           {/* RIGHT ROW 2: white about section */}
-          <div className="bg-white px-8 py-6">
+          <div className="bg-white px-4 py-3 sm:px-6 sm:py-6 lg:px-8">
             <h2 className="mb-3 text-xl font-bold text-[var(--color-fg)]">
               About the Office
             </h2>

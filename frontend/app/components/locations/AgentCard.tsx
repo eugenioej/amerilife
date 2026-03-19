@@ -13,15 +13,15 @@ export function AgentCard({ agent, locationSlug }: AgentCardProps) {
   const agentHref = `/${locationSlug}/${agent.slug}/`;
 
   return (
-    <article className="flex items-center gap-6 rounded-lg border border-[var(--color-border)] bg-white p-6">
-      <div className="relative aspect-square w-40 shrink-0 overflow-hidden bg-[#f7f8f9]">
+    <article className="flex items-center gap-4 rounded-lg border border-[var(--color-border)] bg-white p-4 sm:gap-6 sm:p-6">
+      <div className="relative aspect-square w-28 shrink-0 overflow-hidden bg-[#f7f8f9] sm:w-36 lg:w-40">
         {photoUrl ? (
           <Image
             src={photoUrl}
             alt={`${agent.name} - AmeriLife Agent`}
             fill
             className="object-cover"
-            sizes="160px"
+            sizes="(max-width: 640px) 112px, (max-width: 1024px) 144px, 160px"
           />
         ) : (
           <div

@@ -49,7 +49,7 @@ export function AgentDetailTemplate({ agent, location }: Props) {
     <article className="bg-white">
 
       {/* ── Breadcrumb ───────────────────────────────────────────────── */}
-      <div className="bg-white py-5">
+      <div className="bg-white py-3 sm:py-5">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
           <nav className="text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
             <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -80,19 +80,19 @@ export function AgentDetailTemplate({ agent, location }: Props) {
       </div>
 
       {/* ── Teal Hero Band ───────────────────────────────────────────── */}
-      <div className="bg-[var(--color-brand-primary)] py-8">
+      <div className="bg-[var(--color-brand-primary)] py-6 sm:py-8">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6 lg:gap-8">
 
             {/* Photo */}
-            <div className="relative h-[200px] w-[200px] shrink-0 overflow-hidden rounded-lg bg-[rgba(0,0,0,0.15)] sm:h-[240px] sm:w-[240px]">
+            <div className="relative mx-auto h-[160px] w-[160px] shrink-0 overflow-hidden rounded-lg bg-[rgba(0,0,0,0.15)] sm:mx-0 sm:h-[200px] sm:w-[200px] lg:h-[240px] lg:w-[240px]">
               {agent.photoUrl ? (
                 <Image
                   src={agent.photoUrl}
                   alt={`${agent.name} – AmeriLife Agent`}
                   fill
                   className="object-cover"
-                  sizes="240px"
+                  sizes="(max-width: 640px) 160px, (max-width: 1024px) 200px, 240px"
                 />
               ) : (
                 <div
@@ -104,9 +104,9 @@ export function AgentDetailTemplate({ agent, location }: Props) {
               )}
             </div>
 
-            {/* Name / role / city / stars */}
-            <div className="min-w-0 shrink-0">
-              <h1 className="mb-0.5 text-2xl font-bold text-white sm:text-3xl">
+            {/* Name / role / city */}
+            <div className="min-w-0 shrink-0 text-center sm:text-left">
+              <h1 className="mb-0.5 text-xl font-bold text-white sm:text-2xl lg:text-3xl">
                 {agent.name}
               </h1>
               <p className="mb-0.5 text-sm text-white/80">
@@ -133,17 +133,17 @@ export function AgentDetailTemplate({ agent, location }: Props) {
       {/* ── Action buttons bar (white card, overlapping) ─────────────── */}
       <div className="bg-white shadow-[var(--shadow-md)]">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <div className="flex divide-x divide-[var(--color-border)]">
+          <div className="grid grid-cols-2 gap-px bg-[var(--color-border)] sm:flex sm:divide-x sm:divide-[var(--color-border)] sm:gap-0">
             {ACTION_BUTTONS.map(({ icon: Icon, label }) => (
               <button
                 key={label}
                 type="button"
-                className="group flex flex-1 flex-col items-center gap-2 py-5 transition-colors hover:bg-[#f7f8f9]"
+                className="group flex flex-1 flex-col items-center gap-1.5 bg-white py-3 transition-colors hover:bg-[#f7f8f9] sm:gap-2 sm:py-5"
               >
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-brand-primary)]/10 text-[var(--color-brand-primary)] transition-colors group-hover:bg-[var(--color-brand-primary)] group-hover:text-white">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)]/10 text-[var(--color-brand-primary)] transition-colors group-hover:bg-[var(--color-brand-primary)] group-hover:text-white sm:h-11 sm:w-11">
                   <Icon size={18} aria-hidden />
                 </span>
-                <span className="text-xs font-semibold text-[var(--color-fg)]">
+                <span className="text-[10px] font-semibold text-[var(--color-fg)] sm:text-xs">
                   {label}
                 </span>
               </button>
@@ -155,7 +155,7 @@ export function AgentDetailTemplate({ agent, location }: Props) {
       {/* ── View location details & hours (points down to section) ────── */}
       <a
         href="#location-details"
-        className="block bg-[var(--color-brand-primary)]/8 border-t border-[var(--color-border)] py-4 text-center text-sm font-semibold text-[var(--color-brand-primary)] transition-colors hover:text-[var(--color-brand-primary-hover)] no-underline"
+        className="block bg-[var(--color-brand-primary)]/8 border-t border-[var(--color-border)] py-3 text-center text-sm font-semibold text-[var(--color-brand-primary)] transition-colors hover:text-[var(--color-brand-primary-hover)] no-underline sm:py-4"
       >
         <span className="inline-flex items-center gap-2">
           View location details &amp; hours
@@ -165,11 +165,11 @@ export function AgentDetailTemplate({ agent, location }: Props) {
 
       {/* ── Combined section: Image left | More Details + Location & Hours ─ */}
       <div id="location-details" className="scroll-mt-[calc(var(--header-height)+1rem)] border-t border-[var(--color-border)] bg-white">
-        <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-12 lg:py-16">
-          <div className="grid gap-10 lg:grid-cols-[360px_1fr] lg:gap-12">
+        <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-8 sm:py-12 lg:py-16">
+          <div className="grid gap-8 lg:grid-cols-[360px_1fr] lg:gap-12">
 
             {/* Left: Section image (not agent photo) */}
-            <div className="relative aspect-square w-full max-w-[360px] overflow-hidden rounded-lg bg-[#e8e9eb]">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-[#e8e9eb] lg:aspect-square lg:max-w-[360px]">
               <Image
                 src={SECTION_IMAGE_URL}
                 alt=""
@@ -181,7 +181,7 @@ export function AgentDetailTemplate({ agent, location }: Props) {
             </div>
 
             {/* Right: Content */}
-            <div className="space-y-10">
+            <div className="space-y-8 sm:space-y-10">
               {/* More Details */}
               <div>
                 <p className="mb-4 text-xs font-bold uppercase tracking-[var(--tracking-wide)] text-[var(--color-fg)]">
