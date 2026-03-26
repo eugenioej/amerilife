@@ -3,12 +3,13 @@ import { fetchGraphQL } from "@/lib/wp-client";
 import { GET_POSTS, type PostsListResult } from "@/lib/queries";
 import { BlogPostCard } from "@/app/components/blog/BlogPostCard";
 import { BlogPagination } from "@/app/components/blog/BlogPagination";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Newsroom & Blog | AmeriLife",
-  description:
-    "Stay up to date with the latest news, announcements, and insights from AmeriLife — America's leading health and wealth distribution company.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Newsroom & Blog | AmeriLife",
+  "Stay up to date with the latest news, announcements, and insights from AmeriLife — America's leading health and wealth distribution company.",
+  "/blog/"
+);
 
 const PAGE_SIZE = 12;
 

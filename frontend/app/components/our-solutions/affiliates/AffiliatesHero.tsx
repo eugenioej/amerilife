@@ -3,7 +3,7 @@ import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { WP_IMAGE_SOURCES } from "@/lib/wp-image-sources";
 
 export function AffiliatesHero() {
-  const heroSrc = rewriteUploadsUrl(WP_IMAGE_SOURCES.affiliates.heroImage);
+  const heroSrc = rewriteUploadsUrl(WP_IMAGE_SOURCES.affiliatesPage.heroImage);
 
   return (
     <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">

@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ExistingLeadForm } from "@/app/components/existinglead/ExistingLeadForm";
+import { staticPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Existing Agents Contact Us | AmeriLife",
-  description:
+  ...staticPageMetadata(
+    "Existing Agents Contact Us | AmeriLife",
     "Licensed agents: Contact AmeriLife to learn about partnering opportunities and contracting with an AmeriLife affiliated insurance marketing organization.",
+    "/existinglead/"
+  ),
+  robots: { index: false, follow: false },
 };
 
 export default function ExistingLeadPage() {

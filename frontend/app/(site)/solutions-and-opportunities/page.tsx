@@ -3,12 +3,13 @@ import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { Globe, GraduationCap, Package, TrendingUp, Award } from "lucide-react";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Solutions & Opportunities | AmeriLife",
-  description:
-    "AmeriLife's consultative approach, broad carrier selection and vast distribution network meet the needs of consumers at all stages of their lives — where they are, how they want to buy, and all within their individual budgets.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Solutions & Opportunities | AmeriLife",
+  "AmeriLife's consultative approach, broad carrier selection and vast distribution network meet the needs of consumers at all stages of their lives — where they are, how they want to buy, and all within their individual budgets.",
+  "/solutions-and-opportunities/"
+);
 
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2022/01/Solutions_Opportunities_HeroA_1420x1144.png`;

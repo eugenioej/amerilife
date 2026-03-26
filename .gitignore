@@ -1,3 +1,10 @@
+# Local tooling / IDE
+.cursor/
+*.log
+
+# WordPress plugin archives (keep sources in mu-plugins/*.php only)
+frontend/wp/mu-plugins/*.zip
+
 # Dependencies
 node_modules/
 

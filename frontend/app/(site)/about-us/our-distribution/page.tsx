@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { TrendingUp, Shield, UserCircle, Briefcase } from "lucide-react";
+import { JsonLd } from "@/app/components/seo/JsonLd";
+import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { getByNumberIcon } from "@/app/components/about-us/DistributionIcons";
 
-export const metadata: Metadata = {
-  title: "Our Distribution | AmeriLife",
-  description:
-    "AmeriLife's vast marketing and distribution network connects agents and advisors with consumers nationwide. Explore our distribution channels and by the numbers.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Our Distribution | AmeriLife",
+  "AmeriLife's vast marketing and distribution network connects agents and advisors with consumers nationwide. Explore our distribution channels and by the numbers.",
+  "/about-us/our-distribution/"
+);
 
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
 
@@ -63,8 +66,15 @@ const DISTRIBUTION_CHANNELS = [
 export default function OurDistributionPage() {
   return (
     <article className="bg-white">
+      <JsonLd
+        schema={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "About Us", path: "/about-us/" },
+          { name: "Our Distribution", path: "/about-us/our-distribution/" },
+        ])}
+      />
       {/* Hero - 2-col: gray bg left with copy, image right (match Who We Are) */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
         <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
           <nav className="mb-6 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
             <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -113,10 +123,11 @@ export default function OurDistributionPage() {
             unoptimized
           />
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* By the Numbers - OG uses banner-10.png background */}
-      <section
+      <FadeInOnView
+        direction="up"
         className="relative min-h-[400px] overflow-hidden bg-cover bg-center py-16 sm:py-24"
         style={{ backgroundImage: `url(${rewriteUploadsUrl(BY_THE_NUMBERS_BG)})` }}
       >
@@ -166,10 +177,10 @@ export default function OurDistributionPage() {
           </div>
         </div>
         </div>
-      </section>
+      </FadeInOnView>
 
       {/* Our Distribution Channels - icon cards (no photos, match OG) */}
-      <section className="bg-[#f7f8f9] py-16 sm:py-24">
+      <FadeInOnView direction="up" className="bg-[#f7f8f9] py-16 sm:py-24">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
           <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
             Our Distribution Channels
@@ -195,15 +206,20 @@ export default function OurDistributionPage() {
                   <h3 className="mb-4 text-xl font-bold text-[var(--color-fg)]">
                     {channel.title}
                   </h3>
-                  <p className="mt-auto text-base leading-relaxed text-[var(--color-fg)]">
-                    {channel.description}
-                  </p>
+                  <div className="mt-auto flex flex-col gap-4">
+                    <p className="text-base leading-relaxed text-[var(--color-fg)]">
+                      {channel.description}
+                    </p>
+                    <span className="text-sm font-semibold text-[var(--color-brand-primary)] transition-colors group-hover:text-[var(--color-brand-primary-hover)]">
+                      Read more →
+                    </span>
+                  </div>
                 </Link>
               );
             })}
           </div>
         </div>
-      </section>
+      </FadeInOnView>
     </article>
   );
 }

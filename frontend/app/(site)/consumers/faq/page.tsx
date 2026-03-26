@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Link } from "@/app/components/ui/Link";
 import { FaqNewsroomSection } from "@/app/components/faq/FaqNewsroomSection";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Frequently Asked Questions for Consumers | AmeriLife",
-  description:
-    "Find answers to common questions about insurance for individuals and families. AmeriLife offers life, health, Medicare and financial solutions.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Frequently Asked Questions for Consumers | AmeriLife",
+  "Find answers to common questions about insurance for individuals and families. AmeriLife offers life, health, Medicare and financial solutions.",
+  "/consumers/faq/"
+);
 
 export default function ConsumersFaqPage() {
   return (

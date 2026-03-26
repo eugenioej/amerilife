@@ -38,6 +38,20 @@ const SEARCH_INDEX: SearchEntry[] = [
     ],
   },
   {
+    path: "/about-us/our-leaders/",
+    title: "Our Leaders",
+    description:
+      "Meet AmeriLife's executive leadership team — industry veterans committed to ethics, integrity, and helping people and businesses achieve financial security.",
+    keywords: [
+      "executive team",
+      "leadership",
+      "CEO",
+      "management",
+      "about AmeriLife",
+      "insurance leadership",
+    ],
+  },
+  {
     path: "/about-us/our-distribution/",
     title: "Our Distribution",
     description:

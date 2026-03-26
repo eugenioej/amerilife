@@ -4,12 +4,13 @@ import { Link } from "@/app/components/ui/Link";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { getTechnologyByNumberIcon } from "@/app/components/about-us/TechnologyIcons";
 import { Building2, UserCheck } from "lucide-react";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Technology & Analytics | AmeriLife",
-  description:
-    "AmeriLife's technology stack, analytics platforms, and proprietary digital tools are designed to empower marketers, agents and advisors to drive meaningful client experiences.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Technology & Analytics | AmeriLife",
+  "AmeriLife's technology stack, analytics platforms, and proprietary digital tools are designed to empower marketers, agents and advisors to drive meaningful client experiences.",
+  "/technology-and-analytics/"
+);
 
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
 

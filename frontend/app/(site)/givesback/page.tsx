@@ -3,12 +3,13 @@ import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { WP_IMAGE_SOURCES } from "@/lib/wp-image-sources";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "AmeriLife Gives Back Foundation | AmeriLife",
-  description:
-    "As a values-driven company, giving back is in AmeriLife's DNA. The AmeriLife Gives Back Foundation supports senior veterans and community partnerships.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "AmeriLife Gives Back Foundation | AmeriLife",
+  "As a values-driven company, giving back is in AmeriLife's DNA. The AmeriLife Gives Back Foundation supports senior veterans and community partnerships.",
+  "/givesback/"
+);
 
 const DONATE_URL = "https://buy.stripe.com/eVa2bi8vObFP9u83cc";
 const HONOR_FLIGHT_LINK =

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Link } from "@/app/components/ui/Link";
 import { BrokerContactForm } from "@/app/components/broker-contact-page/BrokerContactForm";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Independent Partner Contact Us | AmeriLife",
-  description:
-    "Contact AmeriLife about brokerage partnerships. Discuss carrier solutions, asset management, leads, training, and more. For broker use only.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Independent Partner Contact Us | AmeriLife",
+  "Contact AmeriLife about brokerage partnerships. Discuss carrier solutions, asset management, leads, training, and more. For broker use only.",
+  "/broker-contact-page/"
+);
 
 export default function BrokerContactPage() {
   return (

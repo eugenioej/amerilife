@@ -115,6 +115,81 @@ body {
   font-family: var(--font-sans);
 }
 
+/* --------------------------------------------------------------------------
+   View Transitions API — subtle cross-fade between navigations (Next.js opt-in)
+   -------------------------------------------------------------------------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 250ms;
+  animation-timing-function: ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0ms !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Lightweight hover micro-interactions (utilities)
+   -------------------------------------------------------------------------- */
+.motion-cta {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.motion-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.motion-card {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.motion-card:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Main nav top-level links — underline grow */
+header nav[aria-label="Main navigation"] > div > a {
+  position: relative;
+}
+header nav[aria-label="Main navigation"] > div > a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--color-brand-primary);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.2s ease;
+}
+header nav[aria-label="Main navigation"] > div > a:hover::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-cta:hover,
+  .motion-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  header nav[aria-label="Main navigation"] > div > a::after {
+    transition: none;
+  }
+}
+
+/* Hero “ONE” headline — Poppins (next/font) */
+.font-poppins {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+}
+
 /* Buttons: never underline on hover */
 button,
 button:hover,

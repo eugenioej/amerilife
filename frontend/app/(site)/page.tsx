@@ -1,8 +1,18 @@
+import type { Metadata } from "next";
 import { HeroSection } from "@/app/components/home/HeroSection";
 import { LegacySection } from "@/app/components/home/LegacySection";
 import { StatBannerSection } from "@/app/components/home/StatBannerSection";
 import { FaqSection } from "@/app/components/home/FaqSection";
+import { JsonLd } from "@/app/components/seo/JsonLd";
+import { organizationJsonLd, staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
+import { Network, Users, Cpu, TrendingUp } from "lucide-react";
+
+export const metadata: Metadata = staticPageMetadata(
+  "AmeriLife | Insurance and Financial Solutions",
+  "Delivering insurance and financial solutions to agents and advisors to help people live longer, healthier lives.",
+  "/"
+);
 
 const STAT_SECTIONS = [
   {
@@ -18,6 +28,7 @@ const STAT_SECTIONS = [
     ),
     imageAlt: "AmeriLife network and distribution",
     direction: "left" as const,
+    icon: Network,
   },
   {
     heading: "Culture of Service",
@@ -32,6 +43,7 @@ const STAT_SECTIONS = [
     ),
     imageAlt: "AmeriLife agents and advisors",
     direction: "right" as const,
+    icon: Users,
   },
   {
     heading: "Technology That Works (For You)",
@@ -46,6 +58,7 @@ const STAT_SECTIONS = [
     ),
     imageAlt: "Agent Xcelerator technology",
     direction: "left" as const,
+    icon: Cpu,
   },
   {
     heading: "PLATFORM TO ACCELERATE YOUR GROWTH",
@@ -60,12 +73,14 @@ const STAT_SECTIONS = [
     ),
     imageAlt: "AmeriLife platform growth",
     direction: "right" as const,
+    icon: TrendingUp,
   },
 ];
 
 export default function Home() {
   return (
     <>
+      <JsonLd schema={organizationJsonLd()} />
       <HeroSection />
       <LegacySection />
       <div className="flex flex-col [&>section]:flex-shrink-0">

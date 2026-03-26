@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
-export const metadata: Metadata = {
-  title: "Employees | AmeriLife",
-  description:
-    "When you work for AmeriLife, you're joining a company with a purpose — to help people live longer, healthier and more secure lives. Explore our culture, benefits, and career opportunities.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Employees | AmeriLife",
+  "When you work for AmeriLife, you're joining a company with a purpose — to help people live longer, healthier and more secure lives. Explore our culture, benefits, and career opportunities.",
+  "/our-solutions/employees/"
+);
 
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2022/01/Employees_Hero_1420x1144.png`;
@@ -37,7 +39,11 @@ export default function EmployeesPage() {
   return (
     <article className="bg-white">
       {/* Breadcrumb + Title - contained */}
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24">
+      <FadeInOnView
+        direction="fade"
+        threshold={0}
+        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24"
+      >
         <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <li>
@@ -60,10 +66,10 @@ export default function EmployeesPage() {
         <h1 className="mb-0 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
           Employees
         </h1>
-      </div>
+      </FadeInOnView>
 
       {/* Hero: A Career Built with You in Mind - 2-col: gray left, image right */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
         <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
           <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-2xl">
             A Career Built with
@@ -84,10 +90,11 @@ export default function EmployeesPage() {
             priority
           />
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Kiersten Burstiner quote - full-bleed banner with background image, light text */}
-      <div
+      <FadeInOnView
+        direction="up"
         className="relative min-h-[320px] w-full overflow-hidden bg-cover bg-center py-16 lg:py-20"
         style={{ backgroundImage: `url(${rewriteUploadsUrl(BANNER_10)})` }}
       >
@@ -103,10 +110,10 @@ export default function EmployeesPage() {
             Chief Human Resources Officer, AmeriLife
           </p>
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Life as an AmeriLife Employee - 2-col: image LEFT, text RIGHT (intercalated) */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
         <div className="relative order-2 aspect-[1420/1144] w-full overflow-hidden lg:order-1 lg:aspect-auto lg:min-h-[400px]">
           <Image
             src={rewriteUploadsUrl(LIFE_EMPLOYEE_IMAGE)}
@@ -129,10 +136,10 @@ export default function EmployeesPage() {
             ))}
           </ul>
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Total Rewards - 2-col: text left, image right */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
         <div className="flex flex-col justify-center px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
           <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-2xl">
             Total Rewards
@@ -151,7 +158,7 @@ export default function EmployeesPage() {
             href={CAREERS_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-2 border-[var(--color-brand-primary)] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary)] hover:text-white no-underline"
+            className="motion-cta inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-2 border-[var(--color-brand-primary)] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary)] hover:text-white no-underline"
           >
             View Employee Openings
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -168,10 +175,11 @@ export default function EmployeesPage() {
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Giving Back to Our Community - lighter bg, dark text */}
-      <div
+      <FadeInOnView
+        direction="up"
         className="relative min-h-[320px] w-full overflow-hidden bg-cover bg-center py-16 text-center lg:py-20"
         style={{ backgroundImage: `url(${rewriteUploadsUrl(BANNER_3)})` }}
       >
@@ -186,7 +194,7 @@ export default function EmployeesPage() {
           <Link
             href="/about-us/community-involvement/"
             variant="button"
-            className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-2 border-[var(--color-brand-primary)] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary)] hover:text-white"
+            className="motion-cta inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-2 border-[var(--color-brand-primary)] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary)] hover:text-white"
           >
             Our Community Impact
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -194,7 +202,7 @@ export default function EmployeesPage() {
             </svg>
           </Link>
         </div>
-      </div>
+      </FadeInOnView>
     </article>
   );
 }

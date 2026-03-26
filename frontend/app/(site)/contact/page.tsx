@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Link } from "@/app/components/ui/Link";
 import { ContactRepresentativeForm } from "@/app/components/contact/ContactRepresentativeForm";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Contact Us | AmeriLife",
-  description:
-    "Contact AmeriLife. Choose a topic to connect with an AmeriLife representative.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Contact Us | AmeriLife",
+  "Contact AmeriLife. Choose a topic to connect with an AmeriLife representative.",
+  "/contact/"
+);
 
 export default function ContactPage() {
   return (

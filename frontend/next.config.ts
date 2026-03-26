@@ -10,6 +10,9 @@ const turbopackRoot =
     : path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
+  experimental: {
+    viewTransition: true,
+  },
   turbopack: {
     root: turbopackRoot,
   },
@@ -55,9 +58,28 @@ const nextConfig: NextConfig = {
   async redirects() {
     const wp = await getRedirectsFromWP();
     return [
-      { source: "/blog", destination: "/newsroom", permanent: false },
-      { source: "/blog/", destination: "/newsroom", permanent: false },
+      { source: "/blog", destination: "/newsroom", permanent: true },
+      { source: "/blog/", destination: "/newsroom", permanent: true },
       ...wp,
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+        ],
+      },
     ];
   },
 };

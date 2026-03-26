@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "../ui/Link";
 
 type FaqItem = {
@@ -127,8 +128,10 @@ export function FaqAccordion({ defaultOpenIndex = 0, className = "" }: FaqAccord
       {FAQ_ITEMS.map((item, index) => {
         const isOpen = openIndex === index;
         return (
-          <div
+          <FadeInOnView
             key={index}
+            direction="up"
+            delay={index * 100}
             className="border-b border-[var(--color-border)]"
           >
             <button
@@ -167,7 +170,7 @@ export function FaqAccordion({ defaultOpenIndex = 0, className = "" }: FaqAccord
                 {typeof item.answer === "string" ? item.answer : item.answer}
               </div>
             </div>
-          </div>
+          </FadeInOnView>
         );
       })}
     </div>

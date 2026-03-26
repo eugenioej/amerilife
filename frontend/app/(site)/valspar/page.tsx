@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { ValsparForm } from "@/app/components/valspar/ValsparForm";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Valspar | AmeriLife",
-  description:
-    "AmeriLife is a national leader in the development, marketing and distribution of annuity, life and health insurance solutions.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Valspar | AmeriLife",
+  "AmeriLife is a national leader in the development, marketing and distribution of annuity, life and health insurance solutions.",
+  "/valspar/"
+);
 
 export default function ValsparPage() {
   return (

@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/app/components/seo/JsonLd";
+import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Our Solutions | AmeriLife",
-  description:
-    "Our solutions represent AmeriLife's ongoing commitment to deliver opportunities for our stakeholders to make a difference and carve their own path.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Our Solutions | AmeriLife",
+  "Our solutions represent AmeriLife's ongoing commitment to deliver opportunities for our stakeholders to make a difference and carve their own path.",
+  "/our-solutions/"
+);
 
 const ABOUT_US_LINKS = [
   { label: "Who We Are", href: "/about-us/who-we-are/" },
@@ -26,8 +29,18 @@ const OUR_SOLUTIONS_LINKS: { label: string; href: string; sublabel?: string }[] 
 export default function OurSolutionsPage() {
   return (
     <article className="bg-white">
+      <JsonLd
+        schema={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Our Solutions", path: "/our-solutions/" },
+        ])}
+      />
       {/* Breadcrumb + Title - contained */}
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24">
+      <FadeInOnView
+        direction="fade"
+        threshold={0}
+        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24"
+      >
         <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <li>
@@ -52,47 +65,51 @@ export default function OurSolutionsPage() {
 
         {/* Two-column link sections - match amerilife.com layout */}
         <div className="grid gap-12 sm:grid-cols-2 lg:gap-16">
-          <section aria-labelledby="about-us-heading">
-            <h2 id="about-us-heading" className="mb-6 text-xl font-bold text-[var(--color-fg)] sm:text-2xl">
-              About Us
-            </h2>
-            <ul className="space-y-3">
-              {ABOUT_US_LINKS.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)] hover:underline"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-          <section aria-labelledby="solutions-heading">
-            <h2 id="solutions-heading" className="mb-6 text-xl font-bold text-[var(--color-fg)] sm:text-2xl">
-              Our Solutions
-            </h2>
-            <ul className="space-y-3">
-              {OUR_SOLUTIONS_LINKS.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)] hover:underline"
-                  >
-                    {item.label}
-                    {item.sublabel != null && (
-                      <span className="block text-sm text-[var(--color-muted)] mt-0.5">
-                        {item.sublabel}
-                      </span>
-                    )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
+          <FadeInOnView direction="up" className="min-w-0">
+            <section aria-labelledby="about-us-heading">
+              <h2 id="about-us-heading" className="mb-6 text-xl font-bold text-[var(--color-fg)] sm:text-2xl">
+                About Us
+              </h2>
+              <ul className="space-y-3">
+                {ABOUT_US_LINKS.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)] hover:underline"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </FadeInOnView>
+          <FadeInOnView direction="up" delay={80} className="min-w-0">
+            <section aria-labelledby="solutions-heading">
+              <h2 id="solutions-heading" className="mb-6 text-xl font-bold text-[var(--color-fg)] sm:text-2xl">
+                Our Solutions
+              </h2>
+              <ul className="space-y-3">
+                {OUR_SOLUTIONS_LINKS.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)] hover:underline"
+                    >
+                      {item.label}
+                      {item.sublabel != null && (
+                        <span className="block text-sm text-[var(--color-muted)] mt-0.5">
+                          {item.sublabel}
+                        </span>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </FadeInOnView>
         </div>
-      </div>
+      </FadeInOnView>
     </article>
   );
 }

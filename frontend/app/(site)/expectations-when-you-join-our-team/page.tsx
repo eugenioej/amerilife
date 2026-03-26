@@ -3,12 +3,13 @@ import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { WP_IMAGE_SOURCES } from "@/lib/wp-image-sources";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Expectations When You Join Our Team | AmeriLife",
-  description:
-    "Join #TeamAmeriLife! Offer insurance and retirement solutions to provide peace of mind and help people live longer healthier lives.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Expectations When You Join Our Team | AmeriLife",
+  "Join #TeamAmeriLife! Offer insurance and retirement solutions to provide peace of mind and help people live longer healthier lives.",
+  "/expectations-when-you-join-our-team/"
+);
 
 const { icons: ICONS } = WP_IMAGE_SOURCES.expectationsJoinTeam;
 

@@ -9,6 +9,8 @@ const LOGO_SIZE = { w: 362, h: 214 };
 export interface LogoCarouselLogo {
   src: string;
   alt: string;
+  /** When set, the logo is wrapped in a link (e.g. affiliate website). */
+  href?: string;
 }
 
 export function LogoCarousel({ logos }: { logos: ReadonlyArray<LogoCarouselLogo> }) {
@@ -45,7 +47,7 @@ export function LogoCarousel({ logos }: { logos: ReadonlyArray<LogoCarouselLogo>
   };
 
   return (
-    <div className="relative flex items-center gap-2 sm:gap-4">
+    <div className="relative flex items-center gap-2 py-2 sm:gap-4 sm:py-3">
       <button
         type="button"
         onClick={() => scroll("left")}
@@ -68,24 +70,42 @@ export function LogoCarousel({ logos }: { logos: ReadonlyArray<LogoCarouselLogo>
       </button>
       <div
         ref={scrollRef}
-        className="min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-3 py-6 sm:px-4 sm:py-8"
         role="region"
         aria-label="Company logos carousel"
       >
-        <div className="flex items-center gap-6 py-4 snap-x snap-mandatory scroll-smooth">
+        <div className="flex items-center gap-6 snap-x snap-mandatory scroll-smooth">
           {logos.map((logo, i) => (
             <div
               key={`${logo.alt}-${i}`}
-              className="flex h-[100px] min-w-[140px] shrink-0 items-center justify-center rounded-lg bg-white p-3 grayscale opacity-80 transition-opacity hover:grayscale-0 hover:opacity-100 snap-start sm:h-[120px] sm:min-w-[200px] sm:p-4"
+              className="motion-card flex h-[100px] min-w-[140px] shrink-0 items-center justify-center rounded-lg bg-white p-3 grayscale opacity-80 transition-[opacity,transform,box-shadow] duration-300 hover:grayscale-0 hover:opacity-100 snap-start sm:h-[120px] sm:min-w-[200px] sm:p-4"
             >
-              <Image
-                src={rewriteUploadsUrl(logo.src)}
-                alt={logo.alt}
-                width={LOGO_SIZE.w}
-                height={LOGO_SIZE.h}
-                className="h-full w-auto object-contain"
-                sizes="200px"
-              />
+              {logo.href ? (
+                <a
+                  href={logo.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-full w-full items-center justify-center"
+                >
+                  <Image
+                    src={rewriteUploadsUrl(logo.src)}
+                    alt={logo.alt}
+                    width={LOGO_SIZE.w}
+                    height={LOGO_SIZE.h}
+                    className="h-full w-auto object-contain"
+                    sizes="200px"
+                  />
+                </a>
+              ) : (
+                <Image
+                  src={rewriteUploadsUrl(logo.src)}
+                  alt={logo.alt}
+                  width={LOGO_SIZE.w}
+                  height={LOGO_SIZE.h}
+                  className="h-full w-auto object-contain"
+                  sizes="200px"
+                />
+              )}
             </div>
           ))}
         </div>

@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { Link } from "@/app/components/ui/Link";
+import { privatePageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = privatePageMetadata(
+  "Search | AmeriLife",
+  "Search AmeriLife pages and news."
+);
+
 import { searchPages, type SearchResult } from "@/lib/search-index";
 import { fetchGraphQL } from "@/lib/wp-client";
 import {

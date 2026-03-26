@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
-export const metadata: Metadata = {
-  title: "Consumers | AmeriLife",
-  description:
-    "Helping you live a longer, healthier life. AmeriLife offers life and health insurance, annuities, Medicare solutions, and retirement planning from leading carriers — customized for your needs.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Consumers | AmeriLife",
+  "Helping you live a longer, healthier life. AmeriLife offers life and health insurance, annuities, Medicare solutions, and retirement planning from leading carriers — customized for your needs.",
+  "/our-solutions/consumers/"
+);
 
 /** Canonical paths; rewriteUploadsUrl() serves from headless WP when NEXT_PUBLIC_USE_LIVE_IMAGES is not "1". */
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
@@ -132,7 +134,11 @@ export default function ConsumersPage() {
   return (
     <article className="bg-white">
       {/* Breadcrumb + Title - contained */}
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24">
+      <FadeInOnView
+        direction="fade"
+        threshold={0}
+        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24"
+      >
         <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <li>
@@ -155,10 +161,10 @@ export default function ConsumersPage() {
         <h1 className="mb-0 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
           Consumers
         </h1>
-      </div>
+      </FadeInOnView>
 
       {/* Hero: Helping You Live a Longer, Healthier Life - 2-col: gray left, image right */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
         <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
           <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-2xl">
             Helping You Live a
@@ -188,10 +194,11 @@ export default function ConsumersPage() {
             priority
           />
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Mike Vietri quote - banner with background image */}
-      <div
+      <FadeInOnView
+        direction="up"
         className="relative min-h-[320px] w-full overflow-hidden bg-cover bg-center py-16 lg:py-20"
         style={{ backgroundImage: `url(${rewriteUploadsUrl(BANNER_10)})` }}
       >
@@ -209,7 +216,7 @@ export default function ConsumersPage() {
             Executive Vice President, Distribution
           </p>
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Products with Your Total Financial Wellness In Mind */}
       <div className="bg-[#f0f0f0] py-16 sm:py-20">
@@ -226,33 +233,43 @@ export default function ConsumersPage() {
           {/* Product categories - desktop: multi-column grid */}
           <div className="space-y-12">
             {PRODUCT_CATEGORIES.map((category, catIndex) => (
-              <section key={catIndex}>
-                <h3 className="mb-8 text-xl font-bold text-[var(--color-brand-primary)] sm:text-2xl">
-                  {category.title}
-                </h3>
-                <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                  {category.items.map((item, itemIndex) => (
-                    <div
-                      key={itemIndex}
-                      className="flex flex-col rounded-lg bg-[#e2e5ed] p-6 sm:p-8"
-                    >
-                      <h4 className="mb-4 text-lg font-bold text-[var(--color-fg)]">
-                        {item.title}
-                      </h4>
-                      <p className="mb-0 text-base leading-relaxed text-[var(--color-fg)]">
-                        {item.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </section>
+              <FadeInOnView
+                key={catIndex}
+                direction="up"
+                delay={catIndex * 80}
+                className="block"
+              >
+                <section>
+                  <h3 className="mb-8 text-xl font-bold text-[var(--color-brand-primary)] sm:text-2xl">
+                    {category.title}
+                  </h3>
+                  <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                    {category.items.map((item, itemIndex) => (
+                      <FadeInOnView
+                        key={itemIndex}
+                        direction="up"
+                        delay={itemIndex * 40}
+                        className="flex flex-col rounded-lg bg-[#e2e5ed] p-6 sm:p-8"
+                      >
+                        <h4 className="mb-4 text-lg font-bold text-[var(--color-fg)]">
+                          {item.title}
+                        </h4>
+                        <p className="mb-0 text-base leading-relaxed text-[var(--color-fg)]">
+                          {item.description}
+                        </p>
+                      </FadeInOnView>
+                    ))}
+                  </div>
+                </section>
+              </FadeInOnView>
             ))}
           </div>
         </div>
       </div>
 
       {/* Connect with an Agent - CTA */}
-      <div
+      <FadeInOnView
+        direction="up"
         className="relative min-h-[320px] w-full overflow-hidden bg-cover bg-center py-16 lg:py-20"
         style={{ backgroundImage: `url(${rewriteUploadsUrl(BANNER_3)})` }}
       >
@@ -269,7 +286,7 @@ export default function ConsumersPage() {
           <Link
             href="/connect/"
             variant="button"
-            className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-2 border-[var(--color-brand-primary)] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary)] hover:text-white"
+            className="motion-cta inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-2 border-[var(--color-brand-primary)] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary)] hover:text-white"
           >
             Contact Us
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -277,7 +294,7 @@ export default function ConsumersPage() {
             </svg>
           </Link>
         </div>
-      </div>
+      </FadeInOnView>
     </article>
   );
 }

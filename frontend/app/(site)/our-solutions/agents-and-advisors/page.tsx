@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import {
@@ -8,12 +9,13 @@ import {
   Package,
   Cpu,
 } from "lucide-react";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Agents & Advisors | AmeriLife",
-  description:
-    "A career as an independent agent or registered advisor with AmeriLife means joining a national network of like-minded professionals and gaining access to products, training and technology to build your business your way.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Agents & Advisors | AmeriLife",
+  "A career as an independent agent or registered advisor with AmeriLife means joining a national network of like-minded professionals and gaining access to products, training and technology to build your business your way.",
+  "/our-solutions/agents-and-advisors/"
+);
 
 /** Canonical paths; rewriteUploadsUrl() serves from headless WP when NEXT_PUBLIC_USE_LIVE_IMAGES is not "1". */
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
@@ -59,7 +61,11 @@ export default function AgentsAdvisorsPage() {
   return (
     <article className="bg-white">
       {/* Breadcrumb + Title - contained */}
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24">
+      <FadeInOnView
+        direction="fade"
+        threshold={0}
+        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24"
+      >
         <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <li>
@@ -82,10 +88,10 @@ export default function AgentsAdvisorsPage() {
         <h1 className="mb-0 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
           Agents & Advisors
         </h1>
-      </div>
+      </FadeInOnView>
 
       {/* Hero: Powering Your Passion for Service - 2-col: green text left, image right */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
         <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
           <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-2xl">
             Powering Your
@@ -113,10 +119,11 @@ export default function AgentsAdvisorsPage() {
             priority
           />
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Scotty Elliott quote - gradient background */}
-      <div
+      <FadeInOnView
+        direction="up"
         className="relative min-h-[320px] w-full overflow-hidden py-16 lg:py-20"
         style={{ background: "var(--gradient-primary)" }}
       >
@@ -133,7 +140,7 @@ export default function AgentsAdvisorsPage() {
             Chief Distribution Officer, Health
           </p>
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Solutions for Agents & Advisors - 4 cards */}
       <div className="bg-[#f0f0f0] py-16 sm:py-20">
@@ -145,8 +152,10 @@ export default function AgentsAdvisorsPage() {
             {SOLUTIONS.map((item, i) => {
               const Icon = item.icon;
               return (
-                <div
+                <FadeInOnView
                   key={i}
+                  direction="up"
+                  delay={i * 80}
                   className="flex flex-col rounded-lg bg-[#e2e5ed] p-8 sm:p-10"
                 >
                   <div className="mb-4">
@@ -158,7 +167,7 @@ export default function AgentsAdvisorsPage() {
                   <p className="mb-0 text-base leading-relaxed text-[var(--color-fg)]">
                     {item.description}
                   </p>
-                </div>
+                </FadeInOnView>
               );
             })}
           </div>
@@ -166,7 +175,7 @@ export default function AgentsAdvisorsPage() {
       </div>
 
       {/* What do Agents & Advisors do? - 2-col: image left, gradient text block right */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
         <div className="relative order-2 aspect-[4/3] w-full overflow-hidden lg:order-1 lg:aspect-auto lg:min-h-[400px]">
           <Image
             src={rewriteUploadsUrl(WHAT_DO_IMAGE)}
@@ -198,10 +207,11 @@ export default function AgentsAdvisorsPage() {
             life insurance and retirement solutions to their portfolio.
           </p>
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Your Opportunities Await - CTA */}
-      <div
+      <FadeInOnView
+        direction="up"
         className="relative min-h-[320px] w-full overflow-hidden bg-cover bg-center py-16 lg:py-20"
         style={{ backgroundImage: `url(${rewriteUploadsUrl(BANNER_3)})` }}
       >
@@ -217,7 +227,7 @@ export default function AgentsAdvisorsPage() {
           <Link
             href="/broker-contact-page/"
             variant="button"
-            className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-2 border-[var(--color-brand-primary)] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary)] hover:text-white"
+            className="motion-cta inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-2 border-[var(--color-brand-primary)] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary)] hover:text-white"
           >
             Contact Us
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -225,7 +235,7 @@ export default function AgentsAdvisorsPage() {
             </svg>
           </Link>
         </div>
-      </div>
+      </FadeInOnView>
     </article>
   );
 }

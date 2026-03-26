@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import {
@@ -13,12 +14,13 @@ import {
   IconShieldHalved,
   IconBuildingColumns,
 } from "@/app/components/our-solutions/CarrierIcons";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Carrier Partners | AmeriLife",
-  description:
-    "Learn how AmeriLife distributes insurance solutions through our powerful network of industry-leading insurance carrier partnerships.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Carrier Partners | AmeriLife",
+  "Learn how AmeriLife distributes insurance solutions through our powerful network of industry-leading insurance carrier partnerships.",
+  "/our-solutions/carriers/"
+);
 
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2021/12/Carriers_Hero_1420x1144.png`;
@@ -92,7 +94,11 @@ export default function CarriersPage() {
   return (
     <article className="bg-white">
       {/* Breadcrumb + Title - contained */}
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24">
+      <FadeInOnView
+        direction="fade"
+        threshold={0}
+        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24"
+      >
         <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <li>
@@ -115,10 +121,10 @@ export default function CarriersPage() {
         <h1 className="mb-0 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
           Carrier Partners
         </h1>
-      </div>
+      </FadeInOnView>
 
       {/* Hero: Your Products, One Powerful Network - 2-col: gray left, image right */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
         <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
           <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-2xl">
             Your Products,
@@ -152,10 +158,11 @@ export default function CarriersPage() {
             priority
           />
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Brad Shelton quote - same style as Kiersten on employees page */}
-      <div
+      <FadeInOnView
+        direction="up"
         className="relative min-h-[320px] w-full overflow-hidden bg-cover bg-center py-16 lg:py-20"
         style={{ backgroundImage: `url(${rewriteUploadsUrl(BANNER_10)})` }}
       >
@@ -174,7 +181,7 @@ export default function CarriersPage() {
             Executive Vice President, Product Innovation
           </p>
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Our Product Expertise - 5 cards with icons */}
       <div className="bg-[#f0f0f0] py-16 sm:py-20">
@@ -186,8 +193,10 @@ export default function CarriersPage() {
             {PRODUCT_EXPERTISE.map((item, i) => {
               const Icon = item.icon;
               return (
-                <div
+                <FadeInOnView
                   key={i}
+                  direction="up"
+                  delay={i * 60}
                   className="flex flex-col items-center rounded-lg bg-[#e2e5ed] p-8 text-center sm:p-10"
                 >
                   <div className="mb-4">
@@ -196,7 +205,7 @@ export default function CarriersPage() {
                   <h3 className="whitespace-pre-line text-lg font-bold text-[var(--color-fg)]">
                     {item.title}
                   </h3>
-                </div>
+                </FadeInOnView>
               );
             })}
           </div>
@@ -213,8 +222,10 @@ export default function CarriersPage() {
             {VALUE_SECTIONS.map((section, i) => {
               const Icon = section.icon;
               return (
-                <div
+                <FadeInOnView
                   key={i}
+                  direction="up"
+                  delay={i * 80}
                   className="flex flex-col rounded-lg bg-[#e2e5ed] p-8 sm:p-10"
                 >
                   <div className="mb-4">
@@ -231,7 +242,7 @@ export default function CarriersPage() {
                       <li key={j}>{listItem}</li>
                     ))}
                   </ul>
-                </div>
+                </FadeInOnView>
               );
             })}
           </div>

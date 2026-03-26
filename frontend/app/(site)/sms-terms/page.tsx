@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageLayout } from "@/app/components/legal/LegalPageLayout";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "SMS Text Messaging Terms and Conditions | AmeriLife",
-  description:
-    "AmeriLife SMS Text Messaging Terms and Conditions - Learn how we use SMS text messaging.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "SMS Text Messaging Terms and Conditions | AmeriLife",
+  "AmeriLife SMS Text Messaging Terms and Conditions - Learn how we use SMS text messaging.",
+  "/sms-terms/"
+);
 
 export default function SmsTermsPage() {
   return (

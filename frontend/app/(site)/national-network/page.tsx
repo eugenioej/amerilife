@@ -3,12 +3,13 @@ import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { Handshake, Trophy, Lightbulb } from "lucide-react";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "National Network | AmeriLife",
-  description:
-    "AmeriLife represents a vast national network of affiliates and partners aligned under one mission: to provide solutions that deliver peace of mind and help people across the United States live longer, healthier lives.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "National Network | AmeriLife",
+  "AmeriLife represents a vast national network of affiliates and partners aligned under one mission: to provide solutions that deliver peace of mind and help people across the United States live longer, healthier lives.",
+  "/national-network/"
+);
 
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2021/12/National_Network_1420x1144.png`;

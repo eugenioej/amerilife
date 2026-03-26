@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageLayout } from "@/app/components/legal/LegalPageLayout";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Terms of Use | AmeriLife",
-  description:
-    "AmeriLife Legal Notice and Terms of Use - Please read these terms and conditions before using this website.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Terms of Use | AmeriLife",
+  "AmeriLife Legal Notice and Terms of Use - Please read these terms and conditions before using this website.",
+  "/terms/"
+);
 
 export default function TermsPage() {
   return (

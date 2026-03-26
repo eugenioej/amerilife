@@ -5,6 +5,7 @@ import { GET_POSTS, type PostsListResult } from "@/lib/queries";
 import { BlogPostCard } from "@/app/components/blog/BlogPostCard";
 import { BlogPagination } from "@/app/components/blog/BlogPagination";
 import { Link } from "@/app/components/ui/Link";
+import { staticPageMetadata } from "@/lib/seo";
 
 const PAGE_SIZE = 12;
 
@@ -34,10 +35,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category } = await params;
   const label = toTitleCase(category);
-  return {
-    title: `${label} | AmeriLife Newsroom`,
-    description: `Browse AmeriLife's latest ${label.toLowerCase()} news and announcements.`,
-  };
+  const title = `${label} | AmeriLife Newsroom`;
+  const description = `Browse AmeriLife's latest ${label.toLowerCase()} news and announcements.`;
+  return staticPageMetadata(title, description, `/blog/${category}/`);
 }
 
 export default async function BlogCategoryPage({

@@ -13,7 +13,10 @@
     "verify:media-import": "node scripts/verify-media-import.mjs",
     "migrate:extract": "node scripts/migrate-posts.mjs extract",
     "migrate:upload": "node scripts/migrate-posts.mjs upload",
-    "migrate:posts": "node scripts/migrate-posts.mjs migrate"
+    "migrate:posts": "node scripts/migrate-posts.mjs migrate",
+    "import:leaders": "node scripts/import-leaders.mjs",
+    "import:affiliates": "node scripts/import-affiliates-from-live.mjs",
+    "import:agency-agents": "node scripts/import-agency-agents-from-static.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.574.0",

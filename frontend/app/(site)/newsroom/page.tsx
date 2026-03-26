@@ -6,12 +6,13 @@ import { fetchGraphQL } from "@/lib/wp-client";
 import { GET_POSTS, type PostsListResult } from "@/lib/queries";
 import { AnnouncementsCarousel } from "@/app/components/blog/AnnouncementsCarousel";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Newsroom | AmeriLife",
-  description:
-    "Stay up to date with the latest news, announcements, and insights from AmeriLife — America's leading health and wealth distribution company.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Newsroom | AmeriLife",
+  "Stay up to date with the latest news, announcements, and insights from AmeriLife — America's leading health and wealth distribution company.",
+  "/newsroom/"
+);
 
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2023/04/AML-Wealth-II-Announcement-040532023-HERO-1024x358-1.png`;
@@ -60,7 +61,7 @@ export default async function NewsroomPage() {
 
   return (
     <>
-      <div className="mx-auto max-w-[1080px] px-6 py-12 lg:px-8">
+      <div className="mx-auto max-w-[1080px] px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         {/* Breadcrumb - matches live: Home / Newsroom */}
         <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -76,15 +77,16 @@ export default async function NewsroomPage() {
           </ol>
         </nav>
 
-        <h1 className="mb-8 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
+        <h1 className="mb-6 text-2xl font-bold text-[var(--color-fg)] sm:mb-8 sm:text-3xl md:text-4xl">
           Newsroom
         </h1>
       </div>
 
       {/* Featured hero - full-width image + gradient overlay + title + button (matches live) */}
       {featured && (
-        <section className="relative mb-16 w-full overflow-hidden">
-          <div className="relative aspect-[21/9] w-full min-h-[280px] sm:min-h-[320px]">
+        <section className="relative mb-10 w-full overflow-hidden sm:mb-16">
+          {/* Taller framing on narrow screens so long headlines + CTA fit; wide screens keep cinematic strip */}
+          <div className="relative flex min-h-[min(72vh,520px)] w-full items-stretch sm:aspect-[21/9] sm:min-h-[280px] lg:min-h-[320px]">
             <Image
               src={rewriteUploadsUrl(HERO_IMAGE)}
               alt=""
@@ -103,14 +105,14 @@ export default async function NewsroomPage() {
               aria-hidden
             />
             {/* Centered title + button */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-              <h2 className="mb-6 max-w-6xl text-3xl font-bold leading-tight text-white drop-shadow-sm sm:text-4xl lg:text-5xl">
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-4 py-8 text-center sm:px-6 sm:py-10">
+              <h2 className="mb-5 max-w-[min(100%,48rem)] text-balance text-xl font-bold leading-snug text-white drop-shadow-sm sm:mb-6 sm:text-2xl sm:leading-tight md:text-3xl md:leading-tight lg:text-4xl xl:text-5xl">
                 {featured.title}
               </h2>
               <Link
                 href={`/blog/${featured.categories?.nodes?.[0]?.slug ?? "announcements"}/${featured.slug ?? ""}/`}
                 variant="button"
-                className="inline-flex items-center rounded-[var(--radius-full)] border-2 border-white bg-white/10 px-8 py-3 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+                className="inline-flex w-full max-w-xs items-center justify-center rounded-[var(--radius-full)] border-2 border-white bg-white/10 px-6 py-3 text-xs font-bold uppercase tracking-wide text-white backdrop-blur-sm transition-colors hover:bg-white/20 sm:w-auto sm:px-8 sm:text-sm"
               >
                 Read article
               </Link>
@@ -119,21 +121,21 @@ export default async function NewsroomPage() {
         </section>
       )}
 
-      <div className="mx-auto max-w-[1080px] px-6 pb-12 lg:px-8">
+      <div className="mx-auto max-w-[1080px] px-4 pb-10 sm:px-6 sm:pb-12 lg:px-8">
       {/* Announcements - carousel (3 cards + arrow for next 3) + See all below */}
-      <section className="mb-16">
-        <h2 className="mb-8 text-2xl font-bold text-[var(--color-fg)]">
+      <section className="mb-10 sm:mb-16">
+        <h2 className="mb-6 text-xl font-bold text-[var(--color-fg)] sm:mb-8 sm:text-2xl">
           Announcements
         </h2>
         <AnnouncementsCarousel posts={announcements} seeAllHref="/blog/announcements/" />
       </section>
 
       {/* Digital Press Kit - 4 columns like live site */}
-      <section className="border-t border-[var(--color-border)] pt-16">
-        <h2 className="mb-6 text-2xl font-bold text-[var(--color-fg)]">
+      <section className="border-t border-[var(--color-border)] pt-10 sm:pt-16">
+        <h2 className="mb-4 text-xl font-bold text-[var(--color-fg)] sm:mb-6 sm:text-2xl">
           Digital Press Kit
         </h2>
-        <p className="mb-8 text-[var(--color-muted)]">
+        <p className="mb-6 text-sm leading-relaxed text-[var(--color-muted)] sm:mb-8 sm:text-base">
           For media inquiries or to request permission to use AmeriLife&apos;s
           logo or imagery, please{" "}
           <Link href="/contact" className="text-[var(--color-link)]">

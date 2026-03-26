@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Link } from "@/app/components/ui/Link";
 import { ConnectForm } from "@/app/components/connect/ConnectForm";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Connect With Us | AmeriLife",
-  description:
-    "Connect with a licensed insurance representative. Fill out the form to get more information about AmeriLife products and solutions.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Connect With Us | AmeriLife",
+  "Connect with a licensed insurance representative. Fill out the form to get more information about AmeriLife products and solutions.",
+  "/connect/"
+);
 
 export default function ConnectPage() {
   return (

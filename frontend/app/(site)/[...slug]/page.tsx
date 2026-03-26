@@ -4,6 +4,12 @@ import { GET_NODE_BY_URI, type PageWithSeo } from "@/lib/queries";
 import { yoastSeoToMetadata } from "@/lib/seo";
 import { rewriteUploadsInHtml } from "@/lib/wp-media";
 import { getLocationBySlug, getAgentBySlug } from "@/lib/locations-data";
+import {
+  agencyLocationMetadata,
+  agentDetailMetadata,
+  fetchAgencyBySlug,
+  fetchAgentWithLocation,
+} from "@/lib/agencies";
 import { LocationPageTemplate } from "@/app/components/locations/LocationPageTemplate";
 import { AgentDetailTemplate } from "@/app/components/locations/AgentDetailTemplate";
 
@@ -14,23 +20,25 @@ export async function generateMetadata({ params }: { params: PageParams }) {
 
   // Agent detail pages: /location-slug/agent-slug/
   if (slug.length === 2) {
+    const gql = await fetchAgentWithLocation(slug[0], slug[1]);
+    if (gql) {
+      return agentDetailMetadata(gql.agent, gql.location);
+    }
     const result = getAgentBySlug(slug[0], slug[1]);
     if (result) {
-      return {
-        title: `${result.agent.name} | AmeriLife Agent`,
-        description: `${result.agent.name} is a licensed AmeriLife agent in ${result.agent.city}, ${result.agent.state}. Connect today for Medicare, health insurance, life insurance, and retirement solutions.`,
-      };
+      return agentDetailMetadata(result.agent, result.location);
     }
   }
 
   // Location pages: use our own metadata
   if (slug.length === 1) {
+    const gqlLoc = await fetchAgencyBySlug(slug[0]);
+    if (gqlLoc) {
+      return agencyLocationMetadata(gqlLoc);
+    }
     const location = getLocationBySlug(slug[0]);
     if (location) {
-      return {
-        title: `${location.officeName} | AmeriLife`,
-        description: `${location.officeName} - ${location.address.city}, ${location.address.state}. Connect with an AmeriLife agent for insurance and retirement solutions.`,
-      };
+      return agencyLocationMetadata(location);
     }
   }
 
@@ -56,6 +64,10 @@ export default async function SlugPage({ params }: { params: PageParams }) {
 
   // Agent detail pages: /location-slug/agent-slug/
   if (slug.length === 2) {
+    const gql = await fetchAgentWithLocation(slug[0], slug[1]);
+    if (gql) {
+      return <AgentDetailTemplate agent={gql.agent} location={gql.location} />;
+    }
     const result = getAgentBySlug(slug[0], slug[1]);
     if (result) {
       return <AgentDetailTemplate agent={result.agent} location={result.location} />;
@@ -64,6 +76,10 @@ export default async function SlugPage({ params }: { params: PageParams }) {
 
   // Location pages: render our custom template
   if (slug.length === 1) {
+    const gqlLoc = await fetchAgencyBySlug(slug[0]);
+    if (gqlLoc) {
+      return <LocationPageTemplate location={gqlLoc} />;
+    }
     const location = getLocationBySlug(slug[0]);
     if (location) {
       return <LocationPageTemplate location={location} />;

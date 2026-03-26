@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { JsonLd } from "@/app/components/seo/JsonLd";
+import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { IconTarget, IconDiamond, getPrincipleIcon } from "@/app/components/about-us/WhoWeAreIcons";
 import { MilestonesSlider } from "@/app/components/about-us/MilestonesSlider";
 
-export const metadata: Metadata = {
-  title: "Who We Are | AmeriLife",
-  description:
-    "AmeriLife's strength is its mission: to provide insurance and retirement solutions to help people live longer, healthier lives. Learn about our values, distribution network, and 50+ year legacy.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Who We Are | AmeriLife",
+  "AmeriLife's strength is its mission: to provide insurance and retirement solutions to help people live longer, healthier lives. Learn about our values, distribution network, and 50+ year legacy.",
+  "/about-us/who-we-are/"
+);
 
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2021/12/WhoWeAre_AmeriLifePlace_746x660.png`;
@@ -83,8 +86,19 @@ const MILESTONES: {
 export default function WhoWeArePage() {
   return (
     <article className="bg-white">
+      <JsonLd
+        schema={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "About Us", path: "/about-us/" },
+          { name: "Who We Are", path: "/about-us/who-we-are/" },
+        ])}
+      />
       {/* Breadcrumb + Title - contained */}
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24">
+      <FadeInOnView
+        direction="fade"
+        threshold={0}
+        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24"
+      >
         <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <li>
@@ -107,10 +121,10 @@ export default function WhoWeArePage() {
         <h1 className="mb-0 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
           Who We Are
         </h1>
-      </div>
+      </FadeInOnView>
 
       {/* About AmeriLife - full-bleed 2-col: gray left, image right */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
         <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
           <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-2xl">
             About AmeriLife
@@ -133,7 +147,7 @@ export default function WhoWeArePage() {
           <Link
             href="/about-us/our-distribution/"
             variant="button"
-            className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-brand-primary)] px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-[var(--color-brand-primary-hover)]"
+            className="motion-cta inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-brand-primary)] px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-[var(--color-brand-primary-hover)]"
           >
             Learn About Our Distribution
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -151,10 +165,11 @@ export default function WhoWeArePage() {
             priority
           />
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Our Mission & Our Values - full-bleed gradient with icons */}
-      <div
+      <FadeInOnView
+        direction="up"
         className="grid gap-12 px-[var(--container-padding-x)] py-16 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:px-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]"
         style={{ background: MISSION_VALUES_GRADIENT }}
       >
@@ -182,7 +197,7 @@ export default function WhoWeArePage() {
             have, day in and day out.
           </p>
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Six Principles - contained, gray cards */}
       <div className="bg-[#f7f8f9] py-16 sm:py-20">
@@ -192,8 +207,10 @@ export default function WhoWeArePage() {
           </h2>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {PRINCIPLES.map((p, i) => (
-              <div
+              <FadeInOnView
                 key={i}
+                direction="up"
+                delay={i * 70}
                 className="flex flex-col rounded-lg bg-[#e2e5ed] p-10 sm:p-12"
               >
                 {getPrincipleIcon(p.title) && (
@@ -201,14 +218,15 @@ export default function WhoWeArePage() {
                 )}
                 <h3 className="mb-3 text-lg font-bold text-[var(--color-fg)]">{p.title}</h3>
                 <p className="text-base leading-relaxed text-[var(--color-muted)]">{p.description}</p>
-              </div>
+              </FadeInOnView>
             ))}
           </div>
         </div>
       </div>
 
       {/* Demonstrating Our Values - full-bleed gradient + photo (2-col: text left, image right) */}
-      <div
+      <FadeInOnView
+        direction="up"
         className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2"
         style={{ background: MISSION_VALUES_GRADIENT }}
       >
@@ -229,7 +247,7 @@ export default function WhoWeArePage() {
                 key={item.href}
                 href={item.href}
                 variant="button"
-                className="rounded-[var(--radius-full)] border-2 border-white bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-white hover:text-[var(--color-brand-primary)]"
+                className="motion-cta rounded-[var(--radius-full)] border-2 border-white bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-white hover:text-[var(--color-brand-primary)]"
               >
                 {item.label}
               </Link>
@@ -245,10 +263,13 @@ export default function WhoWeArePage() {
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Milestones - contained, with images */}
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-20">
+      <FadeInOnView
+        direction="up"
+        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-20"
+      >
         <h2 className="mb-4 text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
           AmeriLife Past, Present & Future: The Next 50
         </h2>
@@ -265,7 +286,7 @@ export default function WhoWeArePage() {
         </p>
         <h3 className="mb-10 text-xl font-semibold text-[var(--color-fg)]">Our Milestones</h3>
         <MilestonesSlider milestones={MILESTONES} images={MILESTONE_IMAGES} />
-      </div>
+      </FadeInOnView>
     </article>
   );
 }

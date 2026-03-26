@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Link } from "@/app/components/ui/Link";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "AmeriLife and Senior Market Advisors (SMA) Video | AmeriLife",
-  description:
-    "AmeriLife and Senior Market Advisors (SMA) have joined forces. Learn about the partnership and how we're better together.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "AmeriLife and Senior Market Advisors (SMA) Video | AmeriLife",
+  "AmeriLife and Senior Market Advisors (SMA) have joined forces. Learn about the partnership and how we're better together.",
+  "/sma-amerilife-video/"
+);
 
 function ConvergingArrows() {
   return (

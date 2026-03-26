@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { FaqNewsroomSection } from "@/app/components/faq/FaqNewsroomSection";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Frequently Asked Questions | AmeriLife",
-  description:
-    "Find answers to common questions about partnering with AmeriLife, becoming an agent, and our insurance and financial solutions.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Frequently Asked Questions | AmeriLife",
+  "Find answers to common questions about partnering with AmeriLife, becoming an agent, and our insurance and financial solutions.",
+  "/faq/"
+);
 
 export default function FaqPage() {
   return (

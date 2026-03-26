@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Link } from "@/app/components/ui/Link";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Employers | AmeriLife",
-  description:
-    "AmeriLife worksite benefits for employers and organizations. Connect with an AmeriLife Benefits representative.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Employers | AmeriLife",
+  "AmeriLife worksite benefits for employers and organizations. Connect with an AmeriLife Benefits representative.",
+  "/worksite/"
+);
 
 export default function WorksitePage() {
   return (

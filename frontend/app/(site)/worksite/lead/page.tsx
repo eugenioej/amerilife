@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { WorksiteLeadForm } from "@/app/components/worksite/WorksiteLeadForm";
+import { staticPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Employers & Organizations Contact Us | AmeriLife",
-  description:
+  ...staticPageMetadata(
+    "Employers & Organizations Contact Us | AmeriLife",
     "Contact AmeriLife to learn about worksite benefits for employers and organizations. Connect with an AmeriLife Benefits representative.",
+    "/worksite/lead/"
+  ),
+  robots: { index: false, follow: false },
 };
 
 export default function WorksiteLeadPage() {

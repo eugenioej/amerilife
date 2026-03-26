@@ -3,12 +3,13 @@ import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { Package, Layers, Flag } from "lucide-react";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Flexibility & Optionality | AmeriLife",
-  description:
-    "At AmeriLife, we embrace your uniqueness. We're a partner that aligns and grows with you, pivots with you, and develops solutions that are as flexible and nimble as today's ever-changing market demands.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Flexibility & Optionality | AmeriLife",
+  "At AmeriLife, we embrace your uniqueness. We're a partner that aligns and grows with you, pivots with you, and develops solutions that are as flexible and nimble as today's ever-changing market demands.",
+  "/flexibility-and-optionality/"
+);
 
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2022/01/Flex_Option_HeroA_1420x1144.png`;

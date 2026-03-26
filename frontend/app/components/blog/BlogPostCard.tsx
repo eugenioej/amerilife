@@ -32,7 +32,7 @@ export function BlogPostCard({ post, hideCategoryPill = false }: Props) {
     : null;
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-lg border border-[var(--color-border)] bg-white transition-shadow hover:shadow-md">
+    <article className="group flex min-w-0 flex-col overflow-hidden rounded-lg border border-[var(--color-border)] bg-white transition-shadow hover:shadow-md">
       <div className="flex flex-1 flex-col p-5">
         {category && !hideCategoryPill && (
           <Link
@@ -45,7 +45,7 @@ export function BlogPostCard({ post, hideCategoryPill = false }: Props) {
           </Link>
         )}
 
-        <h2 className="mb-2 text-base font-bold leading-snug text-[var(--color-brand-dark)]">
+        <h2 className="mb-2 break-words text-base font-bold leading-snug text-[var(--color-brand-dark)]">
           <Link
             href={href}
             variant="button"

@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
+import { staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
-export const metadata: Metadata = {
-  title: "Career Agents | AmeriLife",
-  description:
-    "Your career starts here. Do you have an outgoing personality and entrepreneurial spirit? AmeriLife provides leads, training, and support to help career agents excel.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Career Agents | AmeriLife",
+  "Your career starts here. Do you have an outgoing personality and entrepreneurial spirit? AmeriLife provides leads, training, and support to help career agents excel.",
+  "/career/agents/"
+);
 
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
 // Full URLs for sync-wp-images (repo scan):

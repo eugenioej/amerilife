@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
 import { VideoWithPlaceholder } from "@/app/components/join-our-team/VideoWithPlaceholder";
+import { staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
-export const metadata: Metadata = {
-  title: "Join Our Team | AmeriLife",
-  description:
-    "As part of the AmeriLife team, you have the ability to positively impact the lives of Americans nationwide. Explore career opportunities for employees and sales agents.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Join Our Team | AmeriLife",
+  "As part of the AmeriLife team, you have the ability to positively impact the lives of Americans nationwide. Explore career opportunities for employees and sales agents.",
+  "/join-our-team/"
+);
 
 const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2022/01/Join_Our_Team_Hero_1420x1144.png`;

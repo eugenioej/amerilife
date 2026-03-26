@@ -1,0 +1,56 @@
+/**
+ * Static marketing routes (App Router under `app/(site)/`) for sitemap.xml.
+ * Excludes private / noindex routes (see DISALLOWED_PATH_PREFIXES).
+ */
+export const STATIC_SITEMAP_PATHS: string[] = [
+  "/",
+  "/solutions-and-opportunities/",
+  "/blog/",
+  "/about-us/our-distribution/wealth-distribution/",
+  "/our-solutions/affiliates/",
+  "/sms-terms/",
+  "/career/agents/",
+  "/sma-amerilife-video/",
+  "/privacy/",
+  "/contact/",
+  "/expectations-when-you-join-our-team/",
+  "/worksite/",
+  "/our-solutions/employees/",
+  "/join-our-team/",
+  "/valspar/",
+  "/national-network/",
+  "/kickoff-recap-2025/",
+  "/newsroom/",
+  "/about-us/our-leaders/",
+  "/our-solutions/agents-and-advisors/",
+  "/brokers/faq/",
+  "/career/",
+  "/our-solutions/consumers/",
+  "/our-solutions/carriers/",
+  "/terms/",
+  "/about-us/our-distribution/",
+  "/about-us/our-distribution/career-agency/",
+  "/about-us/our-distribution/worksite-distribution/",
+  "/about-us/our-distribution/health-distribution/",
+  "/faq/",
+  "/flexibility-and-optionality/",
+  "/connect/",
+  "/givesback/",
+  "/our-solutions/",
+  "/find-an-agent/",
+  "/about-us/who-we-are/",
+  "/technology-and-analytics/",
+  "/consumers/faq/",
+  "/broker-contact-page/",
+];
+
+/** Paths that must not appear in sitemap (match pathname prefix). */
+export const DISALLOWED_SITEMAP_PATHS = new Set([
+  "/test",
+  "/search",
+  "/thankyou",
+  "/existinglead",
+  "/worksite/lead",
+  "/career/findanagentthankyou",
+  "/about/affiliates/thank-you",
+]);

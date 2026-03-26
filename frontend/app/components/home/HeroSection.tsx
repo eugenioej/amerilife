@@ -1,14 +1,17 @@
 import Image from "next/image";
+import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 const BANNER_URL = "https://amerilife.com/wp-content/uploads/2021/12/banner-image.png";
+const STAR_URL = "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/03/star.png";
 
 export function HeroSection() {
   const bannerUrl = rewriteUploadsUrl(BANNER_URL);
+  const starUrl = STAR_URL;
   return (
     <section className="relative flex min-h-[85vh] flex-col items-start justify-center overflow-hidden lg:min-h-[100vh]">
       {/* Background image */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-0">
         <Image
           src={bannerUrl}
           alt=""
@@ -19,29 +22,44 @@ export function HeroSection() {
         />
       </div>
 
-      {/* Gradient overlay */}
+      {/* Gradient overlay — strong, matches original site */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 z-[1]"
         style={{
           background:
-            "linear-gradient(86.01deg, rgba(14, 50, 80, 0.85) -74.41%, rgba(0, 58, 116, 0.75) 7.86%, rgba(0, 155, 124, 0.65) 104.48%, rgba(103, 192, 132, 0.5) 142.38%)",
+            "linear-gradient(90deg, rgba(0, 36, 71, 0.97) 0%, rgba(0, 58, 116, 0.92) 35%, rgba(0, 130, 110, 0.82) 65%, rgba(0, 168, 130, 0.70) 100%)",
         }}
       />
 
+      {/* Star — above gradient, top-left */}
+      <div className="pointer-events-none absolute left-0 top-0 z-[2] w-[420px] sm:w-[520px] lg:w-[640px]">
+        <Image
+          src={starUrl}
+          alt=""
+          width={640}
+          height={640}
+          className="h-auto w-full opacity-55 brightness-[1.45] contrast-[1.12]"
+          priority
+        />
+      </div>
+
       {/* Content */}
-      <div className="relative z-10 w-full max-w-[var(--container-max)] px-[var(--container-padding-x)] pl-[calc(var(--container-padding-x)+2rem)] text-left">
+      <FadeInOnView
+        direction="fade"
+        threshold={0}
+        className="relative z-10 mx-auto w-full max-w-[var(--container-max)] px-[var(--container-padding-x)] text-left"
+      >
         <h2 className="mb-4 text-xl font-normal tracking-wide text-white/95 sm:text-2xl lg:text-3xl">
           Together As
         </h2>
-        <h1 className="mb-8 flex items-baseline justify-start gap-2 text-7xl tracking-tight text-white sm:text-8xl md:text-9xl lg:text-[10rem] xl:text-[12rem]">
-          <span style={{ fontWeight: 900 }}>O</span>
-          <span className="font-normal">NE</span>
+        <h1 className="font-poppins mb-8 flex items-baseline justify-start gap-2 text-7xl tracking-tight text-white sm:text-8xl md:text-9xl lg:text-[10rem] xl:text-[12rem]">
+          <span style={{ fontWeight: 800 }}>O</span>
+          <span className="font-light">NE</span>
         </h1>
-        <p className="max-w-2xl text-left text-xl font-normal leading-relaxed text-white/95 sm:text-2xl lg:text-3xl">
-          Delivering insurance and financial solutions to agents and advisors to
-          help people live longer, healthier lives.
+        <p className="max-w-[min(100%,32ch)] text-left text-lg font-normal leading-snug text-white/95 sm:text-xl lg:text-2xl">
+          Delivering insurance and financial solutions to agents and advisors to help people live longer, healthier lives.
         </p>
-      </div>
+      </FadeInOnView>
     </section>
   );
 }

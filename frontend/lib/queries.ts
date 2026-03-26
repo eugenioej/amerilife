@@ -211,6 +211,78 @@ export type PostsListResult = {
   };
 };
 
+/** Paginated published pages for sitemap (URI paths). */
+export type PagesSitemapResult = {
+  pages?: {
+    nodes: Array<{ uri?: string | null }>;
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+  } | null;
+};
+
+export const GET_PAGES_SITEMAP = `
+  query GetPagesSitemap($first: Int!, $after: String) {
+    pages(first: $first, after: $after, where: { status: PUBLISH }) {
+      nodes {
+        uri
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`;
+
+/** Paginated published posts for sitemap. */
+export type PostsSitemapResult = {
+  posts?: {
+    nodes: Array<{ uri?: string | null }>;
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+  } | null;
+};
+
+export const GET_POSTS_SITEMAP = `
+  query GetPostsSitemap($first: Int!, $after: String) {
+    posts(first: $first, after: $after, where: { status: PUBLISH }) {
+      nodes {
+        uri
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`;
+
+export type AgenciesSitemapResult = {
+  agencies?: {
+    nodes: Array<{
+      slug?: string | null;
+      officeAgents?: Array<{ slug?: string | null } | null> | null;
+    }>;
+  } | null;
+};
+
+export const GET_AGENCIES_FOR_SITEMAP = `
+  query GetAgenciesForSitemap {
+    agencies(first: 100, where: { orderby: { field: MENU_ORDER, order: ASC } }) {
+      nodes {
+        slug
+        officeAgents {
+          slug
+        }
+      }
+    }
+  }
+`;
+
 export const GET_POSTS = `
   query GetPosts($first: Int!, $after: String, $categorySlug: String) {
     posts(
@@ -442,6 +514,412 @@ export const SEARCH_POSTS = `
             altText
           }
         }
+      }
+    }
+  }
+`;
+
+/**
+ * Leader CPT — maps to amerilife.com-style leader pages (e.g. /our-leaders/[slug]/ on legacy site).
+ *
+ * | On-page (live)              | WordPress              | GraphQL                          |
+ * | --------------------------- | ---------------------- | -------------------------------- |
+ * | Leader name (H1, breadcrumb)| Post title             | `title`                          |
+ * | Role / job title            | Meta `job_title`       | `leaderFields.jobTitle`        |
+ * | Headshot                    | Featured image         | `featuredImage.node`           |
+ * | Bio paragraphs              | Post body (editor)     | `content` (HTML)               |
+ * | LinkedIn (“view linkedin”)  | Meta `linkedin_url`    | `leaderFields.linkedinUrl`     |
+ * | Listing order / prev-next | Page attributes order  | `menuOrder` + `GET_LEADERS`    |
+ * | URL segment                 | Post slug              | `slug`                         |
+ * | Page & sharing SEO        | Yoast (if enabled)     | `seo` on detail query only     |
+ */
+/** Leader CPT (WPGraphQL) — listing card / grid item. */
+export type LeaderListItem = {
+  id: string;
+  title?: string | null;
+  slug?: string | null;
+  menuOrder?: number | null;
+  featuredImage?: {
+    node?: {
+      sourceUrl?: string | null;
+      altText?: string | null;
+    };
+  } | null;
+  leaderFields?: {
+    jobTitle?: string | null;
+    linkedinUrl?: string | null;
+  } | null;
+};
+
+export type LeadersQueryResult = {
+  leaders?: {
+    nodes: LeaderListItem[];
+  } | null;
+};
+
+export const GET_LEADERS = `
+  query GetLeaders {
+    leaders(first: 100, where: { orderby: { field: MENU_ORDER, order: ASC } }) {
+      nodes {
+        id
+        slug
+        title
+        menuOrder
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+        leaderFields {
+          jobTitle
+          linkedinUrl
+        }
+      }
+    }
+  }
+`;
+
+/** Full leader for detail page (bio + SEO). */
+export type LeaderDetail = {
+  id: string;
+  title?: string | null;
+  slug?: string | null;
+  content?: string | null;
+  menuOrder?: number | null;
+  featuredImage?: {
+    node?: {
+      sourceUrl?: string | null;
+      altText?: string | null;
+    };
+  } | null;
+  leaderFields?: {
+    jobTitle?: string | null;
+    linkedinUrl?: string | null;
+  } | null;
+  seo?: YoastSeoData | null;
+};
+
+export type LeaderBySlugResult = {
+  leader?: LeaderDetail | null;
+};
+
+/**
+ * Affiliate CPT — logos, optional website link, and one or more category terms per post.
+ */
+export type AffiliateListItem = {
+  id: string;
+  title?: string | null;
+  menuOrder?: number | null;
+  featuredImage?: {
+    node?: {
+      sourceUrl?: string | null;
+      altText?: string | null;
+    };
+  } | null;
+  affiliateFields?: {
+    websiteUrl?: string | null;
+  } | null;
+  affiliateCategories?: {
+    nodes?: Array<{
+      name?: string | null;
+      slug?: string | null;
+    }>;
+  } | null;
+};
+
+export type AffiliatesQueryResult = {
+  affiliates?: {
+    nodes: AffiliateListItem[];
+  } | null;
+};
+
+export const GET_AFFILIATES = `
+  query GetAffiliates {
+    affiliates(first: 200, where: { orderby: { field: MENU_ORDER, order: ASC } }) {
+      nodes {
+        id
+        title
+        menuOrder
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+        affiliateFields {
+          websiteUrl
+        }
+        affiliateCategories {
+          nodes {
+            name
+            slug
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_LEADER_BY_SLUG = `
+  query GetLeaderBySlug($slug: ID!) {
+    leader(id: $slug, idType: SLUG) {
+      id
+      slug
+      title
+      content
+      menuOrder
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      leaderFields {
+        jobTitle
+        linkedinUrl
+      }
+      seo {
+        title
+        metaDesc
+        canonical
+        opengraphTitle
+        opengraphDescription
+        opengraphUrl
+        opengraphImage {
+          sourceUrl
+          altText
+        }
+        twitterTitle
+        twitterDescription
+        twitterImage {
+          sourceUrl
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * Agency CPT — career office / location pages (e.g. /polk-county/).
+ */
+export type AgencyFieldsGql = {
+  phone?: string | null;
+  addressLine1?: string | null;
+  addressLine2?: string | null;
+  addressCity?: string | null;
+  addressState?: string | null;
+  addressZip?: string | null;
+  hours?: string | null;
+  aboutOffice?: string | null;
+  featuresJson?: string | null;
+};
+
+export type AgentFieldsGql = {
+  role?: string | null;
+  city?: string | null;
+  state?: string | null;
+  agentPhone?: string | null;
+  email?: string | null;
+  reviewsCount?: number | null;
+  areasOfFocus?: string | null;
+  agencyId?: number | null;
+  agencySlug?: string | null;
+};
+
+export type AgentListItemGql = {
+  id: string;
+  slug?: string | null;
+  title?: string | null;
+  menuOrder?: number | null;
+  content?: string | null;
+  featuredImage?: {
+    node?: {
+      sourceUrl?: string | null;
+      altText?: string | null;
+    };
+  } | null;
+  agentFields?: AgentFieldsGql | null;
+};
+
+export type AgencyDetailGql = {
+  id: string;
+  slug?: string | null;
+  title?: string | null;
+  content?: string | null;
+  featuredImage?: {
+    node?: {
+      sourceUrl?: string | null;
+      altText?: string | null;
+    };
+  } | null;
+  agencyFields?: AgencyFieldsGql | null;
+  officeAgents?: AgentListItemGql[] | null;
+};
+
+export type AgencyBySlugResult = {
+  agency?: AgencyDetailGql | null;
+};
+
+export type AgenciesListResult = {
+  agencies?: {
+    nodes: Array<{
+      id: string;
+      slug?: string | null;
+      title?: string | null;
+    }>;
+  } | null;
+};
+
+export const GET_AGENCIES = `
+  query GetAgencies {
+    agencies(first: 100, where: { orderby: { field: MENU_ORDER, order: ASC } }) {
+      nodes {
+        id
+        slug
+        title
+      }
+    }
+  }
+`;
+
+export const GET_AGENCY_BY_SLUG = `
+  query GetAgencyBySlug($slug: ID!) {
+    agency(id: $slug, idType: SLUG) {
+      id
+      slug
+      title
+      content
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      agencyFields {
+        phone
+        addressLine1
+        addressLine2
+        addressCity
+        addressState
+        addressZip
+        hours
+        aboutOffice
+        featuresJson
+      }
+      officeAgents {
+        id
+        slug
+        title
+        menuOrder
+        content
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+        agentFields {
+          role
+          city
+          state
+          agentPhone
+          email
+          reviewsCount
+          areasOfFocus
+          agencySlug
+        }
+      }
+    }
+  }
+`;
+
+export type AgentByAgencySlugResult = {
+  agentByAgencyAndSlug?: AgentListItemGql | null;
+};
+
+/** Agency + agent in one request for /{agencySlug}/{agentSlug}/ */
+export type AgentPageDataResult = {
+  agency?: AgencyDetailGql | null;
+  agentByAgencyAndSlug?: AgentListItemGql | null;
+};
+
+export const GET_AGENT_PAGE_DATA = `
+  query GetAgentPageData($agencySlug: ID!, $agentSlug: String!) {
+    agency(id: $agencySlug, idType: SLUG) {
+      id
+      slug
+      title
+      content
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      agencyFields {
+        phone
+        addressLine1
+        addressLine2
+        addressCity
+        addressState
+        addressZip
+        hours
+        aboutOffice
+        featuresJson
+      }
+    }
+    agentByAgencyAndSlug(agencySlug: $agencySlug, agentSlug: $agentSlug) {
+      id
+      slug
+      title
+      content
+      menuOrder
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      agentFields {
+        role
+        city
+        state
+        agentPhone
+        email
+        reviewsCount
+        areasOfFocus
+        agencyId
+        agencySlug
+      }
+    }
+  }
+`;
+
+export const GET_AGENT_BY_AGENCY_AND_SLUG = `
+  query GetAgentByAgencyAndSlug($agencySlug: String!, $agentSlug: String!) {
+    agentByAgencyAndSlug(agencySlug: $agencySlug, agentSlug: $agentSlug) {
+      id
+      slug
+      title
+      content
+      menuOrder
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      agentFields {
+        role
+        city
+        state
+        agentPhone
+        email
+        reviewsCount
+        areasOfFocus
+        agencyId
+        agencySlug
       }
     }
   }

@@ -4,12 +4,13 @@ import { Link } from "@/app/components/ui/Link";
 import { KickoffAccordion } from "@/app/components/kickoff-recap/KickoffAccordion";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { WP_IMAGE_SOURCES } from "@/lib/wp-image-sources";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Kickoff Recap 2025 | AmeriLife",
-  description:
-    "That's a wrap on AmeriLife's 2025 National Kickoff Conference. Thank you to everyone who joined us in Tampa, Florida.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Kickoff Recap 2025 | AmeriLife",
+  "That's a wrap on AmeriLife's 2025 National Kickoff Conference. Thank you to everyone who joined us in Tampa, Florida.",
+  "/kickoff-recap-2025/"
+);
 
 const IMG = WP_IMAGE_SOURCES.kickoffRecap2025;
 

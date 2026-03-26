@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageLayout } from "@/app/components/legal/LegalPageLayout";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy | AmeriLife",
-  description:
-    "AmeriLife Privacy Policy - Learn how we collect, use, and protect your personal information.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Privacy Policy | AmeriLife",
+  "AmeriLife Privacy Policy - Learn how we collect, use, and protect your personal information.",
+  "/privacy/"
+);
 
 export default function PrivacyPage() {
   return (

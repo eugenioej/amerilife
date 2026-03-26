@@ -1,8 +1,14 @@
 import { notFound } from "next/navigation";
 import { BlogPostTemplate } from "@/app/components/blog/BlogPostTemplate";
+import { JsonLd } from "@/app/components/seo/JsonLd";
 import { fetchGraphQL } from "@/lib/wp-client";
 import { GET_POST_BY_SLUG, type PostByUri } from "@/lib/queries";
-import { yoastSeoToMetadata } from "@/lib/seo";
+import {
+  articleJsonLd,
+  getSiteUrl,
+  staticPageMetadata,
+  yoastSeoToMetadata,
+} from "@/lib/seo";
 
 type PageParams = Promise<{ category: string; slug: string }>;
 
@@ -16,16 +22,22 @@ async function getPost(slug: string): Promise<PostByUri | null> {
 }
 
 export async function generateMetadata({ params }: { params: PageParams }) {
-  const { slug } = await params;
+  const { category, slug } = await params;
   const post = await getPost(slug);
   if (!post) return {};
 
   if (post.seo) {
     return yoastSeoToMetadata(post.seo, post.title ?? "Article");
   }
-  return {
-    title: `${post.title ?? "Article"} | AmeriLife`,
-  };
+  const title = `${post.title ?? "Article"} | AmeriLife`;
+  const description = post.excerpt
+    ? post.excerpt
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 320)
+    : `Read ${post.title ?? "this article"} on AmeriLife Newsroom.`;
+  return staticPageMetadata(title, description, `/blog/${category}/${slug}/`);
 }
 
 export default async function BlogPostPage({ params }: { params: PageParams }) {
@@ -34,5 +46,21 @@ export default async function BlogPostPage({ params }: { params: PageParams }) {
 
   if (!post) notFound();
 
-  return <BlogPostTemplate post={post} categorySlug={category} />;
+  const site = getSiteUrl().replace(/\/$/, "");
+  const articleUrl = `${site}/blog/${category}/${slug}/`;
+  const categoryLabel =
+    post.categories?.nodes?.[0]?.name?.trim() ||
+    category.replace(/-/g, " ");
+
+  return (
+    <>
+      <JsonLd
+        schema={articleJsonLd(post, {
+          url: articleUrl,
+          categoryLabel,
+        })}
+      />
+      <BlogPostTemplate post={post} categorySlug={category} />
+    </>
+  );
 }

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Link } from "@/app/components/ui/Link";
 import { BrokersFaqAccordion } from "@/app/components/brokers-faq/BrokersFaqAccordion";
+import { staticPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Frequently Asked Questions About AmeriLife | AmeriLife",
-  description:
-    "Find answers to common questions about independent insurance agents, what AmeriLife can do for your business, and our distribution network.",
-};
+export const metadata: Metadata = staticPageMetadata(
+  "Frequently Asked Questions About AmeriLife | AmeriLife",
+  "Find answers to common questions about independent insurance agents, what AmeriLife can do for your business, and our distribution network.",
+  "/brokers/faq/"
+);
 
 export default function BrokersFaqPage() {
   return (

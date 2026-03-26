@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ThankYouPageContent } from "@/app/components/thank-you/ThankYouPageContent";
+import { staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 // Image on WP: /wp-content/uploads/2017/10/Thank-You-IMG.jpg
@@ -8,9 +9,12 @@ const THANK_YOU_IMAGE_URL = rewriteUploadsUrl(
 );
 
 export const metadata: Metadata = {
-  title: "Thank You – Find an Agent | AmeriLife",
-  description:
+  ...staticPageMetadata(
+    "Thank You – Find an Agent | AmeriLife",
     "Thank you for your interest in finding an agent. A company representative will be in touch shortly.",
+    "/career/findanagentthankyou/"
+  ),
+  robots: { index: false, follow: false },
 };
 
 export default function FindAnAgentThankYouPage() {
