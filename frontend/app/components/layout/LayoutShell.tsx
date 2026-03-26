@@ -7,10 +7,10 @@ export async function LayoutShell({ children }: { children: React.ReactNode }) {
   const primaryMenu = await getPrimaryMenu();
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col overflow-x-hidden">
       <TopBar />
       <SiteHeader primaryMenu={primaryMenu} />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 overflow-x-hidden">{children}</main>
       <SiteFooter primaryMenu={primaryMenu} />
     </div>
   );

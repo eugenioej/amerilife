@@ -21,15 +21,15 @@ type Props = {
 function hiddenClasses(direction: FadeInDirection): string {
   switch (direction) {
     case "up":
-      return "translate-y-6 opacity-0";
+      return "translate-y-4 opacity-0";
     case "left":
-      return "-translate-x-6 opacity-0";
+      return "-translate-x-4 opacity-0";
     case "right":
-      return "translate-x-6 opacity-0";
+      return "translate-x-4 opacity-0";
     case "fade":
       return "opacity-0";
     default:
-      return "translate-y-6 opacity-0";
+      return "translate-y-4 opacity-0";
   }
 }
 
