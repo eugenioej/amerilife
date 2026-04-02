@@ -137,15 +137,18 @@ add_action('save_post_agent', function ($post_id) {
  * GraphQL helpers (duplicated from agency plugin to keep plugins independent).
  */
 function amerilife_agent_graphql_post_id($post) {
-  $id = 0;
+  if ($post instanceof WP_Post) {
+    return (int) $post->ID;
+  }
   if (is_object($post)) {
-    if (isset($post->ID)) {
-      $id = (int) $post->ID;
-    } elseif (isset($post->databaseId)) {
-      $id = (int) $post->databaseId;
+    if (isset($post->databaseId)) {
+      return (int) $post->databaseId;
+    }
+    if (isset($post->ID) && is_numeric($post->ID)) {
+      return (int) $post->ID;
     }
   }
-  return $id;
+  return 0;
 }
 
 function amerilife_agent_meta_str($post_id, $key) {
@@ -153,23 +156,89 @@ function amerilife_agent_meta_str($post_id, $key) {
   return $v !== '' && $v !== null ? (string) $v : null;
 }
 
+/**
+ * Build a flat OfficeAgent data array from a WP_Post — avoids WPGraphQL model wrapping.
+ */
+function amerilife_build_office_agent($p) {
+  if (!$p instanceof WP_Post) {
+    return null;
+  }
+  $id = (int) $p->ID;
+  $rc = get_post_meta($id, 'reviews_count', true);
+  $reviews = ($rc !== '' && $rc !== null && is_numeric($rc)) ? (int) $rc : null;
+  $agency_id = (int) get_post_meta($id, 'agency_id', true);
+  $agency_slug = null;
+  if ($agency_id > 0) {
+    $s = get_post_field('post_name', $agency_id);
+    if ($s !== '') $agency_slug = $s;
+  }
+  $photo = null;
+  $thumb_id = (int) get_post_thumbnail_id($id);
+  if ($thumb_id > 0) {
+    $img = wp_get_attachment_image_src($thumb_id, 'full');
+    if ($img) $photo = $img[0];
+  }
+  return [
+    'slug'         => $p->post_name !== '' ? $p->post_name : null,
+    'name'         => $p->post_title !== '' ? $p->post_title : null,
+    'menuOrder'    => (int) $p->menu_order,
+    'content'      => $p->post_content,
+    'photoUrl'     => $photo,
+    'role'         => amerilife_agent_meta_str($id, 'role'),
+    'email'        => amerilife_agent_meta_str($id, 'email'),
+    'phone'        => amerilife_agent_meta_str($id, 'agent_phone'),
+    'city'         => amerilife_agent_meta_str($id, 'city'),
+    'state'        => amerilife_agent_meta_str($id, 'state'),
+    'areasOfFocus' => amerilife_agent_meta_str($id, 'areas_of_focus'),
+    'reviewsCount' => $reviews,
+    'agencyId'     => $agency_id > 0 ? $agency_id : null,
+    'agencySlug'   => $agency_slug,
+  ];
+}
+
 add_action('graphql_register_types', function () {
   if (!function_exists('register_graphql_object_type') || !function_exists('register_graphql_field')) {
     return;
   }
 
-  register_graphql_object_type('AgentFields', [
-    'description' => 'AmeriLife career agent meta',
+  /**
+   * OfficeAgent — flat custom type for office listings.
+   * Does NOT extend the WPGraphQL 'Agent' node, so no model-wrapping needed.
+   * All fields are resolved directly from WP_Post + post_meta.
+   */
+  register_graphql_object_type('OfficeAgent', [
+    'description' => 'AmeriLife career agent (flat, model-free)',
     'fields' => [
-      'role' => ['type' => 'String'],
-      'city' => ['type' => 'String'],
-      'state' => ['type' => 'String'],
-      'agentPhone' => ['type' => 'String'],
-      'email' => ['type' => 'String'],
+      'slug'         => ['type' => 'String'],
+      'name'         => ['type' => 'String'],
+      'menuOrder'    => ['type' => 'Int'],
+      'content'      => ['type' => 'String'],
+      'photoUrl'     => ['type' => 'String'],
+      'role'         => ['type' => 'String'],
+      'email'        => ['type' => 'String'],
+      'phone'        => ['type' => 'String'],
+      'city'         => ['type' => 'String'],
+      'state'        => ['type' => 'String'],
+      'areasOfFocus' => ['type' => 'String'],
+      'reviewsCount' => ['type' => 'Int'],
+      'agencyId'     => ['type' => 'Int'],
+      'agencySlug'   => ['type' => 'String'],
+    ],
+  ]);
+
+  // Keep AgentFields on the built-in Agent type for any existing queries.
+  register_graphql_object_type('AgentFields', [
+    'description' => 'AmeriLife career agent meta (legacy, via Agent node)',
+    'fields' => [
+      'role'         => ['type' => 'String'],
+      'city'         => ['type' => 'String'],
+      'state'        => ['type' => 'String'],
+      'agentPhone'   => ['type' => 'String'],
+      'email'        => ['type' => 'String'],
       'reviewsCount' => ['type' => 'Int'],
       'areasOfFocus' => ['type' => 'String'],
-      'agencyId' => ['type' => 'Int'],
-      'agencySlug' => ['type' => 'String'],
+      'agencyId'     => ['type' => 'Int'],
+      'agencySlug'   => ['type' => 'String'],
     ],
   ]);
 
@@ -177,111 +246,87 @@ add_action('graphql_register_types', function () {
     'type' => 'AgentFields',
     'resolve' => function ($post) {
       $id = amerilife_agent_graphql_post_id($post);
-      if (!$id) {
-        return amerilife_agent_empty_fields();
-      }
+      if (!$id) return amerilife_agent_empty_fields();
       $agency_id = (int) get_post_meta($id, 'agency_id', true);
       $agency_slug = null;
       if ($agency_id > 0) {
-        $agency_slug = get_post_field('post_name', $agency_id, 'agency');
-        if ($agency_slug === '') {
-          $agency_slug = null;
-        }
+        $s = get_post_field('post_name', $agency_id);
+        if ($s !== '') $agency_slug = $s;
       }
       $rc = get_post_meta($id, 'reviews_count', true);
-      $reviews = null;
-      if ($rc !== '' && $rc !== null && is_numeric($rc)) {
-        $reviews = (int) $rc;
-      }
+      $reviews = ($rc !== '' && $rc !== null && is_numeric($rc)) ? (int) $rc : null;
       return [
-        'role' => amerilife_agent_meta_str($id, 'role'),
-        'city' => amerilife_agent_meta_str($id, 'city'),
-        'state' => amerilife_agent_meta_str($id, 'state'),
-        'agentPhone' => amerilife_agent_meta_str($id, 'agent_phone'),
-        'email' => amerilife_agent_meta_str($id, 'email'),
+        'role'         => amerilife_agent_meta_str($id, 'role'),
+        'city'         => amerilife_agent_meta_str($id, 'city'),
+        'state'        => amerilife_agent_meta_str($id, 'state'),
+        'agentPhone'   => amerilife_agent_meta_str($id, 'agent_phone'),
+        'email'        => amerilife_agent_meta_str($id, 'email'),
         'reviewsCount' => $reviews,
         'areasOfFocus' => amerilife_agent_meta_str($id, 'areas_of_focus'),
-        'agencyId' => $agency_id > 0 ? $agency_id : null,
-        'agencySlug' => $agency_slug,
+        'agencyId'     => $agency_id > 0 ? $agency_id : null,
+        'agencySlug'   => $agency_slug,
       ];
     },
   ]);
 
   register_graphql_field('Agency', 'officeAgents', [
-    'type' => ['list_of' => 'Agent'],
-    'description' => 'Agents assigned to this agency',
+    'type'        => ['list_of' => 'OfficeAgent'],
+    'description' => 'Agents assigned to this agency (flat OfficeAgent type)',
     'resolve' => function ($post) {
       $id = amerilife_agent_graphql_post_id($post);
-      if (!$id) {
-        return [];
-      }
+      if (!$id) return [];
       $q = new WP_Query([
-        'post_type' => 'agent',
-        'post_status' => 'publish',
+        'post_type'      => 'agent',
+        'post_status'    => 'publish',
         'posts_per_page' => 100,
-        'orderby' => 'menu_order',
-        'order' => 'ASC',
-        'meta_query' => [
-          [
-            'key' => 'agency_id',
-            'value' => (string) $id,
-            'compare' => '=',
-          ],
-        ],
+        'orderby'        => 'menu_order',
+        'order'          => 'ASC',
+        'meta_query'     => [[
+          'key'     => 'agency_id',
+          'value'   => (string) $id,
+          'compare' => '=',
+        ]],
       ]);
       $out = [];
       foreach ($q->posts as $p) {
-        if ($p instanceof WP_Post) {
-          $out[] = $p;
-        }
+        $agent = amerilife_build_office_agent($p);
+        if ($agent !== null) $out[] = $agent;
       }
       return $out;
     },
   ]);
 
   register_graphql_field('RootQuery', 'agentByAgencyAndSlug', [
-    'type' => 'Agent',
-    'description' => 'Find agent by agency slug + agent slug (headless URL /agencySlug/agentSlug/)',
+    'type'        => 'OfficeAgent',
+    'description' => 'Find agent by agency slug + agent slug',
     'args' => [
-      'agencySlug' => [
-        'type' => 'String',
-        'description' => 'Agency post slug',
-      ],
-      'agentSlug' => [
-        'type' => 'String',
-        'description' => 'Agent post slug',
-      ],
+      'agencySlug' => ['type' => 'String', 'description' => 'Agency post slug'],
+      'agentSlug'  => ['type' => 'String', 'description' => 'Agent post slug'],
     ],
     'resolve' => function ($root, $args) {
       $as = isset($args['agencySlug']) ? sanitize_title((string) $args['agencySlug']) : '';
-      $gs = isset($args['agentSlug']) ? sanitize_title((string) $args['agentSlug']) : '';
-      if ($as === '' || $gs === '') {
-        return null;
-      }
+      $gs = isset($args['agentSlug'])  ? sanitize_title((string) $args['agentSlug'])  : '';
+      if ($as === '' || $gs === '') return null;
       $agencies = get_posts([
-        'post_type' => 'agency',
-        'name' => $as,
-        'post_status' => 'publish',
+        'post_type'      => 'agency',
+        'name'           => $as,
+        'post_status'    => 'publish',
         'posts_per_page' => 1,
       ]);
-      if (empty($agencies)) {
-        return null;
-      }
+      if (empty($agencies)) return null;
       $aid = (int) $agencies[0]->ID;
       $agents = get_posts([
-        'post_type' => 'agent',
-        'name' => $gs,
-        'post_status' => 'publish',
+        'post_type'      => 'agent',
+        'name'           => $gs,
+        'post_status'    => 'publish',
         'posts_per_page' => 1,
-        'meta_query' => [
-          [
-            'key' => 'agency_id',
-            'value' => (string) $aid,
-            'compare' => '=',
-          ],
-        ],
+        'meta_query'     => [[
+          'key'     => 'agency_id',
+          'value'   => (string) $aid,
+          'compare' => '=',
+        ]],
       ]);
-      return !empty($agents) ? $agents[0] : null;
+      return !empty($agents) ? amerilife_build_office_agent($agents[0]) : null;
     },
   ]);
 });

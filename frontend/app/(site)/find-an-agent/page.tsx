@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
+import type { LocationData } from "@/lib/locations-data";
 import { getAllLocationSlugs, getLocationBySlug } from "@/lib/locations-data";
 import { FindAgentContent } from "@/app/components/locations/FindAgentContent";
 import { staticPageMetadata } from "@/lib/seo";
+import { fetchLocationsForFindAgentPage } from "@/lib/agencies";
+import { fetchGravityForm } from "@/lib/gf-client";
+
+/** Gravity Forms form ID for the "Find an Agent" contact form. */
+const FIND_AN_AGENT_FORM_ID = 26;
 
 export const metadata: Metadata = staticPageMetadata(
   "Find An Agent | AmeriLife",
@@ -9,11 +15,23 @@ export const metadata: Metadata = staticPageMetadata(
   "/find-an-agent/"
 );
 
-export default function FindAnAgentPage() {
-  const slugs = getAllLocationSlugs();
-  const locations = slugs
-    .map((slug) => getLocationBySlug(slug))
-    .filter((l): l is NonNullable<typeof l> => l !== null);
+export default async function FindAnAgentPage() {
+  const [locationsResult, form] = await Promise.allSettled([
+    fetchLocationsForFindAgentPage().catch(() => [] as LocationData[]),
+    fetchGravityForm(FIND_AN_AGENT_FORM_ID),
+  ]);
 
-  return <FindAgentContent locations={locations} />;
+  let locations: LocationData[] =
+    locationsResult.status === "fulfilled" ? locationsResult.value : [];
+
+  if (locations.length === 0) {
+    const slugs = getAllLocationSlugs();
+    locations = slugs
+      .map((slug) => getLocationBySlug(slug))
+      .filter((l): l is NonNullable<typeof l> => l !== null);
+  }
+
+  const connectForm = form.status === "fulfilled" ? (form.value ?? null) : null;
+
+  return <FindAgentContent locations={locations} connectForm={connectForm} />;
 }

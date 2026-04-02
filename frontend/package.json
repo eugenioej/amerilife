@@ -16,7 +16,22 @@
     "migrate:posts": "node scripts/migrate-posts.mjs migrate",
     "import:leaders": "node scripts/import-leaders.mjs",
     "import:affiliates": "node scripts/import-affiliates-from-live.mjs",
-    "import:agency-agents": "node scripts/import-agency-agents-from-static.mjs"
+    "import:agency-agents": "node scripts/import-agency-agents-from-static.mjs",
+    "scrape:agencies": "node scripts/scrape-agent-pages.mjs",
+    "map:gf-forms": "node scripts/map-gf-forms.mjs",
+    "import:all-agencies": "node scripts/import-all-agencies.mjs",
+    "import:all-agencies:overwrite": "node scripts/import-all-agencies.mjs -- --overwrite",
+    "import:all-agencies:fresh": "node scripts/import-all-agencies.mjs -- --wipe-first --overwrite",
+    "wipe:agencies-wp": "node scripts/wipe-agencies-wp.mjs",
+    "sync:agency-gf-ids": "node scripts/sync-agency-gravity-form-ids.mjs",
+    "export:scraped-csv": "node scripts/export-scraped-agencies-csv.mjs",
+    "enrich:agencies": "node scripts/enrich-scraped-agencies.mjs",
+    "apply:agency-defaults": "node scripts/apply-agency-defaults.mjs",
+    "normalize:agent-json": "node scripts/normalize-agent-json.mjs",
+    "patch:agency-images": "node scripts/patch-agency-featured-image.mjs",
+    "enrich:agencies-llm": "node scripts/enrich-agencies-llm.mjs",
+    "enrich:agencies-llm:all": "node scripts/enrich-agencies-llm.mjs --all",
+    "pipeline:agencies": "pnpm scrape:agencies && pnpm enrich:agencies && pnpm enrich:agencies-llm -- --all"
   },
   "dependencies": {
     "lucide-react": "^0.574.0",
@@ -32,6 +47,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "node-html-parser": "^7.1.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -42,6 +42,10 @@ export type LocationData = {
   aboutOffice: string;
   agents: AgentData[];
   features: FeatureBlock[];
+  /** Google Maps search URL from CMS (import); used to align map embed with stored address. */
+  mapSearchUrl?: string;
+  /** Gravity Forms form ID on headless WP (Connect with an Agent). */
+  gravityFormId?: number;
 };
 
 const POLK_FEATURES: FeatureBlock[] = [
@@ -132,6 +136,7 @@ const LOCATIONS: Record<string, LocationData> = {
       },
     ],
     features: POLK_FEATURES,
+    gravityFormId: 31,
   },
 };
 

@@ -14,13 +14,13 @@ const FAQ_ITEMS: FaqItem[] = [
     question: "I'm a business owner and ready to partner with AmeriLife. Who do I contact?",
     answer: (
       <>
-        We can&apos;t wait to speak with you! Please email Patrick Nichols, AmeriLife&apos;s
+        We can&apos;t wait to speak with you! Please email Stephen Smith, AmeriLife&apos;s
         Senior Vice President of Corporate Development, at{" "}
         <a
-          href="mailto:pnichols@amerilife.com"
+          href="mailto:sjsmith@amerilife.com"
           className="text-[var(--color-link)] hover:underline"
         >
-          pnichols@amerilife.com
+          sjsmith@amerilife.com
         </a>{" "}
         to get started.
       </>
@@ -102,11 +102,11 @@ const FAQ_ITEMS: FaqItem[] = [
       <>
         Yes, we offer a range of fee-based asset management services and
         solutions. To learn more, visit our{" "}
-        <Link href="/about-us/our-distribution/brokerage-division/" className="text-[var(--color-link)] hover:underline">
+        <Link href="/about-us/our-distribution/health-distribution/" className="text-[var(--color-link)] hover:underline">
           Wholesale Brokerage
         </Link>{" "}
         and{" "}
-        <Link href="/about-us/our-distribution/wealth-management/" className="text-[var(--color-link)] hover:underline">
+        <Link href="/about-us/our-distribution/wealth-distribution/" className="text-[var(--color-link)] hover:underline">
           Institutional Wealth Management, Broker-Dealer & RIA pages
         </Link>
         .

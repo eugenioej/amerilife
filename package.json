@@ -9,7 +9,14 @@
     "dev": "npm run dev --prefix frontend",
     "build": "npm run build --prefix frontend",
     "start": "npm run start --prefix frontend",
-    "lint": "npm run lint --prefix frontend"
+    "lint": "npm run lint --prefix frontend",
+    "scrape:agencies": "pnpm --dir frontend run scrape:agencies",
+    "enrich:agencies": "pnpm --dir frontend run enrich:agencies",
+    "enrich:agencies-llm": "pnpm --dir frontend run enrich:agencies-llm",
+    "pipeline:agencies": "pnpm --dir frontend run pipeline:agencies",
+    "import:all-agencies": "pnpm --dir frontend run import:all-agencies",
+    "export:scraped-csv": "pnpm --dir frontend run export:scraped-csv",
+    "apply:agency-defaults": "pnpm --dir frontend run apply:agency-defaults"
   },
   "dependencies": {
     "clsx": "^2.1.1",

@@ -3,15 +3,32 @@ import { fetchGraphQL } from "@/lib/wp-client";
 import { getSiteUrl } from "@/lib/seo";
 import {
   GET_AGENCIES,
+  GET_AGENCIES_FOR_FIND_AGENT,
   GET_AGENCY_BY_SLUG,
   GET_AGENT_PAGE_DATA,
   type AgencyDetailGql,
+  type AgenciesForFindAgentResult,
   type AgenciesListResult,
   type AgencyBySlugResult,
   type AgentListItemGql,
   type AgentPageDataResult,
 } from "@/lib/queries";
 import type { AgentData, FeatureBlock, LocationData } from "@/lib/locations-data";
+
+/** Matches WP `featured_media` 13398 — used when GraphQL `featuredImage` is null (MediaItem visibility). */
+export const DEFAULT_AGENCY_OFFICE_HERO_URL =
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2023/04/AML-Wealth-II-Announcement-040532023-HERO-1024x358-1.png";
+
+function resolveAgencyOfficeImageUrl(
+  heroFromFields?: string | null,
+  featuredFromNode?: string | null,
+): string {
+  const h = heroFromFields?.trim();
+  if (h) return h;
+  const f = featuredFromNode?.trim();
+  if (f) return f;
+  return DEFAULT_AGENCY_OFFICE_HERO_URL;
+}
 
 function isFeatureIcon(k: string): k is NonNullable<FeatureBlock["icon"]> {
   return k === "medicare" || k === "health" || k === "life" || k === "annuity";
@@ -50,25 +67,23 @@ export function parseFeaturesJson(raw: string | null | undefined): FeatureBlock[
 }
 
 function agentNodeToAgentData(node: AgentListItemGql): AgentData {
-  const f = node.agentFields;
-  const title = node.title?.trim() || "Agent";
   const areas =
-    f?.areasOfFocus
+    node.areasOfFocus
       ?.split(",")
       .map((s) => s.trim())
       .filter(Boolean) ?? undefined;
   const bio = node.content ? stripHtml(node.content) : undefined;
   return {
     slug: node.slug ?? "",
-    name: title,
-    role: f?.role ?? undefined,
-    city: f?.city ?? "",
-    state: f?.state ?? "",
-    reviewsCount: f?.reviewsCount ?? undefined,
-    photoUrl: node.featuredImage?.node?.sourceUrl ?? undefined,
+    name: node.name?.trim() || "Agent",
+    role: node.role ?? undefined,
+    city: node.city ?? "",
+    state: node.state ?? "",
+    reviewsCount: node.reviewsCount ?? undefined,
+    photoUrl: node.photoUrl ?? undefined,
     bio: bio || undefined,
-    email: f?.email ?? undefined,
-    phone: f?.agentPhone ?? undefined,
+    email: node.email ?? undefined,
+    phone: node.phone ?? undefined,
     areasOfFocus: areas,
   };
 }
@@ -76,10 +91,50 @@ function agentNodeToAgentData(node: AgentListItemGql): AgentData {
 /**
  * Map GraphQL agency + nested agents to LocationData for location templates.
  */
+function agencyListNodeToLocationData(node: NonNullable<
+  NonNullable<AgenciesForFindAgentResult["agencies"]>["nodes"][number]
+>): LocationData {
+  const af = node.agencyFields;
+  const features = parseFeaturesJson(af?.featuresJson);
+  return {
+    slug: node.slug ?? "",
+    officeName: node.title ?? "",
+    phone: af?.phone ?? "",
+    officeImageUrl: resolveAgencyOfficeImageUrl(
+      af?.heroImageUrl,
+      node.featuredImage?.node?.sourceUrl,
+    ),
+    address: {
+      line1: af?.addressLine1 ?? "",
+      line2: af?.addressLine2 ?? undefined,
+      city: af?.addressCity ?? "",
+      state: af?.addressState ?? "",
+      zip: af?.addressZip ?? "",
+    },
+    hours: af?.hours ?? "",
+    aboutOffice: af?.aboutOffice?.trim() ?? "",
+    agents: [],
+    features: features.length > 0 ? features : [],
+    mapSearchUrl: af?.mapSearchUrl?.trim() || undefined,
+    gravityFormId: af?.gravityFormId ?? undefined,
+  };
+}
+
+/**
+ * All agencies for the Find An Agent grid (cards + filters). No nested agents (lighter query).
+ */
+export async function fetchLocationsForFindAgentPage(): Promise<LocationData[]> {
+  const data = await fetchGraphQL<AgenciesForFindAgentResult>(GET_AGENCIES_FOR_FIND_AGENT);
+  const nodes = data.agencies?.nodes ?? [];
+  return nodes
+    .filter((n) => n.slug)
+    .map((n) => agencyListNodeToLocationData(n));
+}
+
 export function agencyGraphqlToLocationData(agency: AgencyDetailGql): LocationData {
   const af = agency.agencyFields;
   const agents = (agency.officeAgents ?? [])
-    .filter(Boolean)
+    .filter((a): a is NonNullable<typeof a> => Boolean(a?.slug))
     .sort((a, b) => (a.menuOrder ?? 0) - (b.menuOrder ?? 0))
     .map(agentNodeToAgentData);
 
@@ -94,7 +149,10 @@ export function agencyGraphqlToLocationData(agency: AgencyDetailGql): LocationDa
     slug: agency.slug ?? "",
     officeName: agency.title ?? "",
     phone: af?.phone ?? "",
-    officeImageUrl: agency.featuredImage?.node?.sourceUrl ?? undefined,
+    officeImageUrl: resolveAgencyOfficeImageUrl(
+      af?.heroImageUrl,
+      agency.featuredImage?.node?.sourceUrl,
+    ),
     address: {
       line1: af?.addressLine1 ?? "",
       line2: af?.addressLine2 ?? undefined,
@@ -106,6 +164,8 @@ export function agencyGraphqlToLocationData(agency: AgencyDetailGql): LocationDa
     aboutOffice: about,
     agents,
     features: features.length > 0 ? features : [],
+    mapSearchUrl: af?.mapSearchUrl?.trim() || undefined,
+    gravityFormId: af?.gravityFormId ?? undefined,
   };
 }
 
@@ -126,6 +186,7 @@ export async function fetchAgentWithLocation(
 ): Promise<{ agent: AgentData; location: LocationData } | null> {
   try {
     const data = await fetchGraphQL<AgentPageDataResult>(GET_AGENT_PAGE_DATA, {
+      agencyId: agencySlug,
       agencySlug,
       agentSlug,
     });

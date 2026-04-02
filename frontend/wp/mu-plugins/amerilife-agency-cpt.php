@@ -52,6 +52,8 @@ add_action('init', function () {
       'hours' => 'string',
       'about_office' => 'string',
       'features_json' => 'string',
+      'gravity_form_id' => 'integer',
+      'map_search_url' => 'string',
     ] as $key => $type
   ) {
     register_post_meta('agency', $key, [
@@ -86,12 +88,18 @@ function amerilife_agency_details_metabox($post) {
     'hours' => 'Hours (use line breaks between lines)',
     'about_office' => 'About this office',
     'features_json' => 'Features (JSON array: [{"heading","body","icon"}] icon: medicare|health|life|annuity)',
+    'gravity_form_id' => 'Gravity Form ID (Connect with an Agent)',
+    'map_search_url' => 'Map (Google Maps search URL)',
   ];
   foreach ($fields as $key => $label) {
     $val = get_post_meta($post->ID, $key, true);
     echo '<p><label for="agency_' . esc_attr($key) . '"><strong>' . esc_html($label) . '</strong></label></p>';
     if ($key === 'hours' || $key === 'about_office' || $key === 'features_json') {
       echo '<textarea id="agency_' . esc_attr($key) . '" name="' . esc_attr($key) . '" class="large-text" rows="' . ($key === 'features_json' ? 12 : 6) . '">' . esc_textarea((string) $val) . '</textarea>';
+    } elseif ($key === 'gravity_form_id') {
+      echo '<input type="number" id="agency_' . esc_attr($key) . '" name="' . esc_attr($key) . '" class="small-text" step="1" min="0" value="' . esc_attr((string) $val) . '" />';
+    } elseif ($key === 'map_search_url') {
+      echo '<input type="url" id="agency_' . esc_attr($key) . '" name="' . esc_attr($key) . '" class="large-text" value="' . esc_attr((string) $val) . '" placeholder="https://www.google.com/maps/search/?api=1&amp;query=..." />';
     } else {
       echo '<input type="text" id="agency_' . esc_attr($key) . '" name="' . esc_attr($key) . '" class="large-text" value="' . esc_attr((string) $val) . '" />';
     }
@@ -108,13 +116,18 @@ add_action('save_post_agency', function ($post_id) {
   if (!current_user_can('edit_post', $post_id)) {
     return;
   }
-  $keys = ['phone', 'address_line1', 'address_line2', 'address_city', 'address_state', 'address_zip', 'hours', 'about_office', 'features_json'];
+  $keys = ['phone', 'address_line1', 'address_line2', 'address_city', 'address_state', 'address_zip', 'hours', 'about_office', 'features_json', 'gravity_form_id', 'map_search_url'];
   foreach ($keys as $key) {
     if (!isset($_POST[$key])) {
       continue;
     }
     $raw = wp_unslash($_POST[$key]);
-    if ($key === 'features_json') {
+    if ($key === 'gravity_form_id') {
+      $n = absint($raw);
+      update_post_meta($post_id, $key, $n > 0 ? $n : '');
+    } elseif ($key === 'map_search_url') {
+      update_post_meta($post_id, $key, $raw !== '' ? esc_url_raw($raw) : '');
+    } elseif ($key === 'features_json') {
       update_post_meta($post_id, $key, sanitize_textarea_field($raw));
     } elseif (in_array($key, ['hours', 'about_office'], true)) {
       update_post_meta($post_id, $key, sanitize_textarea_field($raw));
@@ -141,6 +154,10 @@ add_action('graphql_register_types', function () {
       'hours' => ['type' => 'String'],
       'aboutOffice' => ['type' => 'String'],
       'featuresJson' => ['type' => 'String'],
+      'gravityFormId' => ['type' => 'Int'],
+      'mapSearchUrl' => ['type' => 'String'],
+      /** Direct URL from _thumbnail_id — works when featuredImage { node } is null for public GraphQL. */
+      'heroImageUrl' => ['type' => 'String'],
     ],
   ]);
 
@@ -150,6 +167,12 @@ add_action('graphql_register_types', function () {
       $id = amerilife_graphql_post_id($post);
       if (!$id) {
         return amerilife_empty_agency_fields();
+      }
+      $thumb_id = (int) get_post_thumbnail_id($id);
+      $hero_url = null;
+      if ($thumb_id > 0) {
+        $u = wp_get_attachment_image_url($thumb_id, 'full');
+        $hero_url = $u ? (string) $u : null;
       }
       return [
         'phone' => amerilife_meta_str($id, 'phone'),
@@ -161,6 +184,9 @@ add_action('graphql_register_types', function () {
         'hours' => amerilife_meta_str($id, 'hours'),
         'aboutOffice' => amerilife_meta_str($id, 'about_office'),
         'featuresJson' => amerilife_meta_str($id, 'features_json'),
+        'gravityFormId' => amerilife_meta_int($id, 'gravity_form_id'),
+        'mapSearchUrl' => amerilife_meta_str($id, 'map_search_url'),
+        'heroImageUrl' => $hero_url,
       ];
     },
   ]);
@@ -184,6 +210,17 @@ function amerilife_meta_str($post_id, $key) {
   return $v !== '' && $v !== null ? (string) $v : null;
 }
 
+function amerilife_meta_int($post_id, $key) {
+  $v = get_post_meta($post_id, $key, true);
+  if ($v === '' || $v === null) {
+    return null;
+  }
+  if (!is_numeric($v)) {
+    return null;
+  }
+  return (int) $v;
+}
+
 function amerilife_empty_agency_fields() {
   return [
     'phone' => null,
@@ -195,5 +232,8 @@ function amerilife_empty_agency_fields() {
     'hours' => null,
     'aboutOffice' => null,
     'featuresJson' => null,
+    'gravityFormId' => null,
+    'mapSearchUrl' => null,
+    'heroImageUrl' => null,
   ];
 }

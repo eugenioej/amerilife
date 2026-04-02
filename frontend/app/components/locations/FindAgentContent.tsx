@@ -1,49 +1,17 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Search, MapPin, Phone, ChevronRight } from "lucide-react";
+import { MapPin, Phone, ChevronRight } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
 import type { LocationData } from "@/lib/locations-data";
-
-const PRODUCTS = [
-  { value: "", label: "All Products" },
-  { value: "medicare", label: "Medicare" },
-  { value: "health", label: "Health Insurance" },
-  { value: "life", label: "Life Insurance" },
-  { value: "annuity", label: "Annuities" },
-] as const;
-
-const PRODUCT_CHIPS = PRODUCTS.slice(1);
+import type { GfFormData } from "@/lib/gf-types";
+import { GravityForm } from "@/app/components/gravity-forms/GravityForm";
 
 type Props = {
   locations: LocationData[];
+  connectForm?: GfFormData | null;
 };
 
-export function FindAgentContent({ locations }: Props) {
-  const [product, setProduct] = useState("");
-  const [zip, setZip] = useState("");
-
-  const filtered = useMemo(() => {
-    return locations.filter((loc) => {
-      if (product) {
-        const hasProduct = loc.features.some((f) => f.icon === product);
-        if (!hasProduct) return false;
-      }
-      if (zip.trim()) {
-        const matchZip = loc.address.zip.startsWith(zip.trim());
-        const matchCity = loc.address.city
-          .toLowerCase()
-          .includes(zip.trim().toLowerCase());
-        if (!matchZip && !matchCity) return false;
-      }
-      return true;
-    });
-  }, [locations, product, zip]);
-
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-  }
-
+export function FindAgentContent({ locations, connectForm }: Props) {
   return (
     <article className="bg-white">
       {/* ── Hero / Search ───────────────────────────────────────────── */}
@@ -51,7 +19,7 @@ export function FindAgentContent({ locations }: Props) {
         className="relative flex min-h-[520px] flex-col justify-end bg-cover bg-center bg-no-repeat sm:min-h-[580px]"
         style={{
           backgroundImage:
-            "linear-gradient(to right, rgba(36, 66, 96, 0.85) 0%, rgba(36, 66, 96, 0.5) 50%, rgba(36, 66, 96, 0.35) 100%), url(https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/03/hero-find-an-agent-scaled.webp)",
+            "linear-gradient(to right, rgba(36, 66, 96, 0.78) 0%, rgba(36, 66, 96, 0.52) 50%, rgba(36, 66, 96, 0.38) 100%), url(https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/03/hero-find-an-agent-scaled.webp)",
         }}
       >
         <div className="mx-auto flex w-full max-w-[var(--container-max)] flex-1 flex-col items-center justify-end px-[var(--container-padding-x)] pb-[40px]">
@@ -73,7 +41,7 @@ export function FindAgentContent({ locations }: Props) {
             </ol>
           </nav>
 
-          <div className="max-w-3xl text-center">
+          <div className="w-full max-w-3xl text-center">
             <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl">
               Find An Agent Near You
             </h1>
@@ -82,87 +50,10 @@ export function FindAgentContent({ locations }: Props) {
               insurance, life insurance, and retirement solutions.
             </p>
 
-            {/* Search bar */}
-            <form
-              onSubmit={handleSearch}
-              className="overflow-hidden rounded-[var(--radius-full)] bg-white shadow-[var(--shadow-lg)] sm:flex sm:items-stretch"
-            >
-              <div className="relative flex-1 border-b border-[var(--color-border)] sm:border-b-0 sm:border-r">
-                <label htmlFor="product-select" className="sr-only">
-                  Select product
-                </label>
-                <select
-                  id="product-select"
-                  value={product}
-                  onChange={(e) => setProduct(e.target.value)}
-                  className="h-full w-full appearance-none bg-transparent py-4 pl-6 pr-10 text-[var(--color-fg)] focus:outline-none"
-                >
-                  {PRODUCTS.map((p) => (
-                    <option key={p.value} value={p.value}>
-                      {p.label}
-                    </option>
-                  ))}
-                </select>
-                <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    aria-hidden
-                  >
-                    <path d="M6 9l6 6 6-6" />
-                  </svg>
-                </span>
-              </div>
-
-              <div className="relative flex-1 border-b border-[var(--color-border)] sm:border-b-0 sm:border-r">
-                <label htmlFor="zip-input" className="sr-only">
-                  Zip code or city
-                </label>
-                <input
-                  id="zip-input"
-                  type="text"
-                  placeholder="Zip Code or City"
-                  value={zip}
-                  onChange={(e) => setZip(e.target.value)}
-                  className="h-full w-full bg-transparent py-4 pl-6 pr-4 text-[var(--color-fg)] placeholder:text-[var(--color-muted)] focus:outline-none"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="flex items-center justify-center gap-2 bg-[var(--color-brand-primary)] px-8 py-4 font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-[var(--color-brand-primary-hover)]"
-              >
-                <Search size={18} aria-hidden />
-                Search
-              </button>
-            </form>
-
-            {/* Quick-filter chips */}
-            <div className="mt-5 flex flex-wrap justify-center gap-2">
-              {PRODUCT_CHIPS.map((chip) => (
-                <button
-                  key={chip.value}
-                  type="button"
-                  onClick={() =>
-                    setProduct((prev) =>
-                      prev === chip.value ? "" : chip.value,
-                    )
-                  }
-                  className={[
-                    "rounded-[var(--radius-full)] border px-4 py-1.5 text-sm font-semibold transition-colors",
-                    product === chip.value
-                      ? "border-white bg-white text-[var(--color-brand-primary)]"
-                      : "border-white/40 bg-white/10 text-white hover:bg-white/20",
-                  ].join(" ")}
-                >
-                  {chip.label}
-                </button>
-              ))}
-            </div>
+            {/* Gravity Form — horizontal pill, same style as the search bar */}
+            {connectForm ? (
+              <GravityForm form={connectForm} inline />
+            ) : null}
           </div>
         </div>
       </div>
@@ -188,27 +79,15 @@ export function FindAgentContent({ locations }: Props) {
       {/* ── Agency Locations Grid ────────────────────────────────────── */}
       <div className="bg-[#f7f8f9] py-12 lg:py-16">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <div className="mb-10 flex flex-wrap items-baseline justify-between gap-4">
+          <div className="mb-10">
             <h2 className="text-xl font-bold uppercase tracking-[var(--tracking-wide)] text-[var(--color-fg)]">
               Agency Locations
             </h2>
-            {filtered.length !== locations.length && (
-              <button
-                type="button"
-                onClick={() => {
-                  setProduct("");
-                  setZip("");
-                }}
-                className="text-sm text-[var(--color-link)] underline hover:text-[var(--color-link-hover)]"
-              >
-                Clear filters ({filtered.length} of {locations.length})
-              </button>
-            )}
           </div>
 
-          {filtered.length > 0 ? (
+          {locations.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2">
-              {filtered.map((location) => (
+              {locations.map((location) => (
                 <Link
                   key={location.slug}
                   href={`/${location.slug}/`}
@@ -258,26 +137,13 @@ export function FindAgentContent({ locations }: Props) {
             </div>
           ) : (
             <div className="rounded-lg border border-[var(--color-border)] bg-white px-8 py-12 text-center">
-              <p className="mb-2 font-semibold text-[var(--color-fg)]">
-                No agencies found matching your search.
+              <p className="font-semibold text-[var(--color-fg)]">
+                No agency locations are available at this time.
               </p>
-              <p className="text-sm text-[var(--color-muted)]">
-                Try adjusting your product filter or zip code.
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setProduct("");
-                  setZip("");
-                }}
-                className="mt-4 text-sm text-[var(--color-link)] underline hover:text-[var(--color-link-hover)]"
-              >
-                Clear filters
-              </button>
             </div>
           )}
-        </div>
       </div>
+    </div>
 
     </article>
   );

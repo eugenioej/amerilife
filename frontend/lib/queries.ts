@@ -713,6 +713,12 @@ export type AgencyFieldsGql = {
   hours?: string | null;
   aboutOffice?: string | null;
   featuresJson?: string | null;
+  /** Gravity Forms form ID for “Connect with an Agent” (headless instance). */
+  gravityFormId?: number | null;
+  /** Google Maps search URL for office location (from import enrichment). */
+  mapSearchUrl?: string | null;
+  /** Set by MU plugin `amerilife-agency-cpt.php` when `heroImageUrl` is added to queries. */
+  heroImageUrl?: string | null;
 };
 
 export type AgentFieldsGql = {
@@ -727,19 +733,22 @@ export type AgentFieldsGql = {
   agencySlug?: string | null;
 };
 
+/** Flat OfficeAgent type returned by officeAgents and agentByAgencyAndSlug. */
 export type AgentListItemGql = {
-  id: string;
   slug?: string | null;
-  title?: string | null;
+  name?: string | null;
   menuOrder?: number | null;
   content?: string | null;
-  featuredImage?: {
-    node?: {
-      sourceUrl?: string | null;
-      altText?: string | null;
-    };
-  } | null;
-  agentFields?: AgentFieldsGql | null;
+  photoUrl?: string | null;
+  role?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  state?: string | null;
+  areasOfFocus?: string | null;
+  reviewsCount?: number | null;
+  agencyId?: number | null;
+  agencySlug?: string | null;
 };
 
 export type AgencyDetailGql = {
@@ -783,6 +792,66 @@ export const GET_AGENCIES = `
   }
 `;
 
+/** List view for /find-an-agent/ — enough fields for cards + product/zip filters. */
+export type AgenciesForFindAgentResult = {
+  agencies?: {
+    nodes: Array<{
+      id: string;
+      slug?: string | null;
+      title?: string | null;
+      featuredImage?: {
+        node?: { sourceUrl?: string | null; altText?: string | null };
+      } | null;
+      agencyFields?: {
+        phone?: string | null;
+        addressLine1?: string | null;
+        addressLine2?: string | null;
+        addressCity?: string | null;
+        addressState?: string | null;
+        addressZip?: string | null;
+        hours?: string | null;
+        aboutOffice?: string | null;
+        featuresJson?: string | null;
+        mapSearchUrl?: string | null;
+        heroImageUrl?: string | null;
+        gravityFormId?: number | null;
+      } | null;
+    }>;
+  } | null;
+};
+
+export const GET_AGENCIES_FOR_FIND_AGENT = `
+  query GetAgenciesForFindAgent {
+    agencies(first: 200, where: { orderby: { field: MENU_ORDER, order: ASC } }) {
+      nodes {
+        id
+        slug
+        title
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+        agencyFields {
+          phone
+          addressLine1
+          addressLine2
+          addressCity
+          addressState
+          addressZip
+          hours
+          aboutOffice
+          featuresJson
+          mapSearchUrl
+          heroImageUrl
+          gravityFormId
+        }
+      }
+    }
+  }
+`;
+
 export const GET_AGENCY_BY_SLUG = `
   query GetAgencyBySlug($slug: ID!) {
     agency(id: $slug, idType: SLUG) {
@@ -806,29 +875,24 @@ export const GET_AGENCY_BY_SLUG = `
         hours
         aboutOffice
         featuresJson
+        gravityFormId
+        mapSearchUrl
+        heroImageUrl
       }
       officeAgents {
-        id
         slug
-        title
+        name
         menuOrder
         content
-        featuredImage {
-          node {
-            sourceUrl
-            altText
-          }
-        }
-        agentFields {
-          role
-          city
-          state
-          agentPhone
-          email
-          reviewsCount
-          areasOfFocus
-          agencySlug
-        }
+        photoUrl
+        role
+        email
+        phone
+        city
+        state
+        areasOfFocus
+        reviewsCount
+        agencySlug
       }
     }
   }
@@ -838,15 +902,15 @@ export type AgentByAgencySlugResult = {
   agentByAgencyAndSlug?: AgentListItemGql | null;
 };
 
-/** Agency + agent in one request for /{agencySlug}/{agentSlug}/ */
 export type AgentPageDataResult = {
   agency?: AgencyDetailGql | null;
   agentByAgencyAndSlug?: AgentListItemGql | null;
 };
 
+/** `agency(id:)` expects `ID!`; `agentByAgencyAndSlug(agencySlug:)` expects `String!` — use two variables with the same slug value. */
 export const GET_AGENT_PAGE_DATA = `
-  query GetAgentPageData($agencySlug: ID!, $agentSlug: String!) {
-    agency(id: $agencySlug, idType: SLUG) {
+  query GetAgentPageData($agencyId: ID!, $agencySlug: String!, $agentSlug: String!) {
+    agency(id: $agencyId, idType: SLUG) {
       id
       slug
       title
@@ -867,31 +931,26 @@ export const GET_AGENT_PAGE_DATA = `
         hours
         aboutOffice
         featuresJson
+        gravityFormId
+        mapSearchUrl
+        heroImageUrl
       }
     }
     agentByAgencyAndSlug(agencySlug: $agencySlug, agentSlug: $agentSlug) {
-      id
       slug
-      title
+      name
       content
       menuOrder
-      featuredImage {
-        node {
-          sourceUrl
-          altText
-        }
-      }
-      agentFields {
-        role
-        city
-        state
-        agentPhone
-        email
-        reviewsCount
-        areasOfFocus
-        agencyId
-        agencySlug
-      }
+      photoUrl
+      role
+      email
+      phone
+      city
+      state
+      areasOfFocus
+      reviewsCount
+      agencyId
+      agencySlug
     }
   }
 `;
@@ -899,28 +958,20 @@ export const GET_AGENT_PAGE_DATA = `
 export const GET_AGENT_BY_AGENCY_AND_SLUG = `
   query GetAgentByAgencyAndSlug($agencySlug: String!, $agentSlug: String!) {
     agentByAgencyAndSlug(agencySlug: $agencySlug, agentSlug: $agentSlug) {
-      id
       slug
-      title
+      name
       content
       menuOrder
-      featuredImage {
-        node {
-          sourceUrl
-          altText
-        }
-      }
-      agentFields {
-        role
-        city
-        state
-        agentPhone
-        email
-        reviewsCount
-        areasOfFocus
-        agencyId
-        agencySlug
-      }
+      photoUrl
+      role
+      email
+      phone
+      city
+      state
+      areasOfFocus
+      reviewsCount
+      agencyId
+      agencySlug
     }
   }
 `;

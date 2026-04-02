@@ -10,6 +10,7 @@ import {
   fetchAgencyBySlug,
   fetchAgentWithLocation,
 } from "@/lib/agencies";
+import { fetchGravityForm, resolveConnectFormId } from "@/lib/gf-client";
 import { LocationPageTemplate } from "@/app/components/locations/LocationPageTemplate";
 import { AgentDetailTemplate } from "@/app/components/locations/AgentDetailTemplate";
 
@@ -78,11 +79,23 @@ export default async function SlugPage({ params }: { params: PageParams }) {
   if (slug.length === 1) {
     const gqlLoc = await fetchAgencyBySlug(slug[0]);
     if (gqlLoc) {
-      return <LocationPageTemplate location={gqlLoc} />;
+      let connectForm = null;
+      try {
+        connectForm = await fetchGravityForm(resolveConnectFormId(gqlLoc));
+      } catch {
+        connectForm = null;
+      }
+      return <LocationPageTemplate location={gqlLoc} connectForm={connectForm} />;
     }
     const location = getLocationBySlug(slug[0]);
     if (location) {
-      return <LocationPageTemplate location={location} />;
+      let connectForm = null;
+      try {
+        connectForm = await fetchGravityForm(resolveConnectFormId(location));
+      } catch {
+        connectForm = null;
+      }
+      return <LocationPageTemplate location={location} connectForm={connectForm} />;
     }
   }
 

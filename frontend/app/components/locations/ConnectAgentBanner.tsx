@@ -1,23 +1,8 @@
 "use client";
 
-import { Button } from "@/app/components/ui/Button";
 import type { LocationData } from "@/lib/locations-data";
-
-const INPUT_CLASS =
-  "w-full rounded border border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-fg)] placeholder:text-[var(--color-muted)] focus:border-[var(--color-brand-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-primary)]";
-
-const CHECKBOX_CLASS =
-  "h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-brand-primary)] focus:ring-[var(--color-brand-primary)]";
-
-const PRODUCT_CHECKBOXES = [
-  { id: "medicare-advantage", label: "Medicare Advantage", value: "medicare-advantage" },
-  { id: "part-d", label: "Part D Prescription Drugs", value: "part-d" },
-  {
-    id: "medicare-supplement",
-    label: "Medicare Supplement Insurance",
-    value: "medicare-supplement",
-  },
-] as const;
+import type { GfFormData } from "@/lib/gf-types";
+import { GravityForm } from "@/app/components/gravity-forms/GravityForm";
 
 function buildMapsEmbedUrl(location: LocationData): string {
   const addr = [
@@ -33,12 +18,29 @@ function buildMapsEmbedUrl(location: LocationData): string {
   return `https://www.google.com/maps?q=${encoded}&output=embed`;
 }
 
+/** Prefer CMS `mapSearchUrl` (import) so iframe matches the same query as enrichment. */
+function embedUrlFromMapSearchUrl(stored: string | undefined): string | null {
+  if (!stored?.trim()) return null;
+  try {
+    const u = new URL(stored);
+    const q = u.searchParams.get("query");
+    if (q) {
+      return `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed`;
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
 type ConnectAgentBannerProps = {
   location: LocationData;
+  connectForm: GfFormData | null;
 };
 
-export function ConnectAgentBanner({ location }: ConnectAgentBannerProps) {
-  const mapsUrl = buildMapsEmbedUrl(location);
+export function ConnectAgentBanner({ location, connectForm }: ConnectAgentBannerProps) {
+  const mapsUrl =
+    embedUrlFromMapSearchUrl(location.mapSearchUrl) ?? buildMapsEmbedUrl(location);
 
   return (
     <section
@@ -63,126 +65,20 @@ export function ConnectAgentBanner({ location }: ConnectAgentBannerProps) {
             />
           </div>
 
-          {/* Right: Form */}
-          <form
-            className="space-y-6"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="agent-first"
-                  className="mb-1.5 block text-sm font-medium text-[var(--color-fg)]"
-                >
-                  First Name
-                </label>
-                <input
-                  id="agent-first"
-                  name="firstName"
-                  type="text"
-                  placeholder="First"
-                  autoComplete="given-name"
-                  className={INPUT_CLASS}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="agent-last"
-                  className="mb-1.5 block text-sm font-medium text-[var(--color-fg)]"
-                >
-                  Last Name
-                </label>
-                <input
-                  id="agent-last"
-                  name="lastName"
-                  type="text"
-                  placeholder="Last"
-                  autoComplete="family-name"
-                  className={INPUT_CLASS}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="agent-email"
-                className="mb-1.5 block text-sm font-medium text-[var(--color-fg)]"
-              >
-                Email
-              </label>
-              <input
-                id="agent-email"
-                name="email"
-                type="email"
-                placeholder="example@email.com"
-                autoComplete="email"
-                className={INPUT_CLASS}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="agent-phone"
-                className="mb-1.5 block text-sm font-medium text-[var(--color-fg)]"
-              >
-                Phone
-              </label>
-              <input
-                id="agent-phone"
-                name="phone"
-                type="tel"
-                placeholder="(XXX) XXX-XXXX"
-                autoComplete="tel"
-                className={INPUT_CLASS}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="agent-zip"
-                className="mb-1.5 block text-sm font-medium text-[var(--color-fg)]"
-              >
-                Zip Code
-              </label>
-              <input
-                id="agent-zip"
-                name="zip"
-                type="text"
-                placeholder="XXXXX"
-                inputMode="numeric"
-                autoComplete="postal-code"
-                className={INPUT_CLASS}
-              />
-            </div>
-
-            <div>
-              <h3 className="mb-4 text-sm font-bold uppercase text-[var(--color-fg)]">
-                Product Selection
-              </h3>
-              <div className="space-y-3">
-                {PRODUCT_CHECKBOXES.map(({ id, label, value }) => (
-                  <label
-                    key={id}
-                    className="flex cursor-pointer items-center gap-3 text-sm text-[var(--color-fg)]"
-                  >
-                    <input
-                      type="checkbox"
-                      name="products"
-                      value={value}
-                      className={CHECKBOX_CLASS}
-                    />
-                    <span>{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <Button type="submit" className="min-w-[180px]">
-                Find An Agent
-              </Button>
-            </div>
-          </form>
+          {/* Right: Gravity Form via WPGraphQL for GF */}
+          <div className="min-w-0">
+            {connectForm ? (
+              <GravityForm form={connectForm} />
+            ) : (
+              <p className="text-sm text-[var(--color-muted)]">
+                The contact form could not be loaded. Please try again later or call{" "}
+                <a className="text-[var(--color-link)] underline" href={`tel:${location.phone.replace(/\D/g, "")}`}>
+                  {location.phone}
+                </a>
+                .
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </section>
