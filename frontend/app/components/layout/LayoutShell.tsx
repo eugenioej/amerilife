@@ -1,17 +1,39 @@
 import { getPrimaryMenu } from "@/lib/wp-menus";
+import { rewriteUploadsUrl } from "@/lib/wp-media";
+import { HEADER_CONTACT_POPUP_FORM_ID, fetchGravityForm } from "@/lib/gf-client";
+import { ContactPopupProvider } from "./ContactPopupProvider";
 import { TopBar } from "./TopBar";
 import { SiteHeader } from "./SiteHeader";
-import { SiteFooter } from "./SiteFooter";
+import {
+  SiteFooter,
+  FOOTER_CERTIFICATION_BADGE_SRC,
+  FOOTER_LOGO_SRC,
+} from "./SiteFooter";
 
 export async function LayoutShell({ children }: { children: React.ReactNode }) {
   const primaryMenu = await getPrimaryMenu();
+  const footerLogoUrl = rewriteUploadsUrl(FOOTER_LOGO_SRC);
+  const certificationBadgeUrl = rewriteUploadsUrl(FOOTER_CERTIFICATION_BADGE_SRC);
+
+  let contactPopupForm = null;
+  try {
+    contactPopupForm = await fetchGravityForm(HEADER_CONTACT_POPUP_FORM_ID);
+  } catch {
+    contactPopupForm = null;
+  }
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden">
-      <TopBar />
-      <SiteHeader primaryMenu={primaryMenu} />
-      <main className="flex-1 overflow-x-hidden">{children}</main>
-      <SiteFooter primaryMenu={primaryMenu} />
-    </div>
+    <ContactPopupProvider contactPopupForm={contactPopupForm}>
+      <div className="flex min-h-screen flex-col overflow-x-hidden">
+        <TopBar />
+        <SiteHeader primaryMenu={primaryMenu} />
+        <main className="flex-1 overflow-x-hidden">{children}</main>
+        <SiteFooter
+          primaryMenu={primaryMenu}
+          footerLogoUrl={footerLogoUrl}
+          certificationBadgeUrl={certificationBadgeUrl}
+        />
+      </div>
+    </ContactPopupProvider>
   );
 }

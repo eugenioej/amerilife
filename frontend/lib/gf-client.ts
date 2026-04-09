@@ -3,6 +3,21 @@ import { GET_GF_FORM, SUBMIT_GF_FORM } from "@/lib/gf-queries";
 import type { LocationData } from "@/lib/locations-data";
 import type { GfFormData } from "@/lib/gf-types";
 
+/** Gravity Forms database ID for `/contact/` (Contact Us). */
+export const CONTACT_US_FORM_ID = 1;
+
+/** Gravity Forms database ID for `/valspar/`. */
+export const VALSPAR_FORM_ID = 37;
+
+/** Gravity Forms database ID for `/worksite/lead/`. */
+export const WORKSITE_LEAD_FORM_ID = 12;
+
+/** Gravity Forms database ID for `/state-specific-privacy-addendum-request/`. */
+export const PRIVACY_ADDENDUM_REQUEST_FORM_ID = 57;
+
+/** Gravity Forms database ID for the header “Contact” popup (matches live site Contact Us popup). */
+export const HEADER_CONTACT_POPUP_FORM_ID = 54;
+
 /** Headless default “Connect with an Agent” form when agency has no `gravityFormId`. */
 export const DEFAULT_CONNECT_GF_FORM_ID = 31;
 

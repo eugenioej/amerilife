@@ -8,7 +8,8 @@ import type { GfNameInput } from "@/lib/gf-types";
 
 export function shouldShowNameSubfieldLabel(label: string | null | undefined): boolean {
   const lab = (label ?? "").toLowerCase().trim();
-  if (!lab) return true;
+  // Gravity Forms often includes extra name inputs with blank labels; do not render those.
+  if (!lab) return false;
 
   if (/\bprefix\b|prefijo/.test(lab)) return false;
   if (/\bmiddle\b|segundo(\s+nombre)?/.test(lab)) return false;
@@ -21,9 +22,11 @@ export function shouldShowNameSubfieldLabel(label: string | null | undefined): b
   return false;
 }
 
-/** Inputs to render; if filtering removes everything (unknown labels), show all so the form still works. */
+/** Inputs to render; if filtering removes everything (unknown labels), show non-blank labels only. */
 export function nameInputsForDisplay(inputs: GfNameInput[] | null | undefined): GfNameInput[] {
   const raw = inputs ?? [];
   const filtered = raw.filter((inp) => shouldShowNameSubfieldLabel(inp.label));
-  return filtered.length > 0 ? filtered : raw;
+  if (filtered.length > 0) return filtered;
+  const withLabels = raw.filter((inp) => (inp.label ?? "").trim() !== "");
+  return withLabels.length > 0 ? withLabels : raw;
 }

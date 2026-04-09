@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Link } from "@/app/components/ui/Link";
-import { ConnectForm } from "@/app/components/connect/ConnectForm";
+import { GravityForm } from "@/app/components/gravity-forms/GravityForm";
+import { fetchGravityForm } from "@/lib/gf-client";
 import { staticPageMetadata } from "@/lib/seo";
+
+/** Gravity Forms form ID for the Connect With Us page. */
+const CONNECT_FORM_ID = 8;
 
 export const metadata: Metadata = staticPageMetadata(
   "Connect With Us | AmeriLife",
@@ -9,10 +13,16 @@ export const metadata: Metadata = staticPageMetadata(
   "/connect/"
 );
 
-export default function ConnectPage() {
+export default async function ConnectPage() {
+  let connectForm = null;
+  try {
+    connectForm = await fetchGravityForm(CONNECT_FORM_ID);
+  } catch {
+    connectForm = null;
+  }
   return (
     <section className="bg-white py-16 sm:py-24">
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
+      <div className="mx-auto w-full max-w-[720px] px-[var(--container-padding-x)]">
         {/* Breadcrumb */}
         <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -37,16 +47,26 @@ export default function ConnectPage() {
         </h2>
 
         {/* Intro */}
-        <p className="mb-12 max-w-2xl text-base leading-relaxed text-[var(--color-fg)]">
+        <p className="mb-12 text-base leading-relaxed text-[var(--color-fg)]">
           Connect with a licensed insurance representative. Please fill out the form below and
           choose a topic you would like more information about.
         </p>
 
-        {/* Form */}
-        <ConnectForm />
+        {/* Form — Gravity Forms via WPGraphQL */}
+        {connectForm ? (
+          <GravityForm form={connectForm} />
+        ) : (
+          <p className="text-sm text-[var(--color-muted)]">
+            The contact form is temporarily unavailable. Please try again later or{" "}
+            <Link href="/contact/" className="text-[var(--color-link)] underline hover:text-[var(--color-link-hover)]">
+              contact us
+            </Link>
+            .
+          </p>
+        )}
 
         {/* Secondary section - Connect with an Agent */}
-        <div className="mx-auto mt-16 max-w-2xl rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-8">
+        <div className="mt-16 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-8">
           <h2 className="mb-4 text-xl font-bold text-[var(--color-fg)]">
             Connect with an Agent
           </h2>

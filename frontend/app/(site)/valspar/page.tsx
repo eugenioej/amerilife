@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { ValsparForm } from "@/app/components/valspar/ValsparForm";
+import { Link } from "@/app/components/ui/Link";
+import { GravityForm } from "@/app/components/gravity-forms/GravityForm";
+import { VALSPAR_FORM_ID, fetchGravityForm } from "@/lib/gf-client";
 import { staticPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = staticPageMetadata(
@@ -8,7 +10,14 @@ export const metadata: Metadata = staticPageMetadata(
   "/valspar/"
 );
 
-export default function ValsparPage() {
+export default async function ValsparPage() {
+  let valsparForm = null;
+  try {
+    valsparForm = await fetchGravityForm(VALSPAR_FORM_ID);
+  } catch {
+    valsparForm = null;
+  }
+
   return (
     <>
       {/* Hero */}
@@ -60,8 +69,20 @@ export default function ValsparPage() {
               </p>
             </div>
 
-            {/* Right: form */}
-            <ValsparForm />
+            {/* Right: form — Gravity Forms via WPGraphQL */}
+            <div className="min-w-0">
+              {valsparForm ? (
+                <GravityForm form={valsparForm} />
+              ) : (
+                <p className="text-sm text-[var(--color-muted)]">
+                  The contact form is temporarily unavailable. Please try again later or{" "}
+                  <Link href="/contact/" className="text-[var(--color-link)] underline hover:text-[var(--color-link-hover)]">
+                    contact us
+                  </Link>
+                  .
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </section>

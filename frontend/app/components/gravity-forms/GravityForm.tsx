@@ -29,6 +29,11 @@ function nodesList(form: GfFormData): GfFieldNode[] {
   return (form.formFields?.nodes ?? []).filter((n): n is GfFieldNode => Boolean(n));
 }
 
+/** Field types that never render UI (layout, markup, or server-only). */
+function isDisplayOnlyLayoutField(type: string | undefined): boolean {
+  return type === "SECTION" || type === "HTML" || type === "PAGE";
+}
+
 function nameKey(fieldId: number, inputId: number): string {
   return `${fieldId}_${inputId}`;
 }
@@ -176,6 +181,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
   const validateClient = useCallback((): string | null => {
     for (const field of nodes) {
       if (!field.isRequired) continue;
+      if (field.type === "HIDDEN" || isDisplayOnlyLayoutField(field.type)) continue;
       switch (field.type) {
         case "TEXT":
         case "EMAIL":
@@ -185,8 +191,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
         case "RADIO":
         case "ADDRESS":
         case "NUMBER":
-        case "DATE":
-        case "HIDDEN": {
+        case "DATE": {
           const v = (stringValues[field.databaseId] ?? "").trim();
           if (!v) return `${field.label ?? "This field"} is required.`;
           break;
@@ -436,11 +441,18 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
         ) : null;
 
         switch (field.type) {
+          case "HIDDEN":
+            return null;
+
+          case "SECTION":
+          case "HTML":
+          case "PAGE":
+            return null;
+
           case "TEXT":
           case "NUMBER":
           case "DATE":
           case "PHONE":
-          case "HIDDEN":
             return (
               <div key={fid}>
                 <label htmlFor={`gf-${fid}`} className="mb-1.5 block text-sm font-medium text-[var(--color-fg)]">
@@ -547,25 +559,27 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
 
           case "RADIO":
             return (
-              <fieldset key={fid} className="space-y-2">
+              <fieldset key={fid}>
                 <legend className="mb-1.5 text-sm font-medium text-[var(--color-fg)]">
                   {label}
                   {req}
                 </legend>
-                {(field.choices ?? []).map((c) => (
-                  <label key={c.value} className="flex items-center gap-2 text-sm text-[var(--color-fg)]">
-                    <input
-                      type="radio"
-                      name={`gf-${fid}`}
-                      value={c.value}
-                      checked={(stringValues[fid] ?? "") === c.value}
-                      onChange={() => setStr(fid, c.value)}
-                    />
-                    {decodeHtmlEntities(c.text ?? "")}
-                  </label>
-                ))}
+                <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2">
+                  {(field.choices ?? []).map((c) => (
+                    <label key={c.value} className="flex items-center gap-2 text-sm text-[var(--color-fg)]">
+                      <input
+                        type="radio"
+                        name={`gf-${fid}`}
+                        value={c.value}
+                        checked={(stringValues[fid] ?? "") === c.value}
+                        onChange={() => setStr(fid, c.value)}
+                      />
+                      {decodeHtmlEntities(c.text ?? "")}
+                    </label>
+                  ))}
+                </div>
                 {err ? (
-                  <p id={`gf-err-${fid}`} className="text-sm text-red-600" role="alert">
+                  <p id={`gf-err-${fid}`} className="mt-2 text-sm text-red-600" role="alert">
                     {err}
                   </p>
                 ) : null}
@@ -641,27 +655,29 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
 
           case "CHECKBOX":
             return (
-              <fieldset key={fid} className="space-y-2">
+              <fieldset key={fid}>
                 <legend className="mb-1.5 text-sm font-medium text-[var(--color-fg)]">
                   {label}
                   {req}
                 </legend>
-                {(field.inputs ?? []).map((inp, idx) => {
-                  const choice = field.choices?.[idx];
-                  const key = nameKey(fid, inp.id);
-                  return (
-                    <label key={inp.id} className="flex items-start gap-2 text-sm text-[var(--color-fg)]">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(checkboxChecked[key])}
-                        onChange={(e) => toggleCb(key, e.target.checked)}
-                      />
-                      <span>{decodeHtmlEntities(choice?.text ?? inp.label ?? "")}</span>
-                    </label>
-                  );
-                })}
+                <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2">
+                  {(field.inputs ?? []).map((inp, idx) => {
+                    const choice = field.choices?.[idx];
+                    const key = nameKey(fid, inp.id);
+                    return (
+                      <label key={inp.id} className="flex items-start gap-2 text-sm text-[var(--color-fg)]">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(checkboxChecked[key])}
+                          onChange={(e) => toggleCb(key, e.target.checked)}
+                        />
+                        <span>{decodeHtmlEntities(choice?.text ?? inp.label ?? "")}</span>
+                      </label>
+                    );
+                  })}
+                </div>
                 {err ? (
-                  <p className="text-sm text-red-600" role="alert">
+                  <p className="mt-2 text-sm text-red-600" role="alert">
                     {err}
                   </p>
                 ) : null}

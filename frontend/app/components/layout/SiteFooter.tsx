@@ -1,8 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Link as UiLink } from "../ui/Link";
 import type { NavItem } from "@/lib/wp-menus";
-import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 const BOTTOM_LINKS = [
   { label: "Privacy Policy", href: "/privacy/" },
@@ -10,21 +8,22 @@ const BOTTOM_LINKS = [
   { label: "SMS Terms & Conditions", href: "/sms-terms/" },
 ];
 
-const CERTIFICATION_BADGE_URL =
+/** Passed through `rewriteUploadsUrl` in `LayoutShell` so server/client URLs stay aligned. */
+export const FOOTER_LOGO_SRC =
+  "https://amerilife.com/wp-content/uploads/2022/01/amerilife.svg";
+
+export const FOOTER_CERTIFICATION_BADGE_SRC =
   "https://amerilife.com/wp-content/uploads/2025/07/58a9a44b-c754-4491-9340-42a76cfd9ff0-TICKET.supporting_files-AmeriLife_US_English_2025_Certification_Badge-1-scaled.png";
 
 type SiteFooterProps = {
   primaryMenu: NavItem[];
+  footerLogoUrl: string;
+  certificationBadgeUrl: string;
 };
 
-export function SiteFooter({ primaryMenu }: SiteFooterProps) {
+export function SiteFooter({ primaryMenu, footerLogoUrl, certificationBadgeUrl }: SiteFooterProps) {
   const aboutUs = primaryMenu.find((i) => i.label.toLowerCase().includes("about"));
   const ourSolutions = primaryMenu.find((i) => i.label.toLowerCase().includes("solutions"));
-  // Use an uploads-hosted logo so it can be synced to headless.
-  const footerLogoUrl = rewriteUploadsUrl(
-    "https://amerilife.com/wp-content/uploads/2022/01/amerilife.svg"
-  );
-  const certificationBadgeUrl = rewriteUploadsUrl(CERTIFICATION_BADGE_URL);
 
   return (
     <footer
@@ -33,17 +32,17 @@ export function SiteFooter({ primaryMenu }: SiteFooterProps) {
     >
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-12 lg:py-16">
         {/* Row 1: Logo top-left */}
-        <div className="flex items-center">
-          <Link href="/" className="flex items-center" aria-label="AmeriLife Home">
-            <Image
-              src={footerLogoUrl}
-              alt="AmeriLife"
-              width={140}
-              height={40}
-              className="h-8 w-auto"
-            />
-          </Link>
-        </div>
+        <Link href="/" className="inline-flex items-center" aria-label="AmeriLife Home">
+          {/* Native img avoids next/image hydration mismatches in the global footer */}
+          <img
+            src={footerLogoUrl}
+            alt="AmeriLife"
+            width={140}
+            height={40}
+            className="h-8 w-auto"
+            decoding="async"
+          />
+        </Link>
 
         {/* Separator */}
         <hr className="mt-6 border-white/20" />
@@ -122,12 +121,14 @@ export function SiteFooter({ primaryMenu }: SiteFooterProps) {
               className="block w-[140px] shrink-0"
               aria-label="AmeriLife - 2025 Certification Badge"
             >
-              <Image
+              <img
                 src={certificationBadgeUrl}
                 alt="AmeriLife US English 2025 Certification Badge"
                 width={140}
                 height={180}
                 className="w-full object-contain"
+                loading="lazy"
+                decoding="async"
               />
             </a>
           </div>
@@ -140,7 +141,8 @@ export function SiteFooter({ primaryMenu }: SiteFooterProps) {
         <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex-1 max-w-2xl">
             <p className="text-sm leading-relaxed text-white/80">
-              AmeriLife, ©{new Date().getFullYear()} Not affiliated with the U. S. government or
+              AmeriLife, ©
+              <span suppressHydrationWarning>{new Date().getFullYear()}</span> Not affiliated with the U. S. government or
               federal Medicare program. We do not offer every plan available in your area. Any
               information we provide is limited to those plans we do offer in your area. Please
               contact{" "}

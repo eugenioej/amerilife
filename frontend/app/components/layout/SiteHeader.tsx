@@ -6,7 +6,9 @@ import { Link } from "../ui/Link";
 import { ChevronDownIcon, ChevronRightIcon } from "../ui/ChevronDownIcon";
 import { MobileNav } from "./MobileNav";
 import { HeaderSearch } from "./HeaderSearch";
+import { useContactPopup } from "./ContactPopupProvider";
 import type { NavItem } from "@/lib/wp-menus";
+import { isContactNavItem } from "@/lib/nav-contact";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 type SiteHeaderProps = {
@@ -29,6 +31,7 @@ function HamburgerIcon({ open }: { open: boolean }) {
 
 export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { openContactPopup } = useContactPopup();
 
   const navItems = primaryMenu;
   const logoUrl = rewriteUploadsUrl("https://amerilife.com/wp-content/uploads/2022/01/amerilife.svg");
@@ -56,6 +59,20 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
           {/* Desktop nav */}
           <nav className="hidden items-center gap-8 lg:flex" aria-label="Main navigation">
             {navItems.map((item) => {
+              if (isContactNavItem(item)) {
+                return (
+                  <div key={item.href + item.label} className="relative">
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1 px-2 py-1 text-base font-semibold text-[var(--color-brand-dark)] transition-colors hover:text-[var(--color-brand-primary)]"
+                      onClick={openContactPopup}
+                    >
+                      {item.label}
+                    </button>
+                  </div>
+                );
+              }
+
               const hasChildren = item.children && item.children.length > 0;
               return (
                 <div key={item.href + item.label} className="relative group">
@@ -142,6 +159,10 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
         items={primaryMenu}
+        onContactSelect={() => {
+          setMobileOpen(false);
+          openContactPopup();
+        }}
       />
     </>
   );

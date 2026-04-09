@@ -1,4 +1,6 @@
-import { Link } from "../ui/Link";
+"use client";
+
+import { useContactPopup } from "./ContactPopupProvider";
 
 const SOCIAL_LINKS = [
   { href: "https://www.facebook.com/AmeriLifeCorporate/", label: "Facebook", icon: "facebook" },
@@ -52,6 +54,8 @@ function SocialIcon({ icon }: { icon: string }) {
 }
 
 export function TopBar() {
+  const { openContactPopup } = useContactPopup();
+
   return (
     <div
       className="flex items-center justify-between px-[var(--container-padding-x)] py-2"
@@ -73,13 +77,13 @@ export function TopBar() {
           ))}
         </div>
         <span className="text-white/60">|</span>
-        <Link
-          href="/contact/"
-          variant="nav"
-          className="text-sm font-medium"
+        <button
+          type="button"
+          onClick={openContactPopup}
+          className="text-sm font-medium text-white transition-colors hover:text-white/90"
         >
           Contact Us
-        </Link>
+        </button>
       </div>
     </div>
   );

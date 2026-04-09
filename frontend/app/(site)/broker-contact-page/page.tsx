@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Link } from "@/app/components/ui/Link";
-import { BrokerContactForm } from "@/app/components/broker-contact-page/BrokerContactForm";
+import { GravityForm } from "@/app/components/gravity-forms/GravityForm";
+import { fetchGravityForm } from "@/lib/gf-client";
 import { staticPageMetadata } from "@/lib/seo";
+
+/** Gravity Forms form ID for the Independent Partner (broker) contact page. */
+const BROKER_CONTACT_FORM_ID = 30;
 
 export const metadata: Metadata = staticPageMetadata(
   "Independent Partner Contact Us | AmeriLife",
@@ -9,10 +13,16 @@ export const metadata: Metadata = staticPageMetadata(
   "/broker-contact-page/"
 );
 
-export default function BrokerContactPage() {
+export default async function BrokerContactPage() {
+  let brokerForm = null;
+  try {
+    brokerForm = await fetchGravityForm(BROKER_CONTACT_FORM_ID);
+  } catch {
+    brokerForm = null;
+  }
   return (
     <section className="bg-white py-16 sm:py-24">
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
+      <div className="mx-auto w-full max-w-[720px] px-[var(--container-padding-x)]">
         {/* Breadcrumb */}
         <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -42,11 +52,21 @@ export default function BrokerContactPage() {
           Together we can do great things
         </p>
 
-        {/* Form */}
-        <BrokerContactForm />
+        {/* Form — Gravity Forms via WPGraphQL */}
+        {brokerForm ? (
+          <GravityForm form={brokerForm} />
+        ) : (
+          <p className="text-sm text-[var(--color-muted)]">
+            The contact form is temporarily unavailable. Please try again later or{" "}
+            <Link href="/contact/" className="text-[var(--color-link)] underline hover:text-[var(--color-link-hover)]">
+              contact us
+            </Link>
+            .
+          </p>
+        )}
 
         {/* Footer note */}
-        <p className="mx-auto mt-12 max-w-2xl text-sm text-[var(--color-muted)]">
+        <p className="mt-12 text-sm text-[var(--color-muted)]">
           This does not constitute an offer to purchase. For broker use only; not for use with
           consumers.
         </p>

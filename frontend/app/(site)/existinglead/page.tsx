@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ExistingLeadForm } from "@/app/components/existinglead/ExistingLeadForm";
+import { Link as UiLink } from "@/app/components/ui/Link";
+import { GravityForm } from "@/app/components/gravity-forms/GravityForm";
+import { fetchGravityForm } from "@/lib/gf-client";
 import { staticPageMetadata } from "@/lib/seo";
+
+/** Gravity Forms form ID for the Existing Agents contact page. */
+const EXISTING_LEAD_FORM_ID = 11;
 
 export const metadata: Metadata = {
   ...staticPageMetadata(
@@ -12,10 +17,17 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function ExistingLeadPage() {
+export default async function ExistingLeadPage() {
+  let existingLeadForm = null;
+  try {
+    existingLeadForm = await fetchGravityForm(EXISTING_LEAD_FORM_ID);
+  } catch {
+    existingLeadForm = null;
+  }
+
   return (
     <section className="bg-white py-16 sm:py-24">
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
+      <div className="mx-auto w-full max-w-[720px] px-[var(--container-padding-x)]">
         {/* Breadcrumb */}
         <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -43,7 +55,7 @@ export default function ExistingLeadPage() {
         </h2>
 
         {/* Intro */}
-        <div className="mb-12 max-w-2xl">
+        <div className="mb-12">
           <p className="mb-4 text-base leading-relaxed text-[var(--color-fg)]">
             Thank you for your interest in AmeriLife.
           </p>
@@ -52,8 +64,18 @@ export default function ExistingLeadPage() {
           </p>
         </div>
 
-        {/* Form */}
-        <ExistingLeadForm />
+        {/* Form — Gravity Forms via WPGraphQL */}
+        {existingLeadForm ? (
+          <GravityForm form={existingLeadForm} />
+        ) : (
+          <p className="text-sm text-[var(--color-muted)]">
+            The contact form is temporarily unavailable. Please try again later or{" "}
+            <UiLink href="/contact/" className="text-[var(--color-link)] underline hover:text-[var(--color-link-hover)]">
+              contact us
+            </UiLink>
+            .
+          </p>
+        )}
       </div>
     </section>
   );

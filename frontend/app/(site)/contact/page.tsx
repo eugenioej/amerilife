@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Link } from "@/app/components/ui/Link";
-import { ContactRepresentativeForm } from "@/app/components/contact/ContactRepresentativeForm";
+import { GravityForm } from "@/app/components/gravity-forms/GravityForm";
+import { CONTACT_US_FORM_ID, fetchGravityForm } from "@/lib/gf-client";
 import { staticPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = staticPageMetadata(
@@ -9,7 +10,14 @@ export const metadata: Metadata = staticPageMetadata(
   "/contact/"
 );
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  let contactForm = null;
+  try {
+    contactForm = await fetchGravityForm(CONTACT_US_FORM_ID);
+  } catch {
+    contactForm = null;
+  }
+
   return (
     <section className="bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
@@ -43,7 +51,20 @@ export default function ContactPage() {
             <h2 className="mb-6 text-2xl font-bold text-[var(--color-fg)]">
               Connect with an AmeriLife representative
             </h2>
-            <ContactRepresentativeForm />
+            {contactForm ? (
+              <GravityForm form={contactForm} />
+            ) : (
+              <p className="text-sm text-[var(--color-muted)]">
+                The contact form is temporarily unavailable. Please call{" "}
+                <a
+                  href="tel:+18004587112"
+                  className="text-[var(--color-link)] underline-offset-4 hover:text-[var(--color-link-hover)] hover:underline"
+                >
+                  (800) 458-7112
+                </a>{" "}
+                or try again later.
+              </p>
+            )}
           </div>
 
           <div className="shrink-0 space-y-2 text-base text-[var(--color-fg)] sm:w-[280px]">

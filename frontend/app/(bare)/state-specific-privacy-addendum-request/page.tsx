@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PrivacyAddendumRequestForm } from "@/app/components/legal/PrivacyAddendumRequestForm";
+import { Link as UiLink } from "@/app/components/ui/Link";
+import { GravityForm } from "@/app/components/gravity-forms/GravityForm";
+import { PRIVACY_ADDENDUM_REQUEST_FORM_ID, fetchGravityForm } from "@/lib/gf-client";
 
 export const metadata: Metadata = {
   title: "State Specific Privacy Addendum Request | AmeriLife",
@@ -8,9 +10,16 @@ export const metadata: Metadata = {
     "Submit a request regarding your personal information under the California and Virginia privacy laws.",
 };
 
-export default function StateSpecificPrivacyAddendumRequestPage() {
+export default async function StateSpecificPrivacyAddendumRequestPage() {
+  let privacyForm = null;
+  try {
+    privacyForm = await fetchGravityForm(PRIVACY_ADDENDUM_REQUEST_FORM_ID);
+  } catch {
+    privacyForm = null;
+  }
+
   return (
-    <article className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-12 lg:py-16 text-[var(--color-fg)]">
+    <article className="mx-auto w-full max-w-[720px] px-[var(--container-padding-x)] py-12 lg:py-16 text-[var(--color-fg)]">
       <h1 className="mb-2 text-3xl font-bold text-[var(--color-fg)]">AmeriLife</h1>
       <h2 className="mb-6 text-2xl font-bold text-[var(--color-fg)]">
         State Specific Privacy Addendum Request
@@ -21,7 +30,17 @@ export default function StateSpecificPrivacyAddendumRequestPage() {
         soon as possible.
       </p>
 
-      <PrivacyAddendumRequestForm />
+      {privacyForm ? (
+        <GravityForm form={privacyForm} />
+      ) : (
+        <p className="text-sm text-[var(--color-muted)]">
+          The form is temporarily unavailable. Please try again later or{" "}
+          <UiLink href="/contact/" className="text-[var(--color-link)] underline hover:text-[var(--color-link-hover)]">
+            contact us
+          </UiLink>
+          .
+        </p>
+      )}
 
       <div className="mt-16 border-t border-[var(--color-border)] pt-10">
         <p className="text-base">AmeriLife, ©2023</p>
