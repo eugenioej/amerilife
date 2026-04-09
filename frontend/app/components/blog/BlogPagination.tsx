@@ -8,7 +8,22 @@ type Props = {
   /** Base path for the listing, e.g. "/blog" or "/blog/announcements". */
   basePath: string;
   page: number;
+  /** Preserved search query (`q`) across pages. */
+  searchQuery?: string | null;
 };
+
+function buildListingUrl(
+  basePath: string,
+  stack: string,
+  searchQuery?: string | null,
+): string {
+  const params = new URLSearchParams();
+  const q = searchQuery?.trim();
+  if (q) params.set("q", q);
+  if (stack) params.set("stack", stack);
+  const qs = params.toString();
+  return qs ? `${basePath}?${qs}` : basePath;
+}
 
 /**
  * Cursor-stack pagination for WPGraphQL cursor-based pagination.
@@ -26,6 +41,7 @@ export function BlogPagination({
   stack,
   basePath,
   page,
+  searchQuery,
 }: Props) {
   if (page === 1 && !hasNextPage) return null;
 
@@ -33,14 +49,19 @@ export function BlogPagination({
 
   // Previous page URL: remove last cursor from stack
   const prevCursors = cursors.slice(0, -1);
-  const prevUrl =
-    prevCursors.length > 0
-      ? `${basePath}?stack=${prevCursors.join(",")}`
-      : basePath;
+  const prevUrl = buildListingUrl(
+    basePath,
+    prevCursors.join(","),
+    searchQuery,
+  );
 
   // Next page URL: append current endCursor to stack
   const nextCursors = endCursor ? [...cursors, endCursor] : cursors;
-  const nextUrl = `${basePath}?stack=${nextCursors.join(",")}`;
+  const nextUrl = buildListingUrl(
+    basePath,
+    nextCursors.join(","),
+    searchQuery,
+  );
 
   const btnBase =
     "inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium transition-colors";

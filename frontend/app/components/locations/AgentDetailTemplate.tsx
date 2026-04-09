@@ -1,15 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {
-  MapPin,
-  Mail,
-  Calendar,
-  Phone,
-  DollarSign,
-  Clock,
-  ChevronDown,
-} from "lucide-react";
+import { MapPin, Clock } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
 import { FeaturesGrid } from "./FeaturesGrid";
 import type { AgentData, LocationData } from "@/lib/locations-data";
@@ -19,6 +11,7 @@ type Props = {
   location: LocationData;
 };
 
+/* Hidden for now — action bar + “View location details & hours” link
 const ACTION_BUTTONS = [
   { icon: MapPin, label: "Location" },
   { icon: Mail, label: "Email" },
@@ -26,6 +19,7 @@ const ACTION_BUTTONS = [
   { icon: Phone, label: "Call" },
   { icon: DollarSign, label: "Get A Quote" },
 ] as const;
+*/
 
 const SECTION_IMAGE_URL =
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/03/ACAP_CS-ESG_AmeriLife_1024x358-FIFU-1024x683-1.png";
@@ -130,7 +124,8 @@ export function AgentDetailTemplate({ agent, location }: Props) {
         </div>
       </div>
 
-      {/* ── Action buttons bar (white card, overlapping) ─────────────── */}
+      {/*
+      ── Action buttons bar (white card, overlapping) ───────────────
       <div className="bg-white shadow-[var(--shadow-md)]">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
           <div className="grid grid-cols-2 gap-px bg-[var(--color-border)] sm:flex sm:divide-x sm:divide-[var(--color-border)] sm:gap-0">
@@ -152,7 +147,7 @@ export function AgentDetailTemplate({ agent, location }: Props) {
         </div>
       </div>
 
-      {/* ── View location details & hours (points down to section) ────── */}
+      ── View location details & hours (points down to section) ──────
       <a
         href="#location-details"
         className="block bg-[var(--color-brand-primary)]/8 border-t border-[var(--color-border)] py-3 text-center text-sm font-semibold text-[var(--color-brand-primary)] transition-colors hover:text-[var(--color-brand-primary-hover)] no-underline sm:py-4"
@@ -162,6 +157,7 @@ export function AgentDetailTemplate({ agent, location }: Props) {
           <ChevronDown size={18} aria-hidden />
         </span>
       </a>
+      */}
 
       {/* ── Combined section: Image left | More Details + Location & Hours ─ */}
       <div id="location-details" className="scroll-mt-[calc(var(--header-height)+1rem)] border-t border-[var(--color-border)] bg-white">

@@ -196,10 +196,23 @@ export type PostsListItem = {
   categories?: {
     nodes?: Array<{ name?: string | null; slug?: string | null }>;
   } | null;
+  tags?: {
+    nodes?: Array<{ name?: string | null; slug?: string | null }>;
+  } | null;
   featuredImage?: {
     node?: { sourceUrl?: string | null; altText?: string | null };
   } | null;
 };
+
+/** Posts tagged "Featured" (name or slug, case-insensitive) sort before others; order among equals preserved. */
+export function sortPostsFeaturedFirst(nodes: PostsListItem[]): PostsListItem[] {
+  const isFeatured = (p: PostsListItem) =>
+    p.tags?.nodes?.some(
+      (t) =>
+        t.slug?.toLowerCase() === "featured" || t.name?.toLowerCase() === "featured"
+    ) ?? false;
+  return [...nodes].sort((a, b) => Number(isFeatured(b)) - Number(isFeatured(a)));
+}
 
 export type PostsListResult = {
   posts: {
@@ -283,12 +296,40 @@ export const GET_AGENCIES_FOR_SITEMAP = `
   }
 `;
 
+/** Blog category pills / filters — taxonomy list with counts. */
+export type BlogCategoriesResult = {
+  categories?: {
+    nodes: Array<{
+      name?: string | null;
+      slug?: string | null;
+      count?: number | null;
+    }>;
+  } | null;
+};
+
+export const GET_BLOG_CATEGORIES = `
+  query GetBlogCategories($first: Int!) {
+    categories(first: $first, where: { hideEmpty: false }) {
+      nodes {
+        name
+        slug
+        count
+      }
+    }
+  }
+`;
+
 export const GET_POSTS = `
-  query GetPosts($first: Int!, $after: String, $categorySlug: String) {
+  query GetPosts($first: Int!, $after: String, $categorySlug: String, $search: String) {
     posts(
       first: $first
       after: $after
-      where: { status: PUBLISH, categoryName: $categorySlug, orderby: { field: DATE, order: DESC } }
+      where: {
+        status: PUBLISH
+        categoryName: $categorySlug
+        search: $search
+        orderby: { field: DATE, order: DESC }
+      }
     ) {
       nodes {
         id
@@ -298,6 +339,12 @@ export const GET_POSTS = `
         date
         excerpt
         categories {
+          nodes {
+            name
+            slug
+          }
+        }
+        tags {
           nodes {
             name
             slug

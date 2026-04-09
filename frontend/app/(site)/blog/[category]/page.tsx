@@ -1,25 +1,24 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { fetchGraphQL } from "@/lib/wp-client";
-import { GET_POSTS, type PostsListResult } from "@/lib/queries";
+import {
+  GET_BLOG_CATEGORIES,
+  GET_POSTS,
+  type BlogCategoriesResult,
+  type PostsListResult,
+} from "@/lib/queries";
+import { BlogListingToolbar } from "@/app/components/blog/BlogListingToolbar";
 import { BlogPostCard } from "@/app/components/blog/BlogPostCard";
 import { BlogPagination } from "@/app/components/blog/BlogPagination";
 import { Link } from "@/app/components/ui/Link";
+import { LEGACY_CATEGORY_SLUGS } from "@/lib/blog-legacy-category-slugs";
 import { staticPageMetadata } from "@/lib/seo";
 
 const PAGE_SIZE = 12;
 
 type PageParams = Promise<{ category: string }>;
-type SearchParams = Promise<{ stack?: string }>;
-
-// Category slugs from the old amerilife.com URL structure that map to
-// "show all posts" rather than filtering by a specific WP taxonomy category.
-const LEGACY_CATEGORY_SLUGS = new Set([
-  "announcements",
-  "blog",
-  "partnerships",
-  "in-the-news",
-]);
+type SearchParams = Promise<{ stack?: string; q?: string }>;
 
 function toTitleCase(slug: string): string {
   return slug
@@ -48,7 +47,9 @@ export default async function BlogCategoryPage({
   searchParams: SearchParams;
 }) {
   const { category } = await params;
-  const { stack = "" } = await searchParams;
+  const { stack = "", q: rawQ } = await searchParams;
+  const q = rawQ?.trim() ?? "";
+  const search = q.length > 0 ? q : null;
 
   // Legacy URL segments (announcements, blog, partnerships) → show all posts.
   // Actual WP category slugs (leadership, mergers-and-acquisitions, etc.) → filter.
@@ -59,17 +60,36 @@ export default async function BlogCategoryPage({
   const after = cursors[cursors.length - 1] ?? null;
   const page = cursors.length + 1;
 
-  const data = await fetchGraphQL<PostsListResult>(GET_POSTS, {
-    first: PAGE_SIZE,
-    after,
-    categorySlug: categoryFilter ?? null,
-  });
+  const [categoriesData, data] = await Promise.all([
+    fetchGraphQL<BlogCategoriesResult>(GET_BLOG_CATEGORIES, { first: 100 }),
+    fetchGraphQL<PostsListResult>(GET_POSTS, {
+      first: PAGE_SIZE,
+      after,
+      categorySlug: categoryFilter ?? null,
+      search,
+    }),
+  ]);
+
+  const knownSlugs = new Set(
+    (categoriesData?.categories?.nodes ?? [])
+      .map((n) => n?.slug?.toLowerCase())
+      .filter((s): s is string => Boolean(s)),
+  );
+  if (!isLegacy && !knownSlugs.has(category.toLowerCase())) notFound();
+
+  const categoryOptions =
+    categoriesData?.categories?.nodes
+      ?.filter((n): n is { name: string; slug: string; count?: number | null } =>
+        Boolean(n?.slug && n?.name),
+      )
+      .map((n) => ({
+        name: n.name,
+        slug: n.slug,
+        count: n.count,
+      })) ?? [];
 
   const posts = data?.posts?.nodes ?? [];
   const pageInfo = data?.posts?.pageInfo;
-
-  // For non-legacy slugs that return no results, show 404.
-  if (!isLegacy && posts.length === 0) notFound();
 
   const label = toTitleCase(category);
 
@@ -101,7 +121,7 @@ export default async function BlogCategoryPage({
         </ol>
       </nav>
 
-      <header className="mb-10">
+      <header className="mb-6">
         <h1 className="text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
           {label}
         </h1>
@@ -112,12 +132,23 @@ export default async function BlogCategoryPage({
         </p>
       </header>
 
+      <Suspense
+        fallback={
+          <div
+            className="mb-10 h-14 animate-pulse rounded-lg bg-[var(--color-border)]/40"
+            aria-hidden
+          />
+        }
+      >
+        <BlogListingToolbar categories={categoryOptions} />
+      </Suspense>
+
       {posts.length === 0 ? (
         <p className="text-[var(--color-muted)]">No posts found in this category.</p>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
-            <BlogPostCard key={post.id} post={post} hideCategoryPill />
+            <BlogPostCard key={post.id} post={post} />
           ))}
         </div>
       )}
@@ -128,6 +159,7 @@ export default async function BlogCategoryPage({
         stack={stack}
         basePath={`/blog/${category}`}
         page={page}
+        searchQuery={q || null}
       />
     </section>
   );
