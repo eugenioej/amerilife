@@ -52,17 +52,24 @@ export function FadeInOnView({
 
   useEffect(() => {
     const q = window.matchMedia("(prefers-reduced-motion: reduce)");
-    requestAnimationFrame(() => setPrefersReducedMotion(q.matches));
-    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    const applyMedia = () => {
+      const reduced = q.matches;
+      setPrefersReducedMotion(reduced);
+      if (reduced) setVisible(true);
+    };
+    requestAnimationFrame(() => applyMedia());
+    const handler = (e: MediaQueryListEvent) => {
+      const reduced = e.matches;
+      setPrefersReducedMotion(reduced);
+      if (reduced) setVisible(true);
+    };
     q.addEventListener("change", handler);
     return () => q.removeEventListener("change", handler);
   }, []);
 
   useEffect(() => {
-    if (prefersReducedMotion || initialVisible) {
-      setVisible(true);
-      return;
-    }
+    if (initialVisible) return;
+    if (prefersReducedMotion) return;
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(

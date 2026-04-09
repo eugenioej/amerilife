@@ -37,8 +37,8 @@ export default function NotFound() {
           Content Unavailable
         </p>
         <p className="mt-4 text-base leading-relaxed text-[var(--color-muted)]">
-          The page you're looking for is no longer available. But you're still in the
-          right place—AmeriLife connects people, partners, and communities with the
+          The page you&apos;re looking for is no longer available. But you&apos;re still in
+          the right place—AmeriLife connects people, partners, and communities with the
           insurance and retirement solutions that matter most.
         </p>
         <p className="mt-6 text-base text-[var(--color-fg)]">
