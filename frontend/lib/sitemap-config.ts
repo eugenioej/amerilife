@@ -21,6 +21,7 @@ export const STATIC_SITEMAP_PATHS: string[] = [
   "/national-network/",
   "/kickoff-recap-2025/",
   "/newsroom/",
+  "/insights/",
   "/about-us/our-leaders/",
   "/our-solutions/agents-and-advisors/",
   "/brokers/faq/",

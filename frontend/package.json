@@ -7,6 +7,8 @@
     "sync:wp-images": "node scripts/sync-wp-images.mjs",
     "sync:wp-images:download": "SYNC_WP_IMAGES=1 SYNC_WP_DOWNLOAD_ONLY=1 node scripts/sync-wp-images.mjs",
     "build": "next build",
+    "check:pages-404": "node scripts/check-pages-404.mjs",
+    "seed:insights:wp": "node scripts/seed-insights-wp.mjs",
     "start": "next start",
     "lint": "eslint",
     "verify:headless-images": "node scripts/verify-headless-images.mjs",

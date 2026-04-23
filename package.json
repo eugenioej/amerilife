@@ -16,7 +16,8 @@
     "pipeline:agencies": "pnpm --dir frontend run pipeline:agencies",
     "import:all-agencies": "pnpm --dir frontend run import:all-agencies",
     "export:scraped-csv": "pnpm --dir frontend run export:scraped-csv",
-    "apply:agency-defaults": "pnpm --dir frontend run apply:agency-defaults"
+    "apply:agency-defaults": "pnpm --dir frontend run apply:agency-defaults",
+    "seed:insights:wp": "pnpm --dir frontend run seed:insights:wp"
   },
   "dependencies": {
     "clsx": "^2.1.1",

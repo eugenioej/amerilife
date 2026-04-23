@@ -7,6 +7,7 @@
 // 3. Menus must be assigned to a location to be visible in GraphQL
 
 import { fetchGraphQL } from "./wp-client";
+import { isContactNavItem } from "./nav-contact";
 import { GET_MENUS, GET_MENU_BY_SLUG, GET_MENU_ITEMS_PRIMARY, GET_MENU_ITEMS_HEADER } from "./queries";
 
 export type NavItem = {
@@ -49,6 +50,7 @@ const STATIC_PRIMARY_NAV: NavItem[] = [
       { label: "Join Our Team", href: "/join-our-team/" },
     ],
   },
+  { label: "Insights", href: "/insights/" },
   { label: "Contact Us", href: "/contact/" },
 ];
 
@@ -58,6 +60,36 @@ const STATIC_FOOTER_LINKS: NavItem[] = [
   { label: "Terms of Use", href: "/terms/" },
   { label: "Contact Us", href: "/contact/" },
 ];
+
+function menuPath(href: string): string {
+  const h = href.trim();
+  if (!h) return "/";
+  try {
+    if (h.startsWith("http://") || h.startsWith("https://")) {
+      return new URL(h).pathname.replace(/\/+$/, "") || "/";
+    }
+  } catch {
+    /* ignore */
+  }
+  return h.startsWith("/") ? h.replace(/\/+$/, "") || "/" : `/${h.replace(/\/+$/, "")}`;
+}
+
+/** Ensures Insights appears in the header when the WP menu omits it. */
+function ensureInsightsInPrimaryMenu(items: NavItem[]): NavItem[] {
+  const hasInsights = items.some(
+    (i) =>
+      menuPath(i.href ?? "") === "/insights" ||
+      (i.label ?? "").trim().toLowerCase() === "insights"
+  );
+  if (hasInsights) return items;
+
+  const insights: NavItem = { label: "Insights", href: "/insights/" };
+  const contactIdx = items.findIndex((i) => isContactNavItem(i));
+  if (contactIdx >= 0) {
+    return [...items.slice(0, contactIdx), insights, ...items.slice(contactIdx)];
+  }
+  return [...items, insights];
+}
 
 function normalizeMenuItems(
   items: { id: string; label: string; url: string; path?: string; parentId?: string | null }[]
@@ -102,7 +134,7 @@ export async function getPrimaryMenu(): Promise<NavItem[]> {
       const data = await fetchGraphQL<MenuItemsRes>(query);
       const nodes = data?.menuItems?.nodes;
       if (nodes?.length) {
-        return normalizeMenuItems(nodes);
+        return ensureInsightsInPrimaryMenu(normalizeMenuItems(nodes));
       }
     } catch {
       // Location may not exist in theme, try next
@@ -122,7 +154,7 @@ export async function getPrimaryMenu(): Promise<NavItem[]> {
       ) ?? menus[0];
 
     if (primary?.menuItems?.nodes?.length) {
-      return buildHierarchy(primary.menuItems.nodes);
+      return ensureInsightsInPrimaryMenu(buildHierarchy(primary.menuItems.nodes));
     }
 
     for (const slug of ["primary", "header", "main"]) {
@@ -131,13 +163,13 @@ export async function getPrimaryMenu(): Promise<NavItem[]> {
         { slug }
       );
       if (menuBySlug?.menu?.menuItems?.nodes?.length) {
-        return buildHierarchy(menuBySlug.menu.menuItems.nodes);
+        return ensureInsightsInPrimaryMenu(buildHierarchy(menuBySlug.menu.menuItems.nodes));
       }
     }
   } catch {
     // Fall through to static fallback
   }
-  return STATIC_PRIMARY_NAV;
+  return ensureInsightsInPrimaryMenu(STATIC_PRIMARY_NAV);
 }
 
 export async function getFooterMenu(): Promise<NavItem[]> {

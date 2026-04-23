@@ -1022,3 +1022,126 @@ export const GET_AGENT_BY_AGENCY_AND_SLUG = `
     }
   }
 `;
+
+/** Insights CPT — magazine index cards and hero. */
+export type InsightListItem = {
+  id: string;
+  slug?: string | null;
+  title?: string | null;
+  date?: string | null;
+  excerpt?: string | null;
+  author?: {
+    node?: { name?: string | null };
+  } | null;
+  insightFields?: {
+    isSpotlight?: boolean | null;
+  } | null;
+  insightTopics?: {
+    nodes?: Array<{ name?: string | null; slug?: string | null }>;
+  } | null;
+  featuredImage?: {
+    node?: { sourceUrl?: string | null; altText?: string | null };
+  } | null;
+};
+
+export type InsightsListResult = {
+  insights?: {
+    nodes: InsightListItem[];
+  } | null;
+};
+
+export const GET_INSIGHTS = `
+  query GetInsights($first: Int!) {
+    insights(first: $first, where: { orderby: { field: DATE, order: DESC } }) {
+      nodes {
+        id
+        slug
+        title
+        date
+        excerpt
+        author {
+          node {
+            name
+          }
+        }
+        insightFields {
+          isSpotlight
+        }
+        insightTopics {
+          nodes {
+            name
+            slug
+          }
+        }
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+      }
+    }
+  }
+`;
+
+export type InsightDetail = InsightListItem & {
+  content?: string | null;
+  author?: {
+    node?: { name?: string | null };
+  } | null;
+  seo?: YoastSeoData | null;
+};
+
+export type InsightBySlugResult = {
+  insight?: InsightDetail | null;
+};
+
+export const GET_INSIGHT_BY_SLUG = `
+  query GetInsightBySlug($slug: ID!) {
+    insight(id: $slug, idType: SLUG) {
+      id
+      slug
+      title
+      content
+      date
+      excerpt
+      insightFields {
+        isSpotlight
+      }
+      insightTopics {
+        nodes {
+          name
+          slug
+        }
+      }
+      author {
+        node {
+          name
+        }
+      }
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      seo {
+        title
+        metaDesc
+        canonical
+        opengraphTitle
+        opengraphDescription
+        opengraphUrl
+        opengraphImage {
+          sourceUrl
+          altText
+        }
+        twitterTitle
+        twitterDescription
+        twitterImage {
+          sourceUrl
+        }
+      }
+    }
+  }
+`;

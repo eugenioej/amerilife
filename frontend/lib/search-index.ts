@@ -215,6 +215,20 @@ const SEARCH_INDEX: SearchEntry[] = [
     keywords: ["industry-leading products", "flexibility", "optionality", "carriers"],
   },
   {
+    path: "/insights/",
+    title: "Insights",
+    description:
+      "Magazine-style stories on health, wealth, and leadership from AmeriLife — America's leading health and wealth distribution company.",
+    keywords: [
+      "insights",
+      "magazine",
+      "health",
+      "wealth",
+      "leadership",
+      "AmeriLife",
+    ],
+  },
+  {
     path: "/givesback/",
     title: "AmeriLife Gives Back Foundation",
     description:

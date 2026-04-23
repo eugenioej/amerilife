@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { PostByUri, YoastSeoData } from "./queries";
+import type { InsightDetail, PostByUri, YoastSeoData } from "./queries";
 
 const SITE_SUFFIX = " | AmeriLife";
 
@@ -188,6 +188,45 @@ export function articleJsonLd(
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title ?? "Article",
+    ...(desc ? { description: desc } : {}),
+    ...(published ? { datePublished: published } : {}),
+    author: { "@type": "Person", name: authorName },
+    publisher: {
+      "@type": "Organization",
+      name: "AmeriLife",
+      url: getSiteUrl(),
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": options.url },
+  };
+
+  if (image) {
+    article.image = [image];
+  }
+  if (options.categoryLabel) {
+    article.articleSection = options.categoryLabel;
+  }
+
+  return article;
+}
+
+/** Article JSON-LD for Insights CPT posts. */
+export function insightArticleJsonLd(
+  insight: InsightDetail,
+  options: { categoryLabel?: string; url: string }
+): Record<string, unknown> {
+  const authorName = insight.author?.node?.name?.trim() || "AmeriLife";
+  const image = insight.featuredImage?.node?.sourceUrl;
+  const published = insight.date ? new Date(insight.date).toISOString() : undefined;
+  const desc =
+    insight.seo?.metaDesc?.trim() ||
+    (insight.excerpt
+      ? insight.excerpt.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
+      : undefined);
+
+  const article: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: insight.title ?? "Article",
     ...(desc ? { description: desc } : {}),
     ...(published ? { datePublished: published } : {}),
     author: { "@type": "Person", name: authorName },
