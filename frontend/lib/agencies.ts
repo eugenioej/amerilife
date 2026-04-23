@@ -13,7 +13,12 @@ import {
   type AgentListItemGql,
   type AgentPageDataResult,
 } from "@/lib/queries";
-import type { AgentData, FeatureBlock, LocationData } from "@/lib/locations-data";
+import {
+  LICENSED_INSURANCE_AGENT_LABEL,
+  type AgentData,
+  type FeatureBlock,
+  type LocationData,
+} from "@/lib/locations-data";
 
 /** Matches WP `featured_media` 13398 — used when GraphQL `featuredImage` is null (MediaItem visibility). */
 export const DEFAULT_AGENCY_OFFICE_HERO_URL =
@@ -243,7 +248,7 @@ export function agentDetailMetadata(agent: AgentData, location: LocationData): M
   const site = getSiteUrl();
   const path = `/${location.slug}/${agent.slug}/`;
   const url = new URL(path, site).toString();
-  const title = `${agent.name} | Licensed Insurance Agent`;
+  const title = `${agent.name} | ${LICENSED_INSURANCE_AGENT_LABEL}`;
   const description = `${agent.name} is a licensed insurance agent in ${agent.city}, ${agent.state}. Connect today for Medicare, health insurance, life insurance, and retirement solutions.`;
   return {
     title,

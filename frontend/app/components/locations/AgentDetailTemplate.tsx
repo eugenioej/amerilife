@@ -4,7 +4,12 @@ import Image from "next/image";
 import { MapPin, Clock, ShieldCheck } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
 import { FeaturesGrid } from "./FeaturesGrid";
-import type { AgentData, LocationData } from "@/lib/locations-data";
+import {
+  LICENSED_INSURANCE_AGENT_LABEL,
+  agentJobTitleLine,
+  type AgentData,
+  type LocationData,
+} from "@/lib/locations-data";
 
 type Props = {
   agent: AgentData;
@@ -38,6 +43,7 @@ export function AgentDetailTemplate({ agent, location }: Props) {
   ].filter(Boolean);
 
   const hours = location.hours.split("\n");
+  const jobTitle = agentJobTitleLine(agent);
 
   return (
     <article className="bg-white">
@@ -83,7 +89,7 @@ export function AgentDetailTemplate({ agent, location }: Props) {
               {agent.photoUrl ? (
                 <Image
                   src={agent.photoUrl}
-                  alt={`${agent.name} – Licensed Insurance Agent`}
+                  alt={`${agent.name} – ${LICENSED_INSURANCE_AGENT_LABEL}`}
                   fill
                   className="object-cover"
                   sizes="(max-width: 640px) 160px, (max-width: 1024px) 200px, 240px"
@@ -103,9 +109,12 @@ export function AgentDetailTemplate({ agent, location }: Props) {
               <h1 className="mb-0.5 text-xl font-bold text-white sm:text-2xl lg:text-3xl">
                 {agent.name}
               </h1>
+              {jobTitle ? (
+                <p className="mb-0.5 text-sm text-white/70 sm:text-left">{jobTitle}</p>
+              ) : null}
               <p className="mb-0.5 flex items-center justify-center gap-1.5 text-sm text-white/80 sm:justify-start">
                 <ShieldCheck className="size-4 shrink-0 text-white" aria-hidden />
-                <span>{agent.role ?? "Licensed Insurance Agent"}</span>
+                <span>{LICENSED_INSURANCE_AGENT_LABEL}</span>
               </p>
               <p className="mb-3 text-sm text-white/80">
                 {agent.city}, {agent.state}

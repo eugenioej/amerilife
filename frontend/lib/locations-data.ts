@@ -18,6 +18,17 @@ export type AgentData = {
   areasOfFocus?: string[];
 };
 
+/** Shown on every agent profile in addition to any CMS “title” (`role`). */
+export const LICENSED_INSURANCE_AGENT_LABEL = "Licensed Insurance Agent";
+
+/** Optional job title from CMS; omitted when empty or identical to the licensed line. */
+export function agentJobTitleLine(agent: AgentData): string | null {
+  const r = agent.role?.trim();
+  if (!r) return null;
+  if (r.toLowerCase() === LICENSED_INSURANCE_AGENT_LABEL.toLowerCase()) return null;
+  return r;
+}
+
 export type FeatureBlock = {
   heading: string;
   body: string;
