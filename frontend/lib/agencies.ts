@@ -243,8 +243,8 @@ export function agentDetailMetadata(agent: AgentData, location: LocationData): M
   const site = getSiteUrl();
   const path = `/${location.slug}/${agent.slug}/`;
   const url = new URL(path, site).toString();
-  const title = `${agent.name} | AmeriLife Agent`;
-  const description = `${agent.name} is a licensed AmeriLife agent in ${agent.city}, ${agent.state}. Connect today for Medicare, health insurance, life insurance, and retirement solutions.`;
+  const title = `${agent.name} | Licensed Insurance Agent`;
+  const description = `${agent.name} is a licensed insurance agent in ${agent.city}, ${agent.state}. Connect today for Medicare, health insurance, life insurance, and retirement solutions.`;
   return {
     title,
     description,

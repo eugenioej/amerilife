@@ -58,6 +58,7 @@ const STATIC_PRIMARY_NAV: NavItem[] = [
 const STATIC_FOOTER_LINKS: NavItem[] = [
   { label: "Privacy Policy", href: "/privacy/" },
   { label: "Terms of Use", href: "/terms/" },
+  { label: "Insights", href: "/insights/" },
   { label: "Contact Us", href: "/contact/" },
 ];
 
@@ -74,6 +75,22 @@ function menuPath(href: string): string {
   return h.startsWith("/") ? h.replace(/\/+$/, "") || "/" : `/${h.replace(/\/+$/, "")}`;
 }
 
+function isNewsroomNavItem(item: NavItem): boolean {
+  const label = (item.label ?? "").trim().toLowerCase();
+  const path = menuPath(item.href ?? "");
+  return label === "newsroom" || path === "/newsroom";
+}
+
+function ensureInsightsInFooterMenu(items: NavItem[]): NavItem[] {
+  const hasInsights = items.some(
+    (i) =>
+      menuPath(i.href ?? "") === "/insights" ||
+      (i.label ?? "").trim().toLowerCase() === "insights"
+  );
+  if (hasInsights) return items;
+  return [...items, { label: "Insights", href: "/insights/" }];
+}
+
 /** Ensures Insights appears in the header when the WP menu omits it. */
 function ensureInsightsInPrimaryMenu(items: NavItem[]): NavItem[] {
   const hasInsights = items.some(
@@ -84,6 +101,11 @@ function ensureInsightsInPrimaryMenu(items: NavItem[]): NavItem[] {
   if (hasInsights) return items;
 
   const insights: NavItem = { label: "Insights", href: "/insights/" };
+  const newsroomIdx = items.findIndex((i) => isNewsroomNavItem(i));
+  if (newsroomIdx >= 0) {
+    return [...items.slice(0, newsroomIdx + 1), insights, ...items.slice(newsroomIdx + 1)];
+  }
+
   const contactIdx = items.findIndex((i) => isContactNavItem(i));
   if (contactIdx >= 0) {
     return [...items.slice(0, contactIdx), insights, ...items.slice(contactIdx)];
@@ -184,10 +206,10 @@ export async function getFooterMenu(): Promise<NavItem[]> {
       ) ?? menus[1];
 
     if (footer?.menuItems?.nodes?.length) {
-      return buildHierarchy(footer.menuItems.nodes);
+      return ensureInsightsInFooterMenu(buildHierarchy(footer.menuItems.nodes));
     }
   } catch {
     // Fall through to static fallback
   }
-  return STATIC_FOOTER_LINKS;
+  return ensureInsightsInFooterMenu(STATIC_FOOTER_LINKS);
 }

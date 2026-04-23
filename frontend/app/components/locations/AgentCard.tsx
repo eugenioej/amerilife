@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ShieldCheck } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
 import type { AgentData } from "@/lib/locations-data";
 
@@ -18,7 +19,7 @@ export function AgentCard({ agent, locationSlug }: AgentCardProps) {
         {photoUrl ? (
           <Image
             src={photoUrl}
-            alt={`${agent.name} - AmeriLife Agent`}
+            alt={`${agent.name} - Licensed Insurance Agent`}
             fill
             className="object-cover"
             sizes="(max-width: 640px) 112px, (max-width: 1024px) 144px, 160px"
@@ -35,8 +36,9 @@ export function AgentCard({ agent, locationSlug }: AgentCardProps) {
 
       <div className="min-w-0 flex-1">
         <h3 className="mb-1 text-lg font-bold text-[var(--color-fg)]">{agent.name}</h3>
-        <p className="mb-1 text-sm text-[var(--color-muted)]">
-          {agent.role ?? "AmeriLife Agent"}
+        <p className="mb-1 flex items-center gap-1.5 text-sm text-[var(--color-muted)]">
+          <ShieldCheck className="size-4 shrink-0 text-[var(--color-brand-primary)]" aria-hidden />
+          <span>{agent.role ?? "Licensed Insurance Agent"}</span>
         </p>
         <p className="mb-4 text-sm text-[var(--color-fg)]">{locationStr}</p>
         <Link
