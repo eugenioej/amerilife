@@ -10,6 +10,10 @@ import { GfRecaptchaField } from "./GfRecaptchaField";
 const inputClass =
   "w-full rounded border border-[var(--color-border)] px-4 py-3 text-[var(--color-fg)] placeholder:text-[var(--color-muted)] focus:border-[var(--color-brand-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-primary)]";
 
+/** Light inputs on dark panels (labels use light text via separate classes). */
+const inputClassOnDark =
+  "w-full rounded border border-white/25 bg-white px-4 py-3 text-[#2b3e50] placeholder:text-[#64748b] focus:border-[var(--color-brand-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-primary)]";
+
 /** Inline/horizontal pill style — no border, no ring, full height */
 const inlineInputClass =
   "h-full w-full bg-transparent py-4 pl-6 pr-4 text-[var(--color-fg)] placeholder:text-[var(--color-muted)] focus:outline-none";
@@ -145,9 +149,11 @@ type GravityFormProps = {
   className?: string;
   /** Render fields in a single horizontal pill row (hero search-bar style) */
   inline?: boolean;
+  /** Dark surrounding panel: light labels, white input fields */
+  onDarkPanel?: boolean;
 };
 
-export function GravityForm({ form, className, inline = false }: GravityFormProps) {
+export function GravityForm({ form, className, inline = false, onDarkPanel = false }: GravityFormProps) {
   const nodes = useMemo(() => nodesList(form), [form]);
   const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY?.trim() ?? "";
   const submitBtn = form.submitButton;
@@ -165,6 +171,22 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
   const [clientError, setClientError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [successHtml, setSuccessHtml] = useState<string | null>(null);
+
+  const inputCn = onDarkPanel ? inputClassOnDark : inputClass;
+  const labelBlock =
+    "mb-1.5 block text-sm font-medium " +
+    (onDarkPanel ? "text-white" : "text-[var(--color-fg)]");
+  const legendClass =
+    "mb-1.5 text-sm font-medium " + (onDarkPanel ? "text-white" : "text-[var(--color-fg)]");
+  const choiceRowClass =
+    "flex items-center gap-2 text-sm " + (onDarkPanel ? "text-white" : "text-[var(--color-fg)]");
+  const choiceRowStartClass =
+    "flex items-start gap-2 text-sm " + (onDarkPanel ? "text-white" : "text-[var(--color-fg)]");
+  const consentLabelClass = "text-sm " + (onDarkPanel ? "text-white" : "text-[var(--color-fg)]");
+  const captchaLabelClass =
+    "mb-2 block text-sm font-medium " + (onDarkPanel ? "text-white" : "text-[var(--color-fg)]");
+  const unsupportedClass =
+    "text-sm " + (onDarkPanel ? "text-white/70" : "text-[var(--color-muted)]");
 
   const setStr = useCallback((id: number, v: string) => {
     setStringValues((s) => ({ ...s, [id]: v }));
@@ -302,7 +324,9 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
       <div
         className={
           className ??
-          "rounded border border-[var(--color-border)] bg-white p-6 text-sm text-[var(--color-fg)] [&_p]:mb-2"
+          (onDarkPanel
+            ? "rounded border border-white/20 bg-white p-6 text-sm text-[var(--color-fg)] [&_p]:mb-2"
+            : "rounded border border-[var(--color-border)] bg-white p-6 text-sm text-[var(--color-fg)] [&_p]:mb-2")
         }
         dangerouslySetInnerHTML={{ __html: successHtml }}
       />
@@ -455,7 +479,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
           case "PHONE":
             return (
               <div key={fid}>
-                <label htmlFor={`gf-${fid}`} className="mb-1.5 block text-sm font-medium text-[var(--color-fg)]">
+                <label htmlFor={`gf-${fid}`} className={labelBlock}>
                   {label}
                   {req}
                 </label>
@@ -465,7 +489,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
                   value={stringValues[fid] ?? ""}
                   onChange={(e) => setStr(fid, e.target.value)}
                   placeholder={field.placeholder ? decodeHtmlEntities(field.placeholder) : undefined}
-                  className={inputClass}
+                  className={inputCn}
                   aria-invalid={Boolean(err)}
                   aria-describedby={err ? `gf-err-${fid}` : undefined}
                 />
@@ -480,7 +504,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
           case "EMAIL":
             return (
               <div key={fid}>
-                <label htmlFor={`gf-${fid}`} className="mb-1.5 block text-sm font-medium text-[var(--color-fg)]">
+                <label htmlFor={`gf-${fid}`} className={labelBlock}>
                   {label}
                   {req}
                 </label>
@@ -489,7 +513,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
                   type="email"
                   value={stringValues[fid] ?? ""}
                   onChange={(e) => setStr(fid, e.target.value)}
-                  className={inputClass}
+                  className={inputCn}
                   autoComplete="email"
                   aria-invalid={Boolean(err)}
                   aria-describedby={err ? `gf-err-${fid}` : undefined}
@@ -505,7 +529,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
           case "TEXTAREA":
             return (
               <div key={fid}>
-                <label htmlFor={`gf-${fid}`} className="mb-1.5 block text-sm font-medium text-[var(--color-fg)]">
+                <label htmlFor={`gf-${fid}`} className={labelBlock}>
                   {label}
                   {req}
                 </label>
@@ -515,7 +539,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
                   onChange={(e) => setStr(fid, e.target.value)}
                   placeholder={field.placeholder ? decodeHtmlEntities(field.placeholder) : undefined}
                   rows={4}
-                  className={inputClass}
+                  className={inputCn}
                   aria-invalid={Boolean(err)}
                   aria-describedby={err ? `gf-err-${fid}` : undefined}
                 />
@@ -530,7 +554,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
           case "SELECT":
             return (
               <div key={fid}>
-                <label htmlFor={`gf-${fid}`} className="mb-1.5 block text-sm font-medium text-[var(--color-fg)]">
+                <label htmlFor={`gf-${fid}`} className={labelBlock}>
                   {label}
                   {req}
                 </label>
@@ -538,7 +562,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
                   id={`gf-${fid}`}
                   value={stringValues[fid] ?? ""}
                   onChange={(e) => setStr(fid, e.target.value)}
-                  className={inputClass}
+                  className={inputCn}
                   aria-invalid={Boolean(err)}
                   aria-describedby={err ? `gf-err-${fid}` : undefined}
                 >
@@ -560,13 +584,13 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
           case "RADIO":
             return (
               <fieldset key={fid}>
-                <legend className="mb-1.5 text-sm font-medium text-[var(--color-fg)]">
+                <legend className={legendClass}>
                   {label}
                   {req}
                 </legend>
                 <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2">
                   {(field.choices ?? []).map((c) => (
-                    <label key={c.value} className="flex items-center gap-2 text-sm text-[var(--color-fg)]">
+                    <label key={c.value} className={choiceRowClass}>
                       <input
                         type="radio"
                         name={`gf-${fid}`}
@@ -589,7 +613,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
           case "ADDRESS":
             return (
               <div key={fid}>
-                <label htmlFor={`gf-${fid}`} className="mb-1.5 block text-sm font-medium text-[var(--color-fg)]">
+                <label htmlFor={`gf-${fid}`} className={labelBlock}>
                   {label}
                   {req}
                 </label>
@@ -600,7 +624,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
                   autoComplete="postal-code"
                   value={stringValues[fid] ?? ""}
                   onChange={(e) => setStr(fid, e.target.value)}
-                  className={inputClass}
+                  className={inputCn}
                   aria-invalid={Boolean(err)}
                   aria-describedby={err ? `gf-err-${fid}` : undefined}
                 />
@@ -616,7 +640,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
             const nameInputs = nameInputsForDisplay(field.inputs ?? []);
             return (
               <fieldset key={fid} className="space-y-3">
-                <legend className="mb-1.5 text-sm font-medium text-[var(--color-fg)]">
+                <legend className={legendClass}>
                   {label}
                   {req}
                 </legend>
@@ -624,7 +648,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
                   <div key={inp.id}>
                     <label
                       htmlFor={`gf-${fid}-${inp.id}`}
-                      className="mb-1.5 block text-sm font-medium text-[var(--color-fg)]"
+                      className={labelBlock}
                     >
                       {decodeHtmlEntities(inp.label ?? "")}
                     </label>
@@ -640,7 +664,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
                       }
                       value={nameParts[nameKey(fid, inp.id)] ?? ""}
                       onChange={(e) => setName(nameKey(fid, inp.id), e.target.value)}
-                      className={inputClass}
+                      className={inputCn}
                     />
                   </div>
                 ))}
@@ -656,7 +680,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
           case "CHECKBOX":
             return (
               <fieldset key={fid}>
-                <legend className="mb-1.5 text-sm font-medium text-[var(--color-fg)]">
+                <legend className={legendClass}>
                   {label}
                   {req}
                 </legend>
@@ -665,7 +689,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
                     const choice = field.choices?.[idx];
                     const key = nameKey(fid, inp.id);
                     return (
-                      <label key={inp.id} className="flex items-start gap-2 text-sm text-[var(--color-fg)]">
+                      <label key={inp.id} className={choiceRowStartClass}>
                         <input
                           type="checkbox"
                           checked={Boolean(checkboxChecked[key])}
@@ -696,7 +720,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
                     className="mt-1"
                     aria-invalid={Boolean(err)}
                   />
-                  <label htmlFor={`gf-${fid}`} className="text-sm text-[var(--color-fg)]">
+                  <label htmlFor={`gf-${fid}`} className={consentLabelClass}>
                     {decodeHtmlEntities(field.checkboxLabel ?? label)}
                     {req}
                   </label>
@@ -720,7 +744,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
             }
             return (
               <div key={fid}>
-                <span className="mb-2 block text-sm font-medium text-[var(--color-fg)]">
+                <span className={captchaLabelClass}>
                   {label}
                   {req}
                 </span>
@@ -735,7 +759,7 @@ export function GravityForm({ form, className, inline = false }: GravityFormProp
 
           default:
             return (
-              <p key={fid} className="text-sm text-[var(--color-muted)]">
+              <p key={fid} className={unsupportedClass}>
                 Unsupported field type: {field.type} ({label})
               </p>
             );

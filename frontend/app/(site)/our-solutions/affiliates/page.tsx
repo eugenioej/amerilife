@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
-import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { AffiliatesHero } from "@/app/components/our-solutions/affiliates/AffiliatesHero";
 import { AffiliatesQuoteBand } from "@/app/components/our-solutions/affiliates/AffiliatesQuoteBand";
 import { AffiliatesPlatformIcons } from "@/app/components/our-solutions/affiliates/AffiliatesPlatformIcons";
 import { AffiliatesGrowthCards } from "@/app/components/our-solutions/affiliates/AffiliatesGrowthCards";
 import { AffiliatedCompaniesCarousel } from "@/app/components/our-solutions/affiliates/AffiliatedCompaniesCarousel";
 import { buildMainAffiliatesCarouselCategories, fetchAffiliateNodes } from "@/lib/affiliates";
-import { staticPageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/app/components/seo/JsonLd";
+import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = staticPageMetadata(
   "Affiliates | AmeriLife",
@@ -21,43 +22,34 @@ export default async function AffiliatesPage() {
 
   return (
     <article className="bg-white">
-      {/* Breadcrumb + Title - contained */}
-      <FadeInOnView
-        direction="fade"
-        threshold={0}
-        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24"
-      >
-        <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link
-                href="/"
-                className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
-              >
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link
-                href="/our-solutions/"
-                className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
-              >
-                Our Solutions
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-[var(--color-fg)]" aria-current="page">
-              Affiliates
-            </li>
-          </ol>
-        </nav>
-        <h1 className="mb-0 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
-          Affiliates
-        </h1>
-      </FadeInOnView>
+      <JsonLd
+        schema={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Our Solutions", path: "/our-solutions/" },
+          { name: "Affiliates", path: "/our-solutions/affiliates/" },
+        ])}
+      />
+      <div className="bg-white">
+        <FadeInOnView
+          direction="fade"
+          threshold={0}
+          className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 sm:py-12 lg:py-14"
+        >
+          <SiteBreadcrumb
+            className="mb-8"
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Our Solutions", href: "/our-solutions/" },
+              { label: "Affiliates" },
+            ]}
+          />
+          <h1 className="text-3xl font-semibold leading-tight text-[var(--color-fg)] sm:text-4xl lg:text-5xl">
+            Affiliates
+          </h1>
+        </FadeInOnView>
+      </div>
 
-      <FadeInOnView direction="up" className="w-full">
+      <FadeInOnView direction="up" className="w-full border-t border-[#e8ede8]">
         <AffiliatesHero />
       </FadeInOnView>
       <FadeInOnView direction="up" className="w-full">

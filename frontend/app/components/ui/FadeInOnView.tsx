@@ -107,3 +107,5 @@ export function FadeInOnView({
     </div>
   );
 }
+
+export default FadeInOnView;

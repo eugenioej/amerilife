@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import { Open_Sans, Poppins } from "next/font/google";
+import {
+  CrazyEggScript,
+  GoogleTagManagerNoScript,
+  GoogleTagManagerScript,
+} from "@/app/components/analytics/ThirdPartyScripts";
 import { getSiteUrl } from "@/lib/seo";
 import "./globals.css";
 
@@ -56,6 +61,9 @@ export default function RootLayout({
         className={`${openSans.variable} ${poppins.variable} antialiased`}
         style={{ fontFamily: "var(--font-sans)" }}
       >
+        <GoogleTagManagerNoScript />
+        <GoogleTagManagerScript />
+        <CrazyEggScript />
         {children}
       </body>
     </html>

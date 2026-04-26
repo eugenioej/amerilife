@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { JsonLd } from "@/app/components/seo/JsonLd";
+import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { VideoWithPlaceholder } from "@/app/components/join-our-team/VideoWithPlaceholder";
-import { staticPageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 export const metadata: Metadata = staticPageMetadata(
@@ -15,9 +18,6 @@ const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2022/01/Join_Our_Team_Hero_1420x1144.png`;
 const EMPLOYEES_IMAGE = `${UPLOADS}/2022/01/JoinTeam_CorpB_1420x1144.png`;
 const AGENTS_VIDEO_PREVIEW = `${UPLOADS}/2022/01/Join_Agent_VideoPreview.png`;
-/** Original aml-dark-gr / aml-dark: linear-gradient(105deg,#003a74 0%,#67c084 100%) */
-const DARK_GRADIENT = "linear-gradient(105deg, #003a74 0%, #67c084 100%)";
-
 const SALES_AGENTS_VIDEO_ID = "XPmV6iFo3Hk";
 
 const EMPLOYEE_DUTIES = [
@@ -51,25 +51,34 @@ const AGENT_CAREERS_URL = "https://amerilife.avature.net/careers";
 export default function JoinOurTeamPage() {
   return (
     <article className="bg-white">
-      {/* Hero: Work Where Your Work Matters - 2-col: gray left, image right */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
-        <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
-          <nav className="mb-6 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <li>
-                <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                  Home
-                </Link>
-              </li>
-              <li aria-hidden="true">/</li>
-              <li className="text-[var(--color-fg)]" aria-current="page">
-                Join Our Team
-              </li>
-            </ol>
-          </nav>
-          <h1 className="mb-6 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
+      <JsonLd
+        schema={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Join Our Team", path: "/join-our-team/" },
+        ])}
+      />
+      <div className="bg-white">
+        <FadeInOnView
+          direction="fade"
+          threshold={0}
+          className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 sm:py-12 lg:py-14"
+        >
+          <SiteBreadcrumb
+            className="mb-8"
+            items={[{ label: "Home", href: "/" }, { label: "Join Our Team" }]}
+          />
+          <h1 className="text-[32px] font-semibold leading-[38px] text-[#244260] sm:text-5xl sm:leading-[64px]">
             Join Our Team
           </h1>
+        </FadeInOnView>
+      </div>
+
+      {/* Hero: Work Where Your Work Matters - 2-col: gray left, image right */}
+      <FadeInOnView
+        direction="up"
+        className="grid min-h-0 w-full grid-cols-1 border-t border-[#e8ede8] lg:grid-cols-2"
+      >
+        <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
           <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-2xl">
             Work Where
             <br />
@@ -96,11 +105,11 @@ export default function JoinOurTeamPage() {
             priority
           />
         </div>
-      </div>
+      </FadeInOnView>
 
-      {/* AmeriLife Employees - 2-col: image LEFT, text RIGHT (aml-dark-gr, light-text) */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2" style={{ background: DARK_GRADIENT }}>
-        <div className="relative order-2 aspect-[1420/1144] w-full overflow-hidden lg:order-1 lg:aspect-auto lg:min-h-[400px]">
+      {/* AmeriLife Employees - 2-col: image LEFT, text RIGHT (blue → green gradient, light text) */}
+      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+        <div className="relative order-2 aspect-[1420/1144] w-full overflow-hidden bg-[#002a52] lg:order-1 lg:aspect-auto lg:min-h-[400px]">
           <Image
             src={rewriteUploadsUrl(EMPLOYEES_IMAGE)}
             alt="AmeriLife corporate employees"
@@ -109,7 +118,9 @@ export default function JoinOurTeamPage() {
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
         </div>
-        <div className="order-1 flex flex-col justify-center px-[var(--container-padding-x)] py-12 lg:order-2 lg:py-16 lg:pr-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
+        <div
+          className="order-1 flex flex-col justify-center bg-[linear-gradient(105deg,#002a52_0%,#003a74_28%,#0d4a7a_58%,#2d7a72_86%,#67c084_100%)] px-[var(--container-padding-x)] py-12 lg:order-2 lg:min-h-[400px] lg:py-16 lg:pr-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]"
+        >
           <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-white sm:text-2xl">
             AmeriLife Employees
           </h2>
@@ -140,7 +151,7 @@ export default function JoinOurTeamPage() {
             href={EMPLOYEE_CAREERS_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-2 border-white bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-white hover:text-[var(--color-brand-primary)] no-underline"
+            className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-0 bg-white px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] shadow-sm transition-colors hover:bg-white/90 hover:text-[var(--color-brand-primary-hover)] no-underline"
           >
             View Employee Openings
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -150,8 +161,8 @@ export default function JoinOurTeamPage() {
         </div>
       </div>
 
-      {/* Sales Agents - 2-col: text left, VIDEO right (aml-dark, light-text) */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2" style={{ background: DARK_GRADIENT }}>
+      {/* Sales Agents - 2-col: text left, VIDEO right (footer blue, light-text) */}
+      <div className="grid min-h-0 w-full grid-cols-1 bg-[var(--color-footer-bg)] lg:grid-cols-2">
         <div className="flex flex-col justify-center px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
           <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-white sm:text-2xl">
             Sales Agents
@@ -170,7 +181,7 @@ export default function JoinOurTeamPage() {
             href={AGENT_CAREERS_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-2 border-white bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-white hover:text-[var(--color-brand-primary)] no-underline"
+            className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-0 bg-white px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] shadow-sm transition-colors hover:bg-white/90 hover:text-[var(--color-brand-primary-hover)] no-underline"
           >
             View Agent Openings
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -185,13 +196,13 @@ export default function JoinOurTeamPage() {
         />
       </div>
 
-      {/* Learn More About AmeriLife - centered */}
+      {/* Learn More About AmeriLife - centered, wider copy */}
       <div className="bg-[#f7f8f9] py-16 sm:py-24">
-        <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] text-center">
-          <h2 className="mb-6 text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+        <div className="mx-auto w-full max-w-[min(100%,90rem)] px-[var(--container-padding-x)] text-center">
+          <h2 className="mx-auto mb-6 max-w-5xl text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
             Learn More About AmeriLife
           </h2>
-          <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-[var(--color-fg)]">
+          <p className="mx-auto mb-8 max-w-5xl text-base leading-relaxed text-[var(--color-fg)]">
             For more than 50 years, AmeriLife has lived its values — helping people live longer,
             healthier and more secure lives. As you consider opportunities with AmeriLife, we invite
             you to click below to learn more about our company.
@@ -199,7 +210,7 @@ export default function JoinOurTeamPage() {
           <Link
             href="/about-us/who-we-are/"
             variant="button"
-            className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-2 border-[var(--color-brand-primary)] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary)] hover:text-white"
+            className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-0 bg-[var(--color-brand-primary)] px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-[var(--color-brand-primary-hover)] no-underline"
           >
             Read Our Story
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>

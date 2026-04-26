@@ -63,8 +63,14 @@ const nextConfig: NextConfig = {
   async redirects() {
     const wp = await getRedirectsFromWP();
     return [
+      { source: "/fbtermsandpolicy", destination: "/privacy-policy/", permanent: true },
+      { source: "/fbtermsandpolicy/", destination: "/privacy-policy/", permanent: true },
+      { source: "/privacy", destination: "/privacy-policy/", permanent: true },
+      { source: "/privacy/", destination: "/privacy-policy/", permanent: true },
       { source: "/blog", destination: "/newsroom", permanent: true },
       { source: "/blog/", destination: "/newsroom", permanent: true },
+      { source: "/about/news", destination: "/newsroom", permanent: true },
+      { source: "/about/news/", destination: "/newsroom", permanent: true },
       ...wp,
     ];
   },

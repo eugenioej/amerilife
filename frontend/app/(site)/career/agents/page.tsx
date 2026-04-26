@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
@@ -11,11 +12,11 @@ export const metadata: Metadata = staticPageMetadata(
 );
 
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
-// Full URLs for sync-wp-images (repo scan):
-// https://amerilife.com/wp-content/uploads/2017/08/career-recruiting-banner.jpg
-// https://amerilife.com/wp-content/uploads/2017/09/greygeo-banner-1920.png
-const HERO_IMAGE = `${UPLOADS}/2017/08/career-recruiting-banner.jpg`;
 const GREY_GEO_BG = `${UPLOADS}/2017/09/greygeo-banner-1920.png`;
+
+/** Hero — headless WP (Join Our Team hero asset, 1420×1144). */
+const HERO_IMAGE =
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/01/Join_Our_Team_Hero_1420x1144.png";
 
 const AGENT_LEADS = [
   "Direct mail responders",
@@ -45,25 +46,14 @@ export default function CareerAgentsPage() {
       {/* Breadcrumb + Title - white background */}
       <div className="bg-white px-[var(--container-padding-x)] py-6">
         <div className="mx-auto max-w-[var(--container-max)]">
-          <nav className="mb-4 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <li>
-                <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                  Home
-                </Link>
-              </li>
-              <li aria-hidden="true">/</li>
-              <li>
-                <Link href="/career/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                  AmeriLife Offices
-                </Link>
-              </li>
-              <li aria-hidden="true">/</li>
-              <li className="text-[var(--color-fg)]" aria-current="page">
-                Career Agents
-              </li>
-            </ol>
-          </nav>
+          <SiteBreadcrumb
+            className="mb-4"
+            items={[
+              { label: "Home", href: "/" },
+              { label: "AmeriLife Offices", href: "/career/" },
+              { label: "Career Agents" },
+            ]}
+          />
           <h1 className="text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
             Career Agents
           </h1>
@@ -72,22 +62,24 @@ export default function CareerAgentsPage() {
 
       {/* Hero - full-width image with overlay */}
       <div className="relative w-full overflow-hidden">
-        <div className="relative aspect-[1920/600] w-full lg:aspect-[1920/640]">
+        <div className="relative h-[200px] w-full overflow-hidden sm:h-[240px] md:h-[280px] lg:h-[320px]">
           <Image
-            src={rewriteUploadsUrl(HERO_IMAGE)}
-            alt="AmeriLife career agents - diverse team"
+            src={HERO_IMAGE}
+            alt="AmeriLife career agents"
             fill
             className="object-cover object-center"
             sizes="100vw"
             priority
-            unoptimized
           />
+          {/* Base scrim + bottom-weighted gradient for headline contrast */}
+          <div className="absolute inset-0 bg-black/25" aria-hidden />
           <div
-            className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent"
+            className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/20"
             aria-hidden
           />
-          <div className="absolute bottom-0 left-0 right-0 p-[var(--container-padding-x)] pb-8 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))] lg:pb-12">
-            <h2 className="max-w-xl text-3xl font-bold leading-tight text-[var(--color-fg)] drop-shadow-sm sm:text-4xl lg:text-5xl xl:text-6xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent sm:from-black/40" aria-hidden />
+          <div className="absolute bottom-0 left-0 right-0 p-[var(--container-padding-x)] pb-6 sm:pb-8 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))] lg:pb-8">
+            <h2 className="max-w-xl text-2xl font-bold leading-tight text-white [text-shadow:0_2px_24px_rgba(0,0,0,0.45)] sm:text-3xl md:text-4xl lg:text-5xl">
               Your career
               <br />
               starts here!

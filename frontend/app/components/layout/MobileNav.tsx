@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "../ui/Link";
 import { Sheet } from "../ui/Sheet";
 import { ChevronDownIcon } from "../ui/ChevronDownIcon";
@@ -15,6 +15,12 @@ type MobileNavProps = {
   onContactSelect?: () => void;
 };
 
+/** WP / theme menus often use `#` (or empty) for parent items that only expand submenus. */
+function isHashToggleHref(href: string): boolean {
+  const t = href.trim();
+  return t === "#" || t === "";
+}
+
 function MobileNavItem({
   item,
   onClose,
@@ -27,14 +33,16 @@ function MobileNavItem({
   level?: number;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const submenuId = useId();
   const hasChildren = item.children && item.children.length > 0;
   const paddingLeft = level === 0 ? 24 : 24 + level * 32;
   const contactAsPopup = Boolean(onContactSelect && isContactNavItem(item));
+  const hashToggleParent = hasChildren && isHashToggleHref(item.href);
 
   return (
     <li>
-      <div className="flex items-center justify-between gap-2">
-        {contactAsPopup ? (
+      {contactAsPopup ? (
+        <div className="flex items-center justify-between gap-2">
           <button
             type="button"
             className="flex-1 px-6 py-3 text-left text-base font-semibold text-white"
@@ -46,7 +54,33 @@ function MobileNavItem({
           >
             {item.label}
           </button>
-        ) : (
+        </div>
+      ) : hashToggleParent ? (
+        <button
+          type="button"
+          className="flex w-full items-center justify-between gap-2 border-0 bg-transparent px-6 py-3 text-left text-base font-semibold text-white"
+          style={{ paddingLeft }}
+          onClick={() => setExpanded((e) => !e)}
+          aria-expanded={expanded}
+          aria-controls={submenuId}
+        >
+          <span>{item.label}</span>
+          <span
+            className="flex h-12 w-12 shrink-0 items-center justify-center text-white/80"
+            aria-hidden
+          >
+            <ChevronDownIcon size={18} open={expanded} />
+          </span>
+        </button>
+      ) : isHashToggleHref(item.href) ? (
+        <span
+          className="block px-6 py-3 text-base font-semibold text-white/90"
+          style={{ paddingLeft }}
+        >
+          {item.label}
+        </span>
+      ) : (
+        <div className="flex items-center justify-between gap-2">
           <Link
             href={item.href}
             variant="nav"
@@ -56,21 +90,23 @@ function MobileNavItem({
           >
             {item.label}
           </Link>
-        )}
-        {hasChildren && (
-          <button
-            type="button"
-            onClick={() => setExpanded((e) => !e)}
-            className="flex h-12 w-12 shrink-0 items-center justify-center text-white/80"
-            aria-expanded={expanded}
-            aria-label={expanded ? "Collapse submenu" : "Expand submenu"}
-          >
-            <ChevronDownIcon size={18} open={expanded} />
-          </button>
-        )}
-      </div>
+          {hasChildren && (
+            <button
+              type="button"
+              onClick={() => setExpanded((e) => !e)}
+              className="flex h-12 w-12 shrink-0 items-center justify-center text-white/80"
+              aria-expanded={expanded}
+              aria-controls={submenuId}
+              aria-label={expanded ? "Collapse submenu" : "Expand submenu"}
+            >
+              <ChevronDownIcon size={18} open={expanded} />
+            </button>
+          )}
+        </div>
+      )}
       {hasChildren && (
         <ul
+          id={submenuId}
           className={`ml-4 flex flex-col gap-1 border-l-2 border-white/30 pl-4 overflow-hidden transition-[max-height,opacity] duration-200 ${
             expanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
           }`}
@@ -149,8 +185,20 @@ export function MobileNav({ open, onClose, items, onContactSelect }: MobileNavPr
 
   return (
     <Sheet open={open} onClose={onClose} aria-label="Navigation menu">
-      <div ref={panelRef} className="flex h-full flex-col pt-20">
-        <nav className="flex-1 overflow-y-auto px-4">
+      <div ref={panelRef} className="flex h-full min-h-0 flex-col">
+        <div className="flex shrink-0 items-center justify-end border-b border-white/20 px-4 py-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-11 min-w-11 items-center justify-center rounded-md border border-white/35 text-white transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            aria-label="Close navigation menu"
+          >
+            <span className="text-3xl font-light leading-none" aria-hidden>
+              ×
+            </span>
+          </button>
+        </div>
+        <nav className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8 pt-2">
           <NavItemList items={items} onClose={onClose} onContactSelect={onContactSelect} />
         </nav>
       </div>

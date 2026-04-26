@@ -30,9 +30,9 @@ const PLATFORM_ITEMS = [
 
 export function AffiliatesPlatformIcons() {
   return (
-    <div className="bg-[#f0f0f0] py-16 sm:py-20">
+    <div className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-        <h2 className="mb-6 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+        <h2 className="mb-6 text-center text-3xl font-semibold leading-tight text-[var(--color-fg)] sm:text-4xl lg:text-5xl">
           A Platform Built for Your Success
         </h2>
         <p className="mx-auto mb-12 max-w-3xl text-center text-base leading-relaxed text-[var(--color-fg)]">
@@ -52,7 +52,9 @@ export function AffiliatesPlatformIcons() {
                 <div className="mb-4 flex justify-center">
                   <Icon {...iconProps} />
                 </div>
-                <h3 className="mb-4 text-xl font-bold text-[var(--color-fg)]">{item.title}</h3>
+                <h3 className="mb-4 text-xl font-bold uppercase tracking-wide text-[var(--color-fg)]">
+                  {item.title}
+                </h3>
                 <p className="mb-0 text-base leading-relaxed text-[var(--color-fg)]">
                   {item.description}
                 </p>

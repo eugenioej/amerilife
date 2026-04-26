@@ -11,7 +11,10 @@ export const metadata: Metadata = staticPageMetadata(
 
 export default function TermsPage() {
   return (
-    <LegalPageLayout title="Terms of Use">
+    <LegalPageLayout
+      title="Terms of Use"
+      breadcrumb={[{ label: "Home", href: "/" }, { label: "Terms of Use" }]}
+    >
       <p className="font-semibold">Legal Notice:</p>
       <p>
         This website is offered to the users conditioned upon your acceptance, without modification,
@@ -19,7 +22,7 @@ export default function TermsPage() {
         mobile applications, social media, or other electronic or web-based services (collectively,
         &quot;website&quot;) constitutes your acceptance and agreement to all terms, conditions, and
         notices in this Legal Notice and in our{" "}
-        <Link href="/privacy/">Privacy Policy</Link>.
+        <Link href="/privacy-policy/">Privacy Policy</Link>.
       </p>
       <p>
         This Legal Notice applies to this website, as well as those websites associated with the
@@ -493,11 +496,6 @@ export default function TermsPage() {
         agreement between the user and AmeriLife with respect to the AmeriLife website and as to the
         subject matter hereof, and it supersedes or subsumes all prior or contemporaneous agreements,
         negotiations, and understandings.
-      </p>
-
-      <p className="mt-8 pt-8 border-t border-[var(--color-border)]">
-        <Link href="/privacy/">Privacy Policy</Link> |{" "}
-        <Link href="/sms-terms/">SMS Text Messaging Terms and Conditions</Link>
       </p>
     </LegalPageLayout>
   );

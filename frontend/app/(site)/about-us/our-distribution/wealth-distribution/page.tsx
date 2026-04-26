@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { BlogPostCard } from "@/app/components/blog/BlogPostCard";
 import { LogoCarousel } from "@/app/components/ui/LogoCarousel";
 import { fetchGraphQL } from "@/lib/wp-client";
@@ -19,8 +20,8 @@ import {
   affiliatesInCategory,
   fetchAffiliateNodes,
 } from "@/lib/affiliates";
-import { TrendingUp, Shield, Building2, BarChart3, Users, Award } from "lucide-react";
-import { staticPageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/app/components/seo/JsonLd";
+import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = staticPageMetadata(
   "Wealth Distribution | AmeriLife",
@@ -57,43 +58,16 @@ async function getRelatedNewsPosts() {
   }
 }
 
-/** Agent & advisor benefits with icons - mirrors career-agency RESOURCES pattern */
-const AGENT_BENEFITS = [
-  {
-    icon: TrendingUp,
-    text: "Best-in-class annuity products from more than 70 top carriers",
-  },
-  {
-    icon: Shield,
-    text: "Industry-leading protection products from more than 50 carriers",
-  },
-  {
-    icon: Building2,
-    text: "Nationwide reach of 20+ annuities-focused affiliated companies, including TruChoice Financial Group",
-  },
-  {
-    icon: BarChart3,
-    text: "Institutional and wholesaler support through Saybrus Partners",
-  },
-  {
-    icon: Users,
-    text: "Network of 1,000+ advisors in all 50 states with over $8 billion in assets under management",
-  },
-  {
-    icon: Award,
-    text: "Asset management platform, training, and back office support through Brookstone Capital Management",
-  },
-] as const;
+const CONTENT_PANEL_CLASS = "bg-[#f7f8f9]";
 
-const iconProps = {
-  size: 20,
-  strokeWidth: 2,
-  className: " shrink-0 text-white",
-  "aria-hidden": true as const,
-};
-
-/** Dark blue background for content panels */
-const DARK_PANEL_BG = "rgb(36, 66, 96)";
+/** Extra horizontal breathing room; outer edge still aligns with site container. */
+const PANEL_PX = "pl-8 pr-8 sm:pl-10 sm:pr-10";
+const PANEL_INNER_LG = "lg:pl-14";
+const PANEL_INNER_LG_OPP = "lg:pr-14";
+const PANEL_OUTER_R =
+  "lg:pr-[max(calc(var(--container-padding-x)+1.5rem),calc((100vw-var(--container-max))/2+var(--container-padding-x)+1.5rem))]";
+const PANEL_OUTER_L =
+  "lg:pl-[max(calc(var(--container-padding-x)+1.5rem),calc((100vw-var(--container-max))/2+var(--container-padding-x)+1.5rem))]";
 
 export default async function WealthDistributionPage() {
   const [leader, relatedPosts, affiliateNodes] = await Promise.all([
@@ -124,46 +98,42 @@ export default async function WealthDistributionPage() {
 
   return (
     <article className="bg-white">
-      {/* Breadcrumb + Title - contained, left aligned (matches career-agency) */}
-      <FadeInOnView
-        direction="fade"
-        threshold={0}
-        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24"
-      >
-        <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link href="/about-us/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                About Us
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link href="/about-us/our-distribution/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Our Distribution
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-[var(--color-fg)]" aria-current="page">
-              Wealth Distribution
-            </li>
-          </ol>
-        </nav>
-        <h1 className="mb-0 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
-          Wealth Distribution
-        </h1>
-      </FadeInOnView>
+      <JsonLd
+        schema={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "About Us", path: "/about-us/" },
+          { name: "Our Distribution", path: "/about-us/our-distribution/" },
+          { name: "Wealth Distribution", path: "/about-us/our-distribution/wealth-distribution/" },
+        ])}
+      />
+      <div className="bg-white">
+        <FadeInOnView
+          direction="fade"
+          threshold={0}
+          className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 sm:py-12 lg:py-14"
+        >
+          <SiteBreadcrumb
+            className="mb-8"
+            items={[
+              { label: "Home", href: "/" },
+              { label: "About Us", href: "/about-us/" },
+              { label: "Our Distribution", href: "/about-us/our-distribution/" },
+              { label: "Wealth Distribution" },
+            ]}
+          />
+          <h1 className="text-[32px] font-semibold leading-[38px] text-[#244260] sm:text-5xl sm:leading-[64px]">
+            Wealth Distribution
+          </h1>
+        </FadeInOnView>
+      </div>
 
       {/* Hero - Left: teal slogan + intro | Right: Todd headshot + white card below */}
-      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView
+        direction="up"
+        className="grid min-h-0 w-full grid-cols-1 border-t border-[#e8ede8] lg:grid-cols-2"
+      >
         <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
-          <h2 className="mb-6 text-2xl font-bold uppercase leading-tight tracking-wide text-[var(--color-brand-primary)] sm:text-3xl">
+          <h2 className="mb-6 text-2xl font-bold uppercase leading-tight tracking-wide text-[var(--color-brand-primary)] sm:text-3xl lg:text-4xl">
             A Future-Proofed
             <br />
             Platform for Agents
@@ -218,7 +188,7 @@ export default async function WealthDistributionPage() {
         </div>
       </FadeInOnView>
 
-      {/* Dark blue section: Accumulation image left, content + agent benefits (with icons) right - matches career-agency template */}
+      {/* Accumulation: image left, content right */}
       <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
         <div className="relative aspect-[4/3] w-full overflow-hidden lg:aspect-auto lg:min-h-[400px]">
           <Image
@@ -231,73 +201,51 @@ export default async function WealthDistributionPage() {
           />
         </div>
         <div
-          className="flex flex-col justify-center px-[var(--container-padding-x)] py-12 lg:py-16 lg:pr-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]"
-          style={{ backgroundColor: DARK_PANEL_BG }}
+          className={`flex flex-col justify-center ${PANEL_PX} py-16 sm:py-20 lg:py-24 ${PANEL_INNER_LG} ${PANEL_OUTER_R} ${CONTENT_PANEL_CLASS}`}
         >
-          <h3 className="mb-6 text-xl font-bold text-white sm:text-2xl">
+          <h3 className="mb-6 text-2xl font-bold uppercase leading-tight tracking-wide text-[var(--color-brand-primary)] sm:text-3xl lg:text-4xl">
             Accumulation & Retirement Income for a More Secure Future
           </h3>
-          <p className="max-w-xl text-base leading-relaxed text-white">
+          <p className="max-w-xl text-base leading-relaxed text-[var(--color-fg)]">
             Retiring well has never been more challenging, which is why today&apos;s agents and
             advisors are looking for ways to break through and deliver more for their
             clients&apos; retirements.
           </p>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-white">
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-[var(--color-fg)]">
             From the institutional and wholesaler support power of{" "}
-            <Link href="https://www.saybruspartners.com/" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-white/90">
+            <Link href="https://www.saybruspartners.com/" target="_blank" rel="noopener noreferrer" className="font-semibold text-[var(--color-brand-primary)] underline decoration-1 underline-offset-2 transition-colors hover:text-[var(--color-brand-primary-hover)]">
               Saybrus Partners
             </Link>
             {" "}to the nationwide reach of more than 20 annuities-focused affiliated companies — including one of the industry&apos;s largest FMO&apos;s in{" "}
-            <Link href="https://www.truchoicefinancial.com/" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-white/90">
+            <Link href="https://www.truchoicefinancial.com/" target="_blank" rel="noopener noreferrer" className="font-semibold text-[var(--color-brand-primary)] underline decoration-1 underline-offset-2 transition-colors hover:text-[var(--color-brand-primary-hover)]">
               TruChoice Financial Group
             </Link>
             {" "}— AmeriLife Wealth delivers a holistic strategy that breaks the mold of traditional distribution models and sets new standards for excellence. And with best-in-class annuity products from more than 70 top carriers, the right financial strategies are within reach.
           </p>
-          <p className="mb-6 mt-8 max-w-xl text-base leading-relaxed text-white">
-            AmeriLife Wealth provides agents and advisors with valuable resources like:
-          </p>
-          <ul className="space-y-2 pl-0 list-none text-base leading-relaxed text-white">
-            {AGENT_BENEFITS.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <li key={i}>
-                  <FadeInOnView
-                    direction="up"
-                    delay={i * 70}
-                    className="flex items-start gap-3"
-                  >
-                    <Icon {...iconProps} />
-                    <span>{item.text}</span>
-                  </FadeInOnView>
-                </li>
-              );
-            })}
-          </ul>
         </div>
       </FadeInOnView>
 
-      {/* Dark blue section: Protection content left, image right */}
+      {/* Protection: content left, image right */}
       <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
         <div
-          className="flex flex-col justify-center px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]"
-          style={{ backgroundColor: DARK_PANEL_BG }}
+          className={`flex flex-col justify-center ${PANEL_PX} py-16 sm:py-20 lg:py-24 ${PANEL_OUTER_L} ${PANEL_INNER_LG_OPP} ${CONTENT_PANEL_CLASS}`}
         >
-          <h3 className="mb-6 text-xl font-bold text-white sm:text-2xl">
+          <h3 className="mb-6 text-2xl font-bold uppercase leading-tight tracking-wide text-[var(--color-brand-primary)] sm:text-3xl lg:text-4xl">
             Protection Solutions That Deliver Peace of Mind
           </h3>
-          <p className="max-w-xl text-base leading-relaxed text-white">
+          <p className="max-w-xl text-base leading-relaxed text-[var(--color-fg)]">
             AmeriLife Wealth is at the forefront of delivering solutions that help agents and advisors
             help their clients stay ahead of the curve as global trends continue to dramatically
             reshape the life insurance market.
           </p>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-white">
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-[var(--color-fg)]">
             Armed with industry-leading products from more than 50 carriers, and alongside partners
             such as{" "}
-            <Link href="https://marketing.crump.com/" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-white/90">
+            <Link href="https://marketing.crump.com/" target="_blank" rel="noopener noreferrer" className="font-semibold text-[var(--color-brand-primary)] underline decoration-1 underline-offset-2 transition-colors hover:text-[var(--color-brand-primary-hover)]">
               Crump Life Insurance Services
             </Link>
             ,{" "}
-            <Link href="https://successioncapital.com/" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-white/90">
+            <Link href="https://successioncapital.com/" target="_blank" rel="noopener noreferrer" className="font-semibold text-[var(--color-brand-primary)] underline decoration-1 underline-offset-2 transition-colors hover:text-[var(--color-brand-primary-hover)]">
               Succession Capital Alliance
             </Link>
             , and others, we&apos;re focused on redefining what it means to deliver choice and security for modern times.
@@ -315,7 +263,7 @@ export default async function WealthDistributionPage() {
         </div>
       </FadeInOnView>
 
-      {/* Dark blue section: Advisory image left, content right */}
+      {/* Advisory: image left, content right */}
       <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
         <div className="relative aspect-[4/3] w-full overflow-hidden lg:aspect-auto lg:min-h-[400px]">
           <Image
@@ -328,21 +276,20 @@ export default async function WealthDistributionPage() {
           />
         </div>
         <div
-          className="flex flex-col justify-center px-[var(--container-padding-x)] py-12 lg:py-16 lg:pr-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]"
-          style={{ backgroundColor: DARK_PANEL_BG }}
+          className={`flex flex-col justify-center ${PANEL_PX} py-16 sm:py-20 lg:py-24 ${PANEL_INNER_LG} ${PANEL_OUTER_R} ${CONTENT_PANEL_CLASS}`}
         >
-          <h3 className="mb-6 text-xl font-bold text-white sm:text-2xl">
+          <h3 className="mb-6 text-2xl font-bold uppercase leading-tight tracking-wide text-[var(--color-brand-primary)] sm:text-3xl lg:text-4xl">
             Advisory Services to Accelerate Your Independence
           </h3>
-          <p className="max-w-xl text-base leading-relaxed text-white">
+          <p className="max-w-xl text-base leading-relaxed text-[var(--color-fg)]">
             With a network of more than 1,000 advisors in all 50 states and over $8 billion in
             assets under management, AmeriLife&apos;s Wealth Advisory Services offers the tools and
             resources to support, sustain and accelerate the businesses of independent wealth
             advisors and IARs.
           </p>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-white">
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-[var(--color-fg)]">
             These services are spearheaded by our affiliate{" "}
-            <Link href="https://www.brookstonecm.com/" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-white/90">
+            <Link href="https://www.brookstonecm.com/" target="_blank" rel="noopener noreferrer" className="font-semibold text-[var(--color-brand-primary)] underline decoration-1 underline-offset-2 transition-colors hover:text-[var(--color-brand-primary-hover)]">
               Brookstone Capital Management
             </Link>
             , one of the industry&apos;s largest and most respected RIAs. Brookstone offers a one-of-a-kind asset management platform that, along with best-in-class training programs, back office support and other critical services, contributed to the company being named one of the fastest growing RIAs by Financial Advisor magazine.
@@ -353,20 +300,20 @@ export default async function WealthDistributionPage() {
       {/* Affiliated Companies — Affiliate CPT `wealth-management-retirement` (`amerilife-affiliates-cpt.php`) */}
       <FadeInOnView direction="up" className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+          <h2 className="mb-12 text-center text-3xl font-bold leading-tight text-[var(--color-fg)] sm:text-4xl lg:text-5xl">
             Affiliated Companies
           </h2>
           <h3 className="mb-6 text-center text-sm font-bold uppercase tracking-wide text-[var(--color-muted)]">
             Wealth Management & Retirement Planning Market
           </h3>
-          <LogoCarousel logos={wealthAffiliateLogos} />
+          <LogoCarousel colorLogos logos={wealthAffiliateLogos} />
         </div>
       </FadeInOnView>
 
       {/* Related News — latest Posts from WordPress */}
       <FadeInOnView direction="up" className="bg-[#f7f8f9] py-16 sm:py-24">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+          <h2 className="mb-12 text-center text-3xl font-bold leading-tight text-[var(--color-fg)] sm:text-4xl lg:text-5xl">
             Related News
           </h2>
           {relatedPosts.length > 0 ? (

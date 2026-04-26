@@ -1,6 +1,6 @@
 import Image from "next/image";
+import NextLink from "next/link";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
-import { Link } from "@/app/components/ui/Link";
 import type { LeaderListItem } from "@/lib/queries";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
@@ -27,42 +27,50 @@ export function LeaderCard({ leader, revealIndex = 0 }: LeaderCardProps) {
     <FadeInOnView
       direction="up"
       delay={revealIndex * 100}
-      className="flex h-full w-full items-stretch"
+      className="flex h-full w-full max-w-[275px] items-stretch max-[550px]:max-w-[92%]"
     >
-      <article className="flex h-full w-full flex-col items-center rounded-lg border border-[var(--color-border)] bg-white p-6 text-center sm:p-8">
-      <div className="relative mb-6 aspect-square w-full max-w-[280px] shrink-0 overflow-hidden rounded-xl bg-[#f7f8f9] sm:max-w-[300px]">
-        {photoUrl ? (
-          <Image
-            src={rewriteUploadsUrl(photoUrl)}
-            alt={leader.featuredImage?.node?.altText ?? `${name} — AmeriLife leader`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          />
-        ) : (
-          <div
-            className="absolute inset-0 flex items-center justify-center bg-[#e8e9eb] text-4xl font-bold text-[var(--color-muted)]"
-            aria-hidden
-          >
-            {initials}
-          </div>
-        )}
-      </div>
-
-      <h3 className="mb-2 text-lg font-bold text-[var(--color-fg)]">{name}</h3>
-      {jobTitle ? (
-        <p className="mb-6 text-sm leading-relaxed text-[var(--color-muted)]">{jobTitle}</p>
-      ) : (
-        <div className="mb-6" />
-      )}
-      <Link
+      <NextLink
         href={href}
-        variant="button"
-        className="motion-cta inline-flex items-center rounded-[var(--radius-full)] bg-[var(--color-brand-primary)] px-5 py-2.5 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-[var(--color-brand-primary-hover)] no-underline"
+        className="group relative flex h-full w-full flex-col bg-white text-left no-underline outline-none focus-visible:ring-2 focus-visible:ring-[#3FA590] focus-visible:ring-offset-2 max-[550px]:h-[160px] max-[550px]:max-w-full max-[550px]:flex-row max-[550px]:flex-wrap"
+        aria-label={`${name}, read bio`}
       >
-        Read Bio
-      </Link>
-      </article>
+        <div className="relative h-[275px] w-full shrink-0 overflow-hidden bg-[#ccc] max-[550px]:h-full max-[550px]:w-[143px]">
+          {photoUrl ? (
+            <Image
+              src={rewriteUploadsUrl(photoUrl)}
+              alt=""
+              fill
+              className="object-cover"
+              sizes="(max-width: 550px) 143px, 275px"
+            />
+          ) : (
+            <div
+              className="absolute inset-0 flex items-center justify-center bg-[#ccc] text-4xl font-bold text-[#244260]/50"
+              aria-hidden
+            >
+              {initials}
+            </div>
+          )}
+        </div>
+
+        <div className="relative z-[1] min-h-0 flex-1 px-5 pb-[75px] pt-9 max-[550px]:w-[calc(100%-143px)] max-[550px]:px-6 max-[550px]:pb-6 max-[550px]:pt-[30px]">
+          <h3 className="mb-2.5 line-clamp-2 text-xl font-bold capitalize leading-tight text-[#244260] max-[550px]:line-clamp-1 max-[550px]:text-[22px]">
+            {name}
+          </h3>
+          {jobTitle ? (
+            <p className="line-clamp-3 text-base font-normal leading-normal text-[#244260] max-[550px]:line-clamp-1">
+              {jobTitle}
+            </p>
+          ) : null}
+        </div>
+
+        <span
+          className="absolute bottom-[25px] left-5 z-[2] text-lg font-bold uppercase leading-7 tracking-[0.06em] text-[#3FA590] transition-colors duration-200 max-[550px]:left-[26px] group-hover:text-[#008066]"
+          aria-hidden
+        >
+          Read Bio
+        </span>
+      </NextLink>
     </FadeInOnView>
   );
 }

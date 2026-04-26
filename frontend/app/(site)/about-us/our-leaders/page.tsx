@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
-import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { LeadersBackedBySection } from "@/app/components/about-us/leaders/LeadersBackedBySection";
 import { LeadersGrid } from "@/app/components/about-us/leaders/LeadersGrid";
 import { fetchGraphQL } from "@/lib/wp-client";
 import { GET_LEADERS, type LeadersQueryResult } from "@/lib/queries";
 import { staticPageMetadata } from "@/lib/seo";
+import { rewriteUploadsUrl } from "@/lib/wp-media";
+
+const LEADERS_STAR_BG =
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/star-2.png";
 
 export const metadata: Metadata = staticPageMetadata(
   "Our Leaders | AmeriLife",
@@ -24,56 +28,59 @@ export default async function OurLeadersPage() {
 
   const nodes = leaders?.nodes ?? [];
 
+  const starSrc = rewriteUploadsUrl(LEADERS_STAR_BG);
+
   return (
-    <article className="bg-white">
-      <FadeInOnView
-        direction="fade"
-        threshold={0}
-        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-12 sm:py-16"
+    <article>
+      <div className="bg-white">
+        <FadeInOnView
+          direction="fade"
+          threshold={0}
+          className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 sm:py-12 lg:py-14"
+        >
+          <SiteBreadcrumb
+            className="mb-8"
+            items={[
+              { label: "Home", href: "/" },
+              { label: "About Us", href: "/about-us/" },
+              { label: "Our Leaders" },
+            ]}
+          />
+          <h1 className="text-[32px] font-semibold leading-[38px] text-[#244260] sm:text-5xl sm:leading-[64px]">
+            Our Leaders
+          </h1>
+        </FadeInOnView>
+      </div>
+
+      <div
+        className="border-t border-[#e8ede8] bg-[#F6F8F6] pt-10 pb-12 sm:pt-[65px] sm:pb-16"
+        style={{
+          backgroundImage: `url(${starSrc})`,
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "100% -9%",
+        }}
       >
-        <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link
-                href="/"
-                className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
-              >
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link
-                href="/about-us/"
-                className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
-              >
-                About Us
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-[var(--color-fg)]" aria-current="page">
-              Our Leaders
-            </li>
-          </ol>
-        </nav>
+        <FadeInOnView
+          direction="fade"
+          threshold={0}
+          className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]"
+        >
+          <div className="mb-12 max-w-3xl space-y-4 text-base leading-[140%] text-[#244260] sm:mb-[75px]">
+            <p>
+              Ameri{"\u00a0"}Life values our executive team&apos;s wealth of industry expertise as
+              veterans of some of the nation&apos;s most notable insurance companies — including Met
+              {"\u00a0"}Life, Bankers{"\u00a0"}Life and Transamerica.
+            </p>
+            <p>
+              Our leaders are committed to a culture of ethics and integrity, creating top-down
+              accountability and driving Ameri{"\u00a0"}Life&apos;s mission to help people and
+              businesses achieve financial security and a better way of life.
+            </p>
+          </div>
 
-        <h1 className="mb-6 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">Our Leaders</h1>
-
-        <div className="mb-12 max-w-3xl space-y-4 text-base leading-relaxed text-[var(--color-fg)]">
-          <p>
-            Ameri{"\u00a0"}Life values our executive team&apos;s wealth of industry expertise as
-            veterans of some of the nation&apos;s most notable insurance companies — including Met
-            {"\u00a0"}Life, Bankers{"\u00a0"}Life and Transamerica.
-          </p>
-          <p>
-            Our leaders are committed to a culture of ethics and integrity, creating top-down
-            accountability and driving Ameri{"\u00a0"}Life&apos;s mission to help people and businesses
-            achieve financial security and a better way of life.
-          </p>
-        </div>
-
-        <LeadersGrid leaders={nodes} />
-      </FadeInOnView>
+          <LeadersGrid leaders={nodes} />
+        </FadeInOnView>
+      </div>
 
       <LeadersBackedBySection />
     </article>

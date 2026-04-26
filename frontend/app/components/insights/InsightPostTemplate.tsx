@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Facebook, Instagram, Linkedin, Youtube, Clock } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import type { InsightDetail, InsightListItem } from "@/lib/queries";
 import { rewriteUploadsInHtml, rewriteUploadsUrl } from "@/lib/wp-media";
 import { AdBannerHorizontal, AdSidebarVertical } from "./InsightsAds";
@@ -249,47 +250,21 @@ export function InsightPostTemplate({ post, relatedPosts, shareUrl }: Props) {
   return (
     <article className="bg-white pb-16 md:pb-20">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] pt-8 md:pt-10">
-        <nav
-          className="mb-6 text-sm text-[var(--color-muted)]"
-          aria-label="Breadcrumb"
-        >
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link
-                href="/"
-                className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
-              >
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true" className="text-[var(--color-muted)]/80">
-              &gt;
-            </li>
-            <li>
-              <Link
-                href="/insights/"
-                className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
-              >
-                Insights
-              </Link>
-            </li>
-            <li aria-hidden="true" className="text-[var(--color-muted)]/80">
-              &gt;
-            </li>
-            <li className="max-w-[min(100%,12rem)] truncate text-[var(--color-fg)]">
-              {topicName}
-            </li>
-            <li aria-hidden="true" className="text-[var(--color-muted)]/80">
-              &gt;
-            </li>
-            <li
-              className="max-w-[min(100%,28rem)] truncate text-[var(--color-muted)]"
-              aria-current="page"
-            >
-              {post.title}
-            </li>
-          </ol>
-        </nav>
+        <SiteBreadcrumb
+          className="mb-6"
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Insights", href: "/insights/" },
+            {
+              label: topicName,
+              className: "max-w-[min(100%,12rem)] truncate",
+            },
+            {
+              label: post.title ?? "Insights",
+              className: "max-w-[min(100%,28rem)] truncate text-[var(--color-muted)]",
+            },
+          ]}
+        />
 
         <span className="mb-4 inline-block bg-[var(--color-brand-primary)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
           {topicLabel(post)}

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { FaqNewsroomSection } from "@/app/components/faq/FaqNewsroomSection";
 import { staticPageMetadata } from "@/lib/seo";
+import { getFaqNewsroomPosts } from "@/lib/faq-newsroom-posts";
 
 export const metadata: Metadata = staticPageMetadata(
   "Frequently Asked Questions | AmeriLife",
@@ -8,14 +10,28 @@ export const metadata: Metadata = staticPageMetadata(
   "/faq/"
 );
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const posts = await getFaqNewsroomPosts();
+
   return (
     <section className="bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-        <h1 className="mb-12 text-center text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
+        <SiteBreadcrumb
+          className="mb-8"
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Frequently Asked Questions" },
+          ]}
+        />
+
+        <h1 className="mb-4 text-4xl font-bold leading-tight tracking-tight text-[var(--color-fg)]">
           Frequently Asked Questions
         </h1>
-        <FaqNewsroomSection />
+        <div
+          className="mb-12 h-[3px] w-[125px] max-w-full shrink-0 bg-[#94c83d]"
+          aria-hidden
+        />
+        <FaqNewsroomSection posts={posts} />
       </div>
     </section>
   );

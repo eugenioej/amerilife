@@ -13,7 +13,13 @@ export interface LogoCarouselLogo {
   href?: string;
 }
 
-export function LogoCarousel({ logos }: { logos: ReadonlyArray<LogoCarouselLogo> }) {
+type LogoCarouselProps = {
+  logos: ReadonlyArray<LogoCarouselLogo>;
+  /** When true, logos render in full color (default applies grayscale with color on hover). */
+  colorLogos?: boolean;
+};
+
+export function LogoCarousel({ logos, colorLogos = false }: LogoCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -78,7 +84,11 @@ export function LogoCarousel({ logos }: { logos: ReadonlyArray<LogoCarouselLogo>
           {logos.map((logo, i) => (
             <div
               key={`${logo.alt}-${i}`}
-              className="motion-card flex h-[100px] min-w-[140px] shrink-0 items-center justify-center rounded-lg bg-white p-3 grayscale opacity-80 transition-[opacity,transform,box-shadow] duration-300 hover:grayscale-0 hover:opacity-100 snap-start sm:h-[120px] sm:min-w-[200px] sm:p-4"
+              className={
+                colorLogos
+                  ? "motion-card flex h-[100px] min-w-[140px] shrink-0 items-center justify-center rounded-lg bg-white p-3 opacity-100 transition-[opacity,transform,box-shadow] duration-300 snap-start sm:h-[120px] sm:min-w-[200px] sm:p-4"
+                  : "motion-card flex h-[100px] min-w-[140px] shrink-0 items-center justify-center rounded-lg bg-white p-3 grayscale opacity-80 transition-[opacity,transform,box-shadow] duration-300 hover:grayscale-0 hover:opacity-100 snap-start sm:h-[120px] sm:min-w-[200px] sm:p-4"
+              }
             >
               {logo.href ? (
                 <a

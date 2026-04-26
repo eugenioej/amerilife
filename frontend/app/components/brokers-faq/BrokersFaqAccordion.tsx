@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import { Link } from "../ui/Link";
 
 type FaqItem = {
@@ -58,45 +55,21 @@ const BROKERS_FAQ_ITEMS: FaqItem[] = [
   },
 ];
 
+/** Full brokers FAQ: all questions and answers visible (no accordion). */
 export function BrokersFaqAccordion() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
-
   return (
-    <div className="mx-auto max-w-3xl space-y-2">
-      {BROKERS_FAQ_ITEMS.map((item, index) => {
-        const isOpen = openIndex === index;
-        return (
-          <div key={index} className="border-b border-[var(--color-border)]">
-            <button
-              type="button"
-              onClick={() => setOpenIndex(isOpen ? null : index)}
-              className="flex w-full cursor-pointer items-center justify-between py-6 text-left text-lg font-semibold text-[var(--color-fg)] transition-colors hover:text-[var(--color-brand-primary)]"
-              aria-expanded={isOpen}
-            >
-              {item.question}
-              <span className={`ml-4 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}>
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </span>
-            </button>
-            <div
-              className={`overflow-hidden transition-all duration-200 ${
-                isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-              }`}
-            >
-              <div className="pb-6 pr-8 text-base leading-relaxed text-[var(--color-muted)]">
-                {item.answer}
-              </div>
-            </div>
-          </div>
-        );
-      })}
+    <div className="space-y-8">
+      {BROKERS_FAQ_ITEMS.map((item, index) => (
+        <article
+          key={index}
+          className="border-b border-[var(--color-border)] pb-8 last:border-0 last:pb-0"
+        >
+          <h2 className="mb-3 text-lg font-semibold leading-snug text-[var(--color-fg)]">
+            {item.question}
+          </h2>
+          <div className="text-base leading-relaxed text-[var(--color-muted)]">{item.answer}</div>
+        </article>
+      ))}
     </div>
   );
 }

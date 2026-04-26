@@ -92,20 +92,25 @@ function StarBullet() {
 
 export function AffiliatesGrowthCards() {
   return (
-    <div className="py-16 sm:py-20">
+    <div className="bg-[#f0f0f0] py-16 sm:py-20">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-        <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+        <h2 className="mb-12 text-center text-3xl font-semibold leading-tight text-[var(--color-fg)] sm:text-4xl lg:text-5xl">
           How We Help You Drive Growth
         </h2>
         <div className="grid gap-8 sm:grid-cols-2">
           {GROWTH_CARDS.map((item, i) => {
             const Icon = item.icon;
             return (
-              <div key={i} className="flex flex-col rounded-lg bg-[#e2e5ed] p-8 sm:p-10">
+              <div
+                key={i}
+                className="flex flex-col rounded-lg border border-[#e8ede8] bg-white p-8 shadow-sm sm:p-10"
+              >
                 <div className="mb-4">
                   <Icon {...iconProps} />
                 </div>
-                <h3 className="mb-4 text-xl font-bold text-[var(--color-fg)]">{item.title}</h3>
+                <h3 className="mb-4 text-xl font-bold uppercase tracking-wide text-[var(--color-fg)]">
+                  {item.title}
+                </h3>
                 <p className="mb-6 text-base leading-relaxed text-[var(--color-fg)]">
                   {item.description}
                 </p>

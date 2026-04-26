@@ -15,16 +15,16 @@ export function AffiliatedCompaniesCarousel({
   return (
     <div className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-        <h2 className="mb-4 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+        <h2 className="mb-12 text-center text-3xl font-semibold leading-tight text-[var(--color-fg)] sm:text-4xl lg:text-5xl">
           Affiliated Companies
         </h2>
         <div className="space-y-12">
           {categories.map((cat, i) => (
             <div key={`${cat.label}-${i}`}>
-              <h3 className="mb-6 text-center text-sm font-bold uppercase tracking-wide text-[var(--color-muted)]">
+              <h3 className="mb-6 text-center text-sm font-bold uppercase tracking-wide text-[var(--color-fg)] sm:text-base md:text-lg">
                 {cat.label}
               </h3>
-              <LogoCarousel logos={cat.logos} />
+              <LogoCarousel colorLogos logos={cat.logos} />
             </div>
           ))}
         </div>

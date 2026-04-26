@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { staticPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = staticPageMetadata(
@@ -12,19 +13,10 @@ export default function CareerPage() {
   return (
     <article className="bg-white">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-12 lg:py-16">
-        <nav className="mb-6 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-[var(--color-fg)]" aria-current="page">
-              AmeriLife Offices
-            </li>
-          </ol>
-        </nav>
+        <SiteBreadcrumb
+          className="mb-6"
+          items={[{ label: "Home", href: "/" }, { label: "AmeriLife Offices" }]}
+        />
         <h1 className="mb-8 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
           AmeriLife Offices
         </h1>

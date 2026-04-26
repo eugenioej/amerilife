@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { JsonLd } from "@/app/components/seo/JsonLd";
+import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { getTechnologyByNumberIcon } from "@/app/components/about-us/TechnologyIcons";
-import { Building2, UserCheck } from "lucide-react";
-import { staticPageMetadata } from "@/lib/seo";
+import { Building2, Flag } from "lucide-react";
+import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = staticPageMetadata(
   "Technology & Analytics | AmeriLife",
@@ -14,8 +17,9 @@ export const metadata: Metadata = staticPageMetadata(
 
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
 
-/** Hero image - technology/dashboard imagery from amerilife.com */
-const HERO_IMAGE = `${UPLOADS}/2022/02/Power_Tech_Home_1422x1144.png`;
+/** Hero image (headless WP) */
+const HERO_IMAGE =
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/Tech_Analytics_Hero_1422x1144.webp";
 
 /** By the Numbers section - OG uses banner-10.png as background */
 const BY_THE_NUMBERS_BG = `${UPLOADS}/2021/12/banner-10.png`;
@@ -68,35 +72,55 @@ function StarBullet() {
   );
 }
 
+/** Bolds the substring before the first colon (label: body). */
+function BulletWithBoldLead({ text }: { text: string }) {
+  const colon = text.indexOf(":");
+  if (colon === -1) {
+    return <>{text}</>;
+  }
+  return (
+    <>
+      <strong className="font-bold">{text.slice(0, colon)}</strong>
+      {text.slice(colon)}
+    </>
+  );
+}
+
 export default function TechnologyAndAnalyticsPage() {
   return (
     <article className="bg-white">
-      {/* Hero - 2-col: gray bg left with copy, image right (match Our Distribution) */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
-        <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
-          <nav
-            className="mb-6 text-sm text-[var(--color-muted)]"
-            aria-label="Breadcrumb"
-          >
-            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <li>
-                <Link
-                  href="/"
-                  className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
-                >
-                  Home
-                </Link>
-              </li>
-              <li aria-hidden="true">/</li>
-              <li className="text-[var(--color-fg)]" aria-current="page">
-                Technology & Analytics
-              </li>
-            </ol>
-          </nav>
-          <h1 className="mb-2 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
+      <JsonLd
+        schema={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Technology & Analytics", path: "/technology-and-analytics/" },
+        ])}
+      />
+      <div className="bg-white">
+        <FadeInOnView
+          direction="fade"
+          threshold={0}
+          className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 sm:py-12 lg:py-14"
+        >
+          <SiteBreadcrumb
+            className="mb-8"
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Technology & Analytics" },
+            ]}
+          />
+          <h1 className="text-[32px] font-semibold leading-[38px] text-[#244260] sm:text-5xl sm:leading-[64px]">
             Technology & Analytics
           </h1>
-          <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-2xl">
+        </FadeInOnView>
+      </div>
+
+      {/* Hero - 2-col: copy left, image right */}
+      <FadeInOnView
+        direction="up"
+        className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2"
+      >
+        <div className="flex flex-col justify-center bg-white px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
+          <h2 className="mb-6 text-2xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-3xl lg:text-4xl">
             Technology to Help Strengthen Client Relationships
           </h2>
           <p className="mb-4 max-w-xl text-base leading-relaxed text-[var(--color-fg)]">
@@ -124,7 +148,7 @@ export default function TechnologyAndAnalyticsPage() {
             unoptimized
           />
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* Operations & Technology: 2021 By the Numbers */}
       <section
@@ -199,34 +223,42 @@ export default function TechnologyAndAnalyticsPage() {
               <div className="mb-4">
                 <Building2 {...cardIconProps} />
               </div>
-              <h3 className="mb-6 text-xl font-bold text-[var(--color-fg)]">
+              <h3 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-fg)]">
                 For Affiliates
               </h3>
               <ul className="list-none space-y-2 pl-0 text-base leading-relaxed text-[var(--color-fg)]">
                 {FOR_AFFILIATES.map((item, i) => (
                   <li key={i} className="flex items-start">
                     <StarBullet />
-                    {item}
+                    <span>
+                      <BulletWithBoldLead text={item} />
+                    </span>
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="rounded-lg border border-[var(--color-border)] bg-white p-8 shadow-sm sm:p-10">
+            <Link
+              href="/our-solutions/agents-and-advisors/"
+              variant="button"
+              className="group flex flex-col rounded-lg border border-[var(--color-border)] bg-white p-8 shadow-sm transition-shadow hover:border-[var(--color-brand-primary)]/35 hover:shadow-md sm:p-10"
+            >
               <div className="mb-4">
-                <UserCheck {...cardIconProps} />
+                <Flag {...cardIconProps} />
               </div>
-              <h3 className="mb-6 text-xl font-bold text-[var(--color-fg)]">
+              <h3 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-fg)] group-hover:text-[var(--color-brand-primary)]">
                 For Independent Agents
               </h3>
-              <ul className="list-none space-y-2 pl-0 text-base leading-relaxed text-[var(--color-fg)]">
+              <ul className="list-none space-y-2 pl-0 text-left text-base leading-relaxed text-[var(--color-fg)]">
                 {FOR_INDEPENDENT_AGENTS.map((item, i) => (
                   <li key={i} className="flex items-start">
                     <StarBullet />
-                    {item}
+                    <span>
+                      <BulletWithBoldLead text={item} />
+                    </span>
                   </li>
                 ))}
               </ul>
-            </div>
+            </Link>
           </div>
         </div>
       </section>

@@ -3,14 +3,14 @@ import { Link as UiLink } from "../ui/Link";
 import type { NavItem } from "@/lib/wp-menus";
 
 const BOTTOM_LINKS = [
-  { label: "Privacy Policy", href: "/privacy/" },
+  { label: "Privacy Policy", href: "/privacy-policy/" },
   { label: "Terms & Conditions", href: "/terms/" },
-  { label: "SMS Terms & Conditions", href: "/sms-terms/" },
+  { label: "SMS Terms & Conditions", href: "/sms-text-messaging-terms-and-conditions/" },
 ];
 
 /** Passed through `rewriteUploadsUrl` in `LayoutShell` so server/client URLs stay aligned. */
 export const FOOTER_LOGO_SRC =
-  "https://amerilife.com/wp-content/uploads/2022/01/amerilife.svg";
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AmeriLife-Logo-white-s.webp";
 
 export const FOOTER_CERTIFICATION_BADGE_SRC =
   "https://amerilife.com/wp-content/uploads/2025/07/58a9a44b-c754-4491-9340-42a76cfd9ff0-TICKET.supporting_files-AmeriLife_US_English_2025_Certification_Badge-1-scaled.png";
@@ -37,9 +37,9 @@ export function SiteFooter({ primaryMenu, footerLogoUrl, certificationBadgeUrl }
           <img
             src={footerLogoUrl}
             alt="AmeriLife"
-            width={140}
-            height={40}
-            className="h-8 w-auto"
+            width={100}
+            height={28}
+            className="h-5 w-auto"
             decoding="async"
           />
         </Link>

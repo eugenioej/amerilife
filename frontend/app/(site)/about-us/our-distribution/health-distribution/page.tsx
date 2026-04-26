@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { BlogPostCard } from "@/app/components/blog/BlogPostCard";
 import { LogoCarousel } from "@/app/components/ui/LogoCarousel";
 import { fetchGraphQL } from "@/lib/wp-client";
@@ -20,7 +21,8 @@ import {
   fetchAffiliateNodes,
 } from "@/lib/affiliates";
 import { Network, Package, Cpu, Megaphone, DollarSign } from "lucide-react";
-import { staticPageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/app/components/seo/JsonLd";
+import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = staticPageMetadata(
   "Health Distribution | AmeriLife",
@@ -130,7 +132,8 @@ const iconProps = {
 };
 
 /** Dark blue background for content panels */
-const DARK_PANEL_BG = "rgb(36, 66, 96)";
+/** Our Offerings panel — blue to green (aligned with who-we-are mission band) */
+const OFFERINGS_GRADIENT = "linear-gradient(105deg, #003a74 0%, #67c084 100%)";
 
 export default async function HealthDistributionPage() {
   const [leader, relatedPosts, affiliateNodes] = await Promise.all([
@@ -166,46 +169,42 @@ export default async function HealthDistributionPage() {
 
   return (
     <article className="bg-white">
-      {/* Breadcrumb + Title */}
-      <FadeInOnView
-        direction="fade"
-        threshold={0}
-        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24"
-      >
-        <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link href="/about-us/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                About Us
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link href="/about-us/our-distribution/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Our Distribution
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-[var(--color-fg)]" aria-current="page">
-              Health Distribution
-            </li>
-          </ol>
-        </nav>
-        <h1 className="mb-0 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
-          Health Distribution
-        </h1>
-      </FadeInOnView>
+      <JsonLd
+        schema={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "About Us", path: "/about-us/" },
+          { name: "Our Distribution", path: "/about-us/our-distribution/" },
+          { name: "Health Distribution", path: "/about-us/our-distribution/health-distribution/" },
+        ])}
+      />
+      <div className="bg-white">
+        <FadeInOnView
+          direction="fade"
+          threshold={0}
+          className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 sm:py-12 lg:py-14"
+        >
+          <SiteBreadcrumb
+            className="mb-8"
+            items={[
+              { label: "Home", href: "/" },
+              { label: "About Us", href: "/about-us/" },
+              { label: "Our Distribution", href: "/about-us/our-distribution/" },
+              { label: "Health Distribution" },
+            ]}
+          />
+          <h1 className="text-[32px] font-semibold leading-[38px] text-[#244260] sm:text-5xl sm:leading-[64px]">
+            Health Distribution
+          </h1>
+        </FadeInOnView>
+      </div>
 
       {/* Hero - Left: slogan + intro | Right: Scotty headshot + card */}
-      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView
+        direction="up"
+        className="grid min-h-0 w-full grid-cols-1 border-t border-[#e8ede8] lg:grid-cols-2"
+      >
         <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
-          <h2 className="mb-6 text-2xl font-bold uppercase leading-tight tracking-wide text-[var(--color-brand-primary)] sm:text-3xl">
+          <h2 className="mb-6 text-2xl font-bold uppercase leading-tight tracking-wide text-[var(--color-brand-primary)] sm:text-3xl lg:text-4xl">
             Product Solutions
             <br />
             for Modern Times
@@ -258,23 +257,13 @@ export default async function HealthDistributionPage() {
         </div>
       </FadeInOnView>
 
-      {/* Dark blue section: Hero image left, Our Offerings right */}
+      {/* Blue/green gradient: Our Offerings left, hero image right */}
       <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
-        <div className="relative aspect-[4/3] w-full overflow-hidden lg:aspect-auto lg:min-h-[400px]">
-          <Image
-            src={rewriteUploadsUrl(heroImage)}
-            alt="AmeriLife Health distribution"
-            fill
-            className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            unoptimized
-          />
-        </div>
         <div
-          className="flex flex-col justify-center px-[var(--container-padding-x)] py-12 lg:py-16 lg:pr-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]"
-          style={{ backgroundColor: DARK_PANEL_BG }}
+          className="flex flex-col justify-center px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]"
+          style={{ background: OFFERINGS_GRADIENT }}
         >
-          <h3 className="mb-8 text-xl font-bold text-white sm:text-2xl">
+          <h3 className="mb-8 text-xl font-bold uppercase tracking-wide text-white sm:text-2xl">
             Our Offerings
           </h3>
           <ul className="space-y-6 list-none pl-0">
@@ -296,12 +285,22 @@ export default async function HealthDistributionPage() {
             </svg>
           </Link>
         </div>
+        <div className="relative aspect-[4/3] w-full overflow-hidden lg:aspect-auto lg:min-h-[400px]">
+          <Image
+            src={rewriteUploadsUrl(heroImage)}
+            alt="AmeriLife Health distribution"
+            fill
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            unoptimized
+          />
+        </div>
       </FadeInOnView>
 
       {/* Agent Benefits - 5 cards with icons */}
       <section className="bg-[#f7f8f9] py-16 sm:py-24">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+          <h2 className="mb-12 text-center text-3xl font-bold leading-tight text-[var(--color-fg)] sm:text-4xl lg:text-5xl">
             Agent Benefits
           </h2>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
@@ -333,21 +332,21 @@ export default async function HealthDistributionPage() {
       {/* Affiliated Companies — Affiliate CPT + `affiliate_category` terms (see `amerilife-affiliates-cpt.php`) */}
       <FadeInOnView direction="up" className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+          <h2 className="mb-12 text-center text-3xl font-bold leading-tight text-[var(--color-fg)] sm:text-4xl lg:text-5xl">
             Affiliated Companies
           </h2>
           <div className="space-y-12">
             <div>
-              <h3 className="mb-6 text-center text-sm font-bold uppercase tracking-wide text-[var(--color-muted)]">
+              <h3 className="mb-6 text-center text-sm font-bold uppercase tracking-wide text-[var(--color-fg)]">
                 Medical, Life & Health Market
               </h3>
-              <LogoCarousel logos={medicalAffiliateLogos} />
+              <LogoCarousel colorLogos logos={medicalAffiliateLogos} />
             </div>
             <div>
-              <h3 className="mb-6 text-center text-sm font-bold uppercase tracking-wide text-[var(--color-muted)]">
+              <h3 className="mb-6 text-center text-sm font-bold uppercase tracking-wide text-[var(--color-fg)]">
                 Direct to Consumer
               </h3>
-              <LogoCarousel logos={directToConsumerLogos} />
+              <LogoCarousel colorLogos logos={directToConsumerLogos} />
             </div>
           </div>
         </div>
@@ -356,7 +355,7 @@ export default async function HealthDistributionPage() {
       {/* Related News — latest Posts from WordPress */}
       <FadeInOnView direction="up" className="bg-[#f7f8f9] py-16 sm:py-24">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+          <h2 className="mb-12 text-center text-3xl font-bold leading-tight text-[var(--color-fg)] sm:text-4xl lg:text-5xl">
             Related News
           </h2>
           {relatedPosts.length > 0 ? (

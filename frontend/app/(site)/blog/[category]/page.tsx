@@ -12,6 +12,7 @@ import { BlogListingToolbar } from "@/app/components/blog/BlogListingToolbar";
 import { BlogPostCard } from "@/app/components/blog/BlogPostCard";
 import { BlogPagination } from "@/app/components/blog/BlogPagination";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { LEGACY_CATEGORY_SLUGS } from "@/lib/blog-legacy-category-slugs";
 import { staticPageMetadata } from "@/lib/seo";
 
@@ -95,31 +96,14 @@ export default async function BlogCategoryPage({
 
   return (
     <section className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-12">
-      <nav className="mb-6 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-        <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <li>
-            <Link
-              href="/"
-              className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
-            >
-              Home
-            </Link>
-          </li>
-          <li aria-hidden="true">/</li>
-          <li>
-            <Link
-              href="/newsroom/"
-              className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
-            >
-              Newsroom
-            </Link>
-          </li>
-          <li aria-hidden="true">/</li>
-          <li className="text-[var(--color-fg)]" aria-current="page">
-            {label}
-          </li>
-        </ol>
-      </nav>
+      <SiteBreadcrumb
+        className="mb-6"
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Newsroom", href: "/newsroom/" },
+          { label },
+        ]}
+      />
 
       <header className="mb-6">
         <h1 className="text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">

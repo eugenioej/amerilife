@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { JsonLd } from "@/app/components/seo/JsonLd";
+import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { Package, Layers, Flag } from "lucide-react";
-import { staticPageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = staticPageMetadata(
   "Flexibility & Optionality | AmeriLife",
@@ -73,30 +76,38 @@ const iconProps = {
 export default function FlexibilityOptionalityPage() {
   return (
     <article className="bg-white">
-      {/* Breadcrumb + Title */}
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24">
-        <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-[var(--color-fg)]" aria-current="page">
-              Flexibility & Optionality
-            </li>
-          </ol>
-        </nav>
-        <h1 className="mb-0 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
-          Flexibility & Optionality
-        </h1>
+      <JsonLd
+        schema={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Flexibility & Optionality", path: "/flexibility-and-optionality/" },
+        ])}
+      />
+      <div className="bg-white">
+        <FadeInOnView
+          direction="fade"
+          threshold={0}
+          className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 sm:py-12 lg:py-14"
+        >
+          <SiteBreadcrumb
+            className="mb-8"
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Flexibility & Optionality" },
+            ]}
+          />
+          <h1 className="text-[32px] font-semibold leading-[38px] text-[#244260] sm:text-5xl sm:leading-[64px]">
+            Flexibility & Optionality
+          </h1>
+        </FadeInOnView>
       </div>
 
       {/* Hero: Your Business is Our Business - 2-col */}
-      <div className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
-        <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
-          <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-2xl">
+      <FadeInOnView
+        direction="up"
+        className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2"
+      >
+        <div className="flex flex-col justify-center bg-white px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
+          <h2 className="mb-6 text-2xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-3xl lg:text-4xl">
             Your Business is
             <br />
             Our Business
@@ -123,12 +134,12 @@ export default function FlexibilityOptionalityPage() {
             priority
           />
         </div>
-      </div>
+      </FadeInOnView>
 
       {/* We help power your business by offering - 3 cards with icons */}
-      <div className="bg-[#f0f0f0] py-16 sm:py-20">
+      <div className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+          <h2 className="mb-12 text-center text-3xl font-semibold leading-tight text-[var(--color-fg)] sm:text-4xl lg:text-5xl">
             We help power your business by offering:
           </h2>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -142,7 +153,7 @@ export default function FlexibilityOptionalityPage() {
                   <div className="mb-4">
                     <Icon {...iconProps} />
                   </div>
-                  <h3 className="mb-4 text-xl font-bold text-[var(--color-fg)]">
+                  <h3 className="mb-4 text-xl font-bold uppercase tracking-wide text-[var(--color-fg)]">
                     {item.title}
                   </h3>
                   <p className="mb-0 text-base leading-relaxed text-[var(--color-fg)]">
@@ -156,7 +167,7 @@ export default function FlexibilityOptionalityPage() {
       </div>
 
       {/* Leveraging Our Flexibility for You - 5 link cards */}
-      <div className="py-16 sm:py-20">
+      <div className="bg-[#f0f0f0] py-16 sm:py-20">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
           <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
             Leveraging Our Flexibility for You
@@ -166,9 +177,10 @@ export default function FlexibilityOptionalityPage() {
               <Link
                 key={i}
                 href={item.href}
+                variant="button"
                 className="group flex flex-col rounded-lg bg-[#e2e5ed] p-8 transition-colors hover:bg-[#d5d9e8] sm:p-10"
               >
-                <h3 className="mb-4 text-xl font-bold text-[var(--color-fg)] group-hover:text-[var(--color-brand-primary)]">
+                <h3 className="mb-4 text-xl font-bold uppercase tracking-wide text-[var(--color-fg)] group-hover:text-[var(--color-brand-primary)]">
                   {item.title}
                 </h3>
                 <p className="mb-0 text-base leading-relaxed text-[var(--color-fg)]">

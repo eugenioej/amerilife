@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { TrendingUp, Shield, UserCircle, Briefcase } from "lucide-react";
+import { TrendingUp, Shield, UserCircle, Briefcase, Headphones } from "lucide-react";
 import { JsonLd } from "@/app/components/seo/JsonLd";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { getByNumberIcon } from "@/app/components/about-us/DistributionIcons";
@@ -26,8 +27,8 @@ const BY_THE_NUMBERS = [
   { stat: "400k", label: "Clients served by…" },
   { stat: "300k+", label: "Agents and advisors through..." },
   { stat: "50", label: "Agency locations" },
-  { stat: "$7.5 billion", label: "In assets under RIA management and…" },
   { stat: "70", label: "Marketing organizations across the U.S. plus..." },
+  { stat: "$7.5 billion", label: "In assets under RIA management and…" },
   { stat: "110k+", label: "Worksite monthly billings across 20 industry sectors" },
 ] as const;
 
@@ -61,6 +62,13 @@ const DISTRIBUTION_CHANNELS = [
     href: "/about-us/our-distribution/worksite-distribution/",
     Icon: Briefcase,
   },
+  {
+    title: "Direct-to-Consumer",
+    description:
+      "Medicare Advantage and Medicare Supplement products for Medicare-eligible customers nationwide, including Senior Healthcare Direct and YourMedicare.",
+    href: "/about-us/our-distribution/direct-to-consumer/",
+    Icon: Headphones,
+  },
 ] as const;
 
 export default function OurDistributionPage() {
@@ -73,32 +81,33 @@ export default function OurDistributionPage() {
           { name: "Our Distribution", path: "/about-us/our-distribution/" },
         ])}
       />
-      {/* Hero - 2-col: gray bg left with copy, image right (match Who We Are) */}
-      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
-        <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
-          <nav className="mb-6 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <li>
-                <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                  Home
-                </Link>
-              </li>
-              <li aria-hidden="true">/</li>
-              <li>
-                <Link href="/about-us/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                  About Us
-                </Link>
-              </li>
-              <li aria-hidden="true">/</li>
-              <li className="text-[var(--color-fg)]" aria-current="page">
-                Our Distribution
-              </li>
-            </ol>
-          </nav>
-          <h1 className="mb-2 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
+      <div className="bg-white">
+        <FadeInOnView
+          direction="fade"
+          threshold={0}
+          className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 sm:py-12 lg:py-14"
+        >
+          <SiteBreadcrumb
+            className="mb-8"
+            items={[
+              { label: "Home", href: "/" },
+              { label: "About Us", href: "/about-us/" },
+              { label: "Our Distribution" },
+            ]}
+          />
+          <h1 className="text-[32px] font-semibold leading-[38px] text-[#244260] sm:text-5xl sm:leading-[64px]">
             Our Distribution
           </h1>
-          <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-2xl">
+        </FadeInOnView>
+      </div>
+
+      {/* Hero - 2-col: gray bg left with copy, image right (match Who We Are) */}
+      <FadeInOnView
+        direction="up"
+        className="grid min-h-0 w-full grid-cols-1 border-t border-[#e8ede8] lg:grid-cols-2"
+      >
+        <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
+          <h2 className="mb-6 text-2xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-3xl lg:text-4xl">
             A Model
             <br />
             of Excellence
@@ -155,13 +164,16 @@ export default function OurDistributionPage() {
               );
             })}
           </div>
-          {/* Remaining stats */}
+          {/* Remaining stats — icon index 3/4 follow swapped stats (70 vs $7.5B) */}
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {BY_THE_NUMBERS.slice(2).map((item, i) => {
-              const Icon = getByNumberIcon(i + 2);
+              const statIndex = i + 2;
+              const iconIndex =
+                statIndex === 3 ? 4 : statIndex === 4 ? 3 : statIndex;
+              const Icon = getByNumberIcon(iconIndex);
               return (
                 <div
-                  key={i + 2}
+                  key={`${item.stat}-${statIndex}`}
                   className="flex flex-col items-center rounded-lg bg-white/10 p-8 text-center backdrop-blur-sm"
                 >
                   <div className="mb-4">

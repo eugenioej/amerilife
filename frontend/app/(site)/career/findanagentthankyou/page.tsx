@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
 import { ThankYouPageContent } from "@/app/components/thank-you/ThankYouPageContent";
 import { staticPageMetadata } from "@/lib/seo";
-import { rewriteUploadsUrl } from "@/lib/wp-media";
-
-// Image on WP: /wp-content/uploads/2017/10/Thank-You-IMG.jpg
-const THANK_YOU_IMAGE_URL = rewriteUploadsUrl(
-  "https://amerilife.com/wp-content/uploads/2017/10/Thank-You-IMG.jpg"
-);
+import { WP_IMAGE_SOURCES } from "@/lib/wp-image-sources";
 
 export const metadata: Metadata = {
   ...staticPageMetadata(
@@ -28,7 +23,7 @@ export default function FindAnAgentThankYouPage() {
       title="Thank You – Find an Agent"
       subtitle="Thank you!"
       image={{
-        src: THANK_YOU_IMAGE_URL,
+        src: WP_IMAGE_SOURCES.thankYouHero,
         alt: "AmeriLife team members",
         priority: true,
       }}
@@ -36,10 +31,6 @@ export default function FindAnAgentThankYouPage() {
       message={
         <p>A company representative will be in touch.</p>
       }
-      ctas={[
-        { label: "Back to Career Agents", href: "/career/agents/", variant: "primary" },
-        { label: "Back to Home", href: "/", variant: "secondary" },
-      ]}
     />
   );
 }

@@ -1,4 +1,5 @@
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { getCategoryPillColor } from "@/lib/category-colors";
 import type { PostByUri } from "@/lib/queries";
 import { rewriteUploadsInHtml } from "@/lib/wp-media";
@@ -24,43 +25,15 @@ export function BlogPostTemplate({ post, categorySlug }: Props) {
 
   return (
     <article className="mx-auto max-w-[720px] px-[var(--container-padding-x)] py-12">
-      <nav
-        className="mb-6 text-sm text-[var(--color-muted)]"
-        aria-label="Breadcrumb"
-      >
-        <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <li>
-            <Link
-              href="/"
-              className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
-            >
-              Home
-            </Link>
-          </li>
-          <li aria-hidden="true">/</li>
-          <li>
-            <Link
-              href="/newsroom/"
-              className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
-            >
-              Newsroom
-            </Link>
-          </li>
-          <li aria-hidden="true">/</li>
-          <li>
-            <Link
-              href={`/blog/${categorySlug}/`}
-              className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
-            >
-              {categoryName}
-            </Link>
-          </li>
-          <li aria-hidden="true">/</li>
-          <li className="text-[var(--color-fg)]" aria-current="page">
-            {post.title}
-          </li>
-        </ol>
-      </nav>
+      <SiteBreadcrumb
+        className="mb-6"
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Newsroom", href: "/newsroom/" },
+          { label: categoryName, href: `/blog/${categorySlug}/` },
+          { label: post.title ?? "Article" },
+        ]}
+      />
 
       <h1 className="mb-4 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
         {post.title}

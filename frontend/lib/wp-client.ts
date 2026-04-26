@@ -1,17 +1,30 @@
 // lib/wp-client.ts
 
+/** WordPress origin for building `/graphql` (server scripts often set `WORDPRESS_URL` only). */
+function getWpBaseUrl(): string | undefined {
+  const pub = process.env.NEXT_PUBLIC_WORDPRESS_URL?.trim();
+  if (pub) return pub.replace(/\/$/, "");
+  const server = process.env.WORDPRESS_URL?.trim();
+  if (server) return server.replace(/\/$/, "");
+  return undefined;
+}
+
+/** True when a GraphQL URL can be resolved (explicit endpoint or any known WP base URL). */
+export function isWpGraphqlConfigured(): boolean {
+  const explicit = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT?.trim();
+  return Boolean(explicit || getWpBaseUrl());
+}
+
 function getGraphQLEndpoint(): string {
-  const endpoint =
-    process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ??
-    (process.env.NEXT_PUBLIC_WORDPRESS_URL
-      ? `${process.env.NEXT_PUBLIC_WORDPRESS_URL.replace(/\/$/, "")}/graphql`
-      : "");
-  if (!endpoint) {
-    throw new Error(
-      "NEXT_PUBLIC_GRAPHQL_ENDPOINT or NEXT_PUBLIC_WORDPRESS_URL is not defined."
-    );
-  }
-  return endpoint;
+  const explicit = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT?.trim();
+  if (explicit) return explicit;
+
+  const base = getWpBaseUrl();
+  if (base) return `${base}/graphql`;
+
+  throw new Error(
+    "Set NEXT_PUBLIC_GRAPHQL_ENDPOINT, or NEXT_PUBLIC_WORDPRESS_URL / WORDPRESS_URL (in frontend/.env.local).",
+  );
 }
 
 export async function fetchGraphQL<T>(

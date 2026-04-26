@@ -80,6 +80,20 @@ const SEARCH_INDEX: SearchEntry[] = [
     ],
   },
   {
+    path: "/about-us/our-distribution/direct-to-consumer/",
+    title: "Direct-to-Consumer",
+    description:
+      "AmeriLife’s direct-to-consumer division, including Senior Healthcare Direct, delivers Medicare Advantage and Medicare Supplement products to Medicare-eligible customers nationwide.",
+    keywords: [
+      "Senior Healthcare Direct",
+      "Medicare Advantage",
+      "Medicare Supplement",
+      "DTC",
+      "call center",
+      "YourMedicare",
+    ],
+  },
+  {
     path: "/about-us/our-distribution/career-agency/",
     title: "Career Agency",
     description:
@@ -357,7 +371,7 @@ const SEARCH_INDEX: SearchEntry[] = [
     ],
   },
   {
-    path: "/privacy/",
+    path: "/privacy-policy/",
     title: "Privacy Policy",
     description:
       "AmeriLife Privacy Policy - Learn how we collect, use, and protect your personal information.",
@@ -376,7 +390,7 @@ const SEARCH_INDEX: SearchEntry[] = [
     ],
   },
   {
-    path: "/sms-terms/",
+    path: "/sms-text-messaging-terms-and-conditions/",
     title: "SMS Text Messaging Terms and Conditions",
     description:
       "AmeriLife SMS Text Messaging Terms and Conditions - Learn how we use SMS text messaging.",

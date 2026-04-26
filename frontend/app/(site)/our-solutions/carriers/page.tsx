@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
-import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import {
   IconFileMedical,
@@ -14,7 +14,8 @@ import {
   IconShieldHalved,
   IconBuildingColumns,
 } from "@/app/components/our-solutions/CarrierIcons";
-import { staticPageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/app/components/seo/JsonLd";
+import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = staticPageMetadata(
   "Carrier Partners | AmeriLife",
@@ -93,40 +94,40 @@ const VALUE_SECTIONS = [
 export default function CarriersPage() {
   return (
     <article className="bg-white">
-      {/* Breadcrumb + Title - contained */}
-      <FadeInOnView
-        direction="fade"
-        threshold={0}
-        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24"
-      >
-        <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link href="/our-solutions/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Our Solutions
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-[var(--color-fg)]" aria-current="page">
-              Carrier Partners
-            </li>
-          </ol>
-        </nav>
-        <h1 className="mb-0 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
-          Carrier Partners
-        </h1>
-      </FadeInOnView>
+      <JsonLd
+        schema={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Our Solutions", path: "/our-solutions/" },
+          { name: "Carrier Partners", path: "/our-solutions/carriers/" },
+        ])}
+      />
+      <div className="bg-white">
+        <FadeInOnView
+          direction="fade"
+          threshold={0}
+          className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 sm:py-12 lg:py-14"
+        >
+          <SiteBreadcrumb
+            className="mb-8"
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Our Solutions", href: "/our-solutions/" },
+              { label: "Carrier Partners" },
+            ]}
+          />
+          <h1 className="text-[32px] font-semibold leading-[38px] text-[#244260] sm:text-5xl sm:leading-[64px]">
+            Carrier Partners
+          </h1>
+        </FadeInOnView>
+      </div>
 
       {/* Hero: Your Products, One Powerful Network - 2-col: gray left, image right */}
-      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView
+        direction="up"
+        className="grid min-h-0 w-full grid-cols-1 border-t border-[#e8ede8] lg:grid-cols-2"
+      >
         <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
-          <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-2xl">
+          <h2 className="mb-6 text-2xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-3xl lg:text-4xl">
             Your Products,
             <br />
             One Powerful Network
@@ -160,21 +161,20 @@ export default function CarriersPage() {
         </div>
       </FadeInOnView>
 
-      {/* Brad Shelton quote - same style as Kiersten on employees page */}
+      {/* Brad Shelton quote — aligned with /our-solutions/employees & agents-and-advisors */}
       <FadeInOnView
         direction="up"
         className="relative min-h-[320px] w-full overflow-hidden bg-cover bg-center py-16 lg:py-20"
         style={{ backgroundImage: `url(${rewriteUploadsUrl(BANNER_10)})` }}
       >
-        <div className="absolute inset-0 bg-black/40" aria-hidden />
-        <div className="relative mx-auto flex max-w-[var(--container-max)] flex-col items-center justify-center px-[var(--container-padding-x)] text-center">
-          <blockquote className="mb-6 text-xl leading-relaxed text-white sm:text-2xl">
-            In today&apos;s market, a strong, collaborative relationship between
-            carrier and distributor is essential to delivering innovative,
-            high-quality insurance products that can meet the growing needs of
-            marketers, agents and their clients.
+        <div className="absolute inset-0 bg-black/20" aria-hidden />
+        <div className="relative mx-auto flex w-full max-w-[var(--container-max)] flex-col items-center justify-center px-[var(--container-padding-x)] text-center">
+          <blockquote className="mb-8 w-full max-w-6xl text-xl font-medium leading-relaxed text-white sm:text-2xl lg:text-3xl">
+            &ldquo;In today&apos;s market, a strong, collaborative relationship between carrier and
+            distributor is essential to delivering innovative, high-quality insurance products that
+            can meet the growing needs of marketers, agents and their clients.&rdquo;
           </blockquote>
-          <h2 className="mb-2 text-2xl font-bold text-white sm:text-3xl">
+          <h2 className="mb-2 text-2xl font-bold uppercase tracking-wide text-white sm:text-3xl">
             Brad Shelton
           </h2>
           <p className="mb-0 text-base font-medium text-white/90">
@@ -186,7 +186,7 @@ export default function CarriersPage() {
       {/* Our Product Expertise - 5 cards with icons */}
       <div className="bg-[#f0f0f0] py-16 sm:py-20">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+          <h2 className="mb-12 text-center text-3xl font-semibold leading-tight text-[var(--color-fg)] sm:text-4xl lg:text-5xl">
             Our Product Expertise
           </h2>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
@@ -215,7 +215,7 @@ export default function CarriersPage() {
       {/* The Value We Provide - 4 sections with bullet lists */}
       <div className="py-16 sm:py-20">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+          <h2 className="mb-12 text-center text-3xl font-semibold leading-tight text-[var(--color-fg)] sm:text-4xl lg:text-5xl">
             The Value We Provide
           </h2>
           <div className="grid gap-12 sm:grid-cols-2">
@@ -231,7 +231,7 @@ export default function CarriersPage() {
                   <div className="mb-4">
                     <Icon />
                   </div>
-                  <h3 className="mb-4 whitespace-pre-line text-xl font-bold text-[var(--color-fg)]">
+                  <h3 className="mb-4 whitespace-pre-line text-xl font-bold uppercase tracking-wide text-[var(--color-fg)]">
                     {section.title}
                   </h3>
                   <p className="mb-6 text-base leading-relaxed text-[var(--color-fg)]">

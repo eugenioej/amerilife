@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { FaqNewsroomSection } from "@/app/components/faq/FaqNewsroomSection";
 import { staticPageMetadata } from "@/lib/seo";
+import { getFaqNewsroomPosts } from "@/lib/faq-newsroom-posts";
 
 export const metadata: Metadata = staticPageMetadata(
   "Frequently Asked Questions for Consumers | AmeriLife",
@@ -9,38 +10,32 @@ export const metadata: Metadata = staticPageMetadata(
   "/consumers/faq/"
 );
 
-export default function ConsumersFaqPage() {
+export default async function ConsumersFaqPage() {
+  const posts = await getFaqNewsroomPosts();
+
   return (
     <section className="bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-        {/* Breadcrumb */}
-        <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link
-                href="/our-solutions/consumers/"
-                className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]"
-              >
-                Insurance for Individuals and Families
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-[var(--color-fg)]" aria-current="page">
-              Frequently Asked Questions
-            </li>
-          </ol>
-        </nav>
+        <SiteBreadcrumb
+          className="mb-8"
+          items={[
+            { label: "Home", href: "/" },
+            {
+              label: "Insurance for Individuals and Families",
+              href: "/our-solutions/consumers/",
+            },
+            { label: "Frequently Asked Questions" },
+          ]}
+        />
 
-        <h1 className="mb-12 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
+        <h1 className="mb-4 text-4xl font-bold leading-tight tracking-tight text-[var(--color-fg)]">
           Frequently Asked Questions
         </h1>
-        <FaqNewsroomSection />
+        <div
+          className="mb-12 h-[3px] w-[125px] max-w-full shrink-0 bg-[#94c83d]"
+          aria-hidden
+        />
+        <FaqNewsroomSection posts={posts} />
       </div>
     </section>
   );

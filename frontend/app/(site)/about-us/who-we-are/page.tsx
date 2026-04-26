@@ -3,6 +3,7 @@ import Image from "next/image";
 import { JsonLd } from "@/app/components/seo/JsonLd";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { IconTarget, IconDiamond, getPrincipleIcon } from "@/app/components/about-us/WhoWeAreIcons";
@@ -17,8 +18,11 @@ export const metadata: Metadata = staticPageMetadata(
 const UPLOADS = "https://amerilife.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2021/12/WhoWeAre_AmeriLifePlace_746x660.png`;
 
-/** Original uses linear-gradient(105deg,#003a74 0%,#67c084 100%) */
+/** Demonstrating Our Values band */
 const MISSION_VALUES_GRADIENT = "linear-gradient(105deg, #003a74 0%, #67c084 100%)";
+
+const MISSION_VALUES_BANNER =
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2021/12/banner-10.png";
 
 const PRINCIPLES = [
   { title: "Shared Culture", description: "We believe that we are all in this together." },
@@ -93,38 +97,31 @@ export default function WhoWeArePage() {
           { name: "Who We Are", path: "/about-us/who-we-are/" },
         ])}
       />
-      {/* Breadcrumb + Title - contained */}
-      <FadeInOnView
-        direction="fade"
-        threshold={0}
-        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24"
-      >
-        <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link href="/about-us/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                About Us
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-[var(--color-fg)]" aria-current="page">
-              Who We Are
-            </li>
-          </ol>
-        </nav>
-        <h1 className="mb-0 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
-          Who We Are
-        </h1>
-      </FadeInOnView>
+      <div className="bg-white">
+        <FadeInOnView
+          direction="fade"
+          threshold={0}
+          className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 sm:py-12 lg:py-14"
+        >
+          <SiteBreadcrumb
+            className="mb-8"
+            items={[
+              { label: "Home", href: "/" },
+              { label: "About Us", href: "/about-us/" },
+              { label: "Who We Are" },
+            ]}
+          />
+          <h1 className="text-[32px] font-semibold leading-[38px] text-[#244260] sm:text-5xl sm:leading-[64px]">
+            Who We Are
+          </h1>
+        </FadeInOnView>
+      </div>
 
       {/* About AmeriLife - full-bleed 2-col: gray left, image right */}
-      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView
+        direction="up"
+        className="grid min-h-0 w-full grid-cols-1 border-t border-[#e8ede8] lg:grid-cols-2"
+      >
         <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
           <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-2xl">
             About AmeriLife
@@ -167,13 +164,15 @@ export default function WhoWeArePage() {
         </div>
       </FadeInOnView>
 
-      {/* Our Mission & Our Values - full-bleed gradient with icons */}
+      {/* Our Mission & Our Values - banner image with icons */}
       <FadeInOnView
         direction="up"
-        className="grid gap-12 px-[var(--container-padding-x)] py-16 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:px-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]"
-        style={{ background: MISSION_VALUES_GRADIENT }}
+        className="grid gap-12 bg-cover bg-center bg-no-repeat px-[var(--container-padding-x)] py-16 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:px-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]"
+        style={{
+          backgroundImage: `url(${rewriteUploadsUrl(MISSION_VALUES_BANNER)})`,
+        }}
       >
-        <div className="flex flex-col">
+        <div className="flex flex-col items-center text-center">
           <div className="mb-4">
             <IconTarget />
           </div>
@@ -185,7 +184,7 @@ export default function WhoWeArePage() {
             and help people live longer, healthier lives.
           </p>
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col items-center text-center">
           <div className="mb-4">
             <IconDiamond />
           </div>
@@ -270,21 +269,25 @@ export default function WhoWeArePage() {
         direction="up"
         className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-20"
       >
-        <h2 className="mb-4 text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
-          AmeriLife Past, Present & Future: The Next 50
-        </h2>
-        <p className="mb-6 text-base leading-relaxed text-[var(--color-fg)]">
-          AmeriLife&apos;s more than 50-year legacy is rivaled only by the promise and excitement of
-          its continued growth as the nation&apos;s most dominant marketing and distribution company
-          for financial solutions.
-        </p>
-        <p className="mb-12 text-base leading-relaxed text-[var(--color-fg)]">
-          In the last several years alone, AmeriLife has acquired more than 60 companies across the
-          life and health insurance, annuities, and retirement planning space. In doing so, it has
-          strengthened its offerings, expanded its geographical footprint, and fortified its vast and
-          powerful distribution network for years to come.
-        </p>
-        <h3 className="mb-10 text-xl font-semibold text-[var(--color-fg)]">Our Milestones</h3>
+        <div className="mx-auto mb-12 max-w-3xl text-center">
+          <h2 className="mb-4 text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+            AmeriLife Past, Present & Future: The Next 50
+          </h2>
+          <p className="mb-6 text-base leading-relaxed text-[var(--color-fg)]">
+            AmeriLife&apos;s more than 50-year legacy is rivaled only by the promise and excitement of
+            its continued growth as the nation&apos;s most dominant marketing and distribution company
+            for financial solutions.
+          </p>
+          <p className="text-base leading-relaxed text-[var(--color-fg)]">
+            In the last several years alone, AmeriLife has acquired more than 60 companies across the
+            life and health insurance, annuities, and retirement planning space. In doing so, it has
+            strengthened its offerings, expanded its geographical footprint, and fortified its vast and
+            powerful distribution network for years to come.
+          </p>
+        </div>
+        <h3 className="mb-10 text-center text-xl font-semibold text-[var(--color-fg)]">
+          Our Milestones
+        </h3>
         <MilestonesSlider milestones={MILESTONES} images={MILESTONE_IMAGES} />
       </FadeInOnView>
     </article>

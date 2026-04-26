@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { BlogPostCard } from "@/app/components/blog/BlogPostCard";
-import { LogoCarousel } from "@/app/components/ui/LogoCarousel";
 import { fetchGraphQL } from "@/lib/wp-client";
 import {
   GET_LEADER_BY_SLUG,
@@ -13,13 +13,8 @@ import {
 } from "@/lib/queries";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { WP_IMAGE_SOURCES } from "@/lib/wp-image-sources";
-import {
-  AFFILIATE_CATEGORY_SLUG,
-  affiliateNodesToCarouselLogos,
-  affiliatesInCategory,
-  fetchAffiliateNodes,
-} from "@/lib/affiliates";
-import { staticPageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/app/components/seo/JsonLd";
+import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = staticPageMetadata(
   "Career Agency | AmeriLife",
@@ -68,18 +63,8 @@ const RESOURCES = [
 const DARK_PANEL_BG = "rgb(36, 66, 96)";
 
 export default async function CareerAgencyPage() {
-  const [leader, relatedPosts, affiliateNodes] = await Promise.all([
-    getCareerAgencyLeader(),
-    getRelatedNewsPosts(),
-    fetchAffiliateNodes(),
-  ]);
-
-  const medicalAffiliateLogos = affiliateNodesToCarouselLogos(
-    affiliatesInCategory(affiliateNodes, AFFILIATE_CATEGORY_SLUG.medicalLifeHealth)
-  );
-  const wealthAffiliateLogos = affiliateNodesToCarouselLogos(
-    affiliatesInCategory(affiliateNodes, AFFILIATE_CATEGORY_SLUG.wealthManagementRetirement)
-  );
+  const leader = await getCareerAgencyLeader();
+  const relatedPosts = await getRelatedNewsPosts();
 
   const headshotSrc = leader?.featuredImage?.node?.sourceUrl
     ? rewriteUploadsUrl(leader.featuredImage.node.sourceUrl)
@@ -100,46 +85,42 @@ export default async function CareerAgencyPage() {
 
   return (
     <article className="bg-white">
-      {/* Breadcrumb + Title - contained, left aligned (matches agents-and-advisors) */}
-      <FadeInOnView
-        direction="fade"
-        threshold={0}
-        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24"
-      >
-        <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link href="/about-us/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                About Us
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link href="/about-us/our-distribution/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Our Distribution
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-[var(--color-fg)]" aria-current="page">
-              Career Agency
-            </li>
-          </ol>
-        </nav>
-        <h1 className="mb-0 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
-          Career Agency
-        </h1>
-      </FadeInOnView>
+      <JsonLd
+        schema={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "About Us", path: "/about-us/" },
+          { name: "Our Distribution", path: "/about-us/our-distribution/" },
+          { name: "Career Agency", path: "/about-us/our-distribution/career-agency/" },
+        ])}
+      />
+      <div className="bg-white">
+        <FadeInOnView
+          direction="fade"
+          threshold={0}
+          className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 sm:py-12 lg:py-14"
+        >
+          <SiteBreadcrumb
+            className="mb-8"
+            items={[
+              { label: "Home", href: "/" },
+              { label: "About Us", href: "/about-us/" },
+              { label: "Our Distribution", href: "/about-us/our-distribution/" },
+              { label: "Career Agency" },
+            ]}
+          />
+          <h1 className="text-[32px] font-semibold leading-[38px] text-[#244260] sm:text-5xl sm:leading-[64px]">
+            Career Agency
+          </h1>
+        </FadeInOnView>
+      </div>
 
       {/* Hero - Left: teal slogan + intro | Right: Frank headshot + white card below */}
-      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView
+        direction="up"
+        className="grid min-h-0 w-full grid-cols-1 border-t border-[#e8ede8] lg:grid-cols-2"
+      >
         <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
-          <h2 className="mb-6 text-2xl font-bold uppercase leading-tight tracking-wide text-[var(--color-brand-primary)] sm:text-3xl">
+          <h2 className="mb-6 text-2xl font-bold uppercase leading-tight tracking-wide text-[var(--color-brand-primary)] sm:text-3xl lg:text-4xl">
             Helping People
             <br />
             Prepare for Life —
@@ -234,7 +215,7 @@ export default async function CareerAgencyPage() {
             target="_blank"
             rel="noopener noreferrer"
             variant="button"
-            className="motion-cta inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-brand-primary)] px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-[var(--color-brand-primary-hover)]"
+            className="motion-cta inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] bg-white px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-dark)] transition-colors hover:bg-white/90"
           >
             VIEW AGENT OPPORTUNITIES
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -254,33 +235,10 @@ export default async function CareerAgencyPage() {
         </div>
       </FadeInOnView>
 
-      {/* Affiliated Companies — Affiliate CPT + `affiliate_category` terms (`amerilife-affiliates-cpt.php`) */}
-      <FadeInOnView direction="up" className="bg-white py-16 sm:py-20">
-        <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
-            Affiliated Companies
-          </h2>
-          <div className="space-y-12">
-            <div>
-              <h3 className="mb-6 text-center text-sm font-bold uppercase tracking-wide text-[var(--color-muted)]">
-                Medical, Life & Health Market
-              </h3>
-              <LogoCarousel logos={medicalAffiliateLogos} />
-            </div>
-            <div>
-              <h3 className="mb-6 text-center text-sm font-bold uppercase tracking-wide text-[var(--color-muted)]">
-                Wealth Management & Retirement Planning Market
-              </h3>
-              <LogoCarousel logos={wealthAffiliateLogos} />
-            </div>
-          </div>
-        </div>
-      </FadeInOnView>
-
       {/* Related News — latest Posts from WordPress */}
       <FadeInOnView direction="up" className="bg-[#f7f8f9] py-16 sm:py-24">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <h2 className="mb-12 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+          <h2 className="mb-12 text-center text-3xl font-bold leading-tight text-[var(--color-fg)] sm:text-4xl lg:text-5xl">
             Related News
           </h2>
           {relatedPosts.length > 0 ? (

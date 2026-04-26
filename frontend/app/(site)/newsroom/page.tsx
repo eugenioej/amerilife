@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { Building2, Users } from "lucide-react";
 import { fetchGraphQL } from "@/lib/wp-client";
 import {
@@ -69,20 +70,10 @@ export default async function NewsroomPage() {
   return (
     <>
       <div className="mx-auto max-w-[1080px] px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        {/* Breadcrumb - matches live: Home / Newsroom */}
-        <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-[var(--color-fg)]" aria-current="page">
-              Newsroom
-            </li>
-          </ol>
-        </nav>
+        <SiteBreadcrumb
+          className="mb-8"
+          items={[{ label: "Home", href: "/" }, { label: "Newsroom" }]}
+        />
 
         <h1 className="mb-6 text-2xl font-bold text-[var(--color-fg)] sm:mb-8 sm:text-3xl md:text-4xl">
           Newsroom

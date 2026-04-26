@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ExternalLink } from "lucide-react";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import type { LeaderDetail, LeaderListItem } from "@/lib/queries";
 import { rewriteUploadsInHtml, rewriteUploadsUrl } from "@/lib/wp-media";
 import { LeadersGrid } from "./LeadersGrid";
@@ -32,40 +33,14 @@ export function LeaderDetailTemplate({ leader, allLeaders }: LeaderDetailTemplat
       {/* Breadcrumb */}
       <FadeInOnView direction="fade" threshold={0} className="bg-white py-3 sm:py-5">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <nav className="text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <li>
-                <Link
-                  href="/"
-                  className="text-[var(--color-link)] hover:text-[var(--color-link-hover)] no-underline transition-colors"
-                >
-                  Home
-                </Link>
-              </li>
-              <li aria-hidden>/</li>
-              <li>
-                <Link
-                  href="/about-us/"
-                  className="text-[var(--color-link)] hover:text-[var(--color-link-hover)] no-underline transition-colors"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li aria-hidden>/</li>
-              <li>
-                <Link
-                  href="/about-us/our-leaders/"
-                  className="text-[var(--color-link)] hover:text-[var(--color-link-hover)] no-underline transition-colors"
-                >
-                  Our Leaders
-                </Link>
-              </li>
-              <li aria-hidden>/</li>
-              <li className="text-[var(--color-fg)]" aria-current="page">
-                {name}
-              </li>
-            </ol>
-          </nav>
+          <SiteBreadcrumb
+            items={[
+              { label: "Home", href: "/" },
+              { label: "About Us", href: "/about-us/" },
+              { label: "Our Leaders", href: "/about-us/our-leaders/" },
+              { label: name },
+            ]}
+          />
         </div>
       </FadeInOnView>
 
@@ -128,7 +103,10 @@ export function LeaderDetailTemplate({ leader, allLeaders }: LeaderDetailTemplat
       </FadeInOnView>
 
       {/* More leaders */}
-      <FadeInOnView direction="up" className="border-t border-[var(--color-border)] bg-[#f7f8f9] py-12 sm:py-16">
+      <FadeInOnView
+        direction="up"
+        className="border-t border-[#e8ede8] bg-[#F6F8F6] py-12 sm:py-16"
+      >
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
           <h2 className="mb-8 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
             Our Leaders

@@ -56,7 +56,7 @@ const STATIC_PRIMARY_NAV: NavItem[] = [
 
 /** Static footer links (legal + utility). */
 const STATIC_FOOTER_LINKS: NavItem[] = [
-  { label: "Privacy Policy", href: "/privacy/" },
+  { label: "Privacy Policy", href: "/privacy-policy/" },
   { label: "Terms of Use", href: "/terms/" },
   { label: "Insights", href: "/insights/" },
   { label: "Contact Us", href: "/contact/" },

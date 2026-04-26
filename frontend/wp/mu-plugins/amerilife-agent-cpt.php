@@ -62,7 +62,23 @@ add_action('init', function () {
   }
 }, 9);
 
+add_action('edit_form_top', function ($post) {
+  if (!isset($post->post_type) || $post->post_type !== 'agent') {
+    return;
+  }
+  wp_nonce_field('amerilife_agent_save', 'amerilife_agent_nonce');
+}, 1);
+
 add_action('add_meta_boxes', function () {
+  // Office link: sidebar is easy to find in the block editor; "normal" meta boxes sit far below the blocks.
+  add_meta_box(
+    'agent_office',
+    'Office / agency',
+    'amerilife_agent_office_metabox',
+    'agent',
+    'side',
+    'high'
+  );
   add_meta_box(
     'agent_details',
     'Agent details',
@@ -73,21 +89,57 @@ add_action('add_meta_boxes', function () {
   );
 });
 
-function amerilife_agent_details_metabox($post) {
-  wp_nonce_field('amerilife_agent_save', 'amerilife_agent_nonce');
-  $agency_id = (int) get_post_meta($post->ID, 'agency_id', true);
-
-  echo '<p><label for="agency_id"><strong>Agency</strong></label></p>';
-  wp_dropdown_pages(
+/**
+ * Renders a &lt;select&gt; of published agencies. wp_dropdown_pages() / get_pages() do not
+ * list non-hierarchical CPTs, so the Agency dropdown was empty for "agency" posts.
+ */
+function amerilife_agent_render_agency_select($name, $html_id, $selected_id) {
+  if (!post_type_exists('agency')) {
+    echo '<p><strong>Agency post type is missing.</strong> The amerilife-agency-cpt plugin must be active.</p>';
+    return;
+  }
+  $agencies = get_posts(
     [
-      'name' => 'agency_id',
-      'id' => 'agency_id',
-      'post_type' => 'agency',
-      'selected' => $agency_id,
-      'show_option_none' => '— Select agency —',
+      'post_type'      => 'agency',
+      'post_status'    => 'publish',
+      'posts_per_page' => 500,
+      'orderby'        => 'title',
+      'order'          => 'ASC',
+      'no_found_rows'  => true,
     ]
   );
+  $selected_id = (int) $selected_id;
+  echo '<select name="' . esc_attr($name) . '" id="' . esc_attr($html_id) . '" class="widefat" style="max-width:100%;box-sizing:border-box;">';
+  echo '<option value="0">— Select agency —</option>';
+  foreach ($agencies as $a) {
+    $id = (int) $a->ID;
+    echo '<option value="' . (int) $id . '" ' . selected($selected_id, $id, false) . '>' . esc_html(get_the_title($a)) . '</option>';
+  }
+  echo '</select>';
+  if (count($agencies) === 0) {
+    echo '<p class="description" style="margin-top:8px;">No published <strong>Agencies</strong> found. Add offices under <strong>Agencies</strong> in the admin menu, then return here.</p>';
+  }
+}
 
+function amerilife_agent_office_metabox($post) {
+  $agency_id = (int) get_post_meta($post->ID, 'agency_id', true);
+
+  echo '<p><label for="amerilife_agent_agency_id"><strong>Linked office</strong></label></p>';
+  amerilife_agent_render_agency_select('agency_id', 'amerilife_agent_agency_id', $agency_id);
+  echo '<p class="description" style="margin-top:0.5em;">';
+  echo 'Pick the office and <strong>Update</strong> the agent. The ID is saved as <code>agency_id</code>. ';
+  if ($agency_id > 0) {
+    $title = get_the_title($agency_id);
+    echo 'Saved: <code>agency_id</code> = <strong>' . esc_html((string) $agency_id) . '</strong>';
+    if ($title !== '') {
+      echo ' — ' . esc_html($title);
+    }
+    echo '.';
+  }
+  echo '</p>';
+}
+
+function amerilife_agent_details_metabox($post) {
   $fields = [
     'role' => 'Role / title',
     'city' => 'City',

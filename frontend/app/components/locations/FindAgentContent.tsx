@@ -2,6 +2,7 @@
 
 import { MapPin, Phone, ChevronRight } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import type { LocationData } from "@/lib/locations-data";
 import type { GfFormData } from "@/lib/gf-types";
 import { GravityForm } from "@/app/components/gravity-forms/GravityForm";
@@ -23,23 +24,11 @@ export function FindAgentContent({ locations, connectForm }: Props) {
         }}
       >
         <div className="mx-auto flex w-full max-w-[var(--container-max)] flex-1 flex-col items-center justify-end px-[var(--container-padding-x)] pb-[40px]">
-          {/* Breadcrumb */}
-          <nav className="mb-6 text-sm text-white/70" aria-label="Breadcrumb">
-            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <li>
-                <Link
-                  href="/"
-                  className="text-white/80 transition-colors hover:text-white no-underline"
-                >
-                  Home
-                </Link>
-              </li>
-              <li aria-hidden="true">/</li>
-              <li className="text-white/60" aria-current="page">
-                Find An Agent
-              </li>
-            </ol>
-          </nav>
+          <SiteBreadcrumb
+            variant="inverse"
+            className="mb-6"
+            items={[{ label: "Home", href: "/" }, { label: "Find An Agent" }]}
+          />
 
           <div className="w-full max-w-3xl text-center">
             <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl">

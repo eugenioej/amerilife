@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import type { LocationData } from "@/lib/locations-data";
 
@@ -25,26 +26,14 @@ export function OfficeInfoHero({ location }: OfficeInfoHeroProps) {
   return (
     <section className="bg-white">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-6 sm:py-8 lg:py-12">
-        {/* Breadcrumb */}
-        <nav className="mb-6 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">&rsaquo;</li>
-            <li>
-              <Link href="/find-an-agent/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Find An Agent
-              </Link>
-            </li>
-            <li aria-hidden="true">&rsaquo;</li>
-            <li className="font-semibold text-[var(--color-fg)]" aria-current="page">
-              {countyName}
-            </li>
-          </ol>
-        </nav>
+        <SiteBreadcrumb
+          className="mb-6"
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Find An Agent", href: "/find-an-agent/" },
+            { label: countyName },
+          ]}
+        />
 
         {/*
           Grid layout matching the reference:

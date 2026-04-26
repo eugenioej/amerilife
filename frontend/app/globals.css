@@ -41,6 +41,12 @@
   --color-link: #3fa590;
   --color-link-hover: #008066;
 
+  /* Breadcrumbs (Divi Child: .aml-breadcrumbs) */
+  --color-breadcrumb-link: #244260;
+  --color-breadcrumb-link-hover: #3fa590;
+  --color-breadcrumb-current: #244260;
+  --color-breadcrumb-separator: #65778b;
+
   /* Colors - Gradient stops (for header/footer/sections) */
   --color-gradient-start: #0e3250;
   --color-gradient-mid: #003a74;

@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "@/app/components/ui/Link";
-import { staticPageMetadata } from "@/lib/seo";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
+import { JsonLd } from "@/app/components/seo/JsonLd";
+import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 export const metadata: Metadata = staticPageMetadata(
@@ -133,40 +135,40 @@ const PRODUCT_CATEGORIES = [
 export default function ConsumersPage() {
   return (
     <article className="bg-white">
-      {/* Breadcrumb + Title - contained */}
-      <FadeInOnView
-        direction="fade"
-        threshold={0}
-        className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-16 sm:py-24"
-      >
-        <nav className="mb-8 text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <li>
-              <Link href="/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link href="/our-solutions/" className="text-[var(--color-link)] transition-colors hover:text-[var(--color-link-hover)]">
-                Our Solutions
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-[var(--color-fg)]" aria-current="page">
-              Consumers
-            </li>
-          </ol>
-        </nav>
-        <h1 className="mb-0 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
-          Consumers
-        </h1>
-      </FadeInOnView>
+      <JsonLd
+        schema={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Our Solutions", path: "/our-solutions/" },
+          { name: "Consumers", path: "/our-solutions/consumers/" },
+        ])}
+      />
+      <div className="bg-white">
+        <FadeInOnView
+          direction="fade"
+          threshold={0}
+          className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 sm:py-12 lg:py-14"
+        >
+          <SiteBreadcrumb
+            className="mb-8"
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Our Solutions", href: "/our-solutions/" },
+              { label: "Consumers" },
+            ]}
+          />
+          <h1 className="text-[32px] font-semibold leading-[38px] text-[#244260] sm:text-5xl sm:leading-[64px]">
+            Consumers
+          </h1>
+        </FadeInOnView>
+      </div>
 
       {/* Hero: Helping You Live a Longer, Healthier Life - 2-col: gray left, image right */}
-      <FadeInOnView direction="up" className="grid min-h-0 w-full grid-cols-1 lg:grid-cols-2">
+      <FadeInOnView
+        direction="up"
+        className="grid min-h-0 w-full grid-cols-1 border-t border-[#e8ede8] lg:grid-cols-2"
+      >
         <div className="flex flex-col justify-center bg-[#f7f8f9] px-[var(--container-padding-x)] py-12 lg:py-16 lg:pl-[max(var(--container-padding-x),calc((100vw-var(--container-max))/2+var(--container-padding-x)))]">
-          <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-2xl">
+          <h2 className="mb-6 text-2xl font-bold uppercase tracking-wide text-[var(--color-brand-primary)] sm:text-3xl lg:text-4xl">
             Helping You Live a
             <br />
             Longer, Healthier Life
@@ -196,51 +198,53 @@ export default function ConsumersPage() {
         </div>
       </FadeInOnView>
 
-      {/* Mike Vietri quote - banner with background image */}
+      {/* Mike Vietri quote - same treatment as other Our Solutions pages (banner-10, light overlay) */}
       <FadeInOnView
         direction="up"
         className="relative min-h-[320px] w-full overflow-hidden bg-cover bg-center py-16 lg:py-20"
         style={{ backgroundImage: `url(${rewriteUploadsUrl(BANNER_10)})` }}
       >
-        <div className="absolute inset-0 bg-black/40" aria-hidden />
-        <div className="relative mx-auto flex max-w-[var(--container-max)] flex-col items-center justify-center px-[var(--container-padding-x)] text-center">
-          <blockquote className="mb-6 text-xl leading-relaxed text-white sm:text-2xl">
-            Customers today shouldn&apos;t simply be sold to. We believe that it&apos;s our mission to
-            be honest and trusted advisors to our clients; to educate them, be a resource for them,
-            and an advocate for their unique needs.
+        <div className="absolute inset-0 bg-black/20" aria-hidden />
+        <div className="relative mx-auto flex w-full max-w-[var(--container-max)] flex-col items-center justify-center px-[var(--container-padding-x)] text-center">
+          <blockquote className="mb-8 w-full max-w-6xl text-xl font-medium leading-relaxed text-white sm:text-2xl lg:text-3xl">
+            &ldquo;Customers today shouldn&apos;t simply be sold to. We believe that it&apos;s our mission
+            to be honest and trusted advisors to our clients; to educate them, be a resource for them, and
+            an advocate for their unique needs.&rdquo;
           </blockquote>
-          <h2 className="mb-2 text-2xl font-bold text-white sm:text-3xl">
+          <h2 className="mb-2 text-2xl font-bold uppercase tracking-wide text-white sm:text-3xl">
             Mike Vietri
           </h2>
-          <p className="mb-0 text-base font-medium text-white/90">
-            Executive Vice President, Distribution
-          </p>
+          <p className="mb-0 text-base font-medium text-white/90">Executive Vice President, Distribution</p>
         </div>
       </FadeInOnView>
 
-      {/* Products with Your Total Financial Wellness In Mind */}
-      <div className="bg-[#f0f0f0] py-16 sm:py-20">
+      {/* Products with Your Total Financial Wellness In Mind — intro */}
+      <div className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
           <h2 className="mb-6 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
             Products with Your Total Financial Wellness In Mind
           </h2>
-          <p className="mx-auto mb-16 max-w-3xl text-center text-base leading-relaxed text-[var(--color-fg)]">
+          <p className="mx-auto max-w-3xl text-center text-base leading-relaxed text-[var(--color-fg)]">
             AmeriLife offers a wealth of financial solutions from leading carriers to fit every
             budget. Solutions are customized for your needs and easy to obtain — from application to
             policy issue to leveraging their benefits when you need them most.
           </p>
+        </div>
+      </div>
 
-          {/* Product categories - desktop: multi-column grid */}
-          <div className="space-y-12">
-            {PRODUCT_CATEGORIES.map((category, catIndex) => (
-              <FadeInOnView
-                key={catIndex}
-                direction="up"
-                delay={catIndex * 80}
-                className="block"
-              >
+      {/* Product categories — alternate: gray band + white cards, white band + gray cards (first band gray so it follows white intro) */}
+      {PRODUCT_CATEGORIES.map((category, catIndex) => {
+        const graySection = catIndex % 2 === 0;
+        const sectionBg = graySection ? "bg-[#f0f0f0]" : "bg-white";
+        const cardClassName = graySection
+          ? "flex flex-col rounded-lg border border-[#e8ede8] bg-white p-6 shadow-sm sm:p-8"
+          : "flex flex-col rounded-lg bg-[#e2e5ed] p-6 sm:p-8";
+        return (
+          <div key={catIndex} className={`${sectionBg} py-12 sm:py-16`}>
+            <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
+              <FadeInOnView direction="up" delay={catIndex * 80} className="block">
                 <section>
-                  <h3 className="mb-8 text-xl font-bold text-[var(--color-brand-primary)] sm:text-2xl">
+                  <h3 className="mb-8 text-center text-2xl font-bold text-[#244260] sm:text-3xl lg:text-4xl">
                     {category.title}
                   </h3>
                   <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -249,9 +253,9 @@ export default function ConsumersPage() {
                         key={itemIndex}
                         direction="up"
                         delay={itemIndex * 40}
-                        className="flex flex-col rounded-lg bg-[#e2e5ed] p-6 sm:p-8"
+                        className={cardClassName}
                       >
-                        <h4 className="mb-4 text-lg font-bold text-[var(--color-fg)]">
+                        <h4 className="mb-4 text-lg font-bold uppercase tracking-wide text-[var(--color-fg)]">
                           {item.title}
                         </h4>
                         <p className="mb-0 text-base leading-relaxed text-[var(--color-fg)]">
@@ -262,10 +266,10 @@ export default function ConsumersPage() {
                   </div>
                 </section>
               </FadeInOnView>
-            ))}
+            </div>
           </div>
-        </div>
-      </div>
+        );
+      })}
 
       {/* Connect with an Agent - CTA */}
       <FadeInOnView
@@ -274,11 +278,11 @@ export default function ConsumersPage() {
         style={{ backgroundImage: `url(${rewriteUploadsUrl(BANNER_3)})` }}
       >
         <div className="absolute inset-0 bg-white/70" aria-hidden />
-        <div className="relative mx-auto flex max-w-[var(--container-max)] flex-col items-center justify-center px-[var(--container-padding-x)] text-center">
-          <h2 className="mb-6 text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+        <div className="relative mx-auto flex w-full max-w-[var(--container-max)] flex-col items-center justify-center px-[var(--container-padding-x)] text-center">
+          <h2 className="mx-auto mb-6 max-w-xl text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
             Connect with an Agent
           </h2>
-          <p className="mb-8 max-w-2xl text-base leading-relaxed text-[var(--color-fg)]">
+          <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-[var(--color-fg)]">
             Ready to explore your options and get on the path to a healthier and more financially
             secure future? Contact us today and a licensed agent will be in touch to help you get
             started.
@@ -286,7 +290,7 @@ export default function ConsumersPage() {
           <Link
             href="/connect/"
             variant="button"
-            className="motion-cta inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-2 border-[var(--color-brand-primary)] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary)] hover:text-white"
+            className="motion-cta inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-0 bg-white px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] shadow-sm transition-colors hover:bg-white/90 hover:text-[var(--color-brand-primary-hover)]"
           >
             Contact Us
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>

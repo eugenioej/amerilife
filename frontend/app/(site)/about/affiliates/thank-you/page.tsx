@@ -2,12 +2,7 @@ import type { Metadata } from "next";
 import { ThankYouPageContent } from "@/app/components/thank-you/ThankYouPageContent";
 import { Link } from "@/app/components/ui/Link";
 import { staticPageMetadata } from "@/lib/seo";
-import { rewriteUploadsUrl } from "@/lib/wp-media";
-
-// Image on headless: /wp-content/uploads/2017/10/Thank-You-IMG.jpg
-const THANK_YOU_IMAGE_URL = rewriteUploadsUrl(
-  "https://amerilife.com/wp-content/uploads/2017/10/Thank-You-IMG.jpg"
-);
+import { WP_IMAGE_SOURCES } from "@/lib/wp-image-sources";
 
 export const metadata: Metadata = {
   ...staticPageMetadata(
@@ -30,7 +25,7 @@ export default function AffiliatesThankYouPage() {
       title="Thank You"
       subtitle="We appreciate your interest!"
       image={{
-        src: THANK_YOU_IMAGE_URL,
+        src: WP_IMAGE_SOURCES.thankYouHero,
         alt: "AmeriLife team members",
         priority: true,
       }}
@@ -48,10 +43,6 @@ export default function AffiliatesThankYouPage() {
           .
         </p>
       }
-      ctas={[
-        { label: "Back to Home", href: "/", variant: "primary" },
-        { label: "Visit Newsroom", href: "/newsroom/", variant: "secondary" },
-      ]}
     />
   );
 }

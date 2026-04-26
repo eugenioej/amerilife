@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { MapPin, Clock, ShieldCheck } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
+import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { FeaturesGrid } from "./FeaturesGrid";
 import {
   LICENSED_INSURANCE_AGENT_LABEL,
@@ -51,31 +52,14 @@ export function AgentDetailTemplate({ agent, location }: Props) {
       {/* ── Breadcrumb ───────────────────────────────────────────────── */}
       <div className="bg-white py-3 sm:py-5">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <nav className="text-sm text-[var(--color-muted)]" aria-label="Breadcrumb">
-            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <li>
-                <Link href="/" className="text-[var(--color-link)] hover:text-[var(--color-link-hover)] no-underline transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li aria-hidden>/</li>
-              <li>
-                <Link href="/find-an-agent/" className="text-[var(--color-link)] hover:text-[var(--color-link-hover)] no-underline transition-colors">
-                  Find An Agent
-                </Link>
-              </li>
-              <li aria-hidden>/</li>
-              <li>
-                <Link href={`/${location.slug}/`} className="text-[var(--color-link)] hover:text-[var(--color-link-hover)] no-underline transition-colors">
-                  {location.officeName}
-                </Link>
-              </li>
-              <li aria-hidden>/</li>
-              <li className="text-[var(--color-fg)]" aria-current="page">
-                {agent.name}
-              </li>
-            </ol>
-          </nav>
+          <SiteBreadcrumb
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Find An Agent", href: "/find-an-agent/" },
+              { label: location.officeName, href: `/${location.slug}/` },
+              { label: agent.name },
+            ]}
+          />
         </div>
       </div>
 

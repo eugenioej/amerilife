@@ -54,7 +54,53 @@ add_action('init', function () {
       return current_user_can('edit_posts');
     },
   ]);
+}, 9);
+
+add_action('add_meta_boxes', function () {
+  add_meta_box(
+    'amerilife_leader_details',
+    'Leader details',
+    'amerilife_leader_details_metabox',
+    'leader',
+    'normal',
+    'high'
+  );
 });
+
+function amerilife_leader_details_metabox($post) {
+  wp_nonce_field('amerilife_leader_save', 'amerilife_leader_nonce');
+  $job_title = (string) get_post_meta($post->ID, 'job_title', true);
+  $linkedin_url = (string) get_post_meta($post->ID, 'linkedin_url', true);
+
+  echo '<p><label for="amerilife_leader_job_title"><strong>Job title</strong></label></p>';
+  echo '<p><input type="text" id="amerilife_leader_job_title" name="job_title" class="large-text" value="' . esc_attr($job_title) . '" placeholder="e.g. President &amp; CEO" /></p>';
+  echo '<p class="description">Shown under the leader’s name on the site (separate from the post title, which is the person’s name).</p>';
+
+  echo '<p><label for="amerilife_leader_linkedin_url"><strong>LinkedIn profile URL</strong></label></p>';
+  echo '<p><input type="url" id="amerilife_leader_linkedin_url" name="linkedin_url" class="large-text" value="' . esc_attr($linkedin_url) . '" placeholder="https://www.linkedin.com/in/..." inputmode="url" /></p>';
+  echo '<p class="description">Full link to the leader’s public LinkedIn profile. Leave empty to hide the button.</p>';
+}
+
+add_action('save_post_leader', function ($post_id) {
+  if (!isset($_POST['amerilife_leader_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['amerilife_leader_nonce'])), 'amerilife_leader_save')) {
+    return;
+  }
+  if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+    return;
+  }
+  if (!current_user_can('edit_post', $post_id)) {
+    return;
+  }
+
+  if (isset($_POST['job_title'])) {
+    update_post_meta($post_id, 'job_title', sanitize_text_field(wp_unslash($_POST['job_title'])));
+  }
+  if (isset($_POST['linkedin_url'])) {
+    $raw = (string) wp_unslash($_POST['linkedin_url']);
+    $raw = trim($raw);
+    update_post_meta($post_id, 'linkedin_url', $raw === '' ? '' : esc_url_raw($raw));
+  }
+}, 10, 1);
 
 /**
  * Expose grouped leader fields on the Leader GraphQL type.
