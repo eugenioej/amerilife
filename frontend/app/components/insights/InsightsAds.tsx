@@ -1,71 +1,110 @@
 import Image from "next/image";
+import type { InsightsAdSlotSetting } from "@/lib/queries";
+import { rewriteUploadsUrl } from "@/lib/wp-media";
+import { INSIGHT_IMG_QUALITY } from "./insights-utils";
 
-export function AdBannerHorizontal({ label }: { label: string }) {
+/** Placeholder dimensions — layout hint only; image renders with height:auto so actual creatives keep natural ratio. */
+const AD_IMG_FALLBACK_W = 1600;
+const AD_IMG_FALLBACK_H = 900;
+
+export function hasInsightsAdSlotImage(
+  slot?: InsightsAdSlotSetting | null,
+): boolean {
+  return Boolean(slot?.imageUrl?.trim());
+}
+
+type BannerProps = {
+  slot?: InsightsAdSlotSetting | null;
+};
+
+/** Renders nothing unless WP has an image for this slot. */
+export function AdBannerHorizontal({ slot }: BannerProps) {
+  const raw = slot?.imageUrl?.trim();
+  if (!raw) {
+    return null;
+  }
+
+  const src = rewriteUploadsUrl(raw);
+  const alt = slot?.altText?.trim() ?? "";
+  const href = slot?.targetUrl?.trim();
+
+  const creative = (
+    <div className="w-full overflow-hidden rounded-sm border border-[var(--color-border)] bg-neutral-50">
+      <Image
+        src={src}
+        alt={alt}
+        width={AD_IMG_FALLBACK_W}
+        height={AD_IMG_FALLBACK_H}
+        className="h-auto w-full max-w-full object-contain align-middle"
+        sizes="(max-width: 1280px) 100vw, min(1200px, 92vw)"
+        quality={INSIGHT_IMG_QUALITY}
+        style={{ width: "100%", height: "auto" }}
+      />
+    </div>
+  );
+
   return (
     <div className="w-full">
-      <p className="mb-2 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
-        Advertisement
-      </p>
-      <div
-        className="flex min-h-[140px] w-full flex-col items-center justify-center gap-2 rounded-sm border border-dashed border-[var(--color-border)] bg-gradient-to-r from-slate-100/90 via-white to-slate-50 px-6 py-8 text-center md:flex-row md:justify-between md:text-left"
-        role="region"
-        aria-label={`${label} placeholder`}
-      >
-        <div>
-          <p className="text-lg font-bold text-[var(--color-brand-dark)] md:text-xl">
-            Ready to go from college to career?
-          </p>
-          <p className="mt-1 text-sm text-[var(--color-muted)]">
-            Reserve this space for a sponsor or internal campaign.
-          </p>
-        </div>
-        <div className="relative h-24 w-40 shrink-0 overflow-hidden rounded-md bg-[var(--color-border)]/50">
-          <Image
-            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=320&q=80"
-            alt=""
-            fill
-            className="object-cover"
-            sizes="160px"
-          />
-        </div>
-      </div>
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)] focus-visible:ring-offset-2"
+        >
+          {creative}
+        </a>
+      ) : (
+        creative
+      )}
     </div>
   );
 }
 
-export function AdSidebarVertical() {
+/** Renders nothing unless WP has an image for this slot. */
+export function AdSidebarVertical({
+  slot,
+}: {
+  slot?: InsightsAdSlotSetting | null;
+}) {
+  const raw = slot?.imageUrl?.trim();
+  if (!raw) {
+    return null;
+  }
+
+  const src = rewriteUploadsUrl(raw);
+  const alt = slot?.altText?.trim() ?? "";
+  const href = slot?.targetUrl?.trim();
+
+  const creative = (
+    <div className="w-full overflow-hidden rounded-sm border border-[var(--color-border)] bg-neutral-50">
+      <Image
+        src={src}
+        alt={alt}
+        width={800}
+        height={1200}
+        className="h-auto w-full max-w-full object-contain align-middle"
+        sizes="(max-width: 1024px) 100vw, 400px"
+        quality={INSIGHT_IMG_QUALITY}
+        style={{ width: "100%", height: "auto" }}
+      />
+    </div>
+  );
+
   return (
     <div className="w-full">
-      <p className="mb-2 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
-        Advertisement
-      </p>
-      <div
-        className="flex min-h-[420px] w-full flex-col justify-between rounded-sm border border-dashed border-[var(--color-border)] bg-[#1a2f4a] px-5 py-8 text-white"
-        role="region"
-        aria-label="Sidebar advertisement placeholder"
-      >
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-amber-200/90">
-            Lead Star · Powered by EnrollHere
-          </p>
-          <p className="mt-4 text-2xl font-bold leading-tight">
-            Better Leads. Better Prices.
-          </p>
-          <p className="mt-1 text-2xl font-bold italic text-amber-300">
-            Better Results.
-          </p>
-          <p className="mt-4 text-sm leading-relaxed text-white/80">
-            Reserve this space for lead partners, events, or product launches.
-          </p>
-        </div>
-        <button
-          type="button"
-          className="mt-6 w-full rounded-sm bg-amber-500 py-3 text-sm font-bold uppercase tracking-wide text-[var(--color-brand-dark)]"
-          disabled
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)] focus-visible:ring-offset-2"
         >
-          Sign up to learn more
-        </button>
-      </div>
+          {creative}
+        </a>
+      ) : (
+        creative
+      )}
     </div>
   );
 }

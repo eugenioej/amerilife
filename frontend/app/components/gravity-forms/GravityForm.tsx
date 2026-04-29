@@ -677,25 +677,33 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
             );
           }
 
-          case "CHECKBOX":
+          case "CHECKBOX": {
+            const cbInputs = field.inputs ?? [];
+            const checkboxGridClass =
+              cbInputs.length > 1
+                ? "grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2"
+                : "grid w-full grid-cols-1 gap-y-2";
             return (
-              <fieldset key={fid}>
+              <fieldset key={fid} className="min-w-0">
                 <legend className={legendClass}>
                   {label}
                   {req}
                 </legend>
-                <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2">
-                  {(field.inputs ?? []).map((inp, idx) => {
+                <div className={checkboxGridClass}>
+                  {cbInputs.map((inp, idx) => {
                     const choice = field.choices?.[idx];
                     const key = nameKey(fid, inp.id);
                     return (
-                      <label key={inp.id} className={choiceRowStartClass}>
+                      <label key={inp.id} className={`${choiceRowStartClass} min-w-0`}>
                         <input
                           type="checkbox"
+                          className="mt-1 shrink-0"
                           checked={Boolean(checkboxChecked[key])}
                           onChange={(e) => toggleCb(key, e.target.checked)}
                         />
-                        <span>{decodeHtmlEntities(choice?.text ?? inp.label ?? "")}</span>
+                        <span className="min-w-0 flex-1">
+                          {decodeHtmlEntities(choice?.text ?? inp.label ?? "")}
+                        </span>
                       </label>
                     );
                   })}
@@ -707,20 +715,21 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
                 ) : null}
               </fieldset>
             );
+          }
 
           case "CONSENT":
             return (
-              <div key={fid}>
-                <div className="flex items-start gap-2">
+              <div key={fid} className="w-full min-w-0">
+                <div className="flex w-full items-start gap-2">
                   <input
                     id={`gf-${fid}`}
                     type="checkbox"
                     checked={Boolean(stringValues[fid])}
                     onChange={(e) => setStr(fid, e.target.checked ? "1" : "")}
-                    className="mt-1"
+                    className="mt-1 shrink-0"
                     aria-invalid={Boolean(err)}
                   />
-                  <label htmlFor={`gf-${fid}`} className={consentLabelClass}>
+                  <label htmlFor={`gf-${fid}`} className={`${consentLabelClass} min-w-0 flex-1`}>
                     {decodeHtmlEntities(field.checkboxLabel ?? label)}
                     {req}
                   </label>

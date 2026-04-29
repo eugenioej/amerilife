@@ -39,8 +39,9 @@ const STAT_SECTIONS = [
     ctaText: "READ OUR STORY",
     ctaHref: "/about-us/who-we-are/",
     imageUrl: rewriteUploadsUrl(
-      "https://amerilife.com/wp-content/uploads/2022/01/Join_Agent_VideoPreview.png"
+      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/Join_Agent_VideoPreview2_Gemini_HD_4x-scaled.webp"
     ),
+    imageUnoptimized: true,
     imageAlt: "AmeriLife agents and advisors",
     direction: "right" as const,
     icon: Users,

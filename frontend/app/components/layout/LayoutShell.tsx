@@ -24,10 +24,10 @@ export async function LayoutShell({ children }: { children: React.ReactNode }) {
 
   return (
     <ContactPopupProvider contactPopupForm={contactPopupForm}>
-      <div className="flex min-h-screen flex-col overflow-x-hidden">
+      <div className="flex min-h-screen flex-col overflow-x-clip">
         <TopBar />
         <SiteHeader primaryMenu={primaryMenu} />
-        <main className="flex-1 overflow-x-hidden">{children}</main>
+        <main className="flex-1 overflow-x-clip">{children}</main>
         <SiteFooter
           primaryMenu={primaryMenu}
           footerLogoUrl={footerLogoUrl}

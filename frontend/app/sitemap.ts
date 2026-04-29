@@ -10,6 +10,7 @@ import {
   type PagesSitemapResult,
   type PostsSitemapResult,
 } from "@/lib/queries";
+import { getInsightTopicSlugs } from "@/lib/insights-data";
 import { getSiteUrl } from "@/lib/seo";
 import {
   DISALLOWED_SITEMAP_PATHS,
@@ -132,6 +133,17 @@ async function collectAgencyAndAgentUrls(base: URL): Promise<string[]> {
   }
 }
 
+async function collectInsightCategoryUrls(base: URL): Promise<string[]> {
+  try {
+    const slugs = await getInsightTopicSlugs();
+    return slugs.map((slug) =>
+      toAbsoluteUrl(`/insights/category/${slug}/`, base),
+    );
+  } catch {
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseStr = getSiteUrl();
   const base = new URL(baseStr.endsWith("/") ? baseStr : `${baseStr}/`);
@@ -166,6 +178,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     collectPostUris(),
     collectLeaderUrls(base),
     collectAgencyAndAgentUrls(base),
+    collectInsightCategoryUrls(base),
   ]);
 
   const pageUris =
@@ -176,6 +189,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     settled[2].status === "fulfilled" ? settled[2].value : [];
   const agencyUrls =
     settled[3].status === "fulfilled" ? settled[3].value : [];
+  const insightCategoryUrls =
+    settled[4].status === "fulfilled" ? settled[4].value : [];
 
   for (const uri of pageUris) {
     add(toAbsoluteUrl(uri, base), {
@@ -194,6 +209,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   for (const url of agencyUrls) {
     add(url, { changeFrequency: "monthly", priority: 0.6 });
+  }
+  for (const url of insightCategoryUrls) {
+    add(url, { changeFrequency: "weekly", priority: 0.72 });
   }
 
   return out;

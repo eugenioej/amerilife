@@ -1030,11 +1030,10 @@ export type InsightListItem = {
   title?: string | null;
   date?: string | null;
   excerpt?: string | null;
-  author?: {
-    node?: { name?: string | null };
-  } | null;
   insightFields?: {
     isSpotlight?: boolean | null;
+    /** Magazine “Featured articles” slot — from WP is_featured meta and/or Featured insight_tag (see mu-plugin). */
+    isFeatured?: boolean | null;
   } | null;
   insightTopics?: {
     nodes?: Array<{ name?: string | null; slug?: string | null }>;
@@ -1044,26 +1043,72 @@ export type InsightListItem = {
   } | null;
 };
 
-export type InsightsListResult = {
+export type InsightsConnectionResult = {
   insights?: {
     nodes: InsightListItem[];
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
   } | null;
 };
 
 export const GET_INSIGHTS = `
-  query GetInsights($first: Int!) {
-    insights(first: $first, where: { orderby: { field: DATE, order: DESC } }) {
+  query GetInsights($first: Int!, $after: String) {
+    insights(
+      first: $first
+      after: $after
+      where: { orderby: { field: DATE, order: DESC } }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       nodes {
         id
         slug
         title
         date
         excerpt
-        author {
-          node {
+        insightFields {
+          isSpotlight
+          isFeatured
+        }
+        insightTopics {
+          nodes {
             name
+            slug
           }
         }
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+      }
+    }
+  }
+`;
+
+/** Same as GetInsights but omits isFeatured for older WP mu-plugins. */
+export const GET_INSIGHTS_MINIMAL = `
+  query GetInsightsMinimal($first: Int!, $after: String) {
+    insights(
+      first: $first
+      after: $after
+      where: { orderby: { field: DATE, order: DESC } }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        id
+        slug
+        title
+        date
+        excerpt
         insightFields {
           isSpotlight
         }
@@ -1086,9 +1131,6 @@ export const GET_INSIGHTS = `
 
 export type InsightDetail = InsightListItem & {
   content?: string | null;
-  author?: {
-    node?: { name?: string | null };
-  } | null;
   seo?: YoastSeoData | null;
 };
 
@@ -1107,16 +1149,12 @@ export const GET_INSIGHT_BY_SLUG = `
       excerpt
       insightFields {
         isSpotlight
+        isFeatured
       }
       insightTopics {
         nodes {
           name
           slug
-        }
-      }
-      author {
-        node {
-          name
         }
       }
       featuredImage {
@@ -1141,6 +1179,217 @@ export const GET_INSIGHT_BY_SLUG = `
         twitterImage {
           sourceUrl
         }
+      }
+    }
+  }
+`;
+
+export const GET_INSIGHT_BY_SLUG_MINIMAL = `
+  query GetInsightBySlugMinimal($slug: ID!) {
+    insight(id: $slug, idType: SLUG) {
+      id
+      slug
+      title
+      content
+      date
+      excerpt
+      insightFields {
+        isSpotlight
+      }
+      insightTopics {
+        nodes {
+          name
+          slug
+        }
+      }
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      seo {
+        title
+        metaDesc
+        canonical
+        opengraphTitle
+        opengraphDescription
+        opengraphUrl
+        opengraphImage {
+          sourceUrl
+          altText
+        }
+        twitterTitle
+        twitterDescription
+        twitterImage {
+          sourceUrl
+        }
+      }
+    }
+  }
+`;
+
+export type InsightsAdSlotSetting = {
+  imageUrl?: string | null;
+  targetUrl?: string | null;
+  altText?: string | null;
+};
+
+export type InsightsAdsSettings = {
+  primaryHorizontal?: InsightsAdSlotSetting | null;
+  secondaryHorizontal?: InsightsAdSlotSetting | null;
+  sidebarVertical?: InsightsAdSlotSetting | null;
+  inArticle?: InsightsAdSlotSetting | null;
+};
+
+export type InsightsAdsSettingsResult = {
+  insightsAdsSettings?: InsightsAdsSettings | null;
+};
+
+export const GET_INSIGHTS_ADS_SETTINGS = `
+  query GetInsightsAdsSettings {
+    insightsAdsSettings {
+      primaryHorizontal {
+        imageUrl
+        targetUrl
+        altText
+      }
+      secondaryHorizontal {
+        imageUrl
+        targetUrl
+        altText
+      }
+      sidebarVertical {
+        imageUrl
+        targetUrl
+        altText
+      }
+      inArticle {
+        imageUrl
+        targetUrl
+        altText
+      }
+    }
+  }
+`;
+
+/** Topic archive — nested insights connection supports cursor pagination. */
+export type InsightTopicBySlugResult = {
+  insightTopic?: {
+    id: string;
+    name?: string | null;
+    slug?: string | null;
+    /** Taxonomy term post count (published insights in this topic). */
+    count?: number | null;
+    insights?: {
+      nodes: InsightListItem[];
+      pageInfo: {
+        hasNextPage: boolean;
+        endCursor: string | null;
+      };
+    } | null;
+  } | null;
+};
+
+export const GET_INSIGHT_TOPIC_BY_SLUG = `
+  query GetInsightTopicBySlug($slug: ID!, $first: Int!, $after: String) {
+    insightTopic(id: $slug, idType: SLUG) {
+      id
+      name
+      slug
+      count
+      insights(
+        first: $first
+        after: $after
+        where: { orderby: { field: DATE, order: DESC } }
+      ) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          id
+          slug
+          title
+          date
+          excerpt
+          insightFields {
+            isSpotlight
+            isFeatured
+          }
+          insightTopics {
+            nodes {
+              name
+              slug
+            }
+          }
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_INSIGHT_TOPIC_BY_SLUG_MINIMAL = `
+  query GetInsightTopicBySlugMinimal($slug: ID!, $first: Int!, $after: String) {
+    insightTopic(id: $slug, idType: SLUG) {
+      id
+      name
+      slug
+      count
+      insights(
+        first: $first
+        after: $after
+        where: { orderby: { field: DATE, order: DESC } }
+      ) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          id
+          slug
+          title
+          date
+          excerpt
+          insightFields {
+            isSpotlight
+          }
+          insightTopics {
+            nodes {
+              name
+              slug
+            }
+          }
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export type InsightTopicsSlugListResult = {
+  insightTopics?: {
+    nodes: Array<{ slug?: string | null; name?: string | null }>;
+  } | null;
+};
+
+export const GET_INSIGHT_TOPIC_SLUGS = `
+  query GetInsightTopicSlugs($first: Int!) {
+    insightTopics(first: $first) {
+      nodes {
+        slug
+        name
       }
     }
   }

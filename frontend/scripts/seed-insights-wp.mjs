@@ -3,7 +3,7 @@
  * Creates demo Insight posts in WordPress via the core REST API (no custom MU route required).
  * Same content as wp/mu-plugins/insights-demo-seed.json.
  *
- * Requires: insight CPT + insight_topic taxonomy on WordPress (amerilife-insights-cpt.php deployed).
+ * Requires: insight CPT + insight_topic + insight_tag taxonomies on WordPress (amerilife-insights-cpt.php deployed).
  *
  * Usage:
  *   pnpm seed:insights:wp
@@ -545,6 +545,16 @@ async function checkInsightEndpoint() {
   }
 }
 
+async function getInsightTagTermId(tagSlug) {
+  const { res, data } = await wpFetch(
+    `/insight_tag?slug=${encodeURIComponent(tagSlug)}`,
+  );
+  if (!res.ok || !Array.isArray(data) || data.length === 0) {
+    return null;
+  }
+  return data[0].id;
+}
+
 async function getTermId(topicSlug) {
   const { res, data } = await wpFetch(
     `/insight_topic?slug=${encodeURIComponent(topicSlug)}`,
@@ -647,6 +657,16 @@ async function createInsight(row) {
   if (termId) {
     body.insight_topic = [termId];
   }
+  if (Array.isArray(row.tags) && row.tags.length > 0) {
+    const tagIds = [];
+    for (const tagSlug of row.tags) {
+      const tid = await getInsightTagTermId(String(tagSlug));
+      if (tid != null) tagIds.push(tid);
+    }
+    if (tagIds.length > 0) {
+      body.insight_tag = tagIds;
+    }
+  }
   if (featuredId) {
     body.featured_media = featuredId;
   }
@@ -668,9 +688,14 @@ async function createInsight(row) {
     const patch = await wpFetch(`${INSIGHTS_PATH}/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        meta: { is_spotlight: Boolean(row.spotlight) },
-      }),
+        body: JSON.stringify({
+          meta: {
+            is_spotlight: Boolean(row.spotlight),
+            is_featured:
+              Array.isArray(row.tags) &&
+              row.tags.some((t) => String(t).toLowerCase() === "featured"),
+          },
+        }),
     });
     if (!patch.res.ok) {
       console.error(

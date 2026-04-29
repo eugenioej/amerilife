@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: AmeriLife Insights CPT (MU)
- * Description: Magazine-style Insights custom post type, topic taxonomy, spotlight meta, WPGraphQL, optional demo seed.
+ * Description: Magazine-style Insights custom post type, topic & tag taxonomies, spotlight meta, WPGraphQL, optional demo seed.
  * Version: 1.0.0
  */
 
@@ -72,7 +72,40 @@ add_action('init', function () {
     'rewrite' => ['slug' => 'insight-topic', 'with_front' => false],
   ]);
 
+  register_taxonomy('insight_tag', ['insight'], [
+    'labels' => [
+      'name' => 'Insight Tags',
+      'singular_name' => 'Insight Tag',
+      'search_items' => 'Search Tags',
+      'all_items' => 'All Tags',
+      'edit_item' => 'Edit Tag',
+      'update_item' => 'Update Tag',
+      'add_new_item' => 'Add New Tag',
+      'new_item_name' => 'New Tag Name',
+      'menu_name' => 'Tags',
+    ],
+    'public' => true,
+    'hierarchical' => false,
+    'show_ui' => true,
+    'show_in_rest' => true,
+    'show_admin_column' => true,
+    'show_in_graphql' => true,
+    'graphql_single_name' => 'insightTag',
+    'graphql_plural_name' => 'insightTags',
+    'rewrite' => ['slug' => 'insight-tag', 'with_front' => false],
+  ]);
+
   register_post_meta('insight', 'is_spotlight', [
+    'type' => 'boolean',
+    'single' => true,
+    'show_in_rest' => true,
+    'default' => false,
+    'auth_callback' => function () {
+      return current_user_can('edit_posts');
+    },
+  ]);
+
+  register_post_meta('insight', 'is_featured', [
     'type' => 'boolean',
     'single' => true,
     'show_in_rest' => true,
@@ -90,6 +123,9 @@ add_action('init', function () {
     }
     wp_insert_term($name, 'insight_topic', ['slug' => $slug]);
   }
+  if (!term_exists('featured', 'insight_tag')) {
+    wp_insert_term('Featured', 'insight_tag', ['slug' => 'featured']);
+  }
 }, 20);
 
 add_action('graphql_register_types', function () {
@@ -104,12 +140,16 @@ add_action('graphql_register_types', function () {
         'type' => 'Boolean',
         'description' => 'Featured in Spotlight sidebar on the Insights index',
       ],
+      'isFeatured' => [
+        'type' => 'Boolean',
+        'description' => 'Shown in the Featured articles row (is_featured meta and/or Featured tag)',
+      ],
     ],
   ]);
 
   register_graphql_field('Insight', 'insightFields', [
     'type' => 'InsightFields',
-    'description' => 'Insight spotlight flag',
+    'description' => 'Insight spotlight and featured flags',
     'resolve' => function ($post) {
       $id = 0;
       if (is_object($post)) {
@@ -120,11 +160,21 @@ add_action('graphql_register_types', function () {
         }
       }
       if (!$id) {
-        return ['isSpotlight' => false];
+        return ['isSpotlight' => false, 'isFeatured' => false];
       }
-      $raw = get_post_meta($id, 'is_spotlight', true);
-      $flag = filter_var($raw, FILTER_VALIDATE_BOOLEAN);
-      return ['isSpotlight' => (bool) $flag];
+      $raw_spot = get_post_meta($id, 'is_spotlight', true);
+      $spotlight = (bool) filter_var($raw_spot, FILTER_VALIDATE_BOOLEAN);
+
+      $raw_feat = get_post_meta($id, 'is_featured', true);
+      $featured = (bool) filter_var($raw_feat, FILTER_VALIDATE_BOOLEAN);
+      if (!$featured && taxonomy_exists('insight_tag')) {
+        $featured = has_term('featured', 'insight_tag', $id);
+      }
+
+      return [
+        'isSpotlight' => $spotlight,
+        'isFeatured' => $featured,
+      ];
     },
   ]);
 });
@@ -244,6 +294,30 @@ function amerilife_insight_seed_demo_posts($force = false) {
         wp_set_object_terms($post_id, [(int) $term->term_id], 'insight_topic');
       }
     }
+
+    if (!empty($row['tags']) && is_array($row['tags'])) {
+      $tag_ids = [];
+      foreach ($row['tags'] as $tag_slug) {
+        $t = get_term_by('slug', (string) $tag_slug, 'insight_tag');
+        if ($t && !is_wp_error($t)) {
+          $tag_ids[] = (int) $t->term_id;
+        }
+      }
+      if ($tag_ids !== []) {
+        wp_set_object_terms($post_id, $tag_ids, 'insight_tag');
+      }
+    }
+
+    $is_feat = false;
+    if (!empty($row['tags']) && is_array($row['tags'])) {
+      foreach ($row['tags'] as $tag_slug) {
+        if (strtolower((string) $tag_slug) === 'featured') {
+          $is_feat = true;
+          break;
+        }
+      }
+    }
+    update_post_meta($post_id, 'is_featured', $is_feat ? '1' : '0');
 
     $spotlight = !empty($row['spotlight']);
     update_post_meta($post_id, 'is_spotlight', $spotlight ? '1' : '0');

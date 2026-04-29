@@ -1,34 +1,99 @@
 import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
-import type { InsightListItem } from "@/lib/queries";
+import type { InsightListItem, InsightsAdsSettings } from "@/lib/queries";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import {
   formatBylineDate,
+  formatInsightExcerptPlain,
   formatMonthYear,
   insightHref,
-  stripHtml,
+  INSIGHT_IMG_QUALITY,
+  INSIGHTS_NEWSROOM_INITIAL,
+  isInsightFeatured,
   topicLabel,
 } from "./insights-utils";
-import { AdBannerHorizontal, AdSidebarVertical } from "./InsightsAds";
+import { AdBannerHorizontal, AdSidebarVertical, hasInsightsAdSlotImage } from "./InsightsAds";
+import { InsightsNewsroomColumn } from "./InsightsNewsroomColumn";
+import { InsightTopicBadge } from "./InsightTopicBadge";
 
 const PLACEHOLDER_IMG =
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AML-Wealth-II-Announcement-040532023-HERO-1024x358-1.png";
 
 type Props = {
   posts: InsightListItem[];
+  /** WPGraphQL connection after the initial magazine batch — enables “Load more” in the main column. */
+  listPageInfo?: {
+    hasNextPage: boolean;
+    endCursor: string | null;
+  };
+  /** Sponsorship slots from WP Admin → Insights → Ads */
+  insightsAds?: InsightsAdsSettings | null;
 };
 
-export function InsightsMagazinePage({ posts }: Props) {
-  const hero = posts.slice(0, 3);
-  const featured = posts.slice(3, 7);
-  const rest = posts.slice(7);
+function dedupeById(posts: InsightListItem[]): InsightListItem[] {
+  const seen = new Set<string>();
+  const out: InsightListItem[] = [];
+  for (const p of posts) {
+    const id = p.id?.trim();
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    out.push(p);
+  }
+  return out;
+}
 
-  const spotlight =
-    posts.find((p) => p.insightFields?.isSpotlight) ?? featured[0] ?? posts[3] ?? posts[0] ?? null;
+const FEATURED_ARTICLES_COUNT = 4;
 
-  const recentSidebar = posts
-    .filter((p) => p.id !== spotlight?.id)
-    .slice(3, 7);
+function takeFeaturedArticles(pool: InsightListItem[], count: number): InsightListItem[] {
+  const ids = new Set<string>();
+  const out: InsightListItem[] = [];
+  const add = (p: InsightListItem) => {
+    const id = p.id?.trim();
+    if (!id || ids.has(id) || out.length >= count) return;
+    ids.add(id);
+    out.push(p);
+  };
+  for (const p of pool) {
+    if (out.length >= count) break;
+    if (isInsightFeatured(p)) add(p);
+  }
+  for (const p of pool) {
+    if (out.length >= count) break;
+    add(p);
+  }
+  return out;
+}
+
+/** Partition posts so hero, spotlight, featured, sidebar recent, and newsroom never repeat the same article. */
+function partitionInsights(posts: InsightListItem[]) {
+  const unique = dedupeById(posts);
+
+  const hero = unique.slice(0, 3);
+  let remaining = unique.slice(3);
+
+  let spotlight: InsightListItem | null = null;
+  const spotlightIdx = remaining.findIndex((p) => p.insightFields?.isSpotlight);
+  if (spotlightIdx >= 0) {
+    spotlight = remaining[spotlightIdx]!;
+    remaining = remaining.filter((_, i) => i !== spotlightIdx);
+  } else if (remaining.length > 0) {
+    spotlight = remaining[0]!;
+    remaining = remaining.slice(1);
+  }
+
+  const featured = takeFeaturedArticles(remaining, FEATURED_ARTICLES_COUNT);
+  const featuredIds = new Set(featured.map((p) => p.id).filter(Boolean) as string[]);
+  remaining = remaining.filter((p) => !p.id || !featuredIds.has(p.id));
+
+  const recentSidebar = remaining.slice(0, 4);
+  const newsroomRest = remaining.slice(4);
+
+  return { hero, spotlight, featured, recentSidebar, newsroomRest };
+}
+
+export function InsightsMagazinePage({ posts, listPageInfo, insightsAds }: Props) {
+  const { hero, spotlight, featured, recentSidebar, newsroomRest } =
+    partitionInsights(posts);
 
   return (
     <div className="bg-white">
@@ -53,6 +118,7 @@ export function InsightsMagazinePage({ posts }: Props) {
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                 sizes="(max-width:768px) 100vw, 33vw"
+                quality={INSIGHT_IMG_QUALITY}
                 priority={hi < 2}
               />
               <div
@@ -60,7 +126,7 @@ export function InsightsMagazinePage({ posts }: Props) {
                 aria-hidden
               />
               <div className="relative z-[1] p-5 pb-6 text-left md:p-6">
-                <span className="mb-2 inline-block bg-[var(--color-brand-primary)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                <span className="mb-2 inline-block w-fit max-w-full self-start bg-[var(--color-brand-primary)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
                   {topicLabel(post)}
                 </span>
                 <p className="mb-2 text-lg font-bold leading-snug text-white drop-shadow-sm md:text-xl">
@@ -78,7 +144,7 @@ export function InsightsMagazinePage({ posts }: Props) {
       </section>
 
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 md:py-14">
-        <AdBannerHorizontal label="Primary" />
+        <AdBannerHorizontal slot={insightsAds?.primaryHorizontal} />
 
         {/* Featured articles — four columns */}
         <section className="mt-12 md:mt-16">
@@ -102,9 +168,15 @@ export function InsightsMagazinePage({ posts }: Props) {
                       alt=""
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                      sizes="(max-width:640px) 100vw, 25vw"
+                      sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
+                      quality={INSIGHT_IMG_QUALITY}
                     />
                   </Link>
+
+                  <InsightTopicBadge
+                    post={post}
+                    className="mb-2 bg-[var(--color-brand-primary)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white"
+                  />
                   <Link
                     href={href}
                     variant="button"
@@ -125,75 +197,27 @@ export function InsightsMagazinePage({ posts }: Props) {
           </div>
         </section>
 
-        <div className="mt-12 md:mt-16">
-          <AdBannerHorizontal label="Secondary" />
-        </div>
+        {hasInsightsAdSlotImage(insightsAds?.secondaryHorizontal) ? (
+          <div className="mt-12 md:mt-16">
+            <AdBannerHorizontal slot={insightsAds?.secondaryHorizontal} />
+          </div>
+        ) : null}
 
-        {/* Newsroom + sidebar */}
+        {/* Main column + sidebar */}
         <div className="mt-12 grid grid-cols-1 gap-12 lg:mt-16 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-8">
-            <div className="mb-6 flex items-center gap-4 md:mb-8">
-              <h2 className="shrink-0 text-xs font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)]">
-                Newsroom
-              </h2>
-              <div className="h-px flex-1 bg-[var(--color-border)]" aria-hidden />
-            </div>
-            <div className="flex flex-col">
-              {rest.map((post) => {
-                const img =
-                  post.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
-                const href = insightHref(post.slug);
-                return (
-                  <article
-                    key={post.id}
-                    className="flex flex-col gap-4 border-b border-[var(--color-border)] py-8 first:pt-0 last:border-b-0 sm:flex-row sm:gap-6"
-                  >
-                    <Link
-                      href={href}
-                      variant="button"
-                      className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-[var(--color-border)]/30 sm:w-[220px] md:w-[260px]"
-                    >
-                      <Image
-                        src={rewriteUploadsUrl(img)}
-                        alt=""
-                        fill
-                        className="object-cover"
-                        sizes="260px"
-                      />
-                      <span className="absolute bottom-2 left-2 bg-[var(--color-brand-primary)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
-                        {topicLabel(post)}
-                      </span>
-                    </Link>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-lg font-bold leading-snug text-[var(--color-fg)] md:text-xl">
-                        <Link href={href} variant="button" className="hover:text-[var(--color-brand-primary)]">
-                          {post.title}
-                        </Link>
-                      </h3>
-                      {post.date ? (
-                        <p className="mt-2 text-sm text-[var(--color-muted)]">
-                          {formatBylineDate(post.date)}
-                        </p>
-                      ) : null}
-                      <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-[var(--color-muted)]">
-                        {stripHtml(post.excerpt) || "Read the full article for more."}
-                      </p>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
+            <InsightsNewsroomColumn
+              initialPosts={newsroomRest.slice(0, INSIGHTS_NEWSROOM_INITIAL)}
+              deferredBatchPosts={newsroomRest.slice(INSIGHTS_NEWSROOM_INITIAL)}
+              initialHasNextPage={listPageInfo?.hasNextPage ?? false}
+              initialEndCursor={listPageInfo?.endCursor ?? null}
+            />
           </div>
 
           <aside className="lg:col-span-4">
             {spotlight && (
               <div className="mb-10">
-                <div className="bg-[var(--color-brand-dark)] py-3 text-center">
-                  <p className="text-xs font-bold uppercase tracking-[0.15em] text-white">
-                    Spotlight topic here
-                  </p>
-                </div>
-                <div className="border border-t-0 border-[var(--color-border)] bg-white p-0">
+                <div className="border border-[var(--color-border)] bg-white p-0">
                   <Link
                     href={insightHref(spotlight.slug)}
                     variant="button"
@@ -208,9 +232,10 @@ export function InsightsMagazinePage({ posts }: Props) {
                         alt=""
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                        sizes="(max-width:1024px) 100vw, 400px"
+                        sizes="(max-width:1024px) 100vw, min(400px, 33vw)"
+                        quality={INSIGHT_IMG_QUALITY}
                       />
-                      <span className="absolute bottom-3 left-3 bg-[var(--color-brand-primary)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+                      <span className="absolute bottom-3 left-3 inline-block w-fit max-w-full bg-[var(--color-brand-primary)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
                         {topicLabel(spotlight)}
                       </span>
                     </div>
@@ -223,10 +248,10 @@ export function InsightsMagazinePage({ posts }: Props) {
                           {formatBylineDate(spotlight.date)}
                         </p>
                       ) : null}
-                      <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-[var(--color-muted)]">
-                        {stripHtml(spotlight.excerpt) ||
+                      <div className="mt-3 text-sm leading-relaxed text-[var(--color-muted)] whitespace-pre-line">
+                        {formatInsightExcerptPlain(spotlight.excerpt) ||
                           "Explore this spotlight story in full."}
-                      </p>
+                      </div>
                     </div>
                   </Link>
                 </div>
@@ -254,7 +279,8 @@ export function InsightsMagazinePage({ posts }: Props) {
                           alt=""
                           fill
                           className="object-cover"
-                          sizes="80px"
+                          sizes="(max-width:1024px) 160px, 80px"
+                          quality={INSIGHT_IMG_QUALITY}
                         />
                       </Link>
                       <div className="min-w-0">
@@ -277,7 +303,11 @@ export function InsightsMagazinePage({ posts }: Props) {
               </ul>
             </div>
 
-            <AdSidebarVertical />
+            {hasInsightsAdSlotImage(insightsAds?.sidebarVertical) ? (
+              <div className="lg:sticky lg:top-[calc(var(--header-height)+1rem)] lg:self-start">
+                <AdSidebarVertical slot={insightsAds?.sidebarVertical} />
+              </div>
+            ) : null}
           </aside>
         </div>
       </div>

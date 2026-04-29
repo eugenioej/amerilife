@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { InsightsMagazinePage } from "@/app/components/insights/InsightsMagazinePage";
-import { getInsightsList } from "@/lib/insights-data";
+import { getInsightsAdsSettings, getInsightsMagazineBundle } from "@/lib/insights-data";
 import { staticPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = staticPageMetadata(
@@ -10,7 +10,16 @@ export const metadata: Metadata = staticPageMetadata(
 );
 
 export default async function InsightsPage() {
-  const posts = await getInsightsList();
+  const [{ posts, pageInfo }, insightsAds] = await Promise.all([
+    getInsightsMagazineBundle(),
+    getInsightsAdsSettings(),
+  ]);
 
-  return <InsightsMagazinePage posts={posts} />;
+  return (
+    <InsightsMagazinePage
+      posts={posts}
+      listPageInfo={pageInfo}
+      insightsAds={insightsAds}
+    />
+  );
 }

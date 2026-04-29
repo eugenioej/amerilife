@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { InsightDetail, PostByUri, YoastSeoData } from "./queries";
+import { formatInsightExcerptPlain } from "./insight-excerpt";
 
 const SITE_SUFFIX = " | AmeriLife";
 
@@ -214,14 +215,12 @@ export function insightArticleJsonLd(
   insight: InsightDetail,
   options: { categoryLabel?: string; url: string }
 ): Record<string, unknown> {
-  const authorName = insight.author?.node?.name?.trim() || "AmeriLife";
+  const authorName = "AmeriLife";
   const image = insight.featuredImage?.node?.sourceUrl;
   const published = insight.date ? new Date(insight.date).toISOString() : undefined;
   const desc =
     insight.seo?.metaDesc?.trim() ||
-    (insight.excerpt
-      ? insight.excerpt.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
-      : undefined);
+    (insight.excerpt ? formatInsightExcerptPlain(insight.excerpt) : undefined);
 
   const article: Record<string, unknown> = {
     "@context": "https://schema.org",

@@ -1,15 +1,19 @@
 import Image from "next/image";
-import { Facebook, Instagram, Linkedin, Youtube, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
-import type { InsightDetail, InsightListItem } from "@/lib/queries";
+import type { InsightDetail, InsightListItem, InsightsAdsSettings } from "@/lib/queries";
 import { rewriteUploadsInHtml, rewriteUploadsUrl } from "@/lib/wp-media";
-import { AdBannerHorizontal, AdSidebarVertical } from "./InsightsAds";
+import { AdBannerHorizontal, AdSidebarVertical, hasInsightsAdSlotImage } from "./InsightsAds";
+import { InsightSharePanel } from "./InsightSharePanel";
+import { InsightTopicBadge } from "./InsightTopicBadge";
 import {
   formatBylineDate,
+  formatInsightExcerptPlain,
   formatMonthYear,
+  insightCategoryHref,
   insightHref,
-  stripHtml,
+  INSIGHT_IMG_QUALITY,
   topicLabel,
 } from "./insights-utils";
 
@@ -21,93 +25,13 @@ type Props = {
   /** Other insights for sidebar + bottom grid (same list; template slices). */
   relatedPosts: InsightListItem[];
   shareUrl: string;
+  insightsAds?: InsightsAdsSettings | null;
 };
 
 function estimateReadMinutes(html: string): number {
   const text = html.replace(/<[^>]+>/g, " ");
   const words = text.trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
-}
-
-function ShareBarLarge({ url, title }: { url: string; title: string }) {
-  const u = encodeURIComponent(url);
-  const t = encodeURIComponent(title);
-  return (
-    <div className="flex flex-wrap gap-3">
-      <a
-        href={`https://www.facebook.com/sharer/sharer.php?u=${u}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex min-h-[44px] items-center gap-2 rounded-sm bg-[#1877F2] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-      >
-        <Facebook className="size-5 shrink-0" aria-hidden />
-        <span>Facebook</span>
-      </a>
-      <a
-        href="https://www.instagram.com/amerilife/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex min-h-[44px] items-center gap-2 rounded-sm bg-[#E4405F] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-      >
-        <Instagram className="size-5 shrink-0" aria-hidden />
-        <span>Instagram</span>
-      </a>
-      <a
-        href="https://www.youtube.com/channel/UCFbug5RiedNPdb-5Fpq3szuOg"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex min-h-[44px] items-center gap-2 rounded-sm bg-[#FF0000] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-      >
-        <Youtube className="size-5 shrink-0" aria-hidden />
-        <span>YouTube</span>
-      </a>
-      <span className="sr-only">Share: {t}</span>
-    </div>
-  );
-}
-
-function ShareIconsRow({ url }: { url: string }) {
-  const u = encodeURIComponent(url);
-  return (
-    <div className="flex flex-wrap items-center gap-3">
-      <a
-        href={`https://www.facebook.com/sharer/sharer.php?u=${u}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex size-10 items-center justify-center rounded-sm bg-[#1877F2] text-white transition-opacity hover:opacity-90"
-        aria-label="Share on Facebook"
-      >
-        <Facebook className="size-5" />
-      </a>
-      <a
-        href="https://www.instagram.com/amerilife/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex size-10 items-center justify-center rounded-sm bg-[#E4405F] text-white transition-opacity hover:opacity-90"
-        aria-label="AmeriLife on Instagram"
-      >
-        <Instagram className="size-5" />
-      </a>
-      <a
-        href={`https://www.linkedin.com/sharing/share-offsite/?url=${u}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex size-10 items-center justify-center rounded-sm bg-[#0A66C2] text-white transition-opacity hover:opacity-90"
-        aria-label="Share on LinkedIn"
-      >
-        <Linkedin className="size-5" />
-      </a>
-      <a
-        href="https://www.youtube.com/channel/UCFbug5RiedNPdb-5Fpq3szuOg"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex size-10 items-center justify-center rounded-sm bg-[#FF0000] text-white transition-opacity hover:opacity-90"
-        aria-label="AmeriLife on YouTube"
-      >
-        <Youtube className="size-5" />
-      </a>
-    </div>
-  );
 }
 
 function RelatedArticlesSidebar({ posts }: { posts: InsightListItem[] }) {
@@ -137,7 +61,8 @@ function RelatedArticlesSidebar({ posts }: { posts: InsightListItem[] }) {
                   alt=""
                   fill
                   className="object-cover"
-                  sizes="80px"
+                  sizes="160px"
+                  quality={INSIGHT_IMG_QUALITY}
                 />
               </Link>
               <div className="min-w-0">
@@ -186,7 +111,8 @@ function RelatedPostsGrid({ posts }: { posts: InsightListItem[] }) {
                   alt=""
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                  sizes="(max-width:640px) 100vw, 33vw"
+                  sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, min(480px, 33vw)"
+                  quality={INSIGHT_IMG_QUALITY}
                 />
               </Link>
               <Link href={href} variant="button" className="text-left hover:no-underline">
@@ -222,7 +148,8 @@ function CareersCtaBanner() {
       </p>
       <Link
         href="/join-our-team/"
-        className="inline-flex min-h-[48px] shrink-0 items-center justify-center rounded-sm bg-[var(--color-brand-dark)] px-8 text-sm font-bold uppercase tracking-wide text-white transition-opacity hover:opacity-95"
+        variant="button"
+        className="inline-flex min-h-[48px] shrink-0 items-center justify-center rounded-sm bg-[var(--color-brand-dark)] px-8 text-sm font-bold uppercase tracking-wide text-white no-underline transition-opacity hover:!text-white hover:!no-underline hover:opacity-95"
       >
         Discover more
       </Link>
@@ -230,15 +157,21 @@ function CareersCtaBanner() {
   );
 }
 
-export function InsightPostTemplate({ post, relatedPosts, shareUrl }: Props) {
+export function InsightPostTemplate({
+  post,
+  relatedPosts,
+  shareUrl,
+  insightsAds,
+}: Props) {
   const html = post.content ? rewriteUploadsInHtml(post.content) : "";
   const rawImg =
     post.featuredImage?.node?.sourceUrl?.trim() ||
     "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1600&q=80";
   const img = rewriteUploadsUrl(rawImg);
-  const excerptPlain = stripHtml(post.excerpt);
+  const excerptPlain = formatInsightExcerptPlain(post.excerpt);
   const topic = post.insightTopics?.nodes?.[0];
   const topicName = topic?.name?.trim() || "Insights";
+  const topicSlug = topic?.slug?.trim();
   const readMin = estimateReadMinutes(html);
 
   const proseClasses =
@@ -257,6 +190,7 @@ export function InsightPostTemplate({ post, relatedPosts, shareUrl }: Props) {
             { label: "Insights", href: "/insights/" },
             {
               label: topicName,
+              href: topicSlug ? insightCategoryHref(topicSlug) : undefined,
               className: "max-w-[min(100%,12rem)] truncate",
             },
             {
@@ -266,18 +200,19 @@ export function InsightPostTemplate({ post, relatedPosts, shareUrl }: Props) {
           ]}
         />
 
-        <span className="mb-4 inline-block bg-[var(--color-brand-primary)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-          {topicLabel(post)}
-        </span>
+        <InsightTopicBadge
+          post={post}
+          className="mb-4 bg-[var(--color-brand-primary)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white"
+        />
 
         <h1 className="max-w-4xl font-sans text-3xl font-bold leading-tight tracking-tight text-[var(--color-brand-dark)] sm:text-4xl md:text-[2.5rem] md:leading-[1.15]">
           {post.title}
         </h1>
 
         {excerptPlain ? (
-          <p className="mt-4 max-w-3xl text-lg leading-relaxed text-[var(--color-muted)]">
+          <div className="mt-4 max-w-3xl text-lg leading-relaxed text-[var(--color-muted)] whitespace-pre-line">
             {excerptPlain}
-          </p>
+          </div>
         ) : null}
 
         <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-[var(--color-border)] pb-8 text-sm text-[var(--color-muted)]">
@@ -293,9 +228,11 @@ export function InsightPostTemplate({ post, relatedPosts, shareUrl }: Props) {
             <Clock className="size-4 shrink-0" aria-hidden />
             {readMin} min read
           </span>
+          <span className="text-[var(--color-border)]" aria-hidden>
+            ·
+          </span>
+          <InsightSharePanel url={shareUrl} title={post.title ?? "Insight"} />
         </div>
-
-        <ShareBarLarge url={shareUrl} title={post.title ?? "Insight"} />
 
         <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-10 lg:gap-x-12">
           <div className="lg:col-span-8">
@@ -305,7 +242,8 @@ export function InsightPostTemplate({ post, relatedPosts, shareUrl }: Props) {
                 alt=""
                 fill
                 className="object-cover object-center"
-                sizes="(max-width:1024px) 100vw, 66vw"
+                sizes="(max-width:1024px) 100vw, min(960px, 66vw)"
+                quality={INSIGHT_IMG_QUALITY}
                 priority
               />
             </div>
@@ -321,24 +259,38 @@ export function InsightPostTemplate({ post, relatedPosts, shareUrl }: Props) {
               )}
             </div>
 
-            <div className="mt-12">
-              <AdBannerHorizontal label="In-article" />
-            </div>
+            {hasInsightsAdSlotImage(insightsAds?.inArticle) ? (
+              <div className="mt-12">
+                <AdBannerHorizontal slot={insightsAds?.inArticle} />
+              </div>
+            ) : null}
 
             <div className="mt-10 flex flex-col gap-6 border-t border-[var(--color-border)] pt-8 sm:flex-row sm:items-center sm:justify-between">
-              <span className="inline-flex w-fit items-center rounded-sm border border-[var(--color-border)] bg-[#f4f6f8] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-muted)]">
-                {topicLabel(post)}
-              </span>
-              <ShareIconsRow url={shareUrl} />
+              {topicSlug ? (
+                <Link
+                  href={insightCategoryHref(topicSlug)}
+                  variant="button"
+                  className="inline-flex w-fit items-center rounded-sm border border-[var(--color-border)] bg-[#f4f6f8] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-muted)] transition-colors hover:border-[var(--color-brand-primary)] hover:text-[var(--color-brand-primary)]"
+                >
+                  {topicLabel(post)}
+                </Link>
+              ) : (
+                <span className="inline-flex w-fit items-center rounded-sm border border-[var(--color-border)] bg-[#f4f6f8] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-muted)]">
+                  {topicLabel(post)}
+                </span>
+              )}
+              <InsightSharePanel url={shareUrl} title={post.title ?? "Insight"} />
             </div>
 
           </div>
 
-          <aside className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
+          <aside className="lg:col-span-4">
             <RelatedArticlesSidebar posts={sidebarList} />
-            <div className="mt-10">
-              <AdSidebarVertical />
-            </div>
+            {hasInsightsAdSlotImage(insightsAds?.sidebarVertical) ? (
+              <div className="mt-10 w-full lg:sticky lg:top-[calc(var(--header-height)+1rem)] lg:self-start">
+                <AdSidebarVertical slot={insightsAds?.sidebarVertical} />
+              </div>
+            ) : null}
           </aside>
         </div>
 

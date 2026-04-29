@@ -1,80 +1,122 @@
+import { cache } from "react";
 import { fetchGraphQL } from "@/lib/wp-client";
 import {
   GET_INSIGHT_BY_SLUG,
   GET_INSIGHTS,
+  GET_INSIGHTS_ADS_SETTINGS,
+  GET_INSIGHT_TOPIC_BY_SLUG,
+  GET_INSIGHT_TOPIC_SLUGS,
   type InsightBySlugResult,
   type InsightDetail,
   type InsightListItem,
-  type InsightsListResult,
+  type InsightsAdsSettings,
+  type InsightsAdsSettingsResult,
+  type InsightsConnectionResult,
+  type InsightTopicBySlugResult,
+  type InsightTopicsSlugListResult,
 } from "@/lib/queries";
-import rawSeed from "../wp/mu-plugins/insights-demo-seed.json";
 
-type InsightSeedRow = {
-  slug: string;
-  title: string;
-  date: string;
-  topic: string;
-  spotlight: boolean;
-  excerpt: string;
-  content: string;
-  featured_image_url: string;
-  author_login?: string;
-};
+/** First batch size for /insights/ magazine (hero + sidebar slots + main column page-one). */
+export const INSIGHTS_MAGAZINE_FIRST = 36;
 
-const TOPIC_LABELS: Record<string, string> = {
-  health: "Health",
-  wealth: "Wealth",
-  leadership: "Leadership",
-  life: "Life",
-};
+/** Page size for /insights/category/[slug]/ (numbered pagination). */
+export const INSIGHT_CATEGORY_PAGE_FIRST = 8;
 
-function normalizeDate(isoOrLocal: string): string {
-  const t = isoOrLocal.trim();
-  if (t.includes("T")) return t;
-  return t.replace(" ", "T");
+/** Default page size for related-list fetch and load-more chunks. */
+export const INSIGHTS_LOAD_MORE_FIRST = 12;
+
+/** WordPress mu-plugin missing insightFields.isFeatured on schema. */
+function isInsightFieldsSchemaGapError(err: unknown): boolean {
+  const m = err instanceof Error ? err.message : String(err);
+  return m.includes("isFeatured");
 }
 
-/** Fallback when GraphQL has no Insights yet (CPT not deployed) or the request fails. Mirrors `insights-demo-seed.json`. */
-export const DEMO_INSIGHTS: InsightDetail[] = (rawSeed as InsightSeedRow[]).map(
-  (row, i) => ({
-    id: `demo-insight-${i + 1}`,
-    slug: row.slug,
-    title: row.title,
-    date: normalizeDate(row.date),
-    excerpt: row.excerpt,
-    content: row.content,
-    insightFields: { isSpotlight: row.spotlight },
-    insightTopics: {
-      nodes: [
-        {
-          name: TOPIC_LABELS[row.topic] ?? row.topic,
-          slug: row.topic,
-        },
-      ],
-    },
-    author: { node: { name: "AmeriLife Editorial" } },
-    featuredImage: {
-      node: {
-        sourceUrl: row.featured_image_url,
-        altText: "",
+async function fetchInsightsConnection(
+  first: number,
+  after?: string | null,
+): Promise<{
+  nodes: InsightListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  const variables = { first, after: after ?? null };
+  try {
+    const data = await fetchGraphQL<InsightsConnectionResult>(GET_INSIGHTS, variables);
+    const conn = data?.insights;
+    return {
+      nodes: conn?.nodes ?? [],
+      pageInfo: conn?.pageInfo ?? {
+        hasNextPage: false,
+        endCursor: null,
       },
-    },
-  }),
-);
+    };
+  } catch (err) {
+    if (!isInsightFieldsSchemaGapError(err)) throw err;
+    const { GET_INSIGHTS_MINIMAL: minimalQuery } = await import("@/lib/queries");
+    const data = await fetchGraphQL<InsightsConnectionResult>(
+      minimalQuery,
+      variables,
+    );
+    const conn = data?.insights;
+    return {
+      nodes: conn?.nodes ?? [],
+      pageInfo: conn?.pageInfo ?? {
+        hasNextPage: false,
+        endCursor: null,
+      },
+    };
+  }
+}
 
 export async function getInsightsList(): Promise<InsightListItem[]> {
   try {
-    const data = await fetchGraphQL<InsightsListResult>(GET_INSIGHTS, {
-      first: 100,
-    });
-    const nodes = data?.insights?.nodes ?? [];
-    if (nodes.length > 0) {
-      return nodes;
-    }
-  } catch {
-    // CPT missing or GraphQL error — use bundled demo.
+    const { nodes } = await fetchInsightsConnection(100);
+    return nodes;
+  } catch (err) {
+    console.error("[insights] getInsightsList GraphQL failed:", err);
+    return [];
   }
-  return DEMO_INSIGHTS;
+}
+
+export async function getInsightsMagazineBundle(): Promise<{
+  posts: InsightListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  try {
+    const { nodes, pageInfo } = await fetchInsightsConnection(
+      INSIGHTS_MAGAZINE_FIRST,
+      null,
+    );
+    return { posts: nodes, pageInfo };
+  } catch (err) {
+    console.error("[insights] getInsightsMagazineBundle GraphQL failed:", err);
+    return {
+      posts: [],
+      pageInfo: { hasNextPage: false, endCursor: null },
+    };
+  }
+}
+
+/** Used by API route for “Load more” on /insights/. */
+export async function fetchInsightsAfterCursor(
+  after: string,
+  first = INSIGHTS_LOAD_MORE_FIRST,
+): Promise<{
+  nodes: InsightListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  return fetchInsightsConnection(first, after);
+}
+
+export async function getInsightsAdsSettings(): Promise<InsightsAdsSettings | null> {
+  try {
+    const data = await fetchGraphQL<InsightsAdsSettingsResult>(
+      GET_INSIGHTS_ADS_SETTINGS,
+    );
+    return data?.insightsAdsSettings ?? null;
+  } catch (err) {
+    console.error("[insights] getInsightsAdsSettings GraphQL failed:", err);
+    return null;
+  }
 }
 
 export async function getInsightBySlug(slug: string): Promise<InsightDetail | null> {
@@ -85,8 +127,199 @@ export async function getInsightBySlug(slug: string): Promise<InsightDetail | nu
     if (data?.insight?.slug) {
       return data.insight;
     }
-  } catch {
-    // fall through
+    return null;
+  } catch (err) {
+    if (!isInsightFieldsSchemaGapError(err)) {
+      console.error("[insights] getInsightBySlug GraphQL failed:", err);
+      return null;
+    }
+    try {
+      const { GET_INSIGHT_BY_SLUG_MINIMAL: minimalQuery } =
+        await import("@/lib/queries");
+      const data = await fetchGraphQL<InsightBySlugResult>(minimalQuery, {
+        slug,
+      });
+      if (data?.insight?.slug) {
+        return data.insight;
+      }
+    } catch (err2) {
+      console.error("[insights] getInsightBySlug minimal GraphQL failed:", err2);
+    }
+    return null;
   }
-  return DEMO_INSIGHTS.find((p) => p.slug === slug) ?? null;
+}
+
+export async function getInsightTopicSlugs(): Promise<string[]> {
+  try {
+    const data = await fetchGraphQL<InsightTopicsSlugListResult>(
+      GET_INSIGHT_TOPIC_SLUGS,
+      { first: 100 },
+    );
+    return (data?.insightTopics?.nodes ?? [])
+      .map((n) => n.slug?.trim())
+      .filter((s): s is string => Boolean(s));
+  } catch (err) {
+    console.error("[insights] getInsightTopicSlugs failed:", err);
+    return [];
+  }
+}
+
+/** Max nodes per GraphQL request when advancing the cursor to reach a page offset. */
+const INSIGHT_TOPIC_CURSOR_BATCH = 80;
+
+export type InsightCategoryPageData = {
+  topicName: string | null;
+  topicSlug: string;
+  posts: InsightListItem[];
+  totalCount: number;
+  currentPage: number;
+  pageSize: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  endCursor: string | null;
+};
+
+async function fetchInsightTopicBySlugResult(
+  slug: string,
+  first: number,
+  after: string | null,
+): Promise<InsightTopicBySlugResult> {
+  const variables = { slug, first, after };
+  try {
+    return await fetchGraphQL<InsightTopicBySlugResult>(
+      GET_INSIGHT_TOPIC_BY_SLUG,
+      variables,
+    );
+  } catch (err) {
+    if (!isInsightFieldsSchemaGapError(err)) throw err;
+    const { GET_INSIGHT_TOPIC_BY_SLUG_MINIMAL: minimalQuery } =
+      await import("@/lib/queries");
+    return await fetchGraphQL<InsightTopicBySlugResult>(minimalQuery, variables);
+  }
+}
+
+async function fetchInsightTopicInsightsSlice(
+  slug: string,
+  first: number,
+  after: string | null,
+): Promise<{
+  nodes: InsightListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  const data = await fetchInsightTopicBySlugResult(slug, first, after);
+  const conn = data?.insightTopic?.insights;
+  return {
+    nodes: conn?.nodes ?? [],
+    pageInfo: conn?.pageInfo ?? {
+      hasNextPage: false,
+      endCursor: null,
+    },
+  };
+}
+
+/**
+ * Returns the connection cursor immediately after skipping `skip` posts (for same sort as paged queries).
+ */
+async function cursorAfterSkippingTopicPosts(
+  slug: string,
+  skip: number,
+): Promise<{ after: string | null; ok: boolean }> {
+  if (skip <= 0) return { after: null, ok: true };
+  let after: string | null = null;
+  let remaining = skip;
+  while (remaining > 0) {
+    const batch = Math.min(remaining, INSIGHT_TOPIC_CURSOR_BATCH);
+    const { nodes, pageInfo } = await fetchInsightTopicInsightsSlice(slug, batch, after);
+    if (nodes.length === 0) {
+      return { after: null, ok: false };
+    }
+    remaining -= nodes.length;
+    after = pageInfo.endCursor ?? null;
+    if (!pageInfo.hasNextPage && remaining > 0) {
+      return { after: null, ok: false };
+    }
+  }
+  return { after, ok: true };
+}
+
+export const getInsightCategoryPageData = cache(async function getInsightCategoryPageData(
+  slug: string,
+  page: number,
+): Promise<InsightCategoryPageData | null> {
+  const trimmed = slug.trim();
+  if (!trimmed) return null;
+  const safePage =
+    Number.isFinite(page) && page >= 1
+      ? Math.min(Math.floor(page), 1_000_000)
+      : 1;
+  const pageSize = INSIGHT_CATEGORY_PAGE_FIRST;
+
+  try {
+    const skipOffset = (safePage - 1) * pageSize;
+    const { after: afterSkip, ok: skipOk } = await cursorAfterSkippingTopicPosts(
+      trimmed,
+      skipOffset,
+    );
+    if (!skipOk && skipOffset > 0) return null;
+
+    const data = await fetchInsightTopicBySlugResult(
+      trimmed,
+      pageSize,
+      skipOffset === 0 ? null : afterSkip,
+    );
+    const topic = data?.insightTopic;
+    if (!topic?.slug?.trim()) return null;
+
+    const totalCount = Math.max(0, topic.count ?? 0);
+    const totalPages = Math.max(1, Math.ceil(totalCount / pageSize) || 1);
+    if (safePage > totalPages) return null;
+
+    const conn = topic.insights;
+    const posts = conn?.nodes ?? [];
+    const pageInfo = conn?.pageInfo ?? {
+      hasNextPage: false,
+      endCursor: null,
+    };
+
+    return {
+      topicName: topic.name?.trim() ?? null,
+      topicSlug: topic.slug.trim(),
+      posts,
+      totalCount,
+      currentPage: safePage,
+      pageSize,
+      totalPages,
+      hasNextPage: pageInfo.hasNextPage,
+      endCursor: pageInfo.endCursor,
+    };
+  } catch (err) {
+    console.error("[insights] getInsightCategoryPageData failed:", err);
+    return null;
+  }
+});
+
+export async function fetchInsightCategoryAfterCursor(
+  topicSlug: string,
+  after: string,
+  first = INSIGHTS_LOAD_MORE_FIRST,
+): Promise<{
+  nodes: InsightListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  const slug = topicSlug.trim();
+  if (!slug) {
+    return {
+      nodes: [],
+      pageInfo: { hasNextPage: false, endCursor: null },
+    };
+  }
+  const data = await fetchInsightTopicBySlugResult(slug, first, after);
+  const conn = data?.insightTopic?.insights;
+  return {
+    nodes: conn?.nodes ?? [],
+    pageInfo: conn?.pageInfo ?? {
+      hasNextPage: false,
+      endCursor: null,
+    },
+  };
 }

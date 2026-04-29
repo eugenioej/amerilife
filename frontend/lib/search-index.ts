@@ -243,6 +243,34 @@ const SEARCH_INDEX: SearchEntry[] = [
     ],
   },
   {
+    path: "/insights/category/health/",
+    title: "Health Insights",
+    description:
+      "Health, Medicare, and wellness insights for agents and advisors from AmeriLife.",
+    keywords: ["health", "Medicare", "insights", "agents", "wellness"],
+  },
+  {
+    path: "/insights/category/wealth/",
+    title: "Wealth Insights",
+    description:
+      "Wealth, retirement, and financial planning insights from AmeriLife.",
+    keywords: ["wealth", "retirement", "financial planning", "insights"],
+  },
+  {
+    path: "/insights/category/leadership/",
+    title: "Leadership Insights",
+    description:
+      "Leadership and industry perspectives for insurance and financial professionals.",
+    keywords: ["leadership", "insights", "agents", "distribution"],
+  },
+  {
+    path: "/insights/category/life/",
+    title: "Life Insurance Insights",
+    description:
+      "Life insurance trends and guidance from AmeriLife Insights.",
+    keywords: ["life insurance", "IUL", "insights", "sales"],
+  },
+  {
     path: "/givesback/",
     title: "AmeriLife Gives Back Foundation",
     description:

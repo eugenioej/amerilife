@@ -6,7 +6,7 @@ const SOCIAL_LINKS = [
   { href: "https://www.facebook.com/AmeriLifeCorporate/", label: "Facebook", icon: "facebook" },
   { href: "https://www.linkedin.com/company/amerilife", label: "LinkedIn", icon: "linkedin" },
   {
-    href: "https://www.youtube.com/channel/UCFbug5RiedNPdb-5Fpq3szuOg",
+    href: "https://www.youtube.com/@AmeriLife",
     label: "YouTube",
     icon: "youtube",
   },

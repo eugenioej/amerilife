@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { InsightPostTemplate } from "@/app/components/insights/InsightPostTemplate";
 import { JsonLd } from "@/app/components/seo/JsonLd";
-import { getInsightBySlug, getInsightsList } from "@/lib/insights-data";
+import { formatInsightExcerptPlain } from "@/lib/insight-excerpt";
+import { getInsightBySlug, getInsightsAdsSettings, getInsightsList } from "@/lib/insights-data";
 import {
   getSiteUrl,
   insightArticleJsonLd,
@@ -10,11 +11,6 @@ import {
 } from "@/lib/seo";
 
 type PageParams = Promise<{ slug: string }>;
-
-function excerptPlain(excerpt: string | null | undefined): string {
-  if (!excerpt) return "";
-  return excerpt.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-}
 
 export async function generateMetadata({ params }: { params: PageParams }) {
   const { slug } = await params;
@@ -26,16 +22,17 @@ export async function generateMetadata({ params }: { params: PageParams }) {
   }
   const title = `${post.title ?? "Insight"} | AmeriLife`;
   const description =
-    excerptPlain(post.excerpt).slice(0, 320) ||
+    formatInsightExcerptPlain(post.excerpt).slice(0, 320) ||
     `Read ${post.title ?? "this article"} on AmeriLife Insights.`;
   return staticPageMetadata(title, description, `/insights/${slug}/`);
 }
 
 export default async function InsightSinglePage({ params }: { params: PageParams }) {
   const { slug } = await params;
-  const [post, allPosts] = await Promise.all([
+  const [post, allPosts, insightsAds] = await Promise.all([
     getInsightBySlug(slug),
     getInsightsList(),
+    getInsightsAdsSettings(),
   ]);
 
   if (!post) notFound();
@@ -59,6 +56,7 @@ export default async function InsightSinglePage({ params }: { params: PageParams
         post={post}
         relatedPosts={relatedPosts}
         shareUrl={articleUrl}
+        insightsAds={insightsAds}
       />
     </>
   );
