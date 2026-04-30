@@ -2,6 +2,10 @@
 .cursor/
 *.log
 
+# Migration / working data (not production code)
+_media_upload/
+amerilife-media-migration.csv
+
 # WordPress plugin archives (keep sources in mu-plugins/*.php only)
 frontend/wp/mu-plugins/*.zip
 
@@ -28,6 +32,9 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+# Microsoft Office temp/lock files
+~$*
 
 # Debug
 npm-debug.log*
