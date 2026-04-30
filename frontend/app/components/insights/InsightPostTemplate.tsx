@@ -265,21 +265,23 @@ export function InsightPostTemplate({
               </div>
             ) : null}
 
-            <div className="mt-10 flex flex-col gap-6 border-t border-[var(--color-border)] pt-8 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-10 flex flex-nowrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-8">
               {topicSlug ? (
                 <Link
                   href={insightCategoryHref(topicSlug)}
                   variant="button"
-                  className="inline-flex w-fit items-center rounded-sm border border-[var(--color-border)] bg-[#f4f6f8] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-muted)] transition-colors hover:border-[var(--color-brand-primary)] hover:text-[var(--color-brand-primary)]"
+                  className="inline-flex min-w-0 max-w-[calc(100%-3rem)] shrink items-center truncate rounded-sm border border-[var(--color-border)] bg-[#f4f6f8] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-muted)] transition-colors hover:border-[var(--color-brand-primary)] hover:text-[var(--color-brand-primary)]"
                 >
                   {topicLabel(post)}
                 </Link>
               ) : (
-                <span className="inline-flex w-fit items-center rounded-sm border border-[var(--color-border)] bg-[#f4f6f8] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-muted)]">
+                <span className="inline-flex min-w-0 max-w-[calc(100%-3rem)] shrink items-center truncate rounded-sm border border-[var(--color-border)] bg-[#f4f6f8] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-muted)]">
                   {topicLabel(post)}
                 </span>
               )}
-              <InsightSharePanel url={shareUrl} title={post.title ?? "Insight"} />
+              <div className="shrink-0">
+                <InsightSharePanel url={shareUrl} title={post.title ?? "Insight"} />
+              </div>
             </div>
 
           </div>

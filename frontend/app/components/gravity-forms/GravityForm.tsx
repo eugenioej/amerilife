@@ -347,7 +347,7 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
           noValidate
           className={
             className ??
-            "overflow-hidden rounded-[var(--radius-full)] bg-white shadow-[var(--shadow-lg)] sm:flex sm:items-stretch"
+            "flex w-full min-w-0 flex-col overflow-hidden rounded-2xl bg-white shadow-[var(--shadow-lg)] sm:flex-row sm:items-stretch sm:rounded-[var(--radius-full)]"
           }
         >
           {inlineFields.map((field, idx) => {
@@ -359,12 +359,12 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
             const isLast = idx === inlineFields.length - 1;
             const dividerClass = isLast
               ? ""
-              : "border-b border-[var(--color-border)] sm:border-b-0 sm:border-r";
+              : "border-b border-[var(--color-border)] sm:border-0 sm:border-r sm:border-[var(--color-border)]";
 
             if (field.type === "NAME") {
               const nameInputs = nameInputsForDisplay(field.inputs ?? []);
               return nameInputs.map((inp) => (
-                <div key={`${fid}-${inp.id}`} className={`relative flex-1 ${dividerClass}`}>
+                <div key={`${fid}-${inp.id}`} className={`relative min-w-0 flex-1 ${dividerClass}`}>
                   <label htmlFor={`gf-${fid}-${inp.id}`} className="sr-only">
                     {decodeHtmlEntities(inp.label ?? label)}
                   </label>
@@ -385,7 +385,7 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
 
             if (field.type === "SELECT") {
               return (
-                <div key={fid} className={`relative flex-1 ${dividerClass}`}>
+                <div key={fid} className={`relative min-w-0 flex-1 ${dividerClass}`}>
                   <label htmlFor={`gf-${fid}`} className="sr-only">
                     {label}
                   </label>
@@ -412,7 +412,7 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
             }
 
             return (
-              <div key={fid} className={`relative flex-1 ${dividerClass}`}>
+              <div key={fid} className={`relative min-w-0 flex-1 ${dividerClass}`}>
                 <label htmlFor={`gf-${fid}`} className="sr-only">
                   {label}
                 </label>
@@ -432,7 +432,7 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
           <button
             type="submit"
             disabled={submitting}
-            className="flex items-center justify-center gap-2 bg-[var(--color-brand-primary)] px-8 py-4 font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-[var(--color-brand-primary-hover)] disabled:opacity-60"
+            className="flex w-full shrink-0 items-center justify-center gap-2 bg-[var(--color-brand-primary)] px-8 py-4 font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-[var(--color-brand-primary-hover)] disabled:opacity-60 sm:w-auto"
           >
             {submitting ? "Sending…" : submitLabel}
           </button>

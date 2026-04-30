@@ -30,7 +30,7 @@ export function FindAgentContent({ locations, connectForm }: Props) {
             items={[{ label: "Home", href: "/" }, { label: "Find An Agent" }]}
           />
 
-          <div className="w-full max-w-3xl text-center">
+          <div className="w-full min-w-0 max-w-3xl text-center">
             <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl">
               Find An Agent Near You
             </h1>

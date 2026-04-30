@@ -19,7 +19,7 @@ export function LeadersGrid({ leaders, excludeSlug }: LeadersGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 justify-items-center gap-5 md:grid-cols-2 lg:grid-cols-4">
       {items.map((leader, index) => (
         <LeaderCard key={leader.id} leader={leader} revealIndex={index} />
       ))}

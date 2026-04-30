@@ -566,6 +566,90 @@ export const SEARCH_POSTS = `
   }
 `;
 
+export type AgencySearchNode = {
+  id: string;
+  slug?: string | null;
+  title?: string | null;
+  content?: string | null;
+  agencyFields?: {
+    addressLine1?: string | null;
+    addressLine2?: string | null;
+    addressCity?: string | null;
+    addressState?: string | null;
+    addressZip?: string | null;
+    phone?: string | null;
+  } | null;
+};
+
+/** Paginated agency list for server-side search (WP `search` does not match address meta). */
+export type AgenciesSearchBatchResult = {
+  agencies?: {
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+    nodes: AgencySearchNode[];
+  };
+};
+
+export const GET_AGENCIES_SEARCH_BATCH = `
+  query GetAgenciesSearchBatch($first: Int!, $after: String) {
+    agencies(
+      first: $first
+      after: $after
+      where: { orderby: { field: MENU_ORDER, order: ASC } }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        id
+        slug
+        title
+        content
+        agencyFields {
+          addressLine1
+          addressLine2
+          addressCity
+          addressState
+          addressZip
+          phone
+        }
+      }
+    }
+  }
+`;
+
+export type InsightSearchNode = {
+  id: string;
+  slug?: string | null;
+  title?: string | null;
+  date?: string | null;
+  excerpt?: string | null;
+};
+
+export type InsightsSearchResult = {
+  insights?: {
+    nodes: InsightSearchNode[];
+  };
+};
+
+/** Insights CPT — magazine articles (`/insights/[slug]/`). */
+export const SEARCH_INSIGHTS = `
+  query SearchInsights($search: String!, $first: Int!) {
+    insights(where: { search: $search }, first: $first) {
+      nodes {
+        id
+        slug
+        title
+        date
+        excerpt
+      }
+    }
+  }
+`;
+
 /**
  * Leader CPT — maps to amerilife.com-style leader pages (e.g. /our-leaders/[slug]/ on legacy site).
  *

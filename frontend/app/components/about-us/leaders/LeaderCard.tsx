@@ -27,21 +27,21 @@ export function LeaderCard({ leader, revealIndex = 0 }: LeaderCardProps) {
     <FadeInOnView
       direction="up"
       delay={revealIndex * 100}
-      className="flex h-full w-full max-w-[275px] items-stretch max-[550px]:max-w-[92%]"
+      className="flex h-full w-full max-w-[275px] items-stretch"
     >
       <NextLink
         href={href}
-        className="group relative flex h-full w-full flex-col bg-white text-left no-underline outline-none focus-visible:ring-2 focus-visible:ring-[#3FA590] focus-visible:ring-offset-2 max-[550px]:h-[160px] max-[550px]:max-w-full max-[550px]:flex-row max-[550px]:flex-wrap"
+        className="group relative flex h-full w-full flex-col bg-white text-left no-underline outline-none focus-visible:ring-2 focus-visible:ring-[#3FA590] focus-visible:ring-offset-2"
         aria-label={`${name}, read bio`}
       >
-        <div className="relative h-[275px] w-full shrink-0 overflow-hidden bg-[#ccc] max-[550px]:h-full max-[550px]:w-[143px]">
+        <div className="relative h-[275px] w-full shrink-0 overflow-hidden bg-[#ccc]">
           {photoUrl ? (
             <Image
               src={rewriteUploadsUrl(photoUrl)}
               alt=""
               fill
               className="object-cover"
-              sizes="(max-width: 550px) 143px, 275px"
+              sizes="(max-width: 768px) 100vw, 275px"
             />
           ) : (
             <div
@@ -53,19 +53,19 @@ export function LeaderCard({ leader, revealIndex = 0 }: LeaderCardProps) {
           )}
         </div>
 
-        <div className="relative z-[1] min-h-0 flex-1 px-5 pb-[75px] pt-9 max-[550px]:w-[calc(100%-143px)] max-[550px]:px-6 max-[550px]:pb-6 max-[550px]:pt-[30px]">
-          <h3 className="mb-2.5 line-clamp-2 text-xl font-bold capitalize leading-tight text-[#244260] max-[550px]:line-clamp-1 max-[550px]:text-[22px]">
+        <div className="relative z-[1] min-h-0 flex-1 px-5 pb-[75px] pt-9">
+          <h3 className="mb-2.5 line-clamp-2 text-xl font-bold capitalize leading-tight text-[#244260]">
             {name}
           </h3>
           {jobTitle ? (
-            <p className="line-clamp-3 text-base font-normal leading-normal text-[#244260] max-[550px]:line-clamp-1">
+            <p className="line-clamp-3 text-base font-normal leading-normal text-[#244260]">
               {jobTitle}
             </p>
           ) : null}
         </div>
 
         <span
-          className="absolute bottom-[25px] left-5 z-[2] text-lg font-bold uppercase leading-7 tracking-[0.06em] text-[#3FA590] transition-colors duration-200 max-[550px]:left-[26px] group-hover:text-[#008066]"
+          className="absolute bottom-[25px] left-5 z-[2] text-lg font-bold uppercase leading-7 tracking-[0.06em] text-[#3FA590] transition-colors duration-200 group-hover:text-[#008066]"
           aria-hidden
         >
           Read Bio

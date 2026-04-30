@@ -8,9 +8,9 @@ const BOTTOM_LINKS = [
   { label: "SMS Terms & Conditions", href: "/sms-text-messaging-terms-and-conditions/" },
 ];
 
-/** Passed through `rewriteUploadsUrl` in `LayoutShell` so server/client URLs stay aligned. */
+/** Primary AmeriLife wordmark SVG; shown white in footer via CSS filter on dark background. */
 export const FOOTER_LOGO_SRC =
-  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AmeriLife-Logo-white-s.webp";
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/01/amerilife.svg";
 
 export const FOOTER_CERTIFICATION_BADGE_SRC =
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2025/07/58a9a44b-c754-4491-9340-42a76cfd9ff0-TICKET.supporting_files-AmeriLife_US_English_2025_Certification_Badge-1-scaled.png";
@@ -37,9 +37,9 @@ export function SiteFooter({ primaryMenu, footerLogoUrl, certificationBadgeUrl }
           <img
             src={footerLogoUrl}
             alt="AmeriLife"
-            width={100}
-            height={28}
-            className="h-5 w-auto"
+            width={140}
+            height={40}
+            className="h-6 w-auto brightness-0 invert lg:h-7"
             decoding="async"
           />
         </Link>
@@ -47,7 +47,7 @@ export function SiteFooter({ primaryMenu, footerLogoUrl, certificationBadgeUrl }
         {/* Separator */}
         <hr className="mt-6 border-white/20" />
 
-        {/* Row 2: About Us | Our Solutions | Newsroom, Insights + Join Our Team | GPTW Badge */}
+        {/* Row 2: About Us | Our Solutions | News & Careers | GPTW Badge */}
         <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
           {aboutUs && (
             <div>
@@ -91,7 +91,10 @@ export function SiteFooter({ primaryMenu, footerLogoUrl, certificationBadgeUrl }
               </ul>
             </div>
           )}
-          <div className="pt-9 sm:pt-0">
+          <div>
+            <h3 className="mb-4 text-sm font-bold uppercase tracking-wide text-white">
+              News & Careers
+            </h3>
             <ul className="space-y-3">
               <li>
                 <UiLink

@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import Image from "next/image";
 import { Link } from "../ui/Link";
 import { Sheet } from "../ui/Sheet";
 import { ChevronDownIcon } from "../ui/ChevronDownIcon";
+import { FOOTER_LOGO_SRC } from "./SiteFooter";
 import type { NavItem } from "@/lib/wp-menus";
 import { isContactNavItem } from "@/lib/nav-contact";
+import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 type MobileNavProps = {
   open: boolean;
@@ -149,6 +152,9 @@ function NavItemList({
   );
 }
 
+/** Same SVG as header/footer; filtered to white on the drawer background. */
+const mobileMenuLogoSvgUrl = rewriteUploadsUrl(FOOTER_LOGO_SRC);
+
 export function MobileNav({ open, onClose, items, onContactSelect }: MobileNavProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -186,11 +192,27 @@ export function MobileNav({ open, onClose, items, onContactSelect }: MobileNavPr
   return (
     <Sheet open={open} onClose={onClose} aria-label="Navigation menu">
       <div ref={panelRef} className="flex h-full min-h-0 flex-col">
-        <div className="flex shrink-0 items-center justify-end border-b border-white/20 px-4 py-3">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/20 px-4 py-3">
+          <Link
+            href="/"
+            variant="button"
+            className="flex shrink-0 items-center"
+            aria-label="AmeriLife Home"
+            onClick={onClose}
+          >
+            <Image
+              src={mobileMenuLogoSvgUrl}
+              alt="AmeriLife"
+              width={140}
+              height={40}
+              className="h-7 w-auto brightness-0 invert"
+              sizes="128px"
+            />
+          </Link>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-11 min-w-11 items-center justify-center rounded-md border border-white/35 text-white transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="inline-flex h-11 min-w-11 shrink-0 items-center justify-center rounded-md border border-white/35 text-white transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             aria-label="Close navigation menu"
           >
             <span className="text-3xl font-light leading-none" aria-hidden>

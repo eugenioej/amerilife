@@ -52,7 +52,7 @@ export function Sheet({ open, onClose, children, "aria-label": ariaLabel = "Menu
       />
       <div
         ref={ref}
-        className="absolute right-0 top-0 h-full w-full max-w-md bg-[var(--color-gradient-start)] shadow-lg"
+        className="absolute inset-0 bg-[var(--color-gradient-start)]"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
