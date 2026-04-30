@@ -54,10 +54,10 @@ export function FeaturesGrid({
   return (
     <section className="bg-white py-8 sm:py-12 lg:py-16">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-        <h2 className="mb-2 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+        <h2 className="mb-3 text-center text-3xl font-bold text-[var(--color-fg)] sm:mb-4 sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
           {sectionHeading}
         </h2>
-        <p className="mb-8 text-center italic text-[var(--color-fg)] sm:mb-10">
+        <p className="mb-10 text-center text-lg italic leading-snug text-[var(--color-fg)] sm:mb-12 sm:text-xl sm:leading-snug lg:text-2xl lg:leading-snug">
           Helping you live a longer, healthier life.
         </p>
 

@@ -34,7 +34,7 @@ export const metadata: Metadata = {
       "Delivering insurance and financial solutions to agents and advisors to help people live longer, healthier lives.",
     images: [
       {
-        url: "/og-default.png",
+        url: "/og-default.jpg",
         width: 1200,
         height: 630,
         alt: "AmeriLife",

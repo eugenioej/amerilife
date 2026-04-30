@@ -2,45 +2,24 @@
 
 import type { LocationData } from "@/lib/locations-data";
 import type { GfFormData } from "@/lib/gf-types";
+import { agencyMapsEmbedUrl } from "@/lib/agency-map-embed";
+import { telHrefPlusOne } from "@/lib/us-tel-href";
 import { GravityForm } from "@/app/components/gravity-forms/GravityForm";
-
-function buildMapsEmbedUrl(location: LocationData): string {
-  const addr = [
-    location.address.line1,
-    location.address.line2,
-    location.address.city,
-    location.address.state,
-    location.address.zip,
-  ]
-    .filter(Boolean)
-    .join(", ");
-  const encoded = encodeURIComponent(addr);
-  return `https://www.google.com/maps?q=${encoded}&output=embed`;
-}
-
-/** Prefer CMS `mapSearchUrl` (import) so iframe matches the same query as enrichment. */
-function embedUrlFromMapSearchUrl(stored: string | undefined): string | null {
-  if (!stored?.trim()) return null;
-  try {
-    const u = new URL(stored);
-    const q = u.searchParams.get("query");
-    if (q) {
-      return `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed`;
-    }
-  } catch {
-    /* ignore */
-  }
-  return null;
-}
 
 type ConnectAgentBannerProps = {
   location: LocationData;
   connectForm: GfFormData | null;
+  /** When false, only the office map is shown (form appears in OfficeInfoHero). */
+  showForm?: boolean;
 };
 
-export function ConnectAgentBanner({ location, connectForm }: ConnectAgentBannerProps) {
-  const mapsUrl =
-    embedUrlFromMapSearchUrl(location.mapSearchUrl) ?? buildMapsEmbedUrl(location);
+export function ConnectAgentBanner({
+  location,
+  connectForm,
+  showForm = true,
+}: ConnectAgentBannerProps) {
+  const mapsUrl = agencyMapsEmbedUrl(location);
+  const officeTelHref = telHrefPlusOne(location.phone);
 
   return (
     <section
@@ -49,12 +28,23 @@ export function ConnectAgentBanner({ location, connectForm }: ConnectAgentBanner
     >
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
         <h2 className="mb-6 text-center text-lg font-bold uppercase text-[var(--color-fg)] sm:mb-8">
-          Connect With An Agent
+          {showForm ? "Connect With An Agent" : "Office location"}
         </h2>
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_1fr] lg:gap-8">
-          {/* Left: Map */}
-          <div className="relative aspect-[4/3] min-h-[200px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[#e8e9eb] sm:min-h-[280px] lg:aspect-square">
+        <div
+          className={
+            showForm
+              ? "grid gap-6 lg:grid-cols-[1fr_1fr] lg:gap-8"
+              : "mx-auto max-w-4xl"
+          }
+        >
+          <div
+            className={
+              showForm
+                ? "relative aspect-[4/3] min-h-[200px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[#e8e9eb] sm:min-h-[280px] lg:aspect-square"
+                : "relative aspect-[16/10] min-h-[240px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[#e8e9eb] sm:min-h-[320px]"
+            }
+          >
             <iframe
               src={mapsUrl}
               title="Office location map"
@@ -65,20 +55,27 @@ export function ConnectAgentBanner({ location, connectForm }: ConnectAgentBanner
             />
           </div>
 
-          {/* Right: Gravity Form via WPGraphQL for GF */}
-          <div className="min-w-0">
-            {connectForm ? (
-              <GravityForm form={connectForm} />
-            ) : (
-              <p className="text-sm text-[var(--color-muted)]">
-                The contact form could not be loaded. Please try again later or call{" "}
-                <a className="text-[var(--color-link)] underline" href={`tel:${location.phone.replace(/\D/g, "")}`}>
-                  {location.phone}
-                </a>
-                .
-              </p>
-            )}
-          </div>
+          {showForm ? (
+            <div className="min-w-0">
+              {connectForm ? (
+                <GravityForm form={connectForm} />
+              ) : (
+                <p className="text-sm text-[var(--color-muted)]">
+                  The contact form could not be loaded. Please try again later
+                  {officeTelHref ? (
+                    <>
+                      {" "}
+                      or call{" "}
+                      <a className="text-[var(--color-link)] underline" href={officeTelHref}>
+                        {location.phone}
+                      </a>
+                    </>
+                  ) : null}
+                  .
+                </p>
+              )}
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

@@ -36,6 +36,15 @@ export type FeatureBlock = {
   icon?: "medicare" | "health" | "life" | "annuity";
 };
 
+/**
+ * Agent shown in agency location hero: first with `photoUrl`, else first by CMS order.
+ */
+export function heroFeaturedAgent(agents: AgentData[]): AgentData | null {
+  if (!agents.length) return null;
+  const withPhoto = agents.find((a) => a.photoUrl?.trim());
+  return withPhoto ?? agents[0];
+}
+
 export type LocationData = {
   slug: string;
   officeName: string;
@@ -61,7 +70,7 @@ export type LocationData = {
 const POLK_FEATURES: FeatureBlock[] = [
   {
     heading: "Medicare Plans",
-    body: "Navigate your Medicare options with confidence through comprehensive plan choices designed to support your health and wellbeing.",
+    body: "Navigate your Medicare options with confidence with plan choices that help support your health and well-being.",
     icon: "medicare",
   },
   {
@@ -78,6 +87,10 @@ const POLK_FEATURES: FeatureBlock[] = [
     heading: "Annuities",
     body: "Strengthen your retirement strategy with annuity options that offer guaranteed income, safeguard your savings, and help build long-term stability.",
     icon: "annuity",
+  },
+  {
+    heading: "Ancillary Products",
+    body: "Boost your benefits package with additional coverage options that complement your core plans and support your overall financial and health needs.",
   },
 ];
 
@@ -105,7 +118,8 @@ const LOCATIONS: Record<string, LocationData> = {
       {
         slug: "ryan-atkins",
         name: "Ryan Atkins",
-        role: "Licensed Insurance Agent",
+        role: "Managing Director",
+        email: "AMLH108@AmeriLife.com",
         city: "Winter Haven",
         state: "FL",
         reviewsCount: 375,

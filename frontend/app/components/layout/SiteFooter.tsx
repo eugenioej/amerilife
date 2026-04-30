@@ -47,7 +47,7 @@ export function SiteFooter({ primaryMenu, footerLogoUrl, certificationBadgeUrl }
         {/* Separator */}
         <hr className="mt-6 border-white/20" />
 
-        {/* Row 2: About Us | Our Solutions | Newsroom + Join Our Team | GPTW Badge */}
+        {/* Row 2: About Us | Our Solutions | Newsroom, Insights + Join Our Team | GPTW Badge */}
         <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
           {aboutUs && (
             <div>
@@ -100,6 +100,15 @@ export function SiteFooter({ primaryMenu, footerLogoUrl, certificationBadgeUrl }
                   className="text-sm font-medium text-white/90 transition-colors hover:text-white"
                 >
                   Newsroom
+                </UiLink>
+              </li>
+              <li>
+                <UiLink
+                  href="/insights/"
+                  variant="nav"
+                  className="text-sm font-medium text-white/90 transition-colors hover:text-white"
+                >
+                  Insights
                 </UiLink>
               </li>
               <li>

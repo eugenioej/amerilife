@@ -24,10 +24,16 @@ export async function LayoutShell({ children }: { children: React.ReactNode }) {
 
   return (
     <ContactPopupProvider contactPopupForm={contactPopupForm}>
+      {/* Skip-to-content — visually hidden until focused; required for WCAG 2.1 AA */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       <div className="flex min-h-screen flex-col overflow-x-clip">
         <TopBar />
         <SiteHeader primaryMenu={primaryMenu} />
-        <main className="flex min-h-0 flex-1 flex-col overflow-x-clip">{children}</main>
+        <main id="main-content" className="flex min-h-0 flex-1 flex-col overflow-x-clip">
+          {children}
+        </main>
         <SiteFooter
           primaryMenu={primaryMenu}
           footerLogoUrl={footerLogoUrl}

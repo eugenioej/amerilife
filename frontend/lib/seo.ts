@@ -162,7 +162,7 @@ export function organizationJsonLd(): Record<string, unknown> {
     "@type": "Organization",
     name: "AmeriLife",
     url,
-    logo: `${url}/og-default.png`,
+    logo: `${url}/og-default.jpg`,
     sameAs: [
       "https://www.linkedin.com/company/amerilife/",
       "https://www.facebook.com/AmeriLife/",

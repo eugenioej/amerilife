@@ -114,6 +114,34 @@
   --font-mono: var(--font-mono);
 }
 
+/* --------------------------------------------------------------------------
+   Skip-to-content — keyboard / screen-reader accessibility
+   Visually hidden until focused; slides into view at the top-left corner.
+   -------------------------------------------------------------------------- */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: calc(var(--z-header) + 100);
+  padding: 0.75rem 1.5rem;
+  background: var(--color-brand-dark);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: top 0.12s ease;
+}
+.skip-link:focus {
+  top: 1rem;
+  outline: 3px solid var(--color-brand-secondary);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skip-link { transition: none; }
+}
+
 html {
   color-scheme: light;
   scroll-behavior: smooth;
