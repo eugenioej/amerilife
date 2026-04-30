@@ -205,8 +205,8 @@ export function MobileNav({ open, onClose, items, onContactSelect }: MobileNavPr
               alt="AmeriLife"
               width={140}
               height={40}
-              className="h-7 w-auto brightness-0 invert"
-              sizes="128px"
+              className="h-6 w-auto brightness-0 invert"
+              sizes="112px"
             />
           </Link>
           <button

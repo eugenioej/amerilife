@@ -46,17 +46,18 @@ export default async function InsightSinglePage({ params }: { params: PageParams
 
   return (
     <>
+      <InsightPostTemplate
+        key={`insight-post-${slug}`}
+        post={post}
+        relatedPosts={relatedPosts}
+        shareUrl={articleUrl}
+        insightsAds={insightsAds}
+      />
       <JsonLd
         schema={insightArticleJsonLd(post, {
           url: articleUrl,
           categoryLabel,
         })}
-      />
-      <InsightPostTemplate
-        post={post}
-        relatedPosts={relatedPosts}
-        shareUrl={articleUrl}
-        insightsAds={insightsAds}
       />
     </>
   );

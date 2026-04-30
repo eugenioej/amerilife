@@ -31,7 +31,7 @@ export async function LayoutShell({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-screen flex-col overflow-x-clip">
         <TopBar />
         <SiteHeader primaryMenu={primaryMenu} />
-        <main id="main-content" className="flex min-h-0 flex-1 flex-col overflow-x-clip">
+        <main id="main-content" className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-clip">
           {children}
         </main>
         <SiteFooter

@@ -25,7 +25,13 @@ export function SiteBreadcrumb({
 
   return (
     <nav
-      className={`text-sm ${inverse ? "text-white/70" : ""} ${className}`.trim()}
+      className={[
+        "w-full min-w-0 max-w-full text-sm",
+        inverse ? "text-white/70" : null,
+        className || null,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       aria-label="Breadcrumb"
     >
       <ol className="flex flex-wrap items-center gap-y-1">
@@ -35,15 +41,21 @@ export function SiteBreadcrumb({
             ? "font-semibold text-white/80 no-underline transition-colors hover:text-white hover:underline"
             : "font-semibold text-[var(--color-breadcrumb-link)] underline decoration-1 underline-offset-2 transition-colors hover:text-[var(--color-breadcrumb-link-hover)]";
 
+          /** Last crumb: full-width row below `sm` so ellipsis works under `overflow-x-clip` on main. */
+          const liRow = isLast
+            ? "w-full min-w-0 shrink-0 sm:w-auto sm:max-w-full"
+            : "min-w-0 max-w-full";
+
+          const currentBox = isLast
+            ? "min-w-0 flex-1 truncate sm:inline-block sm:flex-none sm:min-w-0 sm:max-w-full"
+            : "inline-block min-w-0 max-w-full";
+
           return (
-            <li
-              key={`${item.href ?? "current"}:${item.label}:${idx}`}
-              className="flex items-center"
-            >
+            <li key={`${item.href ?? "current"}:${item.label}:${idx}`} className={`flex items-center ${liRow}`.trim()}>
               {idx > 0 ? (
                 <span
                   aria-hidden
-                  className={`mx-[3px] select-none text-[10px] font-normal leading-none ${
+                  className={`mx-[3px] shrink-0 select-none text-[10px] font-normal leading-none ${
                     inverse ? "text-white/50" : "text-[var(--color-breadcrumb-separator)]"
                   }`}
                 >
@@ -54,13 +66,13 @@ export function SiteBreadcrumb({
                 <Link
                   href={item.href}
                   variant="button"
-                  className={`${linkClass} ${item.className ?? ""}`.trim()}
+                  className={`inline-block min-w-0 max-w-full ${linkClass} ${item.className ?? ""}`.trim()}
                 >
                   {item.label}
                 </Link>
               ) : (
                 <span
-                  className={`${
+                  className={`${currentBox} ${
                     isLast
                       ? inverse
                         ? "font-normal text-white/60"

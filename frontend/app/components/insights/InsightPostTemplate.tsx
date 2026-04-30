@@ -5,6 +5,7 @@ import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import type { InsightDetail, InsightListItem, InsightsAdsSettings } from "@/lib/queries";
 import { rewriteUploadsInHtml, rewriteUploadsUrl } from "@/lib/wp-media";
 import { AdBannerHorizontal, AdSidebarVertical, hasInsightsAdSlotImage } from "./InsightsAds";
+import { InsightPostChrome } from "./InsightPostChrome";
 import { InsightSharePanel } from "./InsightSharePanel";
 import { InsightTopicBadge } from "./InsightTopicBadge";
 import {
@@ -181,60 +182,59 @@ export function InsightPostTemplate({
   const bottomGrid = relatedPosts.slice(0, 3);
 
   return (
-    <article className="bg-white pb-16 md:pb-20">
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] pt-8 md:pt-10">
-        <SiteBreadcrumb
-          className="mb-6"
-          items={[
-            { label: "Home", href: "/" },
-            { label: "Insights", href: "/insights/" },
-            {
-              label: topicName,
-              href: topicSlug ? insightCategoryHref(topicSlug) : undefined,
-              className: "max-w-[min(100%,12rem)] truncate",
-            },
-            {
-              label: post.title ?? "Insights",
-              className: "max-w-[min(100%,28rem)] truncate text-[var(--color-muted)]",
-            },
-          ]}
-        />
+    <InsightPostChrome>
+      <SiteBreadcrumb
+        className="mb-6"
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Insights", href: "/insights/" },
+          {
+            label: topicName,
+            href: topicSlug ? insightCategoryHref(topicSlug) : undefined,
+            className: "max-w-[12rem] truncate",
+          },
+          {
+            label: post.title ?? "Insights",
+            className: "truncate text-[var(--color-muted)] sm:max-w-[28rem]",
+          },
+        ]}
+      />
 
-        <InsightTopicBadge
-          post={post}
-          className="mb-4 bg-[var(--color-brand-primary)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white"
-        />
+      <InsightTopicBadge
+        post={post}
+        className="mb-4 bg-[var(--color-brand-primary)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white"
+      />
 
-        <h1 className="max-w-4xl font-sans text-3xl font-bold leading-tight tracking-tight text-[var(--color-brand-dark)] sm:text-4xl md:text-[2.5rem] md:leading-[1.15]">
-          {post.title}
-        </h1>
+      <h1 className="max-w-4xl font-sans text-3xl font-bold leading-tight tracking-tight text-[var(--color-brand-dark)] sm:text-4xl md:text-[2.5rem] md:leading-[1.15]">
+        {post.title}
+      </h1>
 
-        {excerptPlain ? (
-          <div className="mt-4 max-w-3xl text-lg leading-relaxed text-[var(--color-muted)] whitespace-pre-line">
-            {excerptPlain}
-          </div>
+      {excerptPlain ? (
+        <div className="mt-4 max-w-3xl text-lg leading-relaxed text-[var(--color-muted)] whitespace-pre-line">
+          {excerptPlain}
+        </div>
+      ) : null}
+
+      <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-[var(--color-border)] pb-8 text-sm text-[var(--color-muted)]">
+        {post.date ? (
+          <time dateTime={post.date}>{formatBylineDate(post.date)}</time>
         ) : null}
-
-        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-[var(--color-border)] pb-8 text-sm text-[var(--color-muted)]">
-          {post.date ? (
-            <time dateTime={post.date}>{formatBylineDate(post.date)}</time>
-          ) : null}
-          {post.date ? (
-            <span className="text-[var(--color-border)]" aria-hidden>
-              ·
-            </span>
-          ) : null}
-          <span className="flex items-center gap-1.5">
-            <Clock className="size-4 shrink-0" aria-hidden />
-            {readMin} min read
-          </span>
+        {post.date ? (
           <span className="text-[var(--color-border)]" aria-hidden>
             ·
           </span>
-          <InsightSharePanel url={shareUrl} title={post.title ?? "Insight"} />
-        </div>
+        ) : null}
+        <span className="flex items-center gap-1.5">
+          <Clock className="size-4 shrink-0" aria-hidden />
+          {readMin} min read
+        </span>
+        <span className="text-[var(--color-border)]" aria-hidden>
+          ·
+        </span>
+        <InsightSharePanel url={shareUrl} title={post.title ?? "Insight"} />
+      </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-10 lg:gap-x-12">
+      <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-10 lg:gap-x-12">
           <div className="lg:col-span-8">
             <div className="relative aspect-[16/10] w-full overflow-hidden bg-[var(--color-border)]/30">
               <Image
@@ -299,7 +299,6 @@ export function InsightPostTemplate({
         <CareersCtaBanner />
 
         <RelatedPostsGrid posts={bottomGrid} />
-      </div>
-    </article>
+    </InsightPostChrome>
   );
 }
