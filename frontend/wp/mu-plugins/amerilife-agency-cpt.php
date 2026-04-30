@@ -50,7 +50,6 @@ add_action('init', function () {
       'address_state' => 'string',
       'address_zip' => 'string',
       'hours' => 'string',
-      'about_office' => 'string',
       'features_json' => 'string',
       'gravity_form_id' => 'integer',
       'map_search_url' => 'string',
@@ -86,7 +85,6 @@ function amerilife_agency_details_metabox($post) {
     'address_state' => 'State',
     'address_zip' => 'ZIP',
     'hours' => 'Hours (use line breaks between lines)',
-    'about_office' => 'About this office',
     'features_json' => 'Features (JSON array: [{"heading","body","icon"}] icon: medicare|health|life|annuity)',
     'gravity_form_id' => 'Gravity Form ID (Connect with an Agent)',
     'map_search_url' => 'Map (Google Maps search URL)',
@@ -94,7 +92,7 @@ function amerilife_agency_details_metabox($post) {
   foreach ($fields as $key => $label) {
     $val = get_post_meta($post->ID, $key, true);
     echo '<p><label for="agency_' . esc_attr($key) . '"><strong>' . esc_html($label) . '</strong></label></p>';
-    if ($key === 'hours' || $key === 'about_office' || $key === 'features_json') {
+    if ($key === 'hours' || $key === 'features_json') {
       echo '<textarea id="agency_' . esc_attr($key) . '" name="' . esc_attr($key) . '" class="large-text" rows="' . ($key === 'features_json' ? 12 : 6) . '">' . esc_textarea((string) $val) . '</textarea>';
     } elseif ($key === 'gravity_form_id') {
       echo '<input type="number" id="agency_' . esc_attr($key) . '" name="' . esc_attr($key) . '" class="small-text" step="1" min="0" value="' . esc_attr((string) $val) . '" />';
@@ -116,7 +114,7 @@ add_action('save_post_agency', function ($post_id) {
   if (!current_user_can('edit_post', $post_id)) {
     return;
   }
-  $keys = ['phone', 'address_line1', 'address_line2', 'address_city', 'address_state', 'address_zip', 'hours', 'about_office', 'features_json', 'gravity_form_id', 'map_search_url'];
+  $keys = ['phone', 'address_line1', 'address_line2', 'address_city', 'address_state', 'address_zip', 'hours', 'features_json', 'gravity_form_id', 'map_search_url'];
   foreach ($keys as $key) {
     if (!isset($_POST[$key])) {
       continue;
@@ -129,7 +127,7 @@ add_action('save_post_agency', function ($post_id) {
       update_post_meta($post_id, $key, $raw !== '' ? esc_url_raw($raw) : '');
     } elseif ($key === 'features_json') {
       update_post_meta($post_id, $key, sanitize_textarea_field($raw));
-    } elseif (in_array($key, ['hours', 'about_office'], true)) {
+    } elseif ($key === 'hours') {
       update_post_meta($post_id, $key, sanitize_textarea_field($raw));
     } else {
       update_post_meta($post_id, $key, sanitize_text_field($raw));
@@ -152,7 +150,6 @@ add_action('graphql_register_types', function () {
       'addressState' => ['type' => 'String'],
       'addressZip' => ['type' => 'String'],
       'hours' => ['type' => 'String'],
-      'aboutOffice' => ['type' => 'String'],
       'featuresJson' => ['type' => 'String'],
       'gravityFormId' => ['type' => 'Int'],
       'mapSearchUrl' => ['type' => 'String'],
@@ -182,7 +179,6 @@ add_action('graphql_register_types', function () {
         'addressState' => amerilife_meta_str($id, 'address_state'),
         'addressZip' => amerilife_meta_str($id, 'address_zip'),
         'hours' => amerilife_meta_str($id, 'hours'),
-        'aboutOffice' => amerilife_meta_str($id, 'about_office'),
         'featuresJson' => amerilife_meta_str($id, 'features_json'),
         'gravityFormId' => amerilife_meta_int($id, 'gravity_form_id'),
         'mapSearchUrl' => amerilife_meta_str($id, 'map_search_url'),
@@ -230,7 +226,6 @@ function amerilife_empty_agency_fields() {
     'addressState' => null,
     'addressZip' => null,
     'hours' => null,
-    'aboutOffice' => null,
     'featuresJson' => null,
     'gravityFormId' => null,
     'mapSearchUrl' => null,

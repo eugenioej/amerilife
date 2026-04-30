@@ -13,7 +13,7 @@ export const FOOTER_LOGO_SRC =
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AmeriLife-Logo-white-s.webp";
 
 export const FOOTER_CERTIFICATION_BADGE_SRC =
-  "https://amerilife.com/wp-content/uploads/2025/07/58a9a44b-c754-4491-9340-42a76cfd9ff0-TICKET.supporting_files-AmeriLife_US_English_2025_Certification_Badge-1-scaled.png";
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2025/07/58a9a44b-c754-4491-9340-42a76cfd9ff0-TICKET.supporting_files-AmeriLife_US_English_2025_Certification_Badge-1-scaled.png";
 
 type SiteFooterProps = {
   primaryMenu: NavItem[];

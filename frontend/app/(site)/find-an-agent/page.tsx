@@ -4,10 +4,7 @@ import { getAllLocationSlugs, getLocationBySlug } from "@/lib/locations-data";
 import { FindAgentContent } from "@/app/components/locations/FindAgentContent";
 import { staticPageMetadata } from "@/lib/seo";
 import { fetchLocationsForFindAgentPage } from "@/lib/agencies";
-import { fetchGravityForm } from "@/lib/gf-client";
-
-/** Gravity Forms form ID for the "Find an Agent" contact form. */
-const FIND_AN_AGENT_FORM_ID = 26;
+import { FIND_AN_AGENT_FORM_ID, fetchGravityForm } from "@/lib/gf-client";
 
 export const metadata: Metadata = staticPageMetadata(
   "Find An Agent | AmeriLife",

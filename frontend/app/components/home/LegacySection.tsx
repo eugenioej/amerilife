@@ -2,10 +2,13 @@ import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 
 export function LegacySection() {
   return (
-    <section className="bg-white py-16 sm:py-24">
+    <section
+      id="home-next"
+      className="scroll-mt-[calc(var(--header-height)+0.75rem)] bg-white py-16 sm:py-24"
+    >
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
         <FadeInOnView direction="up" className="mx-auto max-w-3xl text-center">
-          <h2 className="mb-6 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
+          <h2 className="mb-6 text-3xl font-medium text-[var(--color-fg)] sm:text-4xl xl:text-5xl">
             A Legacy of Leadership
           </h2>
           <p className="text-lg leading-relaxed text-[var(--color-muted)]">

@@ -17,7 +17,7 @@ const CAREERS_URL = "https://amerilife.avature.net/careers";
 const PHONE = "1-888-479-4376";
 
 const BANNER_IMAGE =
-  "https://amerilife.com/wp-content/uploads/2020/06/Banner-alt-career-4.5-scaled.jpg";
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2020/06/Banner-alt-career-4.5-scaled.jpg";
 
 /** "JOIN OUR TEAM" banner image – links to careers */
 const TITLE_BLUE = "text-[#0c2340]";
@@ -116,7 +116,7 @@ export default function ExpectationsWhenYouJoinOurTeamPage() {
             <div className="flex w-full items-center justify-between gap-4">
               <Link href="/" variant="button" className="shrink-0" aria-label="AmeriLife Home">
                 <Image
-                  src={rewriteUploadsUrl("https://amerilife.com/wp-content/uploads/2022/01/amerilife.svg")}
+                  src={rewriteUploadsUrl("https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/01/amerilife.svg")}
                   alt="AmeriLife"
                   width={112}
                   height={32}

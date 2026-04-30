@@ -174,6 +174,21 @@ const SEARCH_INDEX: SearchEntry[] = [
     ],
   },
   {
+    path: "/consumers/",
+    title: "Insurance for Individuals and Families",
+    description:
+      "We help families build a solid financial foundation with insurance now to free you to focus on your plans for the future.",
+    keywords: [
+      "consumers",
+      "individuals",
+      "families",
+      "life insurance",
+      "health insurance",
+      "Medicare",
+      "find an agent",
+    ],
+  },
+  {
     path: "/consumers/faq/",
     title: "Frequently Asked Questions for Consumers",
     description:

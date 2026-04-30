@@ -50,7 +50,6 @@ export type LocationData = {
     zip: string;
   };
   hours: string;
-  aboutOffice: string;
   agents: AgentData[];
   features: FeatureBlock[];
   /** Google Maps search URL from CMS (import); used to align map embed with stored address. */
@@ -102,8 +101,6 @@ const LOCATIONS: Record<string, LocationData> = {
       zip: "33884",
     },
     hours: "Monday-Friday\n8am-5pm",
-    aboutOffice:
-      "AmeriLife of Polk County serves the greater Winter Haven area with a full range of insurance and retirement solutions. Our team of licensed agents is committed to helping you find the right coverage for your health, life, and financial needs.",
     agents: [
       {
         slug: "ryan-atkins",

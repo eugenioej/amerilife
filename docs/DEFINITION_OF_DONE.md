@@ -1,179 +1,137 @@
-1. Purpose
+# Definition of Done
 
-This document defines the criteria required for a feature, page, block, or system component to be considered complete.
+This document defines the criteria required for a feature, page, or system component to be considered complete. A deliverable that does not satisfy these criteria is not done.
 
-If a deliverable does not meet these conditions, it is not considered done.
+---
 
-⸻
+## 1. Definition of Done — System Pages (Frontend-Owned)
 
-2. Definition of Done — System Pages
+System pages have hardcoded layout and content (e.g. `/`, `/about-us/who-we-are`, `/our-solutions/*`, `/find-an-agent`, all lead forms, FAQ pages, and special landing pages).
 
-System pages are frontend-owned:
-	•	/
-	•	/landing
+A system page is complete when:
 
-These pages are intentionally hardcoded.
+- [ ] Uses shared layout components (`LayoutShell`, `SiteHeader`, `SiteFooter`) — no layout duplication
+- [ ] Renders correctly on mobile, tablet, and desktop (no overflow, no broken columns)
+- [ ] Images are uploaded to headless WordPress and URLs are in `lib/wp-image-sources.ts`
+- [ ] Has a `metadata` export with accurate title and description (`staticPageMetadata()`)
+- [ ] Added to `lib/sitemap-config.ts` (`STATIC_SITEMAP_PATHS`) if publicly indexable
+- [ ] Added to `lib/search-index.ts` if the page should appear in site search
+- [ ] Contains no temporary placeholder content
+- [ ] Does not interfere with dynamic CMS routing or the catch-all route
+- [ ] No console errors in browser DevTools
+- [ ] Can be migrated to CMS-driven in the future without architectural changes
 
-A system page is considered complete when:
-	•	It uses shared layout components (Header, Footer).
-	•	It does not duplicate layout logic.
-	•	It is responsive across mobile, tablet, and desktop.
-	•	It does not interfere with dynamic CMS routing.
-	•	It contains no temporary placeholder content.
-	•	It can be migrated to CMS later without architectural refactor.
+---
 
-Hardcoded content is allowed only for system pages.
+## 2. Definition of Done — CMS-Driven Pages
 
-⸻
+CMS-driven pages fetch their content from WordPress and are rendered by the catch-all route `[...slug]/page.tsx`.
 
-3. Definition of Done — CMS-Driven Pages
+### 2.1 Data Integrity
 
-A CMS-driven page is complete when all of the following are satisfied:
+- [ ] Content is fetched via WPGraphQL (`GET_NODE_BY_URI`)
+- [ ] No hardcoded content in the frontend
+- [ ] Slug-based routing resolves correctly end-to-end
+- [ ] 404 is returned (`notFound()`) when the WordPress page does not exist
 
-⸻
+### 2.2 Content Rendering
 
-3.1 Data Integrity
-	•	Content is fetched via WPGraphQL.
-	•	No hardcoded content exists.
-	•	Slug-based routing resolves correctly.
-	•	Nested routes function properly.
-	•	404 behavior works for missing content.
+- [ ] Page content renders correctly from `dangerouslySetInnerHTML`
+- [ ] `rewriteUploadsInHtml()` applied to page content so images resolve from headless WP
+- [ ] No broken image URLs (verify with `NEXT_PUBLIC_USE_LIVE_IMAGES=0`)
+- [ ] Gutenberg layout (columns, spacing, headings) renders acceptably with global CSS
 
-⸻
+### 2.3 SEO
 
-3.2 Block Rendering
-	•	All Gutenberg blocks render via centralized BlockRenderer.
-	•	No page-specific block conditionals exist.
-	•	Blocks receive normalized props.
-	•	Blocks do not fetch their own data.
-	•	No unhandled block types cause runtime crashes.
+- [ ] Title pulled from Yoast (`yoastSeoToMetadata()`)
+- [ ] Meta description pulled from Yoast
+- [ ] Open Graph metadata present (title, description, URL)
+- [ ] Canonical URL correct (rewritten to frontend domain if `NEXT_PUBLIC_SITE_URL` set)
+- [ ] No hardcoded metadata for this page
 
-⸻
+### 2.4 Layout & Responsiveness
 
-3.3 Media Handling
-	•	All images pass through the Media adapter.
-	•	UI components accept only Media interface.
-	•	Alt text is preserved.
-	•	Missing images fail gracefully.
-	•	No raw WordPress image objects are used in UI components.
+- [ ] Uses `LayoutShell` (header + footer render)
+- [ ] Renders correctly on mobile, tablet, and desktop
+- [ ] No layout overflow or broken columns
+- [ ] Images scale correctly
 
-⸻
+### 2.5 Error Handling
 
-3.4 Layout Integrity
-	•	Page uses shared layout.
-	•	No layout duplication.
-	•	No layout logic exists in WordPress.
-	•	No template logic is embedded inside block components.
+- [ ] GraphQL fetch errors are caught; page does not crash
+- [ ] 404 fallback works correctly
 
-⸻
+### 2.6 Environment Safety
 
-3.5 Responsiveness
-	•	Renders correctly on mobile, tablet, desktop.
-	•	No layout overflow.
-	•	No broken column behavior.
-	•	Images scale correctly.
+- [ ] No hardcoded API URLs — all use `NEXT_PUBLIC_GRAPHQL_ENDPOINT`
+- [ ] Page renders correctly in development, Preview, and Production
 
-⸻
+---
 
-3.6 SEO Compliance
-	•	Title pulled from WordPress.
-	•	Meta description pulled from WordPress.
-	•	OpenGraph metadata applied if available.
-	•	Canonical URL correct.
-	•	No hardcoded metadata for CMS-driven pages.
+## 3. Definition of Done — CPT Detail Pages
 
-⸻
+Applies to Agency, OfficeAgent, Leader, and Insight pages (all use dedicated templates, not the catch-all).
 
-3.7 Error Handling
-	•	GraphQL errors are handled gracefully.
-	•	Network failures do not crash app.
-	•	Invalid block data does not cause runtime errors.
-	•	Proper fallback UI exists where needed.
+- [ ] Data fetched from the correct CPT query (e.g. `fetchAgencyBySlug()`, `GET_LEADER_BY_SLUG`)
+- [ ] Template component renders all required fields
+- [ ] Metadata built from CPT data (or Yoast if available) — not hardcoded
+- [ ] 404 returned when CPT record does not exist
+- [ ] `dynamicParams = true` set on pages that should support new slugs without a rebuild
+- [ ] Responsive on all breakpoints
+- [ ] No console errors
 
-⸻
+---
 
-3.8 Environment Safety
-	•	No hardcoded API endpoints.
-	•	All endpoints use environment variables.
-	•	Page works in Dev, Preview, and Production environments.
+## 4. Definition of Done — Gravity Forms
 
-⸻
+A form integration is complete when:
 
-4. Definition of Done — Block Level
+- [ ] Form ID declared as a named constant in `lib/gf-client.ts`
+- [ ] Server component fetches form schema with `fetchGravityForm(FORM_ID)` and passes to `<GravityForm>`
+- [ ] `null` form renders gracefully (fallback UI or nothing — no crash)
+- [ ] Submission succeeds end-to-end (entry appears in WP Admin → Gravity Forms → Entries)
+- [ ] Confirmation message or redirect shown on success
+- [ ] Field-level validation errors display correctly
+- [ ] reCAPTCHA completes without error (if form has a CAPTCHA field)
+- [ ] Tested in both `default` and `on-dark` visual variants (if applicable)
 
-A block is complete when:
-	•	It renders correctly with normalized props.
-	•	It does not call APIs.
-	•	It contains no business logic.
-	•	It handles optional fields safely.
-	•	It is reusable.
-	•	It does not assume a specific page context.
-	•	It does not depend on other blocks directly.
+---
 
-⸻
+## 5. Definition of Done — New Component
 
-5. Definition of Done — API Layer
+- [ ] Built from `ui/` primitives where applicable (`Button`, `Link`, `FadeInOnView`)
+- [ ] Uses CSS variables from `globals.css` — no hardcoded color or spacing values
+- [ ] Responsive (no hardcoded pixel widths that break on mobile)
+- [ ] Props are typed with TypeScript interfaces
+- [ ] Optional props handled safely (no unchecked `.property` access on nullable values)
+- [ ] Added to [COMPONENTS.md](COMPONENTS.md) with props table
+- [ ] Does not fetch data directly — data is passed as props from the parent page/Server Component
 
-The API layer is complete when:
-	•	GraphQL client is centralized.
-	•	Queries are reusable and consistent.
-	•	No UI component performs direct fetch calls.
-	•	Errors are properly handled.
-	•	No duplicate query logic exists across files.
+---
 
-⸻
+## 6. Definition of Done — Deployment Release
 
-6. Definition of Done — Media Adapter
+A release is ready for production when:
 
-Media system is complete when:
-	•	A single Media interface exists.
-	•	All image data is normalized.
-	•	UI components only consume Media.
-	•	Replacing WordPress Media would require changing only the adapter layer.
+- [ ] `pnpm build` succeeds with no errors or warnings
+- [ ] No TypeScript errors (`tsc --noEmit`)
+- [ ] `pnpm lint` passes
+- [ ] `pnpm -C frontend check:pages-404` reports 0 failures
+- [ ] All new images are uploaded to headless WordPress
+- [ ] Environment variables configured in Atlas (see [DEPLOYMENT.md](DEPLOYMENT.md))
+- [ ] At least one full-page visual check after deploy (images, nav, forms)
+- [ ] No `console.error` or `console.log` debug output in production build
 
-⸻
+---
 
-7. Definition of Done — Deployment Readiness
+## 7. Non-Negotiable Violations
 
-A release is ready when:
-	•	No console errors exist.
-	•	Build passes without warnings.
-	•	No TODO comments remain.
-	•	No debug logs remain.
-	•	Environment variables are configured.
-	•	All routes resolve correctly.
+The following conditions **invalidate** a "done" claim regardless of other criteria:
 
-⸻
-
-8. Non-Negotiable Violations
-
-The following invalidate completion:
-	•	Hardcoded content in CMS-driven pages.
-	•	Page-specific block logic.
-	•	Raw WordPress image usage in UI.
-	•	Hardcoded API endpoints.
-	•	Layout duplication.
-	•	Unhandled runtime errors.
-
-⸻
-
-9. Scalability Validation
-
-Before expanding page volume:
-	•	Adding a new page requires no new layout logic.
-	•	Adding a new block does not require refactoring existing blocks.
-	•	Routing system supports nested paths.
-	•	System supports large content volume without manual configuration.
-
-⸻
-
-10. Final Validation Checklist
-
-Before marking a CMS page complete:
-	•	Content loads dynamically.
-	•	All blocks render.
-	•	Media resolves.
-	•	SEO metadata applied.
-	•	Responsive behavior verified.
-	•	No console errors.
-	•	No hardcoded content remains.
+- Hardcoded content in any CMS-driven page
+- Raw WordPress image objects passed to UI components (use `lib/wp-media.ts` rewriting)
+- Hardcoded API endpoints (must use `NEXT_PUBLIC_GRAPHQL_ENDPOINT`)
+- Unhandled GraphQL errors causing runtime crashes
+- Layout duplication (header or footer re-implemented outside `LayoutShell`)
+- Layout or design logic embedded in WordPress content
+- Missing 404 handling in dynamic routes

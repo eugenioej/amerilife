@@ -286,7 +286,6 @@ function buildAgencyMeta(A, addr, mapSearchUrl) {
     address_state: addr.state || "",
     address_zip: addr.zip || "",
     hours: A.hours || "",
-    about_office: A.aboutOffice || "",
     features_json: A.featuresJson || "[]",
   };
   if (gfId != null && gfId !== "") {

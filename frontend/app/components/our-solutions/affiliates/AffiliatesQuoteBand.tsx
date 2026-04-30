@@ -1,6 +1,6 @@
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
-const BANNER_10 = "https://amerilife.com/wp-content/uploads/2021/12/banner-10.png";
+const BANNER_10 = "https://headlessameril.wpenginepowered.com/wp-content/uploads/2021/12/banner-10.png";
 
 export function AffiliatesQuoteBand() {
   return (

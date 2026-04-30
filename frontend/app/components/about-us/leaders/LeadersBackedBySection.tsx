@@ -4,7 +4,7 @@ import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 /** Same assets + overlay as https://amerilife.com/about-us/our-leaders/ (Divi-Child `aml-info-banner overlay overlay-style-2`) */
 const BANNER_BG =
-  "https://amerilife.com/wp-content/uploads/2021/12/banner-5.png";
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/banner-5.png";
 
 /** `main.css` `.overlay-style-2:before` — not the solid brand overlay */
 const OVERLAY_STYLE_2 =

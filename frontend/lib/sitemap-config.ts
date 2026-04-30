@@ -42,6 +42,7 @@ export const STATIC_SITEMAP_PATHS: string[] = [
   "/find-an-agent/",
   "/about-us/who-we-are/",
   "/technology-and-analytics/",
+  "/consumers/",
   "/consumers/faq/",
   "/broker-contact-page/",
 ];

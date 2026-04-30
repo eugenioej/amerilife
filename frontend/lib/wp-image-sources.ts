@@ -9,7 +9,7 @@
  * The sync-wp-images script uses SYNC_WP_SOURCE_HOSTS to try alternate hosts on 404.
  */
 
-const UPLOADS = "https://amerilife.com/wp-content/uploads";
+const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 /** Headless WP uploads (2026) — partner logos on /givesback/ */
 const GB_2026 = "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04";
 

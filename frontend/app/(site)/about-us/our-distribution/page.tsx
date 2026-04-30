@@ -15,7 +15,7 @@ export const metadata: Metadata = staticPageMetadata(
   "/about-us/our-distribution/"
 );
 
-const UPLOADS = "https://amerilife.com/wp-content/uploads";
+const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 
 /** Hero image - from amerilife.com/about-us/our-distribution/ */
 const HERO_IMAGE = `${UPLOADS}/2023/04/Distribution-Hero_0230-1024x683-1.jpg`;

@@ -50,29 +50,23 @@ export async function fetchGraphQL<T>(
     throw new Error(`GraphQL request failed: ${res.statusText}`);
   }
 
-  const json: { data: T; errors?: { message?: string }[] } = await res.json();
+  const json: { data?: T | null; errors?: { message?: string }[] } = await res.json();
 
-  // Partial-error tolerance: WPGraphQL can return errors alongside valid data
-  // (e.g. a nullable field resolver fails but the rest of the response is fine).
-  // Only throw if there is truly no data at all.
-  if (json.errors && (json.data === null || json.data === undefined)) {
-    const msg = json.errors.map((e: { message?: string }) => e.message).join("; ");
-    throw new Error(`GraphQL failed: ${msg}`);
-  }
+  const errorMsgs =
+    json.errors?.map((e) => e.message).filter((m): m is string => Boolean(m)) ?? [];
 
-  if (json.errors) {
-    const critical = json.errors.filter((e) =>
-      !e.message?.toLowerCase().includes("internal server error")
+  const hasData = json.data !== null && json.data !== undefined;
+
+  if (!hasData) {
+    throw new Error(
+      errorMsgs.length ? `GraphQL failed: ${errorMsgs.join("; ")}` : "GraphQL returned no data",
     );
-    if (critical.length > 0) {
-      const msg = critical.map((e) => e.message).join("; ");
-      throw new Error(`GraphQL failed: ${msg}`);
-    }
-    // Log non-critical partial errors in dev
-    if (process.env.NODE_ENV === "development") {
-      console.warn("[GraphQL partial errors]", json.errors.map((e) => e.message));
-    }
   }
 
-  return json.data;
+  // WPGraphQL may attach warnings or field-level errors while still returning usable data.
+  if (errorMsgs.length && process.env.NODE_ENV === "development") {
+    console.warn("[GraphQL errors alongside data]", errorMsgs);
+  }
+
+  return json.data as T;
 }

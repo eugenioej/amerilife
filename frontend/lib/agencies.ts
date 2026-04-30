@@ -117,7 +117,6 @@ function agencyListNodeToLocationData(node: NonNullable<
       zip: af?.addressZip ?? "",
     },
     hours: af?.hours ?? "",
-    aboutOffice: af?.aboutOffice?.trim() ?? "",
     agents: [],
     features: features.length > 0 ? features : [],
     mapSearchUrl: af?.mapSearchUrl?.trim() || undefined,
@@ -143,11 +142,6 @@ export function agencyGraphqlToLocationData(agency: AgencyDetailGql): LocationDa
     .sort((a, b) => (a.menuOrder ?? 0) - (b.menuOrder ?? 0))
     .map(agentNodeToAgentData);
 
-  const about =
-    af?.aboutOffice?.trim() ||
-    (agency.content ? stripHtml(agency.content) : "") ||
-    "";
-
   const features = parseFeaturesJson(af?.featuresJson);
 
   return {
@@ -166,7 +160,6 @@ export function agencyGraphqlToLocationData(agency: AgencyDetailGql): LocationDa
       zip: af?.addressZip ?? "",
     },
     hours: af?.hours ?? "",
-    aboutOffice: about,
     agents,
     features: features.length > 0 ? features : [],
     mapSearchUrl: af?.mapSearchUrl?.trim() || undefined,

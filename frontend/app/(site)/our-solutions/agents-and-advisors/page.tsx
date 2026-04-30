@@ -15,7 +15,7 @@ export const metadata: Metadata = staticPageMetadata(
 );
 
 /** Canonical paths; rewriteUploadsUrl() serves from headless WP when NEXT_PUBLIC_USE_LIVE_IMAGES is not "1". */
-const UPLOADS = "https://amerilife.com/wp-content/uploads";
+const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2022/01/Agents_Advisors_Hero_a_1420x1144.png`;
 const WHAT_DO_IMAGE = `${UPLOADS}/2022/01/Agents_Advisors.png`;
 const BANNER_10 = `${UPLOADS}/2021/12/banner-10.png`;

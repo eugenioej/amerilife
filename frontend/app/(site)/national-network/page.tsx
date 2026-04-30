@@ -14,7 +14,7 @@ export const metadata: Metadata = staticPageMetadata(
   "/national-network/"
 );
 
-const UPLOADS = "https://amerilife.com/wp-content/uploads";
+const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2021/12/National_Network_1420x1144.png`;
 
 const SCALE_DRIVERS = [

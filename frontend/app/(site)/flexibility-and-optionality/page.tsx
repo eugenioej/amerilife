@@ -14,7 +14,7 @@ export const metadata: Metadata = staticPageMetadata(
   "/flexibility-and-optionality/"
 );
 
-const UPLOADS = "https://amerilife.com/wp-content/uploads";
+const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2022/01/Flex_Option_HeroA_1420x1144.png`;
 
 const OFFERINGS = [

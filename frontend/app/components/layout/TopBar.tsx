@@ -58,7 +58,7 @@ export function TopBar() {
 
   return (
     <div
-      className="flex items-center justify-between px-[var(--container-padding-x)] py-2"
+      className="flex min-h-[var(--topbar-height)] items-center justify-between px-[var(--container-padding-x)] py-2"
       style={{ background: "var(--color-topbar)" }}
     >
       <div className="mx-auto flex w-full max-w-[var(--container-max)] items-center justify-end gap-6">

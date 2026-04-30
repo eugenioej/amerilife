@@ -22,7 +22,7 @@ export default async function ConsumersFaqPage() {
             { label: "Home", href: "/" },
             {
               label: "Insurance for Individuals and Families",
-              href: "/our-solutions/consumers/",
+              href: "/consumers/",
             },
             { label: "Frequently Asked Questions" },
           ]}

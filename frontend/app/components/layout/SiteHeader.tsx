@@ -34,7 +34,7 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
   const { openContactPopup } = useContactPopup();
 
   const navItems = primaryMenu;
-  const logoUrl = rewriteUploadsUrl("https://amerilife.com/wp-content/uploads/2022/01/amerilife.svg");
+  const logoUrl = rewriteUploadsUrl("https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/01/amerilife.svg");
 
   return (
     <>

@@ -79,6 +79,10 @@
   --container-max: 1280px;
   --container-padding-x: 1.5rem;
   --header-height: 4rem;
+  /** TopBar row (LayoutShell); keep min-height in TopBar.tsx in sync */
+  --topbar-height: 2.75rem;
+  /** Space taken by TopBar + SiteHeader above <main> */
+  --layout-chrome-height: calc(var(--topbar-height) + var(--header-height));
 
   /* Radii */
   --radius-sm: 4px;
@@ -122,6 +126,24 @@ body {
   color: var(--color-fg);
   font-family: var(--font-sans);
   overflow-x: clip;
+}
+
+/* Home hero: first viewport below TopBar + header (HeroSection uses flex-1 to fill) */
+.home-hero-fold {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  min-height: calc(100vh - var(--layout-chrome-height));
+  min-height: calc(100dvh - var(--layout-chrome-height));
+  min-height: calc(100lvh - var(--layout-chrome-height));
+}
+
+@media (max-width: 639px) {
+  .home-hero-fold {
+    min-height: calc(70vh - var(--layout-chrome-height));
+    min-height: calc(70dvh - var(--layout-chrome-height));
+    min-height: calc(70lvh - var(--layout-chrome-height));
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -204,4 +226,43 @@ button,
 button:hover,
 button:focus {
   text-decoration: none;
+}
+
+/* Hero — scroll indicator: dot travels down through the vertical center of the pill */
+@keyframes hero-scroll-mouse-dot {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% - 10px));
+  }
+  10% {
+    opacity: 1;
+  }
+  42% {
+    opacity: 1;
+    transform: translate(-50%, calc(-50% + 8px));
+  }
+  50% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 12px));
+  }
+  51% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% - 10px));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% - 10px));
+  }
+}
+
+.hero-scroll-mouse-dot {
+  animation: hero-scroll-mouse-dot 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-scroll-mouse-dot {
+    animation: none;
+    opacity: 0.85;
+    transform: translate(-50%, -50%);
+  }
 }

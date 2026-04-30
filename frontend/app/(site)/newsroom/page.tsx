@@ -19,7 +19,7 @@ export const metadata: Metadata = staticPageMetadata(
   "/newsroom/"
 );
 
-const UPLOADS = "https://amerilife.com/wp-content/uploads";
+const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 /** Fixed hero background — always this asset from headless WP (not the featured post image). */
 const NEWSROOM_HERO_BG =
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AML-Wealth-II-Announcement-040532023-HERO-1024x358-1.png";

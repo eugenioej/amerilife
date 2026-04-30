@@ -15,7 +15,7 @@ export const metadata: Metadata = staticPageMetadata(
   "/about-us/who-we-are/"
 );
 
-const UPLOADS = "https://amerilife.com/wp-content/uploads";
+const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2021/12/WhoWeAre_AmeriLifePlace_746x660.png`;
 
 /** Demonstrating Our Values band */

@@ -24,7 +24,7 @@ const STAT_SECTIONS = [
     ctaText: "GET TO KNOW OUR NETWORK",
     ctaHref: "/national-network/",
     imageUrl: rewriteUploadsUrl(
-      "https://amerilife.com/wp-content/uploads/2022/01/GettyImages-1214224199_Resize-scaled.jpg"
+      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/01/GettyImages-1214224199_Resize-scaled.jpg"
     ),
     imageAlt: "AmeriLife network and distribution",
     direction: "left" as const,
@@ -45,6 +45,7 @@ const STAT_SECTIONS = [
     imageAlt: "AmeriLife agents and advisors",
     direction: "right" as const,
     icon: Users,
+    tone: "footer" as const,
   },
   {
     heading: "Technology That Works (For You)",
@@ -55,7 +56,7 @@ const STAT_SECTIONS = [
     ctaText: "POWER YOUR BUSINESS",
     ctaHref: "/technology-and-analytics/",
     imageUrl: rewriteUploadsUrl(
-      "https://amerilife.com/wp-content/uploads/2022/02/Power_Tech_Home_1422x1144.png"
+      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/02/Power_Tech_Home_1422x1144.png"
     ),
     imageAlt: "Agent Xcelerator technology",
     direction: "left" as const,
@@ -70,11 +71,12 @@ const STAT_SECTIONS = [
     ctaText: "START YOUR JOURNEY",
     ctaHref: "/join-our-team/",
     imageUrl: rewriteUploadsUrl(
-      "https://amerilife.com/wp-content/uploads/2022/11/Home-Page-Platform-Growth_1422x1144.png"
+      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/11/Home-Page-Platform-Growth_1422x1144.png"
     ),
     imageAlt: "AmeriLife platform growth",
     direction: "right" as const,
     icon: TrendingUp,
+    tone: "footer" as const,
   },
 ];
 
@@ -82,7 +84,9 @@ export default function Home() {
   return (
     <>
       <JsonLd schema={organizationJsonLd()} />
-      <HeroSection />
+      <div className="home-hero-fold">
+        <HeroSection />
+      </div>
       <LegacySection />
       <div className="flex flex-col [&>section]:flex-shrink-0">
         {STAT_SECTIONS.map((props, i) => (

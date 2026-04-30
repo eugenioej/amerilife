@@ -142,23 +142,10 @@ export function FaqAccordion({ defaultOpenIndex = 0, className = "" }: FaqAccord
             >
               {item.question}
               <span
-                className={`ml-4 shrink-0 transition-transform ${
-                  isOpen ? "rotate-180" : ""
-                }`}
+                className="ml-4 inline-flex h-8 w-8 shrink-0 items-center justify-center text-2xl font-medium leading-none text-current"
+                aria-hidden
               >
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                {isOpen ? "−" : "+"}
               </span>
             </button>
             <div

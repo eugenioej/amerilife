@@ -65,8 +65,6 @@ const AGENCY = {
     zip: "33884",
   },
   hours: "Monday-Friday\n8am-5pm",
-  aboutOffice:
-    "AmeriLife of Polk County serves the greater Winter Haven area with a full range of insurance and retirement solutions. Our team of licensed agents is committed to helping you find the right coverage for your health, life, and financial needs.",
 };
 
 const AGENTS = [
@@ -375,7 +373,6 @@ async function main() {
         address_state: AGENCY.address.state,
         address_zip: AGENCY.address.zip,
         hours: AGENCY.hours,
-        about_office: AGENCY.aboutOffice,
         features_json: JSON.stringify(POLK_FEATURES),
       },
     };

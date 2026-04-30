@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Link } from "@/app/components/ui/Link";
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import type { LocationData } from "@/lib/locations-data";
@@ -110,14 +109,34 @@ export function OfficeInfoHero({ location }: OfficeInfoHeroProps) {
             </div>
           </div>
 
-          {/* RIGHT ROW 2: white about section */}
+          {/* RIGHT ROW 2: AmeriLife narrative */}
           <div className="bg-white px-4 py-3 sm:px-6 sm:py-6 lg:px-8">
-            <h2 className="mb-3 text-xl font-bold text-[var(--color-fg)]">
-              About the Office
+            <h2 className="mb-3 text-xl font-bold text-[var(--color-fg)] sm:text-2xl">
+              One AmeriLife, many possibilities
             </h2>
-            <p className="text-base leading-relaxed text-[var(--color-fg)]">
-              {location.aboutOffice}
-            </p>
+            <div className="space-y-3 text-base leading-relaxed text-[var(--color-fg)] sm:space-y-4">
+              <p>
+                More and more Americans are buying insurance to protect their families, according to a
+                recent study. Perhaps you are one of them.
+              </p>
+              <p>
+                We offer affordable insurance and retirement solutions to empower people to live longer,
+                healthier lives. Since the early 1970s, AmeriLife agents have collaborated with people to
+                learn their stories and find insurance and retirement solutions to address their concerns
+                and ease their fears of the unknown.
+              </p>
+              <p>
+                What hasn&apos;t changed over the years is our commitment to help people live happier and
+                healthier lives.
+              </p>
+              <p>
+                Today, AmeriLife has nearly 60 insurance offices throughout the United States, and is
+                growing and expanding into new markets. We work with 70+ carrier partners, many rated
+                &ldquo;A+&rdquo; or &ldquo;A&rdquo; by A.M. Best, a U.S. – based insurance industry rating
+                agency. This allows our agents to offer an extensive portfolio of quality annuity, life and
+                health insurance products.
+              </p>
+            </div>
           </div>
 
         </div>

@@ -18,6 +18,9 @@ export const PRIVACY_ADDENDUM_REQUEST_FORM_ID = 57;
 /** Gravity Forms database ID for the header “Contact” popup (matches live site Contact Us popup). */
 export const HEADER_CONTACT_POPUP_FORM_ID = 54;
 
+/** Gravity Forms database ID for `/find-an-agent/` and `/consumers/` (Connect with an Agent). */
+export const FIND_AN_AGENT_FORM_ID = 26;
+
 /** Headless default “Connect with an Agent” form when agency has no `gravityFormId`. */
 export const DEFAULT_CONNECT_GF_FORM_ID = 31;
 

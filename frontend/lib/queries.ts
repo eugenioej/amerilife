@@ -758,7 +758,6 @@ export type AgencyFieldsGql = {
   addressState?: string | null;
   addressZip?: string | null;
   hours?: string | null;
-  aboutOffice?: string | null;
   featuresJson?: string | null;
   /** Gravity Forms form ID for “Connect with an Agent” (headless instance). */
   gravityFormId?: number | null;
@@ -857,7 +856,6 @@ export type AgenciesForFindAgentResult = {
         addressState?: string | null;
         addressZip?: string | null;
         hours?: string | null;
-        aboutOffice?: string | null;
         featuresJson?: string | null;
         mapSearchUrl?: string | null;
         heroImageUrl?: string | null;
@@ -888,7 +886,6 @@ export const GET_AGENCIES_FOR_FIND_AGENT = `
           addressState
           addressZip
           hours
-          aboutOffice
           featuresJson
           mapSearchUrl
           heroImageUrl
@@ -920,7 +917,6 @@ export const GET_AGENCY_BY_SLUG = `
         addressState
         addressZip
         hours
-        aboutOffice
         featuresJson
         gravityFormId
         mapSearchUrl
@@ -976,7 +972,6 @@ export const GET_AGENT_PAGE_DATA = `
         addressState
         addressZip
         hours
-        aboutOffice
         featuresJson
         gravityFormId
         mapSearchUrl

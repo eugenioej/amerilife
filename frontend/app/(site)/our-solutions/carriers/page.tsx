@@ -23,7 +23,7 @@ export const metadata: Metadata = staticPageMetadata(
   "/our-solutions/carriers/"
 );
 
-const UPLOADS = "https://amerilife.com/wp-content/uploads";
+const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 const HERO_IMAGE = `${UPLOADS}/2021/12/Carriers_Hero_1420x1144.png`;
 const BANNER_10 = `${UPLOADS}/2021/12/banner-10.png`;
 

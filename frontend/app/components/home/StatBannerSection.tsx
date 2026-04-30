@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { LucideIcon } from "lucide-react";
+import { HOME_STAR_SRC } from "@/app/components/home/home-star";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { Link } from "../ui/Link";
 
@@ -21,6 +22,8 @@ export type StatBannerSectionProps = {
    * Best for already-optimized uploads (avoids double re-encoding); larger payload.
    */
   imageUnoptimized?: boolean;
+  /** Solid footer-style background instead of the default gradient. */
+  tone?: "gradient" | "footer";
 };
 
 export function StatBannerSection({
@@ -36,18 +39,37 @@ export function StatBannerSection({
   icon: Icon,
   imageQuality = 92,
   imageUnoptimized = false,
+  tone = "gradient",
 }: StatBannerSectionProps) {
   const isImageLeft = direction === "left";
 
   return (
     <section
-      className="relative flex w-full flex-col md:min-h-0 md:flex-row md:items-stretch"
-      style={{ background: "var(--gradient-header)" }}
+      className={`relative flex w-full flex-col md:min-h-0 md:flex-row md:items-stretch ${
+        tone === "footer" ? "overflow-hidden" : ""
+      }`}
+      style={
+        tone === "footer"
+          ? { backgroundColor: "var(--color-footer-bg)" }
+          : { background: "var(--gradient-header)" }
+      }
     >
+      {tone === "footer" && (
+        <div className="pointer-events-none absolute left-0 top-0 z-[2] w-[360px] sm:w-[450px] lg:w-[540px]">
+          <Image
+            src={HOME_STAR_SRC}
+            alt=""
+            width={640}
+            height={640}
+            className="h-auto w-full opacity-40 brightness-[1.45] contrast-[1.12]"
+          />
+        </div>
+      )}
+
       <div
         className={`relative aspect-[4/3] w-full shrink-0 overflow-hidden md:aspect-[16/11] md:min-h-0 md:min-w-0 md:w-1/2 ${
-          isImageLeft ? "order-1 md:order-1" : "order-1 md:order-2"
-        }`}
+          tone === "footer" ? "z-[1]" : ""
+        } ${isImageLeft ? "order-2 md:order-1" : "order-2 md:order-2"}`}
       >
         <Image
           src={imageUrl}
@@ -63,8 +85,8 @@ export function StatBannerSection({
       <FadeInOnView
         direction={isImageLeft ? "right" : "left"}
         className={`flex w-full flex-1 flex-col justify-center px-[var(--container-padding-x)] py-8 md:w-1/2 md:min-w-0 md:items-center md:px-10 md:py-10 lg:px-12 lg:py-12 ${
-          isImageLeft ? "order-2 md:order-2" : "order-2 md:order-1"
-        }`}
+          tone === "footer" ? "relative z-10" : ""
+        } ${isImageLeft ? "order-1 md:order-2" : "order-1 md:order-1"}`}
       >
         <div className="mx-auto flex w-full max-w-xl flex-col items-start text-left 2xl:max-w-2xl">
           <h2 className="mb-4 text-2xl font-bold uppercase tracking-wide text-white sm:text-3xl">
@@ -81,7 +103,7 @@ export function StatBannerSection({
                 {statNumber}
               </span>
             </div>
-            <span className="mt-1.5 block text-base font-normal text-white/90 sm:text-lg">
+            <span className="mt-1.5 block text-base font-bold text-white/90 sm:text-lg">
               {statLabel}
             </span>
           </div>

@@ -11,7 +11,7 @@ export const metadata: Metadata = staticPageMetadata(
   "/career/agents/"
 );
 
-const UPLOADS = "https://amerilife.com/wp-content/uploads";
+const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 const GREY_GEO_BG = `${UPLOADS}/2017/09/greygeo-banner-1920.png`;
 
 /** Hero — headless WP (Join Our Team hero asset, 1420×1144). */

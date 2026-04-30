@@ -1,25 +1,27 @@
 # Routing
 
-Route structure and catch-all resolution logic.
+Route structure, layout groups, and catch-all resolution logic.
 
 ## Route Groups & Layouts
 
 | Group | Layout | Use Case |
 |-------|--------|----------|
 | `(site)` | `LayoutShell` (TopBar + SiteHeader + SiteFooter) | All main marketing pages |
-| `(bare)` | None (no chrome) | Legal addendum pages needing minimal layout |
-| `(topbar-only)` | TopBar only | Minimal-chrome pages (e.g. thank-you, lead forms) |
+| `(bare)` | None (no chrome) | Legal addendum pages requiring minimal layout |
+| `(topbar-only)` | TopBar only | Minimal-chrome pages (thank-you, lead forms) |
 
-`LayoutShell` fetches navigation from WordPress via GraphQL and composes the full site chrome.
+`LayoutShell` is an async Server Component. It fetches navigation menus from WordPress via GraphQL and composes the full site chrome around `children`.
 
 ## Static Routes
 
 ### Home
+
 | Path | Page |
 |------|------|
 | `/` | Homepage |
 
 ### About Us
+
 | Path | Page |
 |------|------|
 | `/about-us/who-we-are` | Who We Are |
@@ -28,8 +30,12 @@ Route structure and catch-all resolution logic.
 | `/about-us/our-distribution/health-distribution` | Health Distribution |
 | `/about-us/our-distribution/wealth-distribution` | Wealth Distribution |
 | `/about-us/our-distribution/worksite-distribution` | Worksite Distribution |
+| `/about-us/our-distribution/direct-to-consumer` | Direct to Consumer |
+| `/about-us/our-leaders` | Our Leaders (grid, from WP Leader CPT) |
+| `/about-us/our-leaders/[slug]` | Individual leader profile (dynamic, WP Leader CPT) |
 
 ### Our Solutions
+
 | Path | Page |
 |------|------|
 | `/our-solutions` | Our Solutions index |
@@ -39,107 +45,193 @@ Route structure and catch-all resolution logic.
 | `/our-solutions/consumers` | Consumers |
 | `/our-solutions/employees` | Employees |
 
+### Insights
+
+| Path | Page |
+|------|------|
+| `/insights` | Insights magazine landing (featured articles grid) |
+| `/insights/[slug]` | Individual insight article (WP Insights CPT) |
+| `/insights/category/[slug]` | Category listing with pagination |
+
 ### Blog / Newsroom
+
 | Path | Page |
 |------|------|
 | `/newsroom` | Blog listing |
 | `/blog/[category]` | Category listing |
-| `/blog/[category]/[slug]` | Individual post |
+| `/blog/[category]/[slug]` | Individual blog post |
 | `/blog`, `/blog/` | Redirect → `/newsroom` |
+| `/about/news`, `/about/news/` | Redirect → `/newsroom` |
 
 ### Locations / Career
+
 | Path | Page |
 |------|------|
-| `/find-an-agent` | Find An Agent (search + location cards) |
+| `/find-an-agent` | Find An Agent (search + agency cards) |
 | `/career` | Career index |
 | `/career/agents` | Career agents |
 
 ### Lead Forms & Contact
-| Path | Page |
-|------|------|
-| `/connect` | Connect form |
-| `/contact` | Contact form |
-| `/existinglead` | Existing lead form |
-| `/broker-contact-page` | Broker contact |
-| `/worksite` | Worksite |
-| `/worksite/lead` | Worksite lead form |
 
-### Thank You / Special
 | Path | Page |
 |------|------|
-| `/thankyou` | Thank you |
+| `/connect` | Connect with an agent (Gravity Form) |
+| `/contact` | Contact form (Gravity Form) |
+| `/existinglead` | Existing lead form |
+| `/broker-contact-page` | Broker contact form |
+| `/worksite` | Worksite landing |
+| `/worksite/lead` | Worksite lead form (Gravity Form) |
+
+### Thank You & Special Landing Pages
+
+| Path | Page |
+|------|------|
+| `/thankyou` | Generic thank you |
 | `/career/findanagentthankyou` | Find agent thank you |
 | `/about/affiliates/thank-you` | Affiliates thank you |
-| `/valspar` | Valspar landing |
-| `/sma-amerilife-video` | SMA video |
-| `/kickoff-recap-2025` | Kickoff recap |
+| `/valspar` | Valspar landing (Gravity Form) |
+| `/sma-amerilife-video` | SMA video page |
+| `/kickoff-recap-2025` | 2025 Kickoff recap |
 | `/national-network` | National network |
-| `/flexibility-and-optionality` | Flexibility |
-| `/technology-and-analytics` | Technology |
-| `/solutions-and-opportunities` | Solutions & opportunities |
-| `/givesback` | Gives back |
-| `/join-our-team` | Join our team |
-| `/expectations-when-you-join-our-team` | Expectations |
+| `/flexibility-and-optionality` | Flexibility & Optionality |
+| `/technology-and-analytics` | Technology & Analytics |
+| `/solutions-and-opportunities` | Solutions & Opportunities |
+| `/givesback` | AmeriLife Gives Back |
+| `/join-our-team` | Join Our Team |
+| `/expectations-when-you-join-our-team` | Expectations When You Join |
 
 ### FAQ
+
 | Path | Page |
 |------|------|
-| `/faq` | FAQ |
+| `/faq` | General FAQ |
 | `/consumers/faq` | Consumers FAQ |
 | `/brokers/faq` | Brokers FAQ |
 
 ### Legal
+
 | Path | Page |
 |------|------|
-| `/privacy` | Privacy |
-| `/terms` | Terms |
-| `/sms-terms` | SMS terms |
+| `/privacy-policy` | Privacy Policy (canonical) |
+| `/terms` | Terms of Use |
+| `/sms-terms` | Redirect → `/sms-text-messaging-terms-and-conditions` |
+| `/sms-text-messaging-terms-and-conditions` | SMS Terms (canonical) |
+| `/privacy`, `/fbtermsandpolicy` | Redirects → `/privacy-policy/` |
 
 ### Bare (no header/footer)
+
 | Path | Page |
 |------|------|
-| `/state-specific-privacy-addendum` | State privacy addendum |
-| `/state-specific-privacy-addendum-request` | State privacy addendum request |
+| `/state-specific-privacy-addendum` | State Privacy Addendum |
+| `/state-specific-privacy-addendum-request` | State Privacy Addendum Request Form |
 
 ### Other
+
 | Path | Page |
 |------|------|
-| `/search` | Site search |
+| `/search` | Site search (static index + WPGraphQL blog search) |
+
+---
 
 ## Catch-All (`[...slug]`)
 
-Any URL not matched by a static route is handled by `(site)/[...slug]/page.tsx`.
+Any URL not matched by a static route above is handled by `(site)/[...slug]/page.tsx`.
+
+This route resolves agency location pages, agent detail pages, and WordPress CMS pages — in that order.
 
 ### Resolution Order
 
 ```mermaid
 flowchart TD
     request["Incoming URL"] --> twoSeg{"2-segment slug?"}
-    twoSeg -->|yes| agentDetail["AgentDetailTemplate"]
-    twoSeg -->|no| oneSeg{"Matches LocationData?"}
-    oneSeg -->|yes| locationPage["LocationPageTemplate"]
-    oneSeg -->|no| wpQuery["WPGraphQL GET_NODE_BY_URI"]
+
+    twoSeg -->|yes| gqlAgent["fetchAgentWithLocation() — WPGraphQL Agency CPT"]
+    gqlAgent --> gqlAgentFound{"Agent found?"}
+    gqlAgentFound -->|yes| agentDetail["AgentDetailTemplate"]
+    gqlAgentFound -->|no| staticAgent["getAgentBySlug() — locations-data.ts fallback"]
+    staticAgent --> staticAgentFound{"Agent found?"}
+    staticAgentFound -->|yes| agentDetail
+    staticAgentFound -->|no| notFound["notFound()"]
+
+    twoSeg -->|no| gqlLocation["fetchAgencyBySlug() — WPGraphQL Agency CPT"]
+    gqlLocation --> gqlLocFound{"Agency found?"}
+    gqlLocFound -->|yes| locationPage["LocationPageTemplate"]
+    gqlLocFound -->|no| staticLoc["getLocationBySlug() — locations-data.ts fallback"]
+    staticLoc --> staticLocFound{"Location found?"}
+    staticLocFound -->|yes| locationPage
+    staticLocFound -->|no| wpQuery["WPGraphQL GET_NODE_BY_URI"]
     wpQuery --> wpFound{"Node found?"}
-    wpFound -->|yes| wpRender["dangerouslySetInnerHTML"]
-    wpFound -->|no| notFound["notFound()"]
+    wpFound -->|yes| wpRender["dangerouslySetInnerHTML (raw Gutenberg HTML)"]
+    wpFound -->|no| notFound
 ```
 
-1. **2-segment slug** (`/location-slug/agent-slug/`) → `getAgentBySlug()` → `AgentDetailTemplate` if found
-2. **1-segment slug** → `getLocationBySlug()` → `LocationPageTemplate` if found (e.g. `/polk-county/`)
-3. **WordPress** → `GET_NODE_BY_URI` → render page content via `dangerouslySetInnerHTML` if found
-4. **Not found** → `notFound()` (404)
+**Resolution steps in detail:**
 
-### Location Data
+1. **2-segment slug** (`/{agency-slug}/{agent-slug}/`)
+   - Try `fetchAgentWithLocation()` — queries the WordPress Agency CPT via GraphQL
+   - If not found, fall back to `getAgentBySlug()` from `lib/locations-data.ts`
+   - Renders `AgentDetailTemplate`
 
-Location slugs are defined in `frontend/lib/locations-data.ts`. Currently: `polk-county`. To add locations or agents, edit that file — see [DEVELOPMENT.md](DEVELOPMENT.md#adding-a-new-location-or-agent).
+2. **1-segment slug** (`/{agency-slug}/`)
+   - Try `fetchAgencyBySlug()` — queries the WordPress Agency CPT via GraphQL
+   - If not found, fall back to `getLocationBySlug()` from `lib/locations-data.ts`
+   - Renders `LocationPageTemplate`
+
+3. **WordPress page** — `GET_NODE_BY_URI` → renders Gutenberg HTML via `dangerouslySetInnerHTML`
+
+4. **Not found** → `notFound()` (renders the 404 page)
+
+### Agency Data Sources
+
+**Primary (WordPress Agency CPT):** Agency and agent data is managed in WordPress via the Agency Custom Post Type with custom fields (`phone`, `address`, `hours`, `heroImageUrl`, `featuresJson`, `gravityFormId`, etc.). Agents are a related CPT (`officeAgent`) linked to their parent agency.
+
+**Fallback (Static):** `frontend/lib/locations-data.ts` — used only when a location or agent has not yet been migrated to WordPress. New locations should be added to WordPress, not to this file.
+
+See [AGENCIES.md](AGENCIES.md) for full Agency CPT details and the data pipeline.
 
 ### Metadata
 
-- **Agent detail**: Custom title/description from agent data
-- **Location**: Custom title/description from location data
-- **WordPress**: Yoast SEO metadata via `yoastSeoToMetadata()`
+| Page type | Metadata source |
+|-----------|----------------|
+| Agent detail (WP) | `agentDetailMetadata()` in `lib/agencies.ts` |
+| Agent detail (static) | `agentDetailMetadata()` using `locations-data.ts` |
+| Location / Agency (WP) | `agencyLocationMetadata()` in `lib/agencies.ts` |
+| Location (static) | `agencyLocationMetadata()` using `locations-data.ts` |
+| WordPress page | Yoast SEO via `yoastSeoToMetadata()` |
+
+---
 
 ## Redirects
 
-- **Static**: `/blog` and `/blog/` → `/newsroom` (in `next.config.ts`)
-- **Dynamic**: Fetched from WordPress Redirection plugin at build time via `getRedirectsFromWP()` and merged into Next.js redirects
+Redirects are configured in `next.config.ts` via the `redirects()` async function.
+
+**Static redirects** (always applied):
+
+| Source | Destination | Type |
+|--------|-------------|------|
+| `/blog`, `/blog/` | `/newsroom` | 301 |
+| `/about/news`, `/about/news/` | `/newsroom` | 301 |
+| `/privacy`, `/privacy/` | `/privacy-policy/` | 301 |
+| `/fbtermsandpolicy`, `/fbtermsandpolicy/` | `/privacy-policy/` | 301 |
+
+**Dynamic redirects** (fetched from WordPress at build time): `getRedirectsFromWP()` in `lib/wp-redirects.ts` calls the WPGraphQL Redirection addon to retrieve all redirects configured in the WordPress Redirection plugin. These are merged in after the static redirects and treated as 301s. A 10-second timeout prevents blocking the build.
+
+---
+
+## Sitemap & robots.txt
+
+- **`/sitemap.xml`** — generated by `frontend/app/sitemap.ts` at request time. Combines static marketing paths, WordPress pages, WordPress posts, Leader CPT slugs, Agency CPT slugs (with agent sub-pages), and Insights category slugs.
+- **`/robots.txt`** — generated by `frontend/app/robots.ts`. Disallows: `/test`, `/search`, `/thankyou`, `/existinglead`, `/worksite/lead`, `/career/findanagentthankyou`, `/about/affiliates/thank-you`.
+
+---
+
+## Security Headers
+
+Applied globally via `next.config.ts`:
+
+| Header | Value |
+|--------|-------|
+| `X-Content-Type-Options` | `nosniff` |
+| `X-Frame-Options` | `SAMEORIGIN` |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=()` |

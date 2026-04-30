@@ -15,7 +15,7 @@ export const metadata: Metadata = staticPageMetadata(
   "/technology-and-analytics/"
 );
 
-const UPLOADS = "https://amerilife.com/wp-content/uploads";
+const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 
 /** Hero image (headless WP) */
 const HERO_IMAGE =

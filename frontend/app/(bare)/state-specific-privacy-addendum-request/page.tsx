@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 const HEADER_LOGO_SRC = rewriteUploadsUrl(
-  "https://amerilife.com/wp-content/uploads/2022/01/amerilife.svg",
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/01/amerilife.svg",
 );
 
 const FOOTER_BG = "rgb(0, 55, 103)";
