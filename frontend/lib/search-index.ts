@@ -504,6 +504,35 @@ const SEARCH_INDEX: SearchEntry[] = [
     keywords: ["find agent", "agent locator", "Medicare", "insurance", "local agent"],
   },
   {
+    path: "/texas/",
+    title: "AmeriLife Texas Market",
+    description:
+      "Find AmeriLife agents across Texas — Dallas, Fort Worth, McKinney, Mansfield, Highland Village, Rockwall and more.",
+    keywords: [
+      "Texas",
+      "Dallas",
+      "Fort Worth",
+      "McKinney",
+      "find agent",
+      "AmeriLife of Texas",
+      "Medicare",
+    ],
+  },
+  {
+    path: "/florida/",
+    title: "AmeriLife of Florida, LLC",
+    description:
+      "Find AmeriLife agents in Florida — West Palm Beach and Fort Lauderdale. Medicare, health, life, and annuities.",
+    keywords: [
+      "Florida",
+      "West Palm Beach",
+      "Fort Lauderdale",
+      "find agent",
+      "AmeriLife of Florida",
+      "Medicare",
+    ],
+  },
+  {
     path: "/polk-county/",
     title: "AmeriLife of Polk County, LLC",
     description:

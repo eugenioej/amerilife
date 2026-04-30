@@ -112,6 +112,7 @@ const nextConfig: NextConfig = {
         "https://www.youtube.com",
         "https://www.youtube-nocookie.com",
         "https://www.google.com",
+        "https://maps.google.com",
         "https://recaptcha.net",
       ].join(" "),
       "media-src 'self' https:",

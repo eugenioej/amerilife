@@ -3,7 +3,7 @@ import { ShieldCheck } from "lucide-react";
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { GravityForm } from "@/app/components/gravity-forms/GravityForm";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
-import { agencyMapsEmbedUrl } from "@/lib/agency-map-embed";
+import { agencyMapsEmbedUrl, agencyMapsSecondaryEmbedUrl } from "@/lib/agency-map-embed";
 import { telHrefPlusOne } from "@/lib/us-tel-href";
 import type { GfFormData } from "@/lib/gf-types";
 import {
@@ -118,7 +118,8 @@ export function OfficeInfoHero({ location, connectForm }: OfficeInfoHeroProps) {
     ? `${featured.name} – ${LICENSED_INSURANCE_AGENT_LABEL}`
     : `${location.officeName} office`;
 
-  const mapsUrl = agencyMapsEmbedUrl(location);
+  const mapsUrlPrimary = agencyMapsEmbedUrl(location);
+  const mapsUrlSecondary = agencyMapsSecondaryEmbedUrl(location);
   const officeTelHref = telHrefPlusOne(location.phone);
   const displayPhoneAgent = featured?.phone?.trim() || location.phone;
   const agentTelHref = telHrefPlusOne(displayPhoneAgent);
@@ -248,15 +249,18 @@ export function OfficeInfoHero({ location, connectForm }: OfficeInfoHeroProps) {
                 </p>
               ) : null}
 
-              <div className="relative mt-12 aspect-square w-full min-h-[220px] overflow-hidden rounded-md border border-[var(--color-border)] bg-[#e8eaec]">
-                <iframe
-                  src={mapsUrl}
-                  title="Office location map"
-                  className="absolute inset-0 h-full w-full border-0"
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
+              <div className="mt-12">
+                <p className="mb-2 text-sm font-semibold text-[var(--color-brand-dark)]">Office location</p>
+                <div className="relative aspect-square w-full min-h-[200px] overflow-hidden rounded-md border border-[var(--color-border)] bg-[#e8eaec]">
+                  <iframe
+                    src={mapsUrlPrimary}
+                    title={`${location.officeName} — map`}
+                    className="absolute inset-0 h-full w-full border-0"
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
               </div>
             </div>
 

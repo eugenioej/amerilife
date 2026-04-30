@@ -40,6 +40,8 @@ export const STATIC_SITEMAP_PATHS: string[] = [
   "/givesback/",
   "/our-solutions/",
   "/find-an-agent/",
+  "/texas/",
+  "/florida/",
   "/about-us/who-we-are/",
   "/technology-and-analytics/",
   "/consumers/",
