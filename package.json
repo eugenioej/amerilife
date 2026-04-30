@@ -2,7 +2,11 @@
   "name": "amerilife",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "22"
+  },
   "scripts": {
+    "postinstall": "cd frontend && npm install",
     "dev": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",
     "start": "cd frontend && npm run start",
