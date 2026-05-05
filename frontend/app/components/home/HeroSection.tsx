@@ -10,7 +10,7 @@ export function HeroSection() {
   const bannerUrl = rewriteUploadsUrl(BANNER_URL);
   const starUrl = HOME_STAR_SRC;
   return (
-    <section className="relative flex w-full flex-1 flex-col items-center justify-center overflow-hidden sm:items-start">
+    <section className="relative flex w-full flex-1 flex-col items-center justify-center overflow-x-hidden overflow-y-visible sm:items-start">
       {/* Background image */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -47,15 +47,19 @@ export function HeroSection() {
       {/* Content */}
       <FadeInOnView
         direction="fade"
-        threshold={0}
+        threshold={0.01}
+        initialVisible
         className="relative z-10 mx-auto flex w-full max-w-[var(--container-max)] flex-col items-center px-[var(--container-padding-x)] text-center sm:items-start sm:text-left"
       >
-        <h2 className="mb-4 text-xl font-normal tracking-wide text-white/95 sm:text-2xl lg:text-3xl">
+        <h2 className="hero-home-subtitle text-center sm:text-left">
           Together As
         </h2>
-        <h1 className="font-poppins mb-8 flex items-baseline justify-center gap-2 text-7xl tracking-tight text-white sm:justify-start sm:text-8xl md:text-9xl lg:text-[10rem] xl:text-[12rem]">
-          <span style={{ fontWeight: 800 }}>O</span>
-          <span className="font-light">NE</span>
+        <h1
+          className="hero-home-one w-full justify-center sm:justify-start"
+          aria-label="ONE"
+        >
+          <span aria-hidden className="hero-home-one-ring bg-transparent" />
+          <span aria-hidden>NE</span>
         </h1>
         <p className="max-w-[min(100%,32ch)] text-center text-lg font-normal leading-snug text-white/95 sm:text-left sm:text-xl lg:text-2xl mx-auto sm:mx-0">
           Delivering insurance and financial solutions to agents and advisors to help people live longer, healthier lives.

@@ -23,78 +23,82 @@ export function MilestonesSlider({ milestones, images }: Props) {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  const updateScrollState = useCallback(() => {
+  const getCards = useCallback((): HTMLElement[] => {
+    const el = scrollRef.current;
+    if (!el) return [];
+    return [...el.querySelectorAll<HTMLElement>("[data-milestone-card]")];
+  }, []);
+
+  const updateState = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
     const { scrollLeft, scrollWidth, clientWidth } = el;
-    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollLeft(scrollLeft > 2);
     setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 2);
   }, []);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    updateScrollState();
-    el.addEventListener("scroll", updateScrollState);
-    const ro = new ResizeObserver(updateScrollState);
+    updateState();
+    el.addEventListener("scroll", updateState, { passive: true });
+    const ro = new ResizeObserver(updateState);
     ro.observe(el);
     return () => {
-      el.removeEventListener("scroll", updateScrollState);
+      el.removeEventListener("scroll", updateState);
       ro.disconnect();
     };
-  }, [updateScrollState]);
+  }, [updateState]);
 
   const scroll = (direction: "left" | "right") => {
     const el = scrollRef.current;
     if (!el) return;
-    const cardWidth = el.querySelector("[data-milestone-card]")?.getBoundingClientRect().width ?? 320;
-    const gap = 24;
-    const step = cardWidth + gap;
-    el.scrollBy({ left: direction === "left" ? -step : step, behavior: "smooth" });
+    const cards = getCards();
+    if (!cards.length) return;
+
+    const containerRect = el.getBoundingClientRect();
+    const slop = 8;
+
+    let nextIdx: number;
+    if (direction === "right") {
+      const found = cards.findIndex(
+        (c) => c.getBoundingClientRect().left > containerRect.left + slop
+      );
+      nextIdx = found === -1 ? cards.length - 1 : found;
+    } else {
+      nextIdx = 0;
+      for (let i = cards.length - 1; i >= 0; i--) {
+        if (cards[i].getBoundingClientRect().left < containerRect.left - slop) {
+          nextIdx = i;
+          break;
+        }
+      }
+    }
+
+    const targetLeft =
+      el.scrollLeft +
+      cards[nextIdx].getBoundingClientRect().left -
+      containerRect.left;
+    el.scrollTo({ left: targetLeft, behavior: "smooth" });
   };
 
   return (
-    <div className="relative flex items-stretch gap-4 sm:gap-6">
-      {/* Nav arrows - left side, stacked vertically, same height as cards */}
-      <div className="flex shrink-0 flex-col items-center justify-center gap-2">
-        <button
-          type="button"
-          onClick={() => scroll("left")}
-          disabled={!canScrollLeft}
-          aria-label="Previous milestones"
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] bg-white text-[var(--color-fg)] transition-colors hover:bg-[#f7f8f9] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          onClick={() => scroll("right")}
-          disabled={!canScrollRight}
-          aria-label="Next milestones"
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] bg-white text-[var(--color-fg)] transition-colors hover:bg-[#f7f8f9] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-      {/* Cards slider */}
+    <div className="flex flex-col gap-5">
+      {/* Cards strip */}
       <div
         ref={scrollRef}
-        className="min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         role="region"
         aria-label="Our Milestones carousel"
       >
-        <div className="flex snap-x snap-mandatory gap-6 py-2 pb-4 scroll-smooth">
+        <div className="flex snap-x snap-mandatory gap-4 sm:gap-6">
           {milestones.map((m, i) => {
             const imgSrc = images[m.year];
             return (
               <article
                 key={i}
                 data-milestone-card
-                className="flex min-w-[280px] max-w-[360px] shrink-0 snap-start flex-col overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-sm sm:min-w-[320px] lg:min-w-[340px]"
+                className="w-[280px] shrink-0 snap-start flex flex-col overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-sm sm:w-[320px] lg:w-[340px]"
               >
                 <div className="relative aspect-[746/660] w-full shrink-0 overflow-hidden bg-[#e2e5ed]">
                   {imgSrc ? (
@@ -114,7 +118,9 @@ export function MilestonesSlider({ milestones, images }: Props) {
                   )}
                 </div>
                 <div className="flex flex-1 flex-col p-4 sm:p-5">
-                  <h4 className="mb-2 text-lg font-bold text-[var(--color-brand-primary)]">{m.year}</h4>
+                  <h4 className="mb-2 text-lg font-bold text-[var(--color-brand-primary)]">
+                    {m.year}
+                  </h4>
                   <p className="text-sm leading-relaxed text-[var(--color-fg)]">
                     {m.extLink && m.linkText ? (
                       <>
@@ -138,6 +144,50 @@ export function MilestonesSlider({ milestones, images }: Props) {
             );
           })}
         </div>
+      </div>
+
+      {/* Controls */}
+      <div className="flex items-center justify-center gap-6">
+        <button
+          type="button"
+          onClick={() => scroll("left")}
+          disabled={!canScrollLeft}
+          aria-label="Previous milestone"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] bg-white text-[var(--color-fg)] transition-colors hover:bg-[#f7f8f9] disabled:cursor-not-allowed disabled:opacity-30"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden
+          >
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          onClick={() => scroll("right")}
+          disabled={!canScrollRight}
+          aria-label="Next milestone"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] bg-white text-[var(--color-fg)] transition-colors hover:bg-[#f7f8f9] disabled:cursor-not-allowed disabled:opacity-30"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden
+          >
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
     </div>
   );

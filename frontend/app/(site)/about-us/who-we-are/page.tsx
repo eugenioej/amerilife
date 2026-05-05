@@ -93,7 +93,7 @@ export default function WhoWeArePage() {
       <JsonLd
         schema={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "About Us", path: "/about-us/" },
+          { name: "About Us" },
           { name: "Who We Are", path: "/about-us/who-we-are/" },
         ])}
       />
@@ -107,7 +107,7 @@ export default function WhoWeArePage() {
             className="mb-8"
             items={[
               { label: "Home", href: "/" },
-              { label: "About Us", href: "/about-us/" },
+              { label: "About Us" },
               { label: "Who We Are" },
             ]}
           />

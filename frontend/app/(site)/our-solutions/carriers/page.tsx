@@ -97,7 +97,7 @@ export default function CarriersPage() {
       <JsonLd
         schema={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Our Solutions", path: "/our-solutions/" },
+          { name: "Our Solutions" },
           { name: "Carrier Partners", path: "/our-solutions/carriers/" },
         ])}
       />
@@ -111,7 +111,7 @@ export default function CarriersPage() {
             className="mb-8"
             items={[
               { label: "Home", href: "/" },
-              { label: "Our Solutions", href: "/our-solutions/" },
+              { label: "Our Solutions" },
               { label: "Carrier Partners" },
             ]}
           />

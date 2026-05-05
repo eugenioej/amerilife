@@ -36,7 +36,7 @@ export function LeaderDetailTemplate({ leader, allLeaders }: LeaderDetailTemplat
           <SiteBreadcrumb
             items={[
               { label: "Home", href: "/" },
-              { label: "About Us", href: "/about-us/" },
+              { label: "About Us" },
               { label: "Our Leaders", href: "/about-us/our-leaders/" },
               { label: name },
             ]}

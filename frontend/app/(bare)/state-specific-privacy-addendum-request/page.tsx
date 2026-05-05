@@ -73,8 +73,8 @@ export default async function StateSpecificPrivacyAddendumRequestPage() {
       style={{ backgroundColor: FOOTER_BG }}
     >
       <div className="mx-auto max-w-[720px] space-y-4">
-        <p>AmeriLife, © {copyrightYear}</p>
-        <p>Not affiliated with the U. S. government or federal Medicare program.</p>
+        <p>AmeriLife © {copyrightYear}.</p>
+        <p>Not affiliated with the U.S. government or federal Medicare program.</p>
         <p>
           We do not offer every plan available in your area. Any information we provide is limited to
           those plans we do offer in your area. Please contact{" "}

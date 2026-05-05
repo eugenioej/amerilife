@@ -132,7 +132,8 @@ export function privatePageMetadata(
   };
 }
 
-export type BreadcrumbJsonLdItem = { name: string; path: string };
+/** `path` omitted when the segment has no real index page (avoid 404 / empty stubs in structured data). */
+export type BreadcrumbJsonLdItem = { name: string; path?: string };
 
 /** BreadcrumbList schema.org for use with JsonLd. */
 export function breadcrumbJsonLd(
@@ -142,15 +143,20 @@ export function breadcrumbJsonLd(
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: items.map((item, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      name: item.name,
-      item: new URL(
-        item.path.startsWith("/") ? item.path : `/${item.path}`,
-        siteUrl
-      ).toString(),
-    })),
+    itemListElement: items.map((item, i) => {
+      const el: Record<string, unknown> = {
+        "@type": "ListItem",
+        position: i + 1,
+        name: item.name,
+      };
+      if (item.path) {
+        el.item = new URL(
+          item.path.startsWith("/") ? item.path : `/${item.path}`,
+          siteUrl
+        ).toString();
+      }
+      return el;
+    }),
   };
 }
 

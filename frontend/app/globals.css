@@ -249,6 +249,74 @@ header nav[aria-label="Main navigation"] > div > a:hover::after {
   font-family: var(--font-poppins), ui-sans-serif, sans-serif;
 }
 
+/*
+ * Hero “Together As” / “ONE”
+ * Ring uses 1cap so the circle matches Poppins cap height for “NE” (not oversized vs. glyphs).
+ */
+.hero-home-subtitle {
+  margin-bottom: 7px;
+  font-weight: 300;
+  font-size: 18px;
+  line-height: 1.2;
+  color: rgb(255 255 255 / 0.95);
+}
+
+@media (min-width: 768px) {
+  .hero-home-subtitle {
+    margin-bottom: 0;
+    font-size: 32px;
+  }
+}
+
+.hero-home-one {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-weight: 200;
+  font-size: 54px;
+  line-height: 1;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.hero-home-one-ring {
+  display: block;
+  flex-shrink: 0;
+  font: inherit;
+  line-height: 0;
+  box-sizing: border-box;
+  width: 1cap;
+  height: 1cap;
+  margin-inline-end: 0.035em;
+  border-radius: 50%;
+  border: solid #fff;
+  border-width: 0.17cap;
+  background: transparent;
+}
+
+@supports not (width: 1cap) {
+  .hero-home-one-ring {
+    width: 0.72em;
+    height: 0.72em;
+    border-width: 0.123em;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-home-one {
+    font-size: 110px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .hero-home-one {
+    font-size: 193.719px;
+  }
+}
+
 /* Buttons: never underline on hover */
 button,
 button:hover,

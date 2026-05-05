@@ -50,7 +50,7 @@ export default function EmployeesPage() {
       <JsonLd
         schema={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Our Solutions", path: "/our-solutions/" },
+          { name: "Our Solutions" },
           { name: "Employees", path: "/our-solutions/employees/" },
         ])}
       />
@@ -64,7 +64,7 @@ export default function EmployeesPage() {
             className="mb-8"
             items={[
               { label: "Home", href: "/" },
-              { label: "Our Solutions", href: "/our-solutions/" },
+              { label: "Our Solutions" },
               { label: "Employees" },
             ]}
           />

@@ -88,7 +88,7 @@ export default async function CareerAgencyPage() {
       <JsonLd
         schema={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "About Us", path: "/about-us/" },
+          { name: "About Us" },
           { name: "Our Distribution", path: "/about-us/our-distribution/" },
           { name: "Career Agency", path: "/about-us/our-distribution/career-agency/" },
         ])}
@@ -103,7 +103,7 @@ export default async function CareerAgencyPage() {
             className="mb-8"
             items={[
               { label: "Home", href: "/" },
-              { label: "About Us", href: "/about-us/" },
+              { label: "About Us" },
               { label: "Our Distribution", href: "/about-us/our-distribution/" },
               { label: "Career Agency" },
             ]}

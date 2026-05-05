@@ -5,6 +5,11 @@ export type SiteBreadcrumbItem = {
   href?: string;
   /** Extra classes on the link or label span (e.g. truncate). */
   className?: string;
+  /**
+   * Last crumb only: use wrapping instead of single-line ellipsis
+   * (e.g. very long newsroom article titles on narrow viewports).
+   */
+  wrapMultiLine?: boolean;
 };
 
 type Props = {
@@ -47,7 +52,9 @@ export function SiteBreadcrumb({
             : "min-w-0 max-w-full";
 
           const currentBox = isLast
-            ? "min-w-0 flex-1 truncate sm:inline-block sm:flex-none sm:min-w-0 sm:max-w-full"
+            ? item.wrapMultiLine
+              ? "min-w-0 flex-1 whitespace-normal break-words sm:inline-block sm:flex-none sm:min-w-0 sm:max-w-full"
+              : "min-w-0 flex-1 truncate sm:inline-block sm:flex-none sm:min-w-0 sm:max-w-full"
             : "inline-block min-w-0 max-w-full";
 
           return (

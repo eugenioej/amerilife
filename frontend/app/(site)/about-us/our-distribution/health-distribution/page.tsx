@@ -172,7 +172,7 @@ export default async function HealthDistributionPage() {
       <JsonLd
         schema={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "About Us", path: "/about-us/" },
+          { name: "About Us" },
           { name: "Our Distribution", path: "/about-us/our-distribution/" },
           { name: "Health Distribution", path: "/about-us/our-distribution/health-distribution/" },
         ])}
@@ -187,7 +187,7 @@ export default async function HealthDistributionPage() {
             className="mb-8"
             items={[
               { label: "Home", href: "/" },
-              { label: "About Us", href: "/about-us/" },
+              { label: "About Us" },
               { label: "Our Distribution", href: "/about-us/our-distribution/" },
               { label: "Health Distribution" },
             ]}

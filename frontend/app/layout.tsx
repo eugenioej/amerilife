@@ -16,7 +16,7 @@ const openSans = Open_Sans({
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
-  weight: ["300", "800"],
+  weight: ["200", "300", "800"],
 });
 
 const siteUrl = getSiteUrl();

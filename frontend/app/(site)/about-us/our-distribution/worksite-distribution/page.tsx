@@ -97,7 +97,7 @@ export default async function WorksiteDistributionPage() {
       <JsonLd
         schema={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "About Us", path: "/about-us/" },
+          { name: "About Us" },
           { name: "Our Distribution", path: "/about-us/our-distribution/" },
           { name: "Worksite Distribution", path: "/about-us/our-distribution/worksite-distribution/" },
         ])}
@@ -112,7 +112,7 @@ export default async function WorksiteDistributionPage() {
             className="mb-8"
             items={[
               { label: "Home", href: "/" },
-              { label: "About Us", href: "/about-us/" },
+              { label: "About Us" },
               { label: "Our Distribution", href: "/about-us/our-distribution/" },
               { label: "Worksite Distribution" },
             ]}

@@ -25,7 +25,7 @@ export default async function AffiliatesPage() {
       <JsonLd
         schema={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Our Solutions", path: "/our-solutions/" },
+          { name: "Our Solutions" },
           { name: "Affiliates", path: "/our-solutions/affiliates/" },
         ])}
       />
@@ -39,7 +39,7 @@ export default async function AffiliatesPage() {
             className="mb-8"
             items={[
               { label: "Home", href: "/" },
-              { label: "Our Solutions", href: "/our-solutions/" },
+              { label: "Our Solutions" },
               { label: "Affiliates" },
             ]}
           />

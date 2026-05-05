@@ -81,7 +81,7 @@ export default async function DirectToConsumerPage() {
       <JsonLd
         schema={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "About Us", path: "/about-us/" },
+          { name: "About Us" },
           { name: "Our Distribution", path: "/about-us/our-distribution/" },
           {
             name: "Direct-to-Consumer",
@@ -99,7 +99,7 @@ export default async function DirectToConsumerPage() {
             className="mb-8"
             items={[
               { label: "Home", href: "/" },
-              { label: "About Us", href: "/about-us/" },
+              { label: "About Us" },
               { label: "Our Distribution", href: "/about-us/our-distribution/" },
               { label: "Direct-to-Consumer" },
             ]}

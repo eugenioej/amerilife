@@ -138,7 +138,7 @@ export default function ConsumersPage() {
       <JsonLd
         schema={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Our Solutions", path: "/our-solutions/" },
+          { name: "Our Solutions" },
           { name: "Consumers", path: "/our-solutions/consumers/" },
         ])}
       />
@@ -152,7 +152,7 @@ export default function ConsumersPage() {
             className="mb-8"
             items={[
               { label: "Home", href: "/" },
-              { label: "Our Solutions", href: "/our-solutions/" },
+              { label: "Our Solutions" },
               { label: "Consumers" },
             ]}
           />

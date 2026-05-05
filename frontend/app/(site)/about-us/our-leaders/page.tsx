@@ -42,7 +42,7 @@ export default async function OurLeadersPage() {
             className="mb-8"
             items={[
               { label: "Home", href: "/" },
-              { label: "About Us", href: "/about-us/" },
+              { label: "About Us" },
               { label: "Our Leaders" },
             ]}
           />
@@ -67,13 +67,13 @@ export default async function OurLeadersPage() {
         >
           <div className="mb-12 max-w-3xl space-y-4 text-base leading-[140%] text-[#244260] sm:mb-[75px]">
             <p>
-              Ameri{"\u00a0"}Life values our executive team&apos;s wealth of industry expertise as
-              veterans of some of the nation&apos;s most notable insurance companies — including Met
-              {"\u00a0"}Life, Bankers{"\u00a0"}Life and Transamerica.
+              AmeriLife values our executive team&apos;s wealth of industry expertise as
+              veterans of some of the nation&apos;s most notable insurance companies — including
+              MetLife, Bankers{"\u00a0"}Life and Transamerica.
             </p>
             <p>
               Our leaders are committed to a culture of ethics and integrity, creating top-down
-              accountability and driving Ameri{"\u00a0"}Life&apos;s mission to help people and
+              accountability and driving AmeriLife&apos;s mission to help people and
               businesses achieve financial security and a better way of life.
             </p>
           </div>

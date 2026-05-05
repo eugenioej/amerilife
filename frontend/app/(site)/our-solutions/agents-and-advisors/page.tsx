@@ -60,7 +60,7 @@ export default function AgentsAdvisorsPage() {
       <JsonLd
         schema={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Our Solutions", path: "/our-solutions/" },
+          { name: "Our Solutions" },
           { name: "Agents & Advisors", path: "/our-solutions/agents-and-advisors/" },
         ])}
       />
@@ -74,7 +74,7 @@ export default function AgentsAdvisorsPage() {
             className="mb-8"
             items={[
               { label: "Home", href: "/" },
-              { label: "Our Solutions", href: "/our-solutions/" },
+              { label: "Our Solutions" },
               { label: "Agents & Advisors" },
             ]}
           />

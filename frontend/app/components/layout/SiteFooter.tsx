@@ -153,8 +153,8 @@ export function SiteFooter({ primaryMenu, footerLogoUrl, certificationBadgeUrl }
         <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex-1 max-w-2xl">
             <p className="text-sm leading-relaxed text-white/80">
-              AmeriLife, ©
-              <span suppressHydrationWarning>{new Date().getFullYear()}</span> Not affiliated with the U. S. government or
+              AmeriLife ©{" "}
+              <span suppressHydrationWarning>{new Date().getFullYear()}</span>. Not affiliated with the U.S. government or
               federal Medicare program. We do not offer every plan available in your area. Any
               information we provide is limited to those plans we do offer in your area. Please
               contact{" "}
