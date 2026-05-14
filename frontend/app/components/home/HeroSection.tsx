@@ -10,7 +10,7 @@ export function HeroSection() {
   const bannerUrl = rewriteUploadsUrl(BANNER_URL);
   const starUrl = HOME_STAR_SRC;
   return (
-    <section className="relative flex w-full flex-1 flex-col items-center justify-center overflow-x-hidden overflow-y-visible sm:items-start">
+    <section className="relative flex w-full min-w-0 flex-1 flex-col items-center justify-center sm:items-start">
       {/* Background image */}
       <div className="absolute inset-0 z-0">
         <Image

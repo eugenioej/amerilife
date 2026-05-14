@@ -46,7 +46,7 @@ export function SiteBreadcrumb({
             ? "font-semibold text-white/80 no-underline transition-colors hover:text-white hover:underline"
             : "font-semibold text-[var(--color-breadcrumb-link)] underline decoration-1 underline-offset-2 transition-colors hover:text-[var(--color-breadcrumb-link-hover)]";
 
-          /** Last crumb: full-width row below `sm` so ellipsis works under `overflow-x-clip` on main. */
+          /** Last crumb: full-width row below `sm` so long titles / ellipsis behave on narrow viewports. */
           const liRow = isLast
             ? "w-full min-w-0 shrink-0 sm:w-auto sm:max-w-full"
             : "min-w-0 max-w-full";
