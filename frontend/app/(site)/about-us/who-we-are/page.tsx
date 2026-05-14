@@ -56,7 +56,7 @@ const MILESTONE_IMAGES: Record<string, string> = {
   "2020": `${UPLOADS}/2021/12/WhoWeAre_2020_746x660a.png`,
   "2021": `${UPLOADS}/2021/12/WhoWeAre-2021_746x660a.png`,
   "2022": `${UPLOADS}/2022/06/WhoWeAre-2022_Genstar_746x660.png`,
-  "2023": `${UPLOADS}/2024/04/f09e3dce-8dd8-492d-a352-288fa1b1363e-TICKET.hs_file_upload-Amerilife-Gives-Back-timeline_746x660-003.png`,
+  "2023": `${UPLOADS}/2023/11/AML-Gives-Back_FIFU_500x500.png`,
   "2025": `${UPLOADS}/2026/01/JPG-Logo-Crump-Logo-Cobrand-020725-01-683-x-589.png`,
 };
 

@@ -32,13 +32,9 @@ export default async function ConnectPage() {
         <h1 className="mb-6 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
           Connect With Us
         </h1>
-        <h2 className="mb-4 text-3xl font-semibold leading-snug text-[var(--color-fg)]">
+        <h2 className="mb-8 text-3xl font-semibold leading-snug text-[var(--color-fg)]">
           We Appreciate Your Interest
         </h2>
-        <div
-          className="mb-8 h-[3px] w-[125px] max-w-full shrink-0 bg-[#94c83d]"
-          aria-hidden
-        />
 
         <p className="mb-10 text-base leading-relaxed text-[var(--color-fg)]">
           Connect with a licensed insurance representative. Please fill out the form below and

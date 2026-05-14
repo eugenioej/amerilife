@@ -80,7 +80,7 @@ const nextConfig: NextConfig = {
     //   an inline script injected via next/script dangerouslySetInnerHTML.
     //   Removing it requires a nonce-based approach — see Google's Tag Platform CSP guide.
     // - connect-src covers GA4, GTM, Crazy Egg, and the headless WP GraphQL endpoint.
-    // - frame-src covers GTM noscript iframe and YouTube video embeds.
+    // - frame-src covers GTM noscript iframe, YouTube video embeds, and Vimeo (e.g. /givesback).
     const csp = [
       "default-src 'self'",
       [
@@ -111,6 +111,7 @@ const nextConfig: NextConfig = {
         "https://www.googletagmanager.com",
         "https://www.youtube.com",
         "https://www.youtube-nocookie.com",
+        "https://player.vimeo.com",
         "https://www.google.com",
         "https://maps.google.com",
         "https://recaptcha.net",

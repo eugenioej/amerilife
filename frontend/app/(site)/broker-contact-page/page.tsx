@@ -35,13 +35,9 @@ export default async function BrokerContactPage() {
         <h1 className="mb-6 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
           Independent Partner Contact Us
         </h1>
-        <h2 className="mb-4 text-3xl font-semibold leading-snug text-[var(--color-fg)]">
+        <h2 className="mb-8 text-3xl font-semibold leading-snug text-[var(--color-fg)]">
           We Appreciate Your Interest
         </h2>
-        <div
-          className="mb-8 h-[3px] w-[125px] max-w-full shrink-0 bg-[#94c83d]"
-          aria-hidden
-        />
         <h3 className="mb-2 text-lg font-medium text-[var(--color-fg)]">
           Let&apos;s start a conversation about growing your business and making people&apos;s lives better
         </h3>

@@ -29,8 +29,8 @@ const PRESS_KIT_CARDS = [
   {
     type: "icon" as const,
     icon: Building2,
-    heading: "About Amerilife",
-    cta: "Learn About Amerilife",
+    heading: "About AmeriLife",
+    cta: "Learn About AmeriLife",
     href: "/about-us/who-we-are/",
   },
   {

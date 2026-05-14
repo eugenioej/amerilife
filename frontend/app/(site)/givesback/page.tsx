@@ -16,6 +16,17 @@ const DONATE_URL = "https://buy.stripe.com/eVa2bi8vObFP9u83cc";
 const HONOR_FLIGHT_LINK =
   "https://amerilife.com/blog/announcements/amerilife-gives-back-foundation-names-honor-flight-network-as-inaugural-partner/";
 
+/** Vimeo hero embed (replaces broken Wistia if `NEXT_PUBLIC_GIVESBACK_VIDEO_IFRAME_SRC` still points there). */
+const GIVES_BACK_VIMEO_EMBED_SRC =
+  "https://player.vimeo.com/video/1137018781?h=c6acc8d623&badge=0&autopause=0&player_id=0";
+
+function givesBackHeroIframeSrc(configured?: string): string {
+  const trimmed = configured?.trim();
+  if (!trimmed) return GIVES_BACK_VIMEO_EMBED_SRC;
+  if (/wistia\.com|wi\.st|fast\.wistia\.net/i.test(trimmed)) return GIVES_BACK_VIMEO_EMBED_SRC;
+  return trimmed;
+}
+
 const COMMUNITY_SLIDESHOW_IMAGES = [
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/ChristmasInJuly400-4.jpg",
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/ChristmasInJuly400-5.jpg",
@@ -34,6 +45,8 @@ const PAGE_CONTENT =
 const PAGE_TITLE = "text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl";
 
 export default function GivesBackPage() {
+  const heroVideoSrc = givesBackHeroIframeSrc(process.env.NEXT_PUBLIC_GIVESBACK_VIDEO_IFRAME_SRC);
+
   return (
     <section className="bg-white pt-8 pb-0 sm:pt-10 md:pt-12">
       <div className={PAGE_CONTENT}>
@@ -78,13 +91,14 @@ export default function GivesBackPage() {
       {/* Supporting America's Senior Veterans — full-width video (no radius), text padded */}
       <div className="w-full bg-[var(--color-brand-dark)]">
         <div className="grid w-full grid-cols-1 items-stretch gap-0 lg:grid-cols-2">
-          <div className="aspect-video w-full min-h-0 overflow-hidden bg-black/30">
+          <div className="relative aspect-video w-full min-h-0 overflow-hidden bg-black lg:aspect-auto lg:h-full">
             <iframe
-              src="https://player.vimeo.com/video/1137018781?h=c6acc8d623&badge=0&autopause=0"
+              src={heroVideoSrc}
               title="Supporting Our Veterans: AmeriLife Gives Back Foundation & Honor Flight Network"
-              allow="autoplay; fullscreen; picture-in-picture"
+              allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
               allowFullScreen
-              className="block h-full w-full border-0"
+              referrerPolicy="strict-origin-when-cross-origin"
+              className="absolute inset-0 box-border h-full w-full border-0"
             />
           </div>
           <div className="flex flex-col justify-center px-[var(--container-padding-x)] py-8 sm:py-10 lg:py-16 lg:pl-12 xl:pl-16">
