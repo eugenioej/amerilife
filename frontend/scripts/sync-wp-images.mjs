@@ -92,7 +92,7 @@ function buildDownloadCandidates(originalUrl) {
 
   const liveHosts = parseHostList(
     env("SYNC_WP_SOURCE_HOSTS"),
-    env("NEXT_PUBLIC_LIVE_UPLOAD_HOSTS", "amerilife.com,www.amerilife.com,uatamerilife.wpengine.com")
+    env("NEXT_PUBLIC_LIVE_UPLOAD_HOSTS", "amerilife.com,www.amerilife.com")
   );
 
   const candidates = [originalUrl];

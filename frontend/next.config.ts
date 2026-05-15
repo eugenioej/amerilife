@@ -34,11 +34,6 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
-        protocol: "https",
-        hostname: "uatamerilife.wpengine.com",
-        pathname: "/**",
-      },
-      {
         protocol: "http",
         hostname: "headlessameril.wpenginepowered.com",
         pathname: "/**",

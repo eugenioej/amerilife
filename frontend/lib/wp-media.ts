@@ -11,7 +11,7 @@ function getHeadlessWpBaseUrl(): string | null {
 
 function getLiveUploadHosts(): Set<string> {
   // Comma-separated. Keep defaults small and explicit.
-  const raw = (process.env.NEXT_PUBLIC_LIVE_UPLOAD_HOSTS ?? "amerilife.com,www.amerilife.com,uatamerilife.wpengine.com")
+  const raw = (process.env.NEXT_PUBLIC_LIVE_UPLOAD_HOSTS ?? "amerilife.com,www.amerilife.com")
     .split(",")
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);

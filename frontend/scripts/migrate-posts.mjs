@@ -752,7 +752,7 @@ async function runUpload({ headlessBase, wpUser, wpPassword, delayMs, dryRun, so
   // Hosts whose wp-content/uploads URLs should be re-uploaded to headless WP.
   const sourceHostsRaw = env(
     "MIGRATE_SOURCE_HOSTS",
-    "amerilife.com,www.amerilife.com,uatamerilife.wpengine.com"
+    "amerilife.com,www.amerilife.com"
   );
   const sourceHosts = sourceHostsRaw.split(",").map((h) => h.trim()).filter(Boolean);
 

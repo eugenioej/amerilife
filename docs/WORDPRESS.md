@@ -185,7 +185,7 @@ seo { title metaDesc canonical opengraphTitle opengraphDescription opengraphImag
 
 ### Live Hosts
 
-`NEXT_PUBLIC_LIVE_UPLOAD_HOSTS` (comma-separated, default: `amerilife.com,www.amerilife.com,uatamerilife.wpengine.com`). Only URLs from these hosts are rewritten.
+`NEXT_PUBLIC_LIVE_UPLOAD_HOSTS` (comma-separated, default: `amerilife.com,www.amerilife.com`). Only URLs from these hosts are rewritten. Add staging hosts here only while migrating legacy media.
 
 ---
 

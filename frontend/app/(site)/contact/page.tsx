@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Link } from "@/app/components/ui/Link";
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { GravityForm } from "@/app/components/gravity-forms/GravityForm";
 import { CONTACT_US_FORM_ID, fetchGravityForm } from "@/lib/gf-client";
@@ -27,12 +26,7 @@ export default async function ContactPage() {
           items={[{ label: "Home", href: "/" }, { label: "Contact Us" }]}
         />
 
-        <h1 className="mb-6 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">Contact Us</h1>
-        <div
-          className="mb-10 h-1 w-24"
-          style={{ backgroundColor: "rgb(148, 200, 61)" }}
-          aria-hidden
-        />
+        <h1 className="mb-10 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">Contact Us</h1>
 
         <p className="mb-10 max-w-3xl text-base leading-relaxed text-[var(--color-fg)]">
           Thank you for your interest in AmeriLife. Please indicate the topic you would like more

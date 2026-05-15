@@ -90,18 +90,18 @@ export default function GivesBackPage() {
 
       {/* Supporting America's Senior Veterans — full-width video (no radius), text padded */}
       <div className="w-full bg-[var(--color-brand-dark)]">
-        <div className="grid w-full grid-cols-1 items-stretch gap-0 lg:grid-cols-2">
-          <div className="relative aspect-video w-full min-h-0 overflow-hidden bg-black lg:aspect-auto lg:h-full">
+        <div className="flex w-full flex-col lg:min-h-[30rem] lg:flex-row lg:items-stretch">
+          <div className="relative aspect-video w-full min-h-0 shrink-0 overflow-hidden bg-[var(--color-brand-dark)] [container-type:size] lg:aspect-auto lg:min-h-0 lg:flex-[1_1_50%] lg:self-stretch">
             <iframe
               src={heroVideoSrc}
               title="Supporting Our Veterans: AmeriLife Gives Back Foundation & Honor Flight Network"
               allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
               allowFullScreen
               referrerPolicy="strict-origin-when-cross-origin"
-              className="absolute inset-0 box-border h-full w-full border-0"
+              className="pointer-events-auto absolute top-1/2 left-1/2 max-h-none max-w-none -translate-x-1/2 -translate-y-1/2 border-0 [height:max(100cqh,calc(100cqw*9/16))] [width:max(100cqw,calc(100cqh*16/9))]"
             />
           </div>
-          <div className="flex flex-col justify-center px-[var(--container-padding-x)] py-8 sm:py-10 lg:py-16 lg:pl-12 xl:pl-16">
+          <div className="flex min-h-0 flex-[1_1_50%] flex-col justify-center px-[var(--container-padding-x)] py-10 sm:py-12 lg:py-20 lg:pl-12 xl:pl-16">
             <h2 className="mb-6 text-xl font-semibold leading-snug text-white sm:text-2xl lg:text-3xl">
               Supporting America&apos;s Senior Veterans
             </h2>
