@@ -8,6 +8,7 @@ import { rewriteUploadsUrl } from "@/lib/wp-media";
 type Milestone = {
   year: string;
   text: string;
+  image?: string;
   linkText?: string;
   extLink?: string;
   textEnd?: string;
@@ -15,10 +16,9 @@ type Milestone = {
 
 type Props = {
   milestones: Milestone[];
-  images: Record<string, string>;
 };
 
-export function MilestonesSlider({ milestones, images }: Props) {
+export function MilestonesSlider({ milestones }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -93,17 +93,16 @@ export function MilestonesSlider({ milestones, images }: Props) {
       >
         <div className="flex snap-x snap-mandatory gap-4 sm:gap-6">
           {milestones.map((m, i) => {
-            const imgSrc = images[m.year];
             return (
               <article
                 key={i}
                 data-milestone-card
                 className="w-[280px] shrink-0 snap-start flex flex-col overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-sm sm:w-[320px] lg:w-[340px]"
               >
-                <div className="relative aspect-[746/660] w-full shrink-0 overflow-hidden bg-[#e2e5ed]">
-                  {imgSrc ? (
+                <div className="relative aspect-[746/660] w-full shrink-0 overflow-hidden bg-[#ffffff]">
+                  {m.image ? (
                     <Image
-                      src={rewriteUploadsUrl(imgSrc)}
+                      src={rewriteUploadsUrl(m.image)}
                       alt={`AmeriLife ${m.year}`}
                       fill
                       className="object-cover"
