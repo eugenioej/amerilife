@@ -58,7 +58,7 @@ const MILESTONES: {
   { year: "1990", text: "AmeriLife relocates headquarters to Clearwater, Florida.", image: `${UPLOADS}/2022/01/AL-timeline_1990a.png` },
   { year: "2007", text: "Private investors buy majority stake in AmeriLife.", image: `${UPLOADS}/2026/05/grupo_746x660.jpg` },
   { year: "2008", text: "AmeriLife establishes ", linkText: "AmeriLife Marketing Group (AMG)", extLink: "https://amerilifemarketinggroup.com/", textEnd: ".", image: `${UPLOADS}/2021/12/WhoWeAre_2008_Op2_746x660.png` },
-  { year: "2009", text: "AmeriLife expands into the multicultural market, establishes ", linkText: "Grupo LatinoAmericano de Seguros", extLink: "http://es.insurancegls.com/home/", textEnd: "." },
+  { year: "2009", text: "AmeriLife expands into the multicultural market, establishes ", linkText: "Grupo LatinoAmericano de Seguros", extLink: "http://es.insurancegls.com/home/", textEnd: ".", image: "" },
   { year: "2014", text: "AmeriLife expands into the worksite and direct-to-consumer spaces.", image: `${UPLOADS}/2021/12/WhoWeAre_2014_746x660.png` },
   { year: "2015", text: "Private equity firm J.C. Flowers acquires a majority stake in AmeriLife, helping the company issue approximately $7.7 million in stock over three years.", image: `${UPLOADS}/2021/12/WhoWeAre_2015_746x660a.png` },
   { year: "2016", text: "Scott R. Perry joins AmeriLife as chief executive officer.", image:`${UPLOADS}/2026/05/0034-Scott-Perry-Corporate-Headshots-Tampa-Florida-scaled-e1773146220783.webp` },
@@ -272,7 +272,7 @@ export default function WhoWeArePage() {
         <h3 className="mb-10 text-center text-xl font-semibold text-[var(--color-fg)]">
           Our Milestones
         </h3>
-        <MilestonesSlider milestones={MILESTONES} images={MILESTONE_IMAGES} />
+        <MilestonesSlider milestones={MILESTONES} />
       </FadeInOnView>
     </article>
   );
