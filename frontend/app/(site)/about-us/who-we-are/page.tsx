@@ -56,7 +56,7 @@ const MILESTONES: {
   { year: "1983", text: "AmeriLife enters the annuity brokerage space, establishes National Brokerage Division.", image: `${UPLOADS}/2022/01/AL-timeline_1983.png` },
   { year: "1987", text: "AmeriLife expands outside of Florida, opening an office in North Carolina.", image: `${UPLOADS}/2021/12/WhoWeAre_1987_746x660.png` },
   { year: "1990", text: "AmeriLife relocates headquarters to Clearwater, Florida.", image: `${UPLOADS}/2022/01/AL-timeline_1990a.png` },
-  { year: "2007", text: "Private investors buy majority stake in AmeriLife.", image: "" },
+  { year: "2007", text: "Private investors buy majority stake in AmeriLife.", image: `${UPLOADS}/2026/03/AmeriLife-Logo-DarkBlue_FIFU-47.jpg` },
   { year: "2008", text: "AmeriLife establishes ", linkText: "AmeriLife Marketing Group (AMG)", extLink: "https://amerilifemarketinggroup.com/", textEnd: ".", image: `${UPLOADS}/2021/12/WhoWeAre_2008_Op2_746x660.png` },
   { year: "2009", text: "AmeriLife expands into the multicultural market, establishes ", linkText: "Grupo LatinoAmericano de Seguros", extLink: "http://es.insurancegls.com/home/", textEnd: ".", image: `${UPLOADS}/2026/05/grupo_746x660.jpg` },
   { year: "2014", text: "AmeriLife expands into the worksite and direct-to-consumer spaces.", image: `${UPLOADS}/2021/12/WhoWeAre_2014_746x660.png` },
