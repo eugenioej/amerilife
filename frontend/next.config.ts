@@ -66,6 +66,7 @@ const nextConfig: NextConfig = {
       { source: "/blog/", destination: "/newsroom", permanent: true },
       { source: "/about/news", destination: "/newsroom", permanent: true },
       { source: "/about/news/", destination: "/newsroom", permanent: true },
+      { source: "/our-leaders/:slug", destination: "/about-us/our-leaders/:slug", permanent: true },
       ...wp,
     ];
   },
