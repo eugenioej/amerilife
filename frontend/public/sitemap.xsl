@@ -142,6 +142,38 @@
           </table>
         </details>
 
+        <!-- ✅ ALL URLs -->
+        <details>
+            <summary>All URLs</summary>
+            <table>
+                <tr>
+                <th>URL</th>
+                <th>Freq</th>
+                <th>Priority</th>
+                </tr>
+
+                <xsl:for-each select="sm:urlset/sm:url">
+                  <tr>
+                    <td>
+                      <a>
+                        <xsl:attribute name="href">
+                          <xsl:value-of select="sm:loc"/>
+                        </xsl:attribute>
+                        <xsl:value-of select="sm:loc"/>
+                      </a>
+                    </td>
+                    <td>
+                      <xsl:value-of select="sm:changefreq"/>
+                    </td>
+                    <td>
+                      <xsl:value-of select="sm:priority"/>
+                    </td>
+                  </tr>
+                </xsl:for-each>
+
+          </table>
+        </details>
+
       </body>
     </html>
   </xsl:template>
