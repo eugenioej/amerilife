@@ -96,6 +96,7 @@ async function collectPostUris(): Promise<string[]> {
   return out;
 }
 
+
 async function collectLeaderUrls(base: URL): Promise<string[]> {
   try {
     const data = await fetchGraphQL<LeadersQueryResult>(GET_LEADERS);
@@ -107,6 +108,67 @@ async function collectLeaderUrls(base: URL): Promise<string[]> {
   } catch {
     return [];
   }
+}
+type InsightsQueryResult = {
+  insights?: {
+    nodes?: {
+      uri?: string;
+    }[];
+    pageInfo?: {
+      hasNextPage?: boolean;
+      endCursor?: string | null;
+    };
+  };
+};
+
+async function collectInsightUris(): Promise<string[]> {
+  const out: string[] = [];
+
+  let after: string | null = null;
+  let hasNext = true;
+  let iterations = 0;
+
+  while (hasNext && iterations < MAX_PAGES) {
+    iterations += 1;
+
+    const data: InsightsQueryResult = await fetchGraphQL(
+      `
+      query InsightsSitemap($first: Int!, $after: String) {
+        insights(first: $first, after: $after) {
+          nodes {
+            uri
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }
+    `,
+      {
+        first: BATCH,
+        after,
+      }
+    );
+
+    const nodes = data.insights?.nodes ?? [];
+
+    for (const n of nodes) {
+      const uri = n.uri?.trim();
+
+      // ✅ ADD THIS IF YOUR URLS NEED PREFIXING
+      if (uri) out.push(`/insights${uri}`);
+    }
+
+    const pageInfo = data.insights?.pageInfo;
+
+    hasNext = pageInfo?.hasNextPage ?? false;
+    after = pageInfo?.endCursor ?? null;
+
+    if (!hasNext || !after) break;
+  }
+
+  return out;
 }
 
 async function collectAgencyAndAgentUrls(base: URL): Promise<string[]> {
@@ -173,13 +235,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  const settled = await Promise.allSettled([
-    collectPageUris(),
-    collectPostUris(),
-    collectLeaderUrls(base),
-    collectAgencyAndAgentUrls(base),
-    collectInsightCategoryUrls(base),
-  ]);
+
+const settled = await Promise.allSettled([
+  collectPageUris(),
+  collectPostUris(),
+  collectLeaderUrls(base),
+  collectAgencyAndAgentUrls(base),
+  collectInsightCategoryUrls(base),
+  collectInsightUris(), // ✅ THIS FIXES UNUSED ERROR
+]);
+
+
 
   const pageUris =
     settled[0].status === "fulfilled" ? settled[0].value : [];
@@ -190,7 +256,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const agencyUrls =
     settled[3].status === "fulfilled" ? settled[3].value : [];
   const insightCategoryUrls =
-    settled[4].status === "fulfilled" ? settled[4].value : [];
+    settled[4].status === "fulfilled" ? settled[4].value : []; 
+  const insightUris =
+    settled[5].status === "fulfilled" ? settled[5].value : [];
+
 
   for (const uri of pageUris) {
     add(toAbsoluteUrl(uri, base), {
@@ -212,6 +281,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   for (const url of insightCategoryUrls) {
     add(url, { changeFrequency: "weekly", priority: 0.72 });
+  }
+  for (const uri of insightUris) {
+    add(toAbsoluteUrl(uri, base), {
+      changeFrequency: "weekly",
+      priority: 0.75, // ✅ unique identifier for XSL
+    });
   }
 
   return out;
