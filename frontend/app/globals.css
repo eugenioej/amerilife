@@ -138,7 +138,7 @@
   outline: 3px solid var(--color-brand-secondary);
   outline-offset: 2px;
 }
-body:has(.masterminds-page) header, body:has(.masterminds-page) .topbar {
+body:has(.masterminds-page) header, body:has(.masterminds-page) footer, body:has(.masterminds-page) .topbar {
   display: none;
 }
 body:has(.masterminds-page) {
