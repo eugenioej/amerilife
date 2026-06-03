@@ -157,68 +157,70 @@ type BeforeInstallPromptEvent = Event & {
 };
 
 function AddToHomeScreen() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
 
-  const isIOS =
+  // ✅ Detect mobile directly (no state needed)
+  const isMobile =
     typeof window !== "undefined" &&
-    /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    /iphone|ipad|ipod|android/i.test(navigator.userAgent);
 
   useEffect(() => {
+    if (!isMobile) return;
+
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
+  }, [isMobile]);
+
+  // ✅ Hard stop for desktop
+  if (!isMobile) return null;
 
   const handleInstall = async () => {
     if (deferredPrompt) {
       await deferredPrompt.prompt();
       await deferredPrompt.userChoice;
       setDeferredPrompt(null);
+    } else {
+      alert("To install:\nTap Share (📤) → Add to Home Screen");
     }
   };
 
   return (
-    <div className="mt-12 text-center relative z-20">
-
-      {/* ✅ PRIMARY BUTTON */}
+    <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4">
       <button
         onClick={handleInstall}
         className="
-          group
-          relative
-          inline-flex items-center justify-center gap-2
-          rounded-full
-          px-6 py-3
-          text-sm font-semibold text-white
-          bg-[#03f080]/20
+          flex items-center gap-3
+          rounded-full px-5 py-3
+          bg-[#091229]
           border border-[#03f080]/40
+          shadow-[0_0_25px_rgba(3,240,128,0.35)]
           backdrop-blur
           transition-all duration-200
-          hover:bg-[#03f080]/30
-          hover:scale-[1.03]
           active:scale-95
-          shadow-[0_0_20px_rgba(3,240,128,0.25)]
         "
       >
-        <span className="text-base">📲</span>
-        <span>Add Agenda to Home Screen</span>
+        {/* ✅ FIX #2 applied here (Image component) */}
+        <Image
+          src="https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/05/Masterminds26-Icon-Green-031026-CG.png"
+          alt="App icon"
+          width={24}
+          height={24}
+          className="rounded-md"
+        />
+
+        <span className="text-sm font-semibold text-white">
+          Add to Home Screen
+        </span>
       </button>
-
-      {/* ✅ iOS HELPER (clean + premium) */}
-      {!deferredPrompt && isIOS && (
-        <div className="mt-3 text-xs text-white/60 flex items-center justify-center gap-1">
-          <span>Tap</span>
-          <span className="text-sm">📤</span>
-          <span className="font-medium text-white/80">Share</span>
-          <span>→</span>
-          <span className="font-medium text-white/80">Add to Home Screen</span>
-        </div>
-      )}
-
     </div>
   );
 }
