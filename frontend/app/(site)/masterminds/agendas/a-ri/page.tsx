@@ -14,6 +14,7 @@ const IMAGES = {
   wordmark: `${UPLOADS}/Masterminds26-Wordmark-White-Shaded-031026-CG.png`,
   footerBg: `${UPLOADS}/AdobeStock_1515066628.png`,
   footerLogo: `${UPLOADS}/Masterminds26-Logo-White-031026-CG.png`,
+  qrCode: `${UPLOADS}/MASTERMINDS_Digital_Agenda_Page-scaled.png`,
   
 amerilife:
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AmeriLife-Logo-white-s.webp",
@@ -143,6 +144,31 @@ Retirement Income. You’ll also have dedicated networking time throughout the a
           <AddToHomeScreen />
         </div>
 
+                {/* QR SECTION */}
+        <div className="mt-12 text-center">
+          <Link href="/masterminds/agendas/" className="inline-block group">
+        
+            {/* QR */}
+            
+        <div className="mx-auto mb-4 w-[140px]">
+          <Image
+            src={IMAGES.qrCode}
+            alt="QR Code"
+            width={140}
+            height={140}
+            className="w-full h-auto rounded-xl transition group-hover:scale-102"
+          />
+        </div>
+        
+        
+            {/* GREEN TITLE */}
+            <p className="text-base font-semibold text-[#03f080] tracking-wide">
+              Scan or Click for Agendas
+            </p>
+        
+          </Link>
+        </div>
+
       </div>
     </section>
   );
@@ -219,7 +245,7 @@ function AddToHomeScreen() {
           className="rounded-md"
         />
 
-        <span>Add Agenda to Home Screen</span>
+        <span>Add Agendas to Home Screen</span>
       </button>
     </div>
   );

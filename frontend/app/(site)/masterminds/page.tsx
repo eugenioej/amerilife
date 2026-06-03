@@ -230,7 +230,7 @@ function AgendaSection() {
 
     {/* GREEN TITLE */}
     <p className="text-base font-semibold text-[#03f080] tracking-wide">
-      Scan or Click for Agenda&apos;s
+      Scan or Click for Agendas
     </p>
 
   </Link>
