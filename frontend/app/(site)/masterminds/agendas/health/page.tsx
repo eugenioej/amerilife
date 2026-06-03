@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 /* ========================================
@@ -8,14 +11,13 @@ const UPLOADS =
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/05";
 
 const IMAGES = {
-  hero: `${UPLOADS}/stefano-bucciarelli-59HOF9zHKNs-unsplash.jpg`,
   wordmark: `${UPLOADS}/Masterminds26-Wordmark-White-Shaded-031026-CG.png`,
-  scrollIcon: `${UPLOADS}/Masterminds26-Icon-Green-031026-CG.png`,
   footerBg: `${UPLOADS}/AdobeStock_1515066628.png`,
   footerLogo: `${UPLOADS}/Masterminds26-Logo-White-031026-CG.png`,
-  qrCode: `${UPLOADS}/MASTERMINDS_Digital_Agenda_Page-scaled.png`,
-  amerilife:
-    "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AmeriLife-Logo-white-s.webp",
+  
+amerilife:
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AmeriLife-Logo-white-s.webp",
+
 };
 
 /* ========================================
@@ -24,78 +26,9 @@ const IMAGES = {
 export default function Page() {
   return (
     <div className="masterminds-page">
-      <HeroSection />
       <AgendaSection />
       <FooterSection />
     </div>
-  );
-}
-
-/* ========================================
-   HERO
-======================================== */
-function HeroSection() {
-  return (
-    <section className="relative flex min-h-[85vh] sm:min-h-screen items-center overflow-hidden bg-[#091229] text-white">
-
-      {/* Background */}
-      <div className="absolute inset-0">
-        <Image
-          src={IMAGES.hero}
-          alt=""
-          fill
-          priority
-          className="object-cover"
-        />
-      </div>
-
-      {/* Fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-[#091229]" />
-
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#091229]/95 via-[#091229]/80 to-[#091229]/95" />
-      <div className="absolute bottom-0 left-0 right-0 h-32 sm:h-40 backdrop-blur-[2px] bg-gradient-to-b from-transparent via-[#091229]/50 to-[#091229]" />
-
-      {/* Content */}
-      <div className="relative z-10 mx-auto max-w-[820px] px-5 sm:px-6 text-center">
-
-        <div className="mx-auto mb-3 sm:mb-6 w-[220px] sm:w-[300px] lg:w-[340px]">
-          <Image
-            src={IMAGES.wordmark}
-            alt="Masterminds"
-            width={420}
-            height={120}
-            className="w-full h-auto"
-          />
-        </div>
-
-        <h1 className="text-3xl sm:text-4xl font-bold sm:text-5xl">
-          Masterminds <span className="text-[#03f080]">Agenda</span>
-        </h1>
-
-        <p className="mt-3 inline-block px-4 py-2 text-center text-sm font-semibold tracking-wide text-white rounded-full border border-[#03f080]/40 bg-[#03f080]/20 shadow-[0_0_10px_rgba(3,240,128,0.2)] sm:px-6">
-          June 15 – 17, 2026 • Grand Hyatt Tampa Bay, FL
-        </p>
-
-        <p className="mx-auto mt-3 sm:mt-5 max-w-[600px] text-sm leading-relaxed text-white/85">
-          Scan the QR codes below for detailed agendas by track. Business
-          casual attire is recommended for meetings, and resort casual for
-          group dinners. Unless otherwise noted, group functions combine
-          the Health and A&amp;RI distributions. The agenda may change.
-        </p>
-      </div>
-
-      {/* Scroll */}
-      <a
-        href="#agenda"
-        className="absolute bottom-6 sm:bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center text-[#03f080]"
-      >
-        <div className="mb-2 animate-[pulse_2.5s_infinite] drop-shadow-[0_0_16px_rgba(3,240,128,0.8)]">
-          <Image src={IMAGES.scrollIcon} alt="" width={36} height={36} />
-        </div>
-        <span className="text-xs tracking-wider">VIEW AGENDA</span>
-      </a>
-    </section>
   );
 }
 
@@ -104,23 +37,51 @@ function HeroSection() {
 ======================================== */
 function AgendaSection() {
   return (
-    <section className="bg-[#091229] py-14 sm:py-20" id="agenda">
+    <section className="bg-[#091229] py-14 sm:py-20">
       <div className="mx-auto max-w-[1000px] px-5 sm:px-6">
+
+        {/* HEADER */}
+                <div className="mb-10 sm:mb-14 text-center text-white">
+        
+                  {/* LOGO */}
+      
+<div className="mx-auto mb-6 w-[220px] sm:w-[300px]">
+  <Link href="/masterminds" className="block">
+    <Image
+      src={IMAGES.wordmark}
+      alt="Masterminds"
+      width={420}
+      height={120}
+      className="w-full h-auto cursor-pointer transition hover:scale-102"
+    />
+  </Link>
+</div>
+        
+                  <h1 className="text-2xl sm:text-4xl font-bold">
+                    Masterminds <span className="text-[#03f080]">Health Agenda</span>
+                  </h1>
+        
+                  <p className="mt-3 inline-block px-4 py-2 text-sm font-semibold tracking-wide text-white rounded-full border border-[#03f080]/40 bg-[#03f080]/20">
+                    June 15 – 17, 2026 • Grand Hyatt Tampa Bay, FL
+                  </p>
+        
+                  <p className="mx-auto mt-3 max-w-[600px] text-xs text-white/60">
+                    Please note the agenda is subject to change. Attire is business casual for meetings and resort casual for group dinners. Unless otherwise noted, group meals combine Health and A&RI distributions.
+                  </p>
+        
+                </div>
+
         {/* SCHEDULE CARD */}
         <div className="rounded-2xl bg-[#f0fdf4] px-4 py-7 sm:px-10 sm:py-10 shadow-xl">
 
-<div className="space-y-10 sm:space-y-14">
+          <div className="space-y-10 sm:space-y-14">
 
   {/* MONDAY */}
   <Day
     title="Monday, June 15, 2026"
     items={[
-      {
-        text: "12:30 PM: Conference Check-in Begins",
-      },
-      {
-        text: "1:00 PM – 4:00 PM: A&RI General Session, Audubon Ballroom",
-      },
+      { text: "Arrivals - please utilize Ubers/Lyft" },
+      { text: "5:00 PM: Carrier booth set-up, Audubon Ballroom" },
       {
         text: "6:00 PM – 8:00 PM: Group Dinner, Oystercatchers",
         children: [
@@ -137,48 +98,67 @@ function AgendaSection() {
   <Day
     title="Tuesday, June 16, 2026"
     items={[
+      { text: "7:00 AM: Carrier booth set-up, Audubon Ballroom" },
+      { text: "8:00 AM – 9:00 AM: Group Breakfast & Networking, Audubon Ballroom A" },
+
       {
-        text:
-          "8:00 AM – 9:00 AM: Group Breakfast & Networking, Audubon Ballroom A",
-      },
-      {
-        text: "9:00 AM – 11:30 AM: General Sessions",
+        text: "9:00 AM – 11:30 AM: General Session, Audubon Ballroom",
         children: [
           {
-            text: "Health: Audubon Ballroom",
-          },
-          {
-            text: "A&RI: White Ibis",
-          },
-        ],
-      },
-      {
-        text: "11:30 AM – 12:30 PM: Group Lunch, Audubon Ballroom A",
-      },
-      {
-        text: "12:30 PM – 4:30 PM: General Sessions",
-        children: [
-          {
-            text: "Health: Audubon Ballroom",
-          },
-          {
-            text: "A&RI: White Ibis",
-          },
-        ],
-      },
-      {
-        text: "6:00 PM – 8:00 PM: Offsite Dinners",
-        children: [
-          {
-            text: "Health: Whiskey Cakes",
-          },
-          {
-            text: "A&RI: TBD",
+            text:
+              "9:00 – 9:30 AM: Opening Session: Powering the Next Surge in Senior Market Expansion",
+            children: [
+              { text: "Speakers: Bryan Keeven & Jim Palmer" },
+            ],
           },
           {
             text:
-              "For offsite dinner transportation details, please scan the Health or A&RI QR code below that corresponds to your track.",
+              "9:30 – 9:45 AM: Orientation: How the Product Marketing Labs Work",
+            children: [
+              { text: "Rotations include Life & Annuity and Health Specialty" },
+              { text: "Life & Annuity: David Paul & Eric Brennan" },
+              { text: "Health Specialty: Steve Patton & Jamie Sarno" },
+            ],
           },
+          {
+            text: "9:50 – 11:20 AM: Product Marketing Lab Rotation 1",
+          },
+        ],
+      },
+
+      { text: "11:30 AM – 12:30 PM: Group Lunch, Audubon Ballroom A" },
+
+      {
+        text: "12:30 PM – 4:00 PM: General Session, Audubon Ballroom",
+        children: [
+          { text: "12:30 – 2:00 PM: Product Marketing Lab Rotation 2" },
+          {
+            text:
+              "2:10 – 3:00 PM: Growth Session: The Power of the Process: Solutions First, Products Second",
+            children: [{ text: "Speakers: Bryan Keeven" }],
+          },
+          { text: "3:00 – 3:30 PM: Carrier Networking" },
+          {
+            text:
+              "3:30 – 4:00 PM: Closing: Pulse Check: Connecting Today’s Product Line Insights",
+            children: [
+              {
+                text:
+                  "Speakers: Bobby Bache, Eric Brennan, Brian Luben & Darren Houck",
+              },
+            ],
+          },
+        ],
+      },
+
+      {
+        text: "5:30 PM – 9:00 PM: Offsite Group Dinner, Whiskey Cakes",
+        children: [
+          {
+            text:
+              "Group transportation provided – more details and updated timing will be communicated closer to the event",
+          },
+          { text: "Health + Health Carriers only" },
         ],
       },
     ]}
@@ -188,57 +168,123 @@ function AgendaSection() {
   <Day
     title="Wednesday, June 17, 2026"
     items={[
+      { text: "8:00 AM – 9:00 AM: Group Breakfast, Audubon Ballroom A" },
+
       {
-        text: "8:00 AM – 9:00 AM: Group Breakfast, Audubon Ballroom A",
-      },
-      {
-        text: "9:00 AM – 12:00 PM: General Sessions",
+        text: "9:00 AM – 12:00 PM: General Session, Audubon Ballroom",
         children: [
           {
-            text: "Health: Audubon Ballroom",
+            text:
+              "9:00 – 9:45 AM: Tapping into the Current: The Agent Need – Value Proposition Connection",
+            children: [
+              {
+                text:
+                  "Speakers: David Paul, Eric Brennan, Robert Bache, Darren Houck, & Brian Luben",
+              },
+            ],
           },
           {
-            text: "A&RI: White Ibis",
+            text:
+              "9:45 – 10:30 AM: Growth Session: Powering Up: Where Under 65 Growth Is Accelerating",
+            children: [{ text: "Speakers: JC Moreno" }],
+          },
+          { text: "10:30 – 10:45 AM: Break" },
+          {
+            text:
+              "10:45 – 11:25 AM: Flip the Switch: Execute, Implement, and Scale",
+            children: [
+              {
+                text:
+                  "Speakers: Bobby Bache, Eric Brennan, Brian Luben & Darren Houck",
+              },
+            ],
+          },
+          {
+            text: "11:30 AM: Carrier Raffles",
+            children: [
+              { text: "Moderated by: Bryan Keeven & Jim Palmer" },
+            ],
           },
         ],
       },
+
+      { text: "12:00 PM – 12:30 PM: Grab ‘n’ Go Lunches, Audubon Foyer" },
       {
-        text: "12:00 PM – 12:30 PM: Grab ‘n’ Go Lunches, Audubon Ballroom Foyer",
+        text:
+          "12:00 PM – 12:30 PM – Carrier booth break-down, Audubon Ballroom",
       },
+      { text: "Departures – please utilize Ubers/Lyft" },
     ]}
   />
 
 </div>
         </div>
+        <p className="mx-auto mt-4 text-center text-sm text-white/80 leading-relaxed">
+            Health Carriers are welcome to attend all Health meeting sessions, with booths located in the
+Audubon Ballroom.
+          </p>
 
-{/* QR SECTION */}
-<div className="mt-12 text-center">
-  <Link href="/masterminds/agendas/" className="inline-block group">
-
-    {/* QR */}
-    
-<div className="mx-auto mb-4 w-[140px]">
-  <Image
-    src={IMAGES.qrCode}
-    alt="QR Code"
-    width={140}
-    height={140}
-    className="w-full h-auto rounded-xl transition group-hover:scale-102"
-  />
-</div>
-
-
-    {/* GREEN TITLE */}
-    <p className="text-base font-semibold text-[#03f080] tracking-wide">
-      Scan for Agenda&apos;s
-    </p>
-
-  </Link>
-</div>
-
+        {/* INSTALL BUTTON */}
+        <div className="mt-10 text-center">
+          <AddToHomeScreen />
+        </div>
 
       </div>
     </section>
+  );
+}
+
+
+/* ========================================
+   INSTALL BUTTON
+======================================== */
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: string }>;
+};
+
+function AddToHomeScreen() {
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+      setTimeout(() => setVisible(true), 0);
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  useEffect(() => {
+    const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
+
+    if (isIOS && !isStandalone) {
+      setTimeout(() => setVisible(true), 0);
+    }
+  }, []);
+
+  if (!visible) return null;
+
+  const handleClick = async () => {
+    if (deferredPrompt) {
+      await deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+    } else {
+      alert("Tap Share → Add to Home Screen");
+    }
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className="rounded-full border border-[#03f080] bg-[#03f080]/20 px-6 py-3 text-sm font-semibold text-white hover:bg-[#03f080]/30 transition"
+    >
+      📲 Add Agenda to Home Screen
+    </button>
   );
 }
 
@@ -364,7 +410,6 @@ function Item({ item, level }: { item: AgendaItem; level: number }) {
     </li>
   );
 }
-
 
 /* ========================================
    FOOTER
