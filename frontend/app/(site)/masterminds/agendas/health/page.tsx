@@ -271,22 +271,28 @@ type BeforeInstallPromptEvent = Event & {
 };
 
 function AddToHomeScreen() {
-  
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
 
-    
-useEffect(() => {
-  if (!("serviceWorker" in navigator)) return;
+  // ✅ ADD THIS STATE
+  
+const isInstalled =
+  typeof window !== "undefined" &&
+  window.matchMedia("(display-mode: standalone)").matches;
 
-  navigator.serviceWorker.register("/sw.js").catch(console.error);
-}, []);
 
+  // ✅ existing SW registration
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+
+    navigator.serviceWorker.register("/sw.js").catch(console.error);
+  }, []);
 
   const isMobile =
     typeof window !== "undefined" &&
     /iphone|ipad|ipod|android/i.test(navigator.userAgent);
 
+  // ✅ EXISTING install prompt listener
   useEffect(() => {
     if (!isMobile) return;
 
@@ -304,6 +310,24 @@ useEffect(() => {
 
   // ✅ Hide entirely on desktop
   if (!isMobile) return null;
+
+  // ✅ ✅ NEW: SHOW INSTALLED STATE
+  if (isInstalled) {
+    return (
+      <div className="mt-10 text-center relative z-20">
+        <div
+          className="
+            inline-flex items-center justify-center gap-3
+            rounded-full px-6 py-3
+            text-sm font-semibold text-white
+            bg-white/10 border border-white/20
+          "
+        >
+          ✅ <span>Already Added</span>
+        </div>
+      </div>
+    );
+  }
 
   const handleInstall = async () => {
     if (deferredPrompt) {
@@ -333,7 +357,6 @@ useEffect(() => {
           cursor-pointer
         "
       >
-        {/* ✅ Branded icon */}
         <Image
           src="https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/05/Masterminds26-Icon-Green-031026-CG.png"
           alt="App icon"
