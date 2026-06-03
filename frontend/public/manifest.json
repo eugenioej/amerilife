@@ -1,7 +1,7 @@
 {
   "name": "Masterminds 2026 Agenda",
   "short_name": "Masterminds",
-  "start_url": "/masterminds/agendas",
+  "start_url": "/masterminds/agendas/",
   "scope": "/masterminds/agendas/",
   "display": "standalone",
   "background_color": "#091229",
