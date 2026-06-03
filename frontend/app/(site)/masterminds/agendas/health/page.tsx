@@ -241,11 +241,21 @@ Audubon Ballroom.
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: string }>;
+  
 };
 
 function AddToHomeScreen() {
+  
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
+
+    
+useEffect(() => {
+  if (!("serviceWorker" in navigator)) return;
+
+  navigator.serviceWorker.register("/sw.js").catch(console.error);
+}, []);
+
 
   const isMobile =
     typeof window !== "undefined" &&
