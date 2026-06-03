@@ -245,7 +245,6 @@ type BeforeInstallPromptEvent = Event & {
 
 function AddToHomeScreen() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [visible, setVisible] = useState(false);
 
   const isIOS =
     typeof window !== "undefined" &&
@@ -255,24 +254,11 @@ function AddToHomeScreen() {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-
-      // ✅ defer to avoid ESLint rule
-      setTimeout(() => setVisible(true), 0);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-
-    const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
-
-    if (isIOS && !isStandalone) {
-      // ✅ defer here too
-      setTimeout(() => setVisible(true), 0);
-    }
-
     return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, [isIOS]);
-
-  if (!visible) return null;
+  }, []);
 
   const handleInstall = async () => {
     if (deferredPrompt) {
@@ -283,20 +269,43 @@ function AddToHomeScreen() {
   };
 
   return (
-    <div className="text-center">
-      {deferredPrompt ? (
-        <button
-          onClick={handleInstall}
-          className="rounded-full border border-[#03f080] bg-[#03f080]/20 px-6 py-3 text-sm font-semibold text-white hover:bg-[#03f080]/30 transition"
-        >
-          📲 Add Agenda to Home Screen
-        </button>
-      ) : (
-        <p className="text-sm text-white/70">
-          Tap <span className="font-semibold">Share</span> →{" "}
-          <span className="font-semibold">Add to Home Screen</span>
-        </p>
+    <div className="mt-12 text-center relative z-20">
+
+      {/* ✅ PRIMARY BUTTON */}
+      <button
+        onClick={handleInstall}
+        className="
+          group
+          relative
+          inline-flex items-center justify-center gap-2
+          rounded-full
+          px-6 py-3
+          text-sm font-semibold text-white
+          bg-[#03f080]/20
+          border border-[#03f080]/40
+          backdrop-blur
+          transition-all duration-200
+          hover:bg-[#03f080]/30
+          hover:scale-[1.03]
+          active:scale-95
+          shadow-[0_0_20px_rgba(3,240,128,0.25)]
+        "
+      >
+        <span className="text-base">📲</span>
+        <span>Add Agenda to Home Screen</span>
+      </button>
+
+      {/* ✅ iOS HELPER (clean + premium) */}
+      {!deferredPrompt && isIOS && (
+        <div className="mt-3 text-xs text-white/60 flex items-center justify-center gap-1">
+          <span>Tap</span>
+          <span className="text-sm">📤</span>
+          <span className="font-medium text-white/80">Share</span>
+          <span>→</span>
+          <span className="font-medium text-white/80">Add to Home Screen</span>
+        </div>
       )}
+
     </div>
   );
 }
