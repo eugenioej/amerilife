@@ -160,44 +160,57 @@ function AddToHomeScreen() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
 
+  const isIOS =
+    typeof window !== "undefined" &&
+    /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+
   useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
+
+      // ✅ defer to avoid ESLint rule
       setTimeout(() => setVisible(true), 0);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
 
-  useEffect(() => {
-    const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
     const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
 
     if (isIOS && !isStandalone) {
+      // ✅ defer here too
       setTimeout(() => setVisible(true), 0);
     }
-  }, []);
+
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, [isIOS]);
 
   if (!visible) return null;
 
-  const handleClick = async () => {
+  const handleInstall = async () => {
     if (deferredPrompt) {
       await deferredPrompt.prompt();
       await deferredPrompt.userChoice;
-    } else {
-      alert("Tap Share → Add to Home Screen");
+      setDeferredPrompt(null);
     }
   };
 
   return (
-    <button
-      onClick={handleClick}
-      className="rounded-full border border-[#03f080] bg-[#03f080]/20 px-6 py-3 text-sm font-semibold text-white hover:bg-[#03f080]/30 transition"
-    >
-      📲 Add Agenda to Home Screen
-    </button>
+    <div className="text-center">
+      {deferredPrompt ? (
+        <button
+          onClick={handleInstall}
+          className="rounded-full border border-[#03f080] bg-[#03f080]/20 px-6 py-3 text-sm font-semibold text-white hover:bg-[#03f080]/30 transition"
+        >
+          📲 Add Agenda to Home Screen
+        </button>
+      ) : (
+        <p className="text-sm text-white/70">
+          Tap <span className="font-semibold">Share</span> →{" "}
+          <span className="font-semibold">Add to Home Screen</span>
+        </p>
+      )}
+    </div>
   );
 }
 
