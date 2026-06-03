@@ -160,7 +160,6 @@ function AddToHomeScreen() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
 
-  // ✅ Detect mobile directly (no state needed)
   const isMobile =
     typeof window !== "undefined" &&
     /iphone|ipad|ipod|android/i.test(navigator.userAgent);
@@ -180,7 +179,7 @@ function AddToHomeScreen() {
     };
   }, [isMobile]);
 
-  // ✅ Hard stop for desktop
+  // ✅ Hide entirely on desktop
   if (!isMobile) return null;
 
   const handleInstall = async () => {
@@ -194,32 +193,33 @@ function AddToHomeScreen() {
   };
 
   return (
-    <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4">
+    <div className="mt-10 text-center relative z-20">
       <button
         onClick={handleInstall}
         className="
-          flex items-center gap-3
-          rounded-full px-5 py-3
+          inline-flex items-center justify-center gap-3
+          rounded-full px-6 py-3
+          text-sm font-semibold text-white
           bg-[#091229]
           border border-[#03f080]/40
-          shadow-[0_0_25px_rgba(3,240,128,0.35)]
+          shadow-[0_0_20px_rgba(3,240,128,0.25)]
           backdrop-blur
           transition-all duration-200
+          hover:bg-[#091229]/90 hover:scale-[1.02]
           active:scale-95
+          cursor-pointer
         "
       >
-        {/* ✅ FIX #2 applied here (Image component) */}
+        {/* ✅ Branded icon */}
         <Image
           src="https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/05/Masterminds26-Icon-Green-031026-CG.png"
           alt="App icon"
-          width={24}
-          height={24}
+          width={22}
+          height={22}
           className="rounded-md"
         />
 
-        <span className="text-sm font-semibold text-white">
-          Add to Home Screen
-        </span>
+        <span>Add Agenda to Home Screen</span>
       </button>
     </div>
   );
