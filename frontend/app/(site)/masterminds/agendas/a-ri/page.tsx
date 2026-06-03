@@ -186,12 +186,13 @@ function AddToHomeScreen() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
 
-  // ✅ ADD THIS STATE
-  
-const isInstalled =
-  typeof window !== "undefined" &&
-  window.matchMedia("(display-mode: standalone)").matches;
-
+  // ✅ FIXED: proper install detection (Android + standalone)
+  const isInstalled =
+    typeof window !== "undefined" &&
+    (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      localStorage.getItem("pwaInstalled") === "true"
+    );
 
   // ✅ existing SW registration
   useEffect(() => {
@@ -204,7 +205,7 @@ const isInstalled =
     typeof window !== "undefined" &&
     /iphone|ipad|ipod|android/i.test(navigator.userAgent);
 
-  // ✅ EXISTING install prompt listener
+  // ✅ install prompt listener
   useEffect(() => {
     if (!isMobile) return;
 
@@ -223,18 +224,11 @@ const isInstalled =
   // ✅ Hide entirely on desktop
   if (!isMobile) return null;
 
-  // ✅ ✅ NEW: SHOW INSTALLED STATE
+  // ✅ ✅ FIX: correct installed state
   if (isInstalled) {
     return (
       <div className="mt-10 text-center relative z-20">
-        <div
-          className="
-            inline-flex items-center justify-center gap-3
-            rounded-full px-6 py-3
-            text-sm font-semibold text-white
-            bg-white/10 border border-white/20
-          "
-        >
+        <div className="inline-flex items-center justify-center gap-3 rounded-full px-6 py-3 text-sm font-semibold text-white bg-white/10 border border-white/20">
           ✅ <span>Already Added</span>
         </div>
       </div>
@@ -244,7 +238,13 @@ const isInstalled =
   const handleInstall = async () => {
     if (deferredPrompt) {
       await deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
+      const result = await deferredPrompt.userChoice;
+
+      // ✅ FIX: persist install state
+      if (result.outcome === "accepted") {
+        localStorage.setItem("pwaInstalled", "true");
+      }
+
       setDeferredPrompt(null);
     } else {
       alert("To install:\nTap Share (📤) → Add to Home Screen");
