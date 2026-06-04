@@ -41,131 +41,194 @@ function AgendaSection() {
     <section className="bg-[#091229] py-14 sm:py-20">
       <div className="mx-auto max-w-[1000px] px-5 sm:px-6">
 
-         {/* HEADER */}
-                        <div className="mb-10 sm:mb-14 text-center text-white">
-                
-                          {/* LOGO */}
-      
-<div className="mx-auto mb-6 w-[220px] sm:w-[300px]">
-  <Link href="/masterminds" className="block">
-    <Image
-      src={IMAGES.wordmark}
-      alt="Masterminds"
-      width={420}
-      height={120}
-      className="w-full h-auto cursor-pointer transition hover:scale-102"
-    />
-  </Link>
-</div>
-                
-                          <h1 className="text-2xl sm:text-4xl font-bold">
-                            Masterminds <span className="text-[#03f080]">A&RI Agenda</span>
-                          </h1>
-                
-                          <p className="mt-3 inline-block px-4 py-2 text-sm font-semibold tracking-wide text-white rounded-full border border-[#03f080]/40 bg-[#03f080]/20">
-                            June 15 – 17, 2026 • Grand Hyatt Tampa Bay, FL
-                          </p>
-                          <p className="mx-auto mt-3 sm:mt-5 max-w-[600px] text-sm leading-relaxed text-white/85">
-          Our content is still being worked on but will focus on best practice sharing, emerging markets
-and trends, and professional development for wholesalers specializing in Accumulation &
-Retirement Income. You’ll also have dedicated networking time throughout the agenda.
-        </p>
-                
-                          <p className="mx-auto mt-3 max-w-[600px] text-xs text-white/60">
-                            Please note the agenda is subject to change. Attire is business casual for meetings and resort casual for group dinners. Unless otherwise noted, group meals combine Health and A&RI distributions.
-                          </p>
-                
-                        </div>
+        {/* HEADER */}
+        <div className="mb-10 sm:mb-14 text-center text-white">
+
+          <div className="mx-auto mb-6 w-[220px] sm:w-[300px]">
+            <Link href="/masterminds/agendas/" className="block">
+              <Image
+                src={IMAGES.wordmark}
+                alt="Masterminds"
+                width={420}
+                height={120}
+                className="w-full h-auto cursor-pointer transition hover:scale-102"
+              />
+            </Link>
+          </div>
+
+          <h1 className="text-2xl sm:text-4xl font-bold">
+            Masterminds <span className="text-[#03f080]">A&amp;RI Agenda</span>
+          </h1>
+
+          <p className="mt-3 inline-block px-4 py-2 text-sm font-semibold tracking-wide text-white rounded-full border border-[#03f080]/40 bg-[#03f080]/20">
+            June 15 – 17, 2026 • Grand Hyatt Tampa Bay, FL
+          </p>
+
+          <p className="mx-auto mt-3 sm:mt-5 max-w-[600px] text-sm leading-relaxed text-white/85">
+            Our content is still being worked on but will focus on best practice sharing, emerging markets
+            and trends, and professional development for wholesalers specializing in Accumulation &
+            Retirement Income. You’ll also have dedicated networking time throughout the agenda.
+          </p>
+
+          <p className="mx-auto mt-3 max-w-[600px] text-xs text-white/60">
+            Please note the agenda is subject to change. Attire is business casual for meetings and resort casual for group dinners. Unless otherwise noted, group meals combine Health and A&amp;RI distributions.
+          </p>
+
+        </div>
 
         {/* SCHEDULE CARD */}
         <div className="rounded-2xl bg-[#f0fdf4] px-4 py-7 sm:px-10 sm:py-10 shadow-xl">
-
           <div className="space-y-10 sm:space-y-14">
 
-            {/* MONDAY */}
-            <Day
-              title="Monday, June 15, 2026"
-              items={[
-                { text: "Arrivals - please utilize Ubers/Lyft" },
-                { text: "1:00 PM – 4:30 PM: General Session, Audubon Ballroom" },
-                {
-                  text: "6:00 PM – 8:00 PM: Group Dinner, Oystercatchers",
-                  children: [
-                    {
-                      text:
-                        "Please note that this location is a 10-minute walk from the hotel. For easy access, kindly take the walkway located beyond the surface parking lot. If needed, hotel shuttles are available upon request at the front drive (valet stand) of the hotel for transportation.",
-                    },
-                  ],
-                },
-              ]}
-            />
+             {/* MONDAY */}
+<Day
+  title="Monday, June 15, 2026"
+  items={[
+    { text: "Arrivals - please utilize Ubers/Lyft" },
+    { text: "12:30 PM: Conference Check-in Begins, Audubon Foyer" },
+    {
+      text: "1:30 PM – 4:00 PM: General Session, Audubon Ballroom",
+      children: [
+        {
+          text: "1:30 PM – 2:00 PM: Welcome",
+          children: [
+            { text: "Speakers: Brian Peterson (AmeriLife)" },
+          ],
+        },
+        {
+          text: "2:00 PM – 4:00 PM: Best Practices Roundtable",
+        },
+      ],
+    },
+    {
+      text: "6:00 PM – 8:00 PM: Group Dinner, Oystercatchers",
+      children: [
+        {
+          text:
+            "Please note that this location is a 10-minute walk from the hotel. For easy access, kindly take the walkway located beyond the surface parking lot. If needed, hotel shuttles are available upon request at the front drive (valet stand) of the hotel for transportation.",
+        },
+      ],
+    },
+  ]}
+/>
 
-            {/* TUESDAY */}
-            <Day
-              title="Tuesday, June 16, 2026"
-              items={[
-                { text: "8:00 AM – 9:00 AM: Group Breakfast, Audubon Ballroom A" },
-                { text: "9:00 AM – 11:30 AM: General Session, White Ibis" },
-                { text: "11:30 AM – 12:30 PM: Group Lunch, Audubon Ballroom A" },
-                { text: "12:30 PM – 4:30 PM: General Session, White Ibis" },
-                {
-                  text: "5:30 PM – 9:00 PM: Offsite Group Dinner, Union",
-                  children: [
-                    {
-                      text:
-                        "Group transportation provided – more details and updated timing will be communicated closer to the event",
-                    },
-                    {
-                      text: "A&RI + A&RI Carriers only",
-                    },
-                  ],
-                },
-              ]}
-            />
+{/* TUESDAY */}
+<Day
+  title="Tuesday, June 16, 2026"
+  items={[
+    { text: "8:00 AM – 8:30 AM: Group Breakfast, Audubon Ballroom A" },
+    {
+      text: "8:30 AM – 12:00 PM: General Session, White Ibis",
+      children: [
+        {
+          text: "8:30 AM – 8:45 AM: Day 1 Recap",
+          children: [
+            { text: "Speakers: Brian Peterson" },
+          ],
+        },
+        {
+          text: "8:45 AM – 10:45 AM: Elite Wholesaler Prospecting",
+          children: [
+            { text: "Speakers: Sarano Kelly" },
+          ],
+        },
+        {
+          text: "10:45 AM – 11:00 AM: Break",
+        },
+        {
+          text: "11:00 AM – 12:00 PM: Fueling Financial Professional Growth Panel",
+        },
+      ],
+    },
+    { text: "12:00 PM – 12:45 PM: Group Lunch, Audubon Ballroom A" },
+    {
+      text: "12:45 PM – 4:00 PM: General Session, White Ibis",
+      children: [
+        {
+          text: "12:45 PM – 2:15 PM: Carrier Speed Dating",
+        },
+        {
+          text: "2:15 PM – 2:30 PM: Break",
+        },
+        {
+          text: "2:30 PM – 4:00 PM: Carrier Speed Dating",
+        },
+      ],
+    },
+    {
+      text: "5:30 PM – 9:00 PM: Offsite Group Dinner, Union New American",
+      children: [
+        {
+          text: "5:30 PM: Please meet near the front drive (valet stand) for group transportation",
+        },
+        {
+          text: "9:00 PM: Group transportation pick-up at Union",
+          children: [
+            {text: "Transportation to and from the restaurant is approximately 10 minutes."},
+          ],
+        },
+        {
+          text: "A&RI + A&RI Carriers only",
+        },
+      ],
+    },
+  ]}
+/>
 
-            {/* WEDNESDAY */}
-            <Day
-              title="Wednesday, June 17, 2026"
-              items={[
-                { text: "8:00 AM – 9:00 AM: Group Breakfast, Audubon Ballroom A" },
-                { text: "9:00 AM – 12:00 PM: General Session, White Ibis" },
-                { text: "12:00 PM – 12:30 PM: Grab ‘n’ Go Lunches, Audubon Foyer" },
-                { text: "Departures – please utilize Ubers/Lyft" },
-              ]}
-            />
+{/* WEDNESDAY */}
+<Day
+  title="Wednesday, June 17, 2026"
+  items={[
+    { text: "8:00 AM – 9:00 AM: Group Breakfast, Audubon Ballroom A" },
+    {
+      text: "9:00 AM – 11:00 AM: General Session, White Ibis",
+      children: [
+        {
+          text: "9:00 AM – 10:30 AM: Wholesaler Showdown",
+          children: [
+            { text: "Speakers: Brian Kunkel" },
+          ],
+        },
+        {
+          text: "10:30 AM: Wrap Ups",
+          children: [
+            { text: "Speakers: Brian Peterson" },
+          ],
+        },
+      ],
+    },
+    { text: "11:00 AM: Grab ‘n’ Go Lunches, Audubon Foyer" },
+    { text: "Departures – please utilize Ubers/Lyft" },
+  ]}
+/>
 
           </div>
         </div>
 
-        <p className="mx-auto mt-4 text-center text-sm text-white/80 leading-relaxed">A&RI Carriers are invited to all A&RI meeting sessions.</p>
+        <p className="mx-auto mt-4 text-center text-sm text-white/80 leading-relaxed">
+          A&amp;RI Carriers are invited to all A&amp;RI meeting sessions.
+        </p>
 
         {/* INSTALL BUTTON */}
         <div className="mt-10 text-center">
           <AddToHomeScreen />
         </div>
 
-                {/* QR SECTION */}
+        {/* QR SECTION */}
         <div className="mt-12 text-center">
           <Link href="/masterminds/agendas/" className="inline-block group">
-        
-            {/* QR */}
-            
-        <div className="mx-auto mb-4 w-[140px]">
-          <Image
-            src={IMAGES.qrCode}
-            alt="QR Code"
-            width={140}
-            height={140}
-            className="w-full h-auto rounded-xl transition group-hover:scale-102"
-          />
-        </div>
-        
-        
-            {/* GREEN TITLE */}
+            <div className="mx-auto mb-4 w-[140px]">
+              <Image
+                src={IMAGES.qrCode}
+                alt="QR Code"
+                width={140}
+                height={140}
+                className="w-full h-auto rounded-xl transition group-hover:scale-102"
+              />
+            </div>
             <p className="text-base font-semibold text-[#03f080] tracking-wide">
               Scan or Click for Agendas
             </p>
-        
           </Link>
         </div>
 

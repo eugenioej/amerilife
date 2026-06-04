@@ -47,7 +47,7 @@ function AgendaSection() {
                   {/* LOGO */}
       
 <div className="mx-auto mb-6 w-[220px] sm:w-[300px]">
-  <Link href="/masterminds" className="block">
+  <Link href="/masterminds/agendas/" className="block">
     <Image
       src={IMAGES.wordmark}
       alt="Masterminds"
@@ -77,146 +77,148 @@ function AgendaSection() {
 
           <div className="space-y-10 sm:space-y-14">
 
-  {/* MONDAY */}
-  <Day
-    title="Monday, June 15, 2026"
-    items={[
-      { text: "Arrivals - please utilize Ubers/Lyft" },
-      { text: "5:00 PM: Carrier booth set-up, Audubon Ballroom" },
-      {
-        text: "6:00 PM – 8:00 PM: Group Dinner, Oystercatchers",
-        children: [
-          {
-            text:
-              "Please note that this location is a 10-minute walk from the hotel. For easy access, kindly take the walkway located beyond the surface parking lot. If needed, hotel shuttles are available upon request at the front drive (valet stand) of the hotel for transportation.",
-          },
-        ],
-      },
-    ]}
-  />
+{/* MONDAY */}
+<Day
+  title="Monday, June 15, 2026"
+  items={[
+    { text: "Arrivals - please utilize Ubers/Lyft" },
+    {
+      text: "3:00 PM: Carrier booth set-up, Audubon Ballroom",
+    },
+    {
+      text: "6:00 PM – 8:00 PM: Group Dinner, Oystercatchers",
+      children: [
+        {
+          text:
+            "Please note that this location is a 10-minute walk from the hotel. For easy access, kindly take the walkway located beyond the surface parking lot. If needed, hotel shuttles are available upon request at the front drive (valet stand) of the hotel for transportation.",
+        },
+      ],
+    },
+  ]}
+/>
 
-  {/* TUESDAY */}
-  <Day
-    title="Tuesday, June 16, 2026"
-    items={[
-      { text: "7:00 AM: Carrier booth set-up, Audubon Ballroom" },
-      { text: "8:00 AM – 9:00 AM: Group Breakfast & Networking, Audubon Ballroom A" },
+{/* TUESDAY */}
+<Day
+  title="Tuesday, June 16, 2026"
+  items={[
+    { text: "7:00 AM: Carrier booth set-up, Audubon Ballroom" },
+    { text: "8:00 AM – 9:00 AM: Group Breakfast & Networking, Audubon Ballroom A" },
+    {
+      text: "9:00 AM – 11:30 AM: General Session, Audubon Ballroom",
+      children: [
+        {
+          text: "9:00 – 9:30 AM: Opening Session: Powering the Next Surge in Senior Market Expansion",
+          children: [
+            { text: "Speakers: Bryan Keeven & Jim Palmer" },
+          ],
+        },
+        {
+          text: "9:30 – 9:45 AM: Orientation: How the Product Marketing Labs Work",
+          children: [
+            { text: "Rotations include Life & Annuity and Health Specialty" },
+            { text: "Life & Annuity: David Paul" },
+            { text: "Health Specialty: Jamie Sarno" },
+          ],
+        },
+        {
+          text: "9:50 – 11:20 AM: Product Marketing Lab Rotation 1",
+        },
+      ],
+    },
+    { text: "11:30 AM – 12:30 PM: Group Lunch, Audubon Ballroom A" },
+    {
+      text: "12:30 PM – 4:00 PM: General Session, Audubon Ballroom",
+      children: [
+        {
+          text: "12:30 – 2:00 PM: Product Marketing Lab Rotation 2",
+        },
+        {
+          text: "2:10 – 3:00 PM: Growth Session: The Power of the Process: Solutions First, Products Second",
+          children: [
+            { text: "Speakers: Bryan Keeven" },
+          ],
+        },
+        {
+          text: "3:00 – 3:30 PM: Carrier Networking",
+        },
+        {
+          text: "3:30 – 4:00 PM: Closing: Pulse Check: Connecting Today’s Product Line Insights",
+          children: [
+            {
+              text:
+                "Speakers: Bobby Bache, Eric Brennan, Darren Houck, & Brian Luben",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      text: "5:30 PM – 8:00 PM: Offsite Group Dinner, Whiskey Cakes",
+      children: [
+        {
+          text: "5:30 PM: Please meet near the front drive (valet stand) for group transportation",
+        },
+        {
+          text: "8:00 PM: Group transportation pick-up at Whiskey Cakes",
+          children: [
+            {
+              text: "Transportation to and from the restaurant is approximately 10 minutes."
+            },
+          ],
+        },
+        {
+          text: "Health + Health Carrier tracks only",
+        },
+      ],
+    },
+  ]}
+/>
 
-      {
-        text: "9:00 AM – 11:30 AM: General Session, Audubon Ballroom",
-        children: [
-          {
-            text:
-              "9:00 – 9:30 AM: Opening Session: Powering the Next Surge in Senior Market Expansion",
-            children: [
-              { text: "Speakers: Bryan Keeven & Jim Palmer" },
-            ],
-          },
-          {
-            text:
-              "9:30 – 9:45 AM: Orientation: How the Product Marketing Labs Work",
-            children: [
-              { text: "Rotations include Life & Annuity and Health Specialty" },
-              { text: "Life & Annuity: David Paul & Eric Brennan" },
-              { text: "Health Specialty: Steve Patton & Jamie Sarno" },
-            ],
-          },
-          {
-            text: "9:50 – 11:20 AM: Product Marketing Lab Rotation 1",
-          },
-        ],
-      },
-
-      { text: "11:30 AM – 12:30 PM: Group Lunch, Audubon Ballroom A" },
-
-      {
-        text: "12:30 PM – 4:00 PM: General Session, Audubon Ballroom",
-        children: [
-          { text: "12:30 – 2:00 PM: Product Marketing Lab Rotation 2" },
-          {
-            text:
-              "2:10 – 3:00 PM: Growth Session: The Power of the Process: Solutions First, Products Second",
-            children: [{ text: "Speakers: Bryan Keeven" }],
-          },
-          { text: "3:00 – 3:30 PM: Carrier Networking" },
-          {
-            text:
-              "3:30 – 4:00 PM: Closing: Pulse Check: Connecting Today’s Product Line Insights",
-            children: [
-              {
-                text:
-                  "Speakers: Bobby Bache, Eric Brennan, Brian Luben & Darren Houck",
-              },
-            ],
-          },
-        ],
-      },
-
-      {
-        text: "5:30 PM – 9:00 PM: Offsite Group Dinner, Whiskey Cakes",
-        children: [
-          {
-            text:
-              "Group transportation provided – more details and updated timing will be communicated closer to the event",
-          },
-          { text: "Health + Health Carriers only" },
-        ],
-      },
-    ]}
-  />
-
-  {/* WEDNESDAY */}
-  <Day
-    title="Wednesday, June 17, 2026"
-    items={[
-      { text: "8:00 AM – 9:00 AM: Group Breakfast, Audubon Ballroom A" },
-
-      {
-        text: "9:00 AM – 12:00 PM: General Session, Audubon Ballroom",
-        children: [
-          {
-            text:
-              "9:00 – 9:45 AM: Tapping into the Current: The Agent Need – Value Proposition Connection",
-            children: [
-              {
-                text:
-                  "Speakers: David Paul, Eric Brennan, Robert Bache, Darren Houck, & Brian Luben",
-              },
-            ],
-          },
-          {
-            text:
-              "9:45 – 10:30 AM: Growth Session: Powering Up: Where Under 65 Growth Is Accelerating",
-            children: [{ text: "Speakers: JC Moreno" }],
-          },
-          { text: "10:30 – 10:45 AM: Break" },
-          {
-            text:
-              "10:45 – 11:25 AM: Flip the Switch: Execute, Implement, and Scale",
-            children: [
-              {
-                text:
-                  "Speakers: Bobby Bache, Eric Brennan, Brian Luben & Darren Houck",
-              },
-            ],
-          },
-          {
-            text: "11:30 AM: Carrier Raffles",
-            children: [
-              { text: "Moderated by: Bryan Keeven & Jim Palmer" },
-            ],
-          },
-        ],
-      },
-
-      { text: "12:00 PM – 12:30 PM: Grab ‘n’ Go Lunches, Audubon Foyer" },
-      {
-        text:
-          "12:00 PM – 12:30 PM – Carrier booth break-down, Audubon Ballroom",
-      },
-      { text: "Departures – please utilize Ubers/Lyft" },
-    ]}
-  />
+{/* WEDNESDAY */}
+<Day
+  title="Wednesday, June 17, 2026"
+  items={[
+    { text: "8:00 AM – 9:00 AM: Group Breakfast, Audubon Ballroom A" },
+    {
+      text: "9:00 AM – 12:00 PM: General Session, Audubon Ballroom",
+      children: [
+        {
+          text: "9:00 – 9:45 AM: Tapping into the Current: The Agent Need – Value Proposition Connection",
+          children: [
+            { text: "Speakers: Eric Brennan & Darren Houck" },
+          ],
+        },
+        {
+          text: "9:45 – 10:30 AM: Growth Session: Powering Up: Where Under 65 Growth Is Accelerating",
+          children: [
+            { text: "Speakers: JC Moreno" },
+          ],
+        },
+        {
+          text: "10:30 – 10:45 AM: Break",
+        },
+        {
+          text: "10:45 – 11:25 AM: Flip the Switch: Execute, Implement, and Scale",
+          children: [
+            {
+              text:
+                "Speakers: Bobby Bache, Eric Brennan, Matt Graham, Darren Houck, Bryan Keeven, Brian Luben, JC Moreno, Jim Palmer, David Paul, Steve Patton, & Jamie Sarno",
+            },
+          ],
+        },
+        {
+          text: "11:30 AM: Carrier Raffles",
+          children: [
+            { text: "Moderated by: Bryan Keeven & Jim Palmer" },
+          ],
+        },
+      ],
+    },
+    { text: "12:00 PM – 12:30 PM: Grab ‘n’ Go Lunches, Audubon Foyer" },
+    { text: "12:00 PM – 12:30 PM – Carrier booth break-down, Audubon Ballroom" },
+    { text: "Departures – please utilize Ubers/Lyft" },
+  ]}
+/>
 
 </div>
         </div>

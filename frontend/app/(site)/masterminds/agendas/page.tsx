@@ -42,7 +42,7 @@ function HeroSection() {
       {/* LOGO */}
       
 <div className="mx-auto mb-6 w-[220px] sm:w-[300px]">
-  <Link href="/masterminds" className="block">
+  <Link href="/masterminds/agendas/" className="block">
     <Image
       src={IMAGES.wordmark}
       alt="Masterminds"
