@@ -64,12 +64,6 @@ function AgendaSection() {
             June 15 – 17, 2026 • Grand Hyatt Tampa Bay, FL
           </p>
 
-          <p className="mx-auto mt-3 sm:mt-5 max-w-[600px] text-sm leading-relaxed text-white/85">
-            Our content is still being worked on but will focus on best practice sharing, emerging markets
-            and trends, and professional development for wholesalers specializing in Accumulation &
-            Retirement Income. You’ll also have dedicated networking time throughout the agenda.
-          </p>
-
           <p className="mx-auto mt-3 max-w-[600px] text-xs text-white/60">
             Please note the agenda is subject to change. Attire is business casual for meetings and resort casual for group dinners. Unless otherwise noted, group meals combine Health and A&amp;RI distributions.
           </p>
