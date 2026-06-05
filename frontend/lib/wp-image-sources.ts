@@ -1,12 +1,8 @@
 /**
  * Centralized image source URLs for the AmeriLife frontend.
  *
- * Image paths were verified against:
- * - Production: https://amerilife.com
- * - UAT: https://uatamerilife.wpengine.com
- *
- * Partner logos and some assets use 2021/12 or 2023/02 paths (not 2023/01).
- * The sync-wp-images script uses SYNC_WP_SOURCE_HOSTS to try alternate hosts on 404.
+ * Media is served from headless WordPress (`headlessameril.wpenginepowered.com`).
+ * The sync-wp-images script can set `SYNC_WP_SOURCE_HOSTS` to pull from other origins on 404.
  */
 
 const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";

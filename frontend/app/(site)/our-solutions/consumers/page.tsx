@@ -288,7 +288,7 @@ export default function ConsumersPage() {
             started.
           </p>
           <Link
-            href="/connect/"
+            href="/find-an-agent/"
             variant="button"
             className="motion-cta inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] border-0 bg-white px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] shadow-sm transition-colors hover:bg-white/90 hover:text-[var(--color-brand-primary-hover)]"
           >

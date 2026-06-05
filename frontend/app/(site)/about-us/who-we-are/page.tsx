@@ -41,50 +41,34 @@ const STAKEHOLDER_LINKS = [
   { label: "Employees", href: "/our-solutions/employees/" },
 ] as const;
 
-/** Milestone images from amerilife.com - year -> image path */
-const MILESTONE_IMAGES: Record<string, string> = {
-  "1971": `${UPLOADS}/2021/12/WhoWeAre_1971_746x660.png`,
-  "1979": `${UPLOADS}/2021/12/WhoWeAre_1979_746x660.png`,
-  "1983": `${UPLOADS}/2022/01/AL-timeline_1983.png`,
-  "1987": `${UPLOADS}/2021/12/WhoWeAre_1987_746x660.png`,
-  "1990": `${UPLOADS}/2022/01/AL-timeline_1990a.png`,
-  "2008": `${UPLOADS}/2021/12/WhoWeAre_2008_Op2_746x660.png`,
-  "2009": `${UPLOADS}/2021/12/WhoWeAre_2009_Opt1_746x660.png`,
-  "2014": `${UPLOADS}/2021/12/WhoWeAre_2014_746x660.png`,
-  "2015": `${UPLOADS}/2021/12/WhoWeAre_2015_746x660a.png`,
-  "2019": `${UPLOADS}/2021/12/WhoWeAre_2019_Part1_746x660a.png`,
-  "2020": `${UPLOADS}/2021/12/WhoWeAre_2020_746x660a.png`,
-  "2021": `${UPLOADS}/2021/12/WhoWeAre-2021_746x660a.png`,
-  "2022": `${UPLOADS}/2022/06/WhoWeAre-2022_Genstar_746x660.png`,
-  "2023": `${UPLOADS}/2024/04/f09e3dce-8dd8-492d-a352-288fa1b1363e-TICKET.hs_file_upload-Amerilife-Gives-Back-timeline_746x660-003.png`,
-  "2025": `${UPLOADS}/2026/01/JPG-Logo-Crump-Logo-Cobrand-020725-01-683-x-589.png`,
-};
+/** Milestone images have been added to the MileStone Object allow same year to have individual images */
 
 const MILESTONES: {
   year: string;
   text: string;
+  image: string;
   linkText?: string;
   extLink?: string;
   textEnd?: string;
 }[] = [
-  { year: "1971", text: "AmeriLife was founded in Holiday, Florida." },
-  { year: "1979", text: "AmeriLife expands to seven offices throughout Florida." },
-  { year: "1983", text: "AmeriLife enters the annuity brokerage space, establishes National Brokerage Division." },
-  { year: "1987", text: "AmeriLife expands outside of Florida, opening an office in North Carolina." },
-  { year: "1990", text: "AmeriLife relocates headquarters to Clearwater, Florida." },
-  { year: "2007", text: "Private investors buy majority stake in AmeriLife." },
-  { year: "2008", text: "AmeriLife establishes ", linkText: "AmeriLife Marketing Group (AMG)", extLink: "https://amerilifemarketinggroup.com/", textEnd: "." },
-  { year: "2009", text: "AmeriLife expands into the multicultural market, establishes ", linkText: "Grupo LatinoAmericano de Seguros", extLink: "http://es.insurancegls.com/home/", textEnd: "." },
-  { year: "2014", text: "AmeriLife expands into the worksite and direct-to-consumer spaces." },
-  { year: "2015", text: "Private equity firm J.C. Flowers acquires a majority stake in AmeriLife, helping the company issue approximately $7.7 million in stock over three years." },
-  { year: "2016", text: "Scott R. Perry joins AmeriLife as chief executive officer." },
-  { year: "2019", text: "AmeriLife enters the RIA space, acquires majority stake in ", linkText: "Brookstone Capital Management", extLink: "https://www.brookstonecm.com/", textEnd: "." },
-  { year: "2019", text: "AmeriLife enters the life insurance space, acquires ", linkText: "Agent Support Group Inc", extLink: "https://asglife.com/", textEnd: "." },
-  { year: "2020", text: "J.C. Flowers sells a majority stake in AmeriLife to an investor group led by private equity firm ", linkText: "Thomas H. Lee Partners", extLink: "https://thl.com/", textEnd: "." },
-  { year: "2021", text: "AmeriLife celebrates its 50th anniversary." },
-  { year: "2022", text: "Private equity firm ", linkText: "Genstar Capital", extLink: "https://www.gencap.com/", textEnd: " makes a strategic investment in AmeriLife, joining Thomas H. Lee Partners as an equal investor." },
-  { year: "2023", text: "Announced the formation of the AmeriLife Gives Back Foundation, an enterprise-wide giving initiative and its first foundation partnership with the Honor Flight Network." },
-  { year: "2025", text: "Announced acquisition of Crump Life Insurance Services, one of the largest and most dynamic providers of life insurance and retirement products in the United States." },
+  { year: "1971", text: "AmeriLife was founded in Holiday, Florida.", image: `${UPLOADS}/2021/12/WhoWeAre_1971_746x660.png` },
+  { year: "1979", text: "AmeriLife expands to seven offices throughout Florida.", image: `${UPLOADS}/2021/12/WhoWeAre_1979_746x660.png` },
+  { year: "1983", text: "AmeriLife enters the annuity brokerage space, establishes National Brokerage Division.", image: `${UPLOADS}/2022/01/AL-timeline_1983.png` },
+  { year: "1987", text: "AmeriLife expands outside of Florida, opening an office in North Carolina.", image: `${UPLOADS}/2021/12/WhoWeAre_1987_746x660.png` },
+  { year: "1990", text: "AmeriLife relocates headquarters to Clearwater, Florida.", image: `${UPLOADS}/2022/01/AL-timeline_1990a.png` },
+  { year: "2007", text: "Private investors buy majority stake in AmeriLife.", image: `${UPLOADS}/2026/03/AmeriLife-Logo-DarkBlue_FIFU-47.jpg` },
+  { year: "2008", text: "AmeriLife establishes ", linkText: "AmeriLife Marketing Group (AMG)", extLink: "https://amerilifemarketinggroup.com/", textEnd: ".", image: `${UPLOADS}/2021/12/WhoWeAre_2008_Op2_746x660.png` },
+  { year: "2009", text: "AmeriLife expands into the multicultural market, establishes ", linkText: "Grupo LatinoAmericano de Seguros", extLink: "http://es.insurancegls.com/home/", textEnd: ".", image: `${UPLOADS}/2026/05/grupo_746x660.jpg` },
+  { year: "2014", text: "AmeriLife expands into the worksite and direct-to-consumer spaces.", image: `${UPLOADS}/2021/12/WhoWeAre_2014_746x660.png` },
+  { year: "2015", text: "Private equity firm J.C. Flowers acquires a majority stake in AmeriLife, helping the company issue approximately $7.7 million in stock over three years.", image: `${UPLOADS}/2021/12/WhoWeAre_2015_746x660a.png` },
+  { year: "2016", text: "Scott R. Perry joins AmeriLife as chief executive officer.", image:`${UPLOADS}/2026/05/0034-Scott-Perry-Corporate-Headshots-Tampa-Florida-scaled-e1773146220783.webp` },
+  { year: "2019", text: "AmeriLife enters the RIA space, acquires majority stake in ", linkText: "Brookstone Capital Management", extLink: "https://www.brookstonecm.com/", textEnd: ".", image: `${UPLOADS}/2021/12/WhoWeAre_2019_Part1_746x660a.png` },
+  { year: "2019", text: "AmeriLife enters the life insurance space, acquires ", linkText: "Agent Support Group Inc", extLink: "https://asglife.com/", textEnd: ".", image: `${UPLOADS}/2026/05/asg_746x660.jpg` },
+  { year: "2020", text: "J.C. Flowers sells a majority stake in AmeriLife to an investor group led by private equity firm ", linkText: "Thomas H. Lee Partners", extLink: "https://thl.com/", textEnd: ".", image: `${UPLOADS}/2021/12/WhoWeAre_2020_746x660a.png` },
+  { year: "2021", text: "AmeriLife celebrates its 50th anniversary.", image: `${UPLOADS}/2021/12/WhoWeAre-2021_746x660a.png` },
+  { year: "2022", text: "Private equity firm ", linkText: "Genstar Capital", extLink: "https://www.gencap.com/", textEnd: " makes a strategic investment in AmeriLife, joining Thomas H. Lee Partners as an equal investor.", image: `${UPLOADS}/2022/06/WhoWeAre-2022_Genstar_746x660.png` },
+  { year: "2023", text: "Announced the formation of the AmeriLife Gives Back Foundation, an enterprise-wide giving initiative and its first foundation partnership with the Honor Flight Network.", image: `${UPLOADS}/2023/11/AML-Gives-Back_FIFU_500x500.png` },
+  { year: "2025", text: "Announced acquisition of Crump Life Insurance Services, one of the largest and most dynamic providers of life insurance and retirement products in the United States.", image: `${UPLOADS}/2026/01/JPG-Logo-Crump-Logo-Cobrand-020725-01-683-x-589.png` },
 ];
 
 export default function WhoWeArePage() {
@@ -288,7 +272,7 @@ export default function WhoWeArePage() {
         <h3 className="mb-10 text-center text-xl font-semibold text-[var(--color-fg)]">
           Our Milestones
         </h3>
-        <MilestonesSlider milestones={MILESTONES} images={MILESTONE_IMAGES} />
+        <MilestonesSlider milestones={MILESTONES} />
       </FadeInOnView>
     </article>
   );

@@ -30,12 +30,15 @@ const GALLERY_LINKS = {
   ],
 } as const;
 
+const KICKOFF_UPLOADS =
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2025/02";
+
 const FRIDAY_PRESENTATIONS = [
   { label: "01/17/2025 Health General Session", href: "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/PW-Friday-1.17-Health-General-Session.pdf" },
   { label: "01/17/2025 Wealth General Session", href: "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/PW-Friday-1.17-Wealth-General-Session.pdf" },
   { label: "01/17/2025 Career General Session", href: "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/PW-Friday-1.17-Career-General-Session-.pdf" },
-  { label: "Friday General Session", href: "https://uatamerilife.wpengine.com/wp-content/uploads/2025/02/Friday-General-Session-PW.pdf" },
-  { label: "Distribution Leadership Roundtable", href: "https://uatamerilife.wpengine.com/wp-content/uploads/2025/02/Distribution-Leadership-Roundtable-Friday-General-Session-PW.pdf" },
+  { label: "Friday General Session", href: `${KICKOFF_UPLOADS}/Friday-General-Session-PW.pdf` },
+  { label: "Distribution Leadership Roundtable", href: `${KICKOFF_UPLOADS}/Distribution-Leadership-Roundtable-Friday-General-Session-PW.pdf` },
 ] as const;
 
 const SATURDAY_PRESENTATIONS = [
@@ -50,7 +53,7 @@ const SATURDAY_PRESENTATIONS = [
   { label: "01/18/2025 Exploring New Sales Territories", href: "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/PW-Saturday-1.18-Exploring-New-Sales-Territories.pdf" },
   { label: "01/18/2025 Marketing for Recruitment & Retention", href: "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/PW-Saturday-1.18-Marketing-for-Recruitment-Retention.pdf" },
   { label: "01/18/2025 Rocketing to Stellar Success", href: "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/PW-Saturday-1.18-Rocketing-to-Stellar-Success.pdf" },
-  { label: "Don Yaeger – Keynote Speaker", href: "https://uatamerilife.wpengine.com/wp-content/uploads/2025/02/Don-Yaeger-Keynote-Speaker-Friday-General-Session-PW.pdf" },
+  { label: "Don Yaeger – Keynote Speaker", href: `${KICKOFF_UPLOADS}/Don-Yaeger-Keynote-Speaker-Friday-General-Session-PW.pdf` },
 ] as const;
 
 const INCENTIVE_LINKS = {
@@ -75,9 +78,6 @@ const INCENTIVE_LINKS = {
 
 const KICKOFF_CONTENT =
   "mx-auto w-full max-w-[var(--container-max)] px-[var(--container-padding-x)]";
-
-const KICKOFF_UPLOADS =
-  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2025/02";
 
 /** Headless WP asset URLs (order after hero: galleries → event photo → section banners). */
 const KICKOFF_IMAGES = {

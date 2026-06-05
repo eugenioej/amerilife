@@ -288,12 +288,23 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
         setClientError("Submission failed. Please try again.");
         return;
       }
+      if (process.env.NODE_ENV === "development" && result.errors?.length) {
+        console.warn("[GravityForm] Submission errors from WordPress:", result.errors);
+      }
       if (result.errors?.length) {
         const map: Record<string, string> = {};
+        const generalMessages: string[] = [];
         for (const er of result.errors) {
-          if (er.id != null) map[String(er.id)] = er.message ?? "Invalid value";
+          if (er.id != null) {
+            map[String(er.id)] = er.message ?? "Invalid value";
+          } else {
+            generalMessages.push(er.message ?? "An error occurred. Please try again.");
+          }
         }
         setFieldErrors(map);
+        if (generalMessages.length) {
+          setClientError(generalMessages.join(" "));
+        }
         if (recaptchaWidgetId != null && window.grecaptcha) {
           window.grecaptcha.reset(recaptchaWidgetId);
         }
