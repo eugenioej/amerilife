@@ -71,7 +71,7 @@ const STAT_SECTIONS = [
     ctaText: "START YOUR JOURNEY",
     ctaHref: "/join-our-team/",
     imageUrl: rewriteUploadsUrl(
-      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/11/Home-Page-Platform-Growth_1422x1144.png"
+      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/06/DSC04221.jpg"
     ),
     imageAlt: "AmeriLife platform growth",
     direction: "right" as const,
