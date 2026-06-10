@@ -79,6 +79,9 @@ query GetGfForm($id: ID!) {
         ... on ConsentField {
           label
           checkboxLabel
+        }    
+        ... on SectionField {
+          description
         }
       }
     }

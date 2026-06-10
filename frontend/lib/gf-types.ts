@@ -21,6 +21,7 @@ export type GfFieldNode = {
   /** Name / Checkbox sub-fields */
   inputs?: GfNameInput[] | null;
   checkboxLabel?: string | null;
+  description?: string
 };
 
 /** Matches `FormSubmitButton` on `GfForm` (WPGraphQL for Gravity Forms). */

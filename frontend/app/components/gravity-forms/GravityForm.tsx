@@ -480,6 +480,18 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
             return null;
 
           case "SECTION":
+            return (
+              <div key={fid} className="gf-consent-text text-sm text-[var(--color-muted)]">
+                {field.description && (
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: decodeHtmlEntities(field.description),
+                    }}
+                  />
+                )}
+              </div>
+            );
+
           case "HTML":
           case "PAGE":
             return null;
