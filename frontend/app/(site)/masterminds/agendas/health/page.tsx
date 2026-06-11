@@ -109,7 +109,7 @@ function AgendaSection() {
         {
           text: "9:00 – 9:30 AM: Opening Session: Powering the Next Surge in Senior Market Expansion",
           children: [
-            { text: "Speakers: Bryan Keeven & Jim Palmer" },
+            { text: "Speakers: Jim Palmer" },
           ],
         },
         {
@@ -134,9 +134,6 @@ function AgendaSection() {
         },
         {
           text: "2:10 – 3:00 PM: Growth Session: The Power of the Process: Solutions First, Products Second",
-          children: [
-            { text: "Speakers: Bryan Keeven" },
-          ],
         },
         {
           text: "3:00 – 3:30 PM: Carrier Networking",
@@ -202,14 +199,14 @@ function AgendaSection() {
           children: [
             {
               text:
-                "Speakers: Bobby Bache, Eric Brennan, Matt Graham, Darren Houck, Bryan Keeven, Brian Luben, JC Moreno, Jim Palmer, David Paul, Steve Patton, & Jamie Sarno",
+                "Speakers: Bobby Bache, Eric Brennan, Matt Graham, Darren Houck, Brian Luben, JC Moreno, Jim Palmer, David Paul, Steve Patton, & Jamie Sarno",
             },
           ],
         },
         {
           text: "11:30 AM: Carrier Raffles",
           children: [
-            { text: "Moderated by: Bryan Keeven & Jim Palmer" },
+            { text: "Moderated by: Jim Palmer" },
           ],
         },
       ],
