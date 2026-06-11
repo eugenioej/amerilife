@@ -78,10 +78,10 @@ async function fetchAllInsightSearchNodes(): Promise<InsightSearchBatchNode[]> {
   let after: string | null = null;
 
   for (let i = 0; i < MAX_BATCHES; i++) {
-    const data = await fetchGraphQL<InsightsSearchBatchResult>(GET_INSIGHTS_SEARCH_BATCH, {
-      first: BATCH,
-      after,
-    });
+    const data: InsightsSearchBatchResult = await fetchGraphQL<InsightsSearchBatchResult>(
+      GET_INSIGHTS_SEARCH_BATCH,
+      { first: BATCH, after },
+    );
     const conn = data.insights;
     const nodes = conn?.nodes ?? [];
     out.push(...nodes);
