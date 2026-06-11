@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Link } from "../ui/Link";
 import { ChevronDownIcon, ChevronRightIcon } from "../ui/ChevronDownIcon";
 import { MobileNav } from "./MobileNav";
@@ -9,6 +10,12 @@ import { HeaderSearch } from "./HeaderSearch";
 import { useContactPopup } from "./ContactPopupProvider";
 import type { NavItem } from "@/lib/wp-menus";
 import { isContactNavItem } from "@/lib/nav-contact";
+import {
+  IDEAXCHANGE_LOGO_SRC,
+  IDEAXCHANGE_VERTICAL_NAV,
+  isIdeaxchangePath,
+} from "@/lib/ideaxchange-nav";
+import { IDEAXCHANGE_MAGAZINE_PATH } from "@/lib/ideaxchange-constants";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 type SiteHeaderProps = {
@@ -32,9 +39,18 @@ function HamburgerIcon({ open }: { open: boolean }) {
 export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { openContactPopup } = useContactPopup();
+  const pathname = usePathname() ?? "";
+  const inIdeaxchange = isIdeaxchangePath(pathname);
 
-  const navItems = primaryMenu;
-  const logoUrl = rewriteUploadsUrl("https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/01/amerilife.svg");
+  const navItems = inIdeaxchange ? IDEAXCHANGE_VERTICAL_NAV : primaryMenu;
+  const logoUrl = rewriteUploadsUrl(
+    inIdeaxchange
+      ? IDEAXCHANGE_LOGO_SRC
+      : "https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/01/amerilife.svg",
+  );
+  const logoHref = inIdeaxchange ? IDEAXCHANGE_MAGAZINE_PATH : "/";
+  const logoAlt = inIdeaxchange ? "AmeriLife ideaXchange" : "AmeriLife";
+  const logoAriaLabel = inIdeaxchange ? "ideaXchange Home" : "AmeriLife Home";
 
   return (
     <>
@@ -46,20 +62,23 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
           className="mx-auto flex h-[var(--header-height)] max-w-[var(--container-max)] items-center justify-between px-[var(--container-padding-x)]"
           style={{ height: "var(--header-height)" }}
         >
-          <Link href="/" variant="button" className="flex items-center shrink-0" aria-label="AmeriLife Home">
+          <Link href={logoHref} variant="button" className="flex items-center shrink-0" aria-label={logoAriaLabel}>
             <Image
               src={logoUrl}
-              alt="AmeriLife"
-              width={140}
-              height={40}
-              className="h-6 w-auto lg:h-8"
+              alt={logoAlt}
+              width={inIdeaxchange ? 160 : 140}
+              height={inIdeaxchange ? 48 : 40}
+              className={inIdeaxchange ? "h-7 w-auto max-w-[160px] object-contain lg:h-9" : "h-6 w-auto lg:h-8"}
             />
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-8 lg:flex" aria-label="Main navigation">
+          <nav
+            className="hidden items-center gap-8 lg:flex"
+            aria-label={inIdeaxchange ? "Content verticals" : "Main navigation"}
+          >
             {navItems.map((item) => {
-              if (isContactNavItem(item)) {
+              if (!inIdeaxchange && isContactNavItem(item)) {
                 return (
                   <div key={item.href + item.label} className="relative">
                     <button
@@ -73,7 +92,7 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
                 );
               }
 
-              const hasChildren = item.children && item.children.length > 0;
+              const hasChildren = !inIdeaxchange && item.children && item.children.length > 0;
               return (
                 <div key={item.href + item.label} className="relative group">
                   <Link
@@ -82,11 +101,11 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
                     className="inline-flex items-center gap-1 px-2 py-1 text-base font-semibold text-[var(--color-brand-dark)] transition-colors hover:text-[var(--color-brand-primary)]"
                   >
                     {item.label}
-                    {hasChildren && (
+                    {hasChildren ? (
                       <ChevronDownIcon size={14} className="text-[var(--color-brand-primary)]" />
-                    )}
+                    ) : null}
                   </Link>
-                  {hasChildren && (
+                  {hasChildren ? (
                     <div className="absolute left-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all delay-75">
                       <ul className="min-w-[200px] rounded-md bg-white/95 py-2 shadow-lg ring-1 ring-black/5">
                         {item.children!.map((child) => {
@@ -133,14 +152,14 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
                         })}
                       </ul>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               );
             })}
           </nav>
 
           <div className="flex items-center gap-4">
-            <HeaderSearch />
+            {!inIdeaxchange ? <HeaderSearch /> : null}
             <button
               type="button"
               onClick={() => setMobileOpen((o) => !o)}
@@ -158,11 +177,15 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
       <MobileNav
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
-        items={primaryMenu}
-        onContactSelect={() => {
-          setMobileOpen(false);
-          openContactPopup();
-        }}
+        items={navItems}
+        onContactSelect={
+          inIdeaxchange
+            ? undefined
+            : () => {
+                setMobileOpen(false);
+                openContactPopup();
+              }
+        }
       />
     </>
   );

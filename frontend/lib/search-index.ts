@@ -141,6 +141,20 @@ const SEARCH_INDEX: SearchEntry[] = [
     keywords: ["FAQ", "brokers", "independent agents", "distribution"],
   },
   {
+    path: "/acquisition-partner-program/",
+    title: "Acquisition Partner Program",
+    description:
+      "Partner with AmeriLife to accelerate growth. Learn about our acquisition partner program, corporate development team, and unique partnership approach.",
+    keywords: [
+      "acquisition",
+      "M&A",
+      "corporate development",
+      "partnership",
+      "future partners",
+      "mergers",
+    ],
+  },
+  {
     path: "/broker-contact-page/",
     title: "Independent Partner Contact Us",
     description:
@@ -296,6 +310,21 @@ const SEARCH_INDEX: SearchEntry[] = [
       "Honor Flight",
       "community",
       "giving back",
+    ],
+  },
+  {
+    path: "/ideaxchange/",
+    title: "ideaXchange Login",
+    description:
+      "Sign in to AmeriLife ideaXchange — the internal online magazine for employees and affiliates. Learn about careers at AmeriLife.",
+    keywords: [
+      "ideaXchange",
+      "login",
+      "employees",
+      "affiliates",
+      "internal magazine",
+      "ALG",
+      "ALF",
     ],
   },
   {

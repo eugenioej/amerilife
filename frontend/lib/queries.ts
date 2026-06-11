@@ -650,6 +650,53 @@ export const SEARCH_INSIGHTS = `
   }
 `;
 
+export type InsightSearchBatchNode = InsightSearchNode & {
+  content?: string | null;
+  insightTopics?: {
+    nodes?: Array<{ name?: string | null; slug?: string | null }>;
+  } | null;
+};
+
+export type InsightsSearchBatchResult = {
+  insights?: {
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+    nodes: InsightSearchBatchNode[];
+  };
+};
+
+/** Paginated insights list for server-side search (WP `search` misses topics and body text). */
+export const GET_INSIGHTS_SEARCH_BATCH = `
+  query GetInsightsSearchBatch($first: Int!, $after: String) {
+    insights(
+      first: $first
+      after: $after
+      where: { orderby: { field: DATE, order: DESC } }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        id
+        slug
+        title
+        date
+        excerpt
+        content
+        insightTopics {
+          nodes {
+            name
+            slug
+          }
+        }
+      }
+    }
+  }
+`;
+
 /**
  * Leader CPT — maps to amerilife.com-style leader pages (e.g. /our-leaders/[slug]/ on legacy site).
  *

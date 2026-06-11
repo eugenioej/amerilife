@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/app/components/ui/Button";
 import { Link } from "@/app/components/ui/Link";
 import type { InsightListItem } from "@/lib/queries";
@@ -44,6 +44,23 @@ export function InsightsNewsroomColumn({
   const [hasNextPage, setHasNextPage] = useState(initialHasNextPage);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Numbered category pages navigate client-side; reset local list when the server feed changes.
+  useEffect(() => {
+    if (enableLoadMore) return;
+    setPosts(initialPosts);
+    setDeferredRest(deferredBatchPosts);
+    setEndCursor(initialEndCursor);
+    setHasNextPage(initialHasNextPage);
+    setLoading(false);
+    setError(null);
+  }, [
+    enableLoadMore,
+    initialPosts,
+    deferredBatchPosts,
+    initialEndCursor,
+    initialHasNextPage,
+  ]);
 
   const loadMore = useCallback(async () => {
     if (!enableLoadMore) return;

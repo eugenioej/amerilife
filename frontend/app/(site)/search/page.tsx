@@ -10,15 +10,15 @@ export const metadata: Metadata = privatePageMetadata(
 import { searchPages, type SearchResult } from "@/lib/search-index";
 import { fetchGraphQL } from "@/lib/wp-client";
 import {
-  SEARCH_INSIGHTS,
   SEARCH_POSTS,
   type AgencySearchNode,
   type InsightSearchNode,
-  type InsightsSearchResult,
   type PostSearchNode,
   type PostsSearchResult,
 } from "@/lib/queries";
+import { formatInsightExcerptPlain } from "@/lib/insight-excerpt";
 import { searchAgenciesLocal } from "@/lib/search-agencies";
+import { searchInsightsLocal } from "@/lib/search-insights";
 
 type Props = {
   searchParams: Promise<{ q?: string }>;
@@ -32,6 +32,11 @@ type UnifiedResult =
 
 function stripTags(html: string): string {
   return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+/** Plain-text snippet for search cards — strips HTML and decodes WP entities (&#8220;, &#8230;, etc.). */
+function searchSnippet(html: string | null | undefined): string {
+  return formatInsightExcerptPlain(html).replace(/\s+/g, " ").trim();
 }
 
 function formatDate(dateStr: string): string {
@@ -75,7 +80,7 @@ function agencySearchSnippet(node: AgencySearchNode): string {
 }
 
 function InsightCard({ node }: { node: InsightSearchNode }) {
-  const excerpt = node.excerpt ? stripTags(node.excerpt) : "";
+  const excerpt = searchSnippet(node.excerpt);
   const truncated = excerpt.length > 200 ? excerpt.slice(0, 200) + "…" : excerpt;
   const slug = node.slug ?? "";
   const href = slug ? `/insights/${slug}/` : "#";
@@ -133,7 +138,7 @@ function AgencyCard({ node }: { node: AgencySearchNode }) {
 }
 
 function PostCard({ node }: { node: PostSearchNode }) {
-  const excerpt = node.excerpt ? stripTags(node.excerpt) : "";
+  const excerpt = searchSnippet(node.excerpt);
   const truncated = excerpt.length > 200 ? excerpt.slice(0, 200) + "…" : excerpt;
   const categorySlug = node.categories?.nodes?.[0]?.slug ?? "announcements";
   const slug = node.slug ?? "";
@@ -175,13 +180,13 @@ export default async function SearchPage({ searchParams }: Props) {
   let agencyNodes: AgencySearchNode[] = [];
 
   if (q) {
-    const [postsData, insightsData, agencyLocal] = await Promise.all([
+    const [postsData, insightsLocal, agencyLocal] = await Promise.all([
       fetchGraphQL<PostsSearchResult>(SEARCH_POSTS, { search: q, first: 20 }).catch(() => null),
-      fetchGraphQL<InsightsSearchResult>(SEARCH_INSIGHTS, { search: q, first: 20 }).catch(() => null),
+      searchInsightsLocal(q, 20),
       searchAgenciesLocal(q, 20),
     ]);
     postNodes = postsData?.posts?.nodes ?? [];
-    insightNodes = insightsData?.insights?.nodes ?? [];
+    insightNodes = insightsLocal;
     agencyNodes = agencyLocal;
   }
 

@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import {
+  IDEAXCHANGE_LOGIN_PATH,
+  IDEAXCHANGE_SESSION_COOKIE,
+  IDEAXCHANGE_SESSION_VALUE,
+} from "@/lib/ideaxchange-constants";
+
+const IDEAXCHANGE_MAGAZINE_PREFIX = "/ideaxchange/magazine";
 
 // ---------------------------------------------------------------------------
 // Blocked user-agent substrings — vulnerability scanners & automated tools
@@ -59,6 +66,17 @@ export function proxy(request: NextRequest) {
   for (const ext of BLOCKED_EXTENSIONS) {
     if (pathLower.endsWith(ext)) {
       return new NextResponse("Not Found", { status: 404 });
+    }
+  }
+
+  // 4. Gated ideaXchange magazine — require session cookie
+  if (pathname.startsWith(IDEAXCHANGE_MAGAZINE_PREFIX)) {
+    const session = request.cookies.get(IDEAXCHANGE_SESSION_COOKIE)?.value;
+    if (session !== IDEAXCHANGE_SESSION_VALUE) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = IDEAXCHANGE_LOGIN_PATH;
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
     }
   }
 

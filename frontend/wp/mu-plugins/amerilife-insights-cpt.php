@@ -114,6 +114,28 @@ add_action('init', function () {
       return current_user_can('edit_posts');
     },
   ]);
+
+  $yoast_meta_keys = [
+    '_yoast_wpseo_title',
+    '_yoast_wpseo_metadesc',
+    '_yoast_wpseo_focuskw',
+    '_yoast_wpseo_canonical',
+    '_yoast_wpseo_opengraph-title',
+    '_yoast_wpseo_opengraph-description',
+    '_yoast_wpseo_twitter-title',
+    '_yoast_wpseo_twitter-description',
+  ];
+
+  foreach ($yoast_meta_keys as $key) {
+    register_post_meta('insight', $key, [
+      'show_in_rest' => true,
+      'single' => true,
+      'type' => 'string',
+      'auth_callback' => function () {
+        return current_user_can('edit_posts');
+      },
+    ]);
+  }
 }, 9);
 
 add_action('init', function () {
@@ -360,6 +382,83 @@ add_action('admin_init', function () {
 }, 999);
 
 add_action('rest_api_init', function () {
+  register_rest_route('amerilife/v1', '/insights-seo', [
+    'methods' => 'POST',
+    'permission_callback' => function () {
+      return current_user_can('edit_posts');
+    },
+    'callback' => function (WP_REST_Request $request) {
+      $params = $request->get_json_params();
+      $items  = isset($params['items']) && is_array($params['items']) ? $params['items'] : [];
+
+      if ($items === []) {
+        return new WP_REST_Response(['updated' => 0, 'skipped' => 0, 'errors' => []], 200);
+      }
+
+      $updated = 0;
+      $skipped = 0;
+      $errors  = [];
+
+      foreach ($items as $item) {
+        if (!is_array($item)) {
+          $skipped++;
+          continue;
+        }
+
+        $slug = isset($item['slug']) ? sanitize_title((string) $item['slug']) : '';
+        if ($slug === '') {
+          $skipped++;
+          continue;
+        }
+
+        $posts = get_posts([
+          'post_type' => 'insight',
+          'post_status' => ['publish', 'draft', 'pending', 'private'],
+          'name' => $slug,
+          'posts_per_page' => 1,
+          'fields' => 'ids',
+        ]);
+
+        if ($posts === []) {
+          $errors[] = ['slug' => $slug, 'error' => 'not_found'];
+          continue;
+        }
+
+        $post_id = (int) $posts[0];
+        $fields  = [
+          'seoTitle' => '_yoast_wpseo_title',
+          'metaDescription' => '_yoast_wpseo_metadesc',
+          'focusKeyphrase' => '_yoast_wpseo_focuskw',
+        ];
+
+        $changed = false;
+        foreach ($fields as $input_key => $meta_key) {
+          if (!array_key_exists($input_key, $item)) {
+            continue;
+          }
+          $value = sanitize_text_field((string) $item[$input_key]);
+          if ($value === '') {
+            continue;
+          }
+          update_post_meta($post_id, $meta_key, $value);
+          $changed = true;
+        }
+
+        if ($changed) {
+          $updated++;
+        } else {
+          $skipped++;
+        }
+      }
+
+      return new WP_REST_Response([
+        'updated' => $updated,
+        'skipped' => $skipped,
+        'errors' => $errors,
+      ], 200);
+    },
+  ]);
+
   register_rest_route('amerilife/v1', '/seed-insights', [
     'methods' => 'POST',
     'permission_callback' => function () {

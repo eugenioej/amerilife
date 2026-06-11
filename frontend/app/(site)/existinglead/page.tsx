@@ -39,13 +39,9 @@ export default async function ExistingLeadPage() {
         <h1 className="mb-6 text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
           Existing Agents Contact Us
         </h1>
-        <h2 className="mb-4 text-2xl font-semibold text-[var(--color-fg)]">
+        <h2 className="mb-8 text-2xl font-semibold text-[var(--color-fg)]">
           Licensed Agents
         </h2>
-        <div
-          className="mb-8 h-[3px] w-[125px] max-w-full shrink-0 bg-[#94c83d]"
-          aria-hidden
-        />
 
         <div className="mb-10">
           <p className="mb-4 text-base leading-relaxed text-[var(--color-fg)]">
