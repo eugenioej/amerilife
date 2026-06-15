@@ -115,8 +115,8 @@ function AgendaSection() {
         {
           text: "9:30 – 9:45 AM: Orientation: How the Product Marketing Labs Work",
           children: [
-            { text: "Rotations include Life & Annuity and Health Specialty" },
-            { text: "Life & Annuity: David Paul" },
+            { text: "Rotations include Final Expense and Health Specialty" },
+            { text: "Final Expense: David Paul" },
             { text: "Health Specialty: Jamie Sarno" },
           ],
         },
@@ -134,6 +134,9 @@ function AgendaSection() {
         },
         {
           text: "2:10 – 3:00 PM: Growth Session: The Power of the Process: Solutions First, Products Second",
+          children: [
+            { text: "Speaker: Rick Banville" },
+          ],
         },
         {
           text: "3:00 – 3:30 PM: Carrier Networking",
@@ -182,7 +185,7 @@ function AgendaSection() {
         {
           text: "9:00 – 9:45 AM: Tapping into the Current: The Agent Need – Value Proposition Connection",
           children: [
-            { text: "Speakers: Eric Brennan & Darren Houck" },
+            { text: "Speakers: David Paul, Eric Brennan & Darren Houck" },
           ],
         },
         {

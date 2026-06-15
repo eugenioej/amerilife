@@ -86,7 +86,7 @@ function AgendaSection() {
         {
           text: "1:30 PM – 2:00 PM: Welcome",
           children: [
-            { text: "Speakers: Brian Peterson (AmeriLife)" },
+            { text: "Speakers: Brian Peterson" },
           ],
         },
         {
