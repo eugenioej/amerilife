@@ -63,7 +63,7 @@ export function BlogPostTemplate({ post, categorySlug }: Props) {
       <WpText
         as="h1"
         text={post.title || ''}
-        className="mb-4 break-words text-3xl font-bold"
+        className="mb-4 break-words text-3xl font-bold sm:text-4xl"
       />
 
       <div className="mb-8 flex flex-wrap items-center gap-3">
