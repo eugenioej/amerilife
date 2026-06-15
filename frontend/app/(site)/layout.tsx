@@ -6,8 +6,6 @@ export const metadata = {
 
   manifest: "/manifest.json",
 
-  themeColor: "#091229",
-
   appleWebApp: {
     capable: true,
     title: "Masterminds",
@@ -17,6 +15,11 @@ export const metadata = {
     apple: "/icon-192.png",
   },
 };
+
+export const viewport = {
+  themeColor: "#091229",
+};
+
 
 export default function SiteLayout({
   children,

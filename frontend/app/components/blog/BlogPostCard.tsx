@@ -3,6 +3,7 @@
 import { Link } from "@/app/components/ui/Link";
 import { getCategoryPillColor } from "@/lib/category-colors";
 import type { PostsListItem } from "@/lib/queries";
+import { WpText } from "../ui/WpText";
 
 type Props = {
   post: PostsListItem;
@@ -51,7 +52,7 @@ export function BlogPostCard({ post, hideCategoryPill = false }: Props) {
             variant="button"
             className="text-[var(--color-brand-dark)] transition-colors hover:text-[var(--color-brand-dark)]"
           >
-            {post.title}
+            <WpText text={post.title || ''} />
           </Link>
         </h2>
 

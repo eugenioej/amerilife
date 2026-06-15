@@ -3,6 +3,7 @@ import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { getCategoryPillColor } from "@/lib/category-colors";
 import type { PostByUri } from "@/lib/queries";
 import { rewriteUploadsInHtml } from "@/lib/wp-media";
+import { WpText } from '../ui/WpText';
 
 type Props = {
   post: PostByUri;
@@ -59,9 +60,11 @@ export function BlogPostTemplate({ post, categorySlug }: Props) {
         ]}
       />
 
-      <h1 className="mb-4 break-words text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
-        {post.title}
-      </h1>
+      <WpText
+        as="h1"
+        text={post.title || ''}
+        className="mb-4 break-words text-3xl font-bold"
+      />
 
       <div className="mb-8 flex flex-wrap items-center gap-3">
         {post.date && (
