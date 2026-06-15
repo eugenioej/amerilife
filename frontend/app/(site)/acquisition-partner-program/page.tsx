@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
+import { Link } from "@/app/components/ui/Link";
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
-import { GravityForm } from "@/app/components/gravity-forms/GravityForm";
 import { AnnouncementsCarousel } from "@/app/components/blog/AnnouncementsCarousel";
 import { AcquisitionPartnerHero } from "@/app/components/acquisition-partner-program/AcquisitionPartnerHero";
 import { AcquisitionPartnerApproach } from "@/app/components/acquisition-partner-program/AcquisitionPartnerApproach";
@@ -9,10 +9,6 @@ import { AcquisitionPartnerTeam } from "@/app/components/acquisition-partner-pro
 import { AcquisitionPartnerCulture } from "@/app/components/acquisition-partner-program/AcquisitionPartnerCulture";
 import { JsonLd } from "@/app/components/seo/JsonLd";
 import { fetchGraphQL } from "@/lib/wp-client";
-import {
-  CONTACT_US_FORM_ID,
-  fetchGravityForm,
-} from "@/lib/gf-client";
 import { GET_POSTS, type PostsListItem, type PostsListResult } from "@/lib/queries";
 import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 
@@ -25,12 +21,6 @@ export const metadata: Metadata = staticPageMetadata(
 const ANNOUNCEMENTS_COUNT = 3;
 
 export default async function AcquisitionPartnerProgramPage() {
-  let contactForm = null;
-  try {
-    contactForm = await fetchGravityForm(CONTACT_US_FORM_ID);
-  } catch {
-    contactForm = null;
-  }
 
   let announcements: PostsListItem[] = [];
   try {
@@ -97,42 +87,36 @@ export default async function AcquisitionPartnerProgramPage() {
 
       <FadeInOnView direction="up" className="w-full bg-[#f0f0f0] py-16 sm:py-20">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
-            <div>
-              <h2 className="mb-4 text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
-                Learn more about{" "}
-                <span className="text-[var(--color-brand-primary)]">partnering with AmeriLife</span>
-              </h2>
-              <p className="mb-6 text-base leading-relaxed text-[var(--color-fg)]">
-                Complete the form below and a member of our Corporate Development team will reach
-                out to you to learn more about your company, your goals and to walk through details
-                of our partnership program:
-              </p>
-              <p className="text-base leading-relaxed text-[var(--color-fg)]">
-                At AmeriLife, our mission is to provide your agents and advisors with the health and
-                wealth solutions they need to deliver peace of mind and help their clients live
-                longer, healthier lives.
-              </p>
-            </div>
-            <div className="rounded-lg bg-white p-6 shadow-sm sm:p-8">
-              <h3 className="mb-6 text-xl font-bold text-[var(--color-fg)]">
-                Request an Exploratory Discussion Today!
-              </h3>
-              {contactForm ? (
-                <GravityForm form={contactForm} />
-              ) : (
-                <p className="text-sm text-[var(--color-muted)]">
-                  The contact form is temporarily unavailable. Please call{" "}
-                  <a
-                    href="tel:+18004587112"
-                    className="text-[var(--color-link)] underline-offset-4 hover:text-[var(--color-link-hover)] hover:underline"
-                  >
-                    (800) 458-7112
-                  </a>{" "}
-                  or try again later.
-                </p>
-              )}
-            </div>
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="mb-4 text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+              Learn more about{" "}
+              <span className="text-[var(--color-brand-primary)]">
+                partnering with AmeriLife
+              </span>
+            </h2>
+
+            <p className="mb-6 text-base leading-relaxed text-[var(--color-fg)]">
+              Complete the form below and a member of our Corporate Development team
+              will reach out to you to learn more about your company, your goals and to
+              walk through details of our partnership program:
+            </p>
+
+            <p className="text-base leading-relaxed text-[var(--color-fg)]">
+              At AmeriLife, our mission is to provide your agents and advisors with
+              the health and wealth solutions they need to deliver peace of mind and
+              help their clients live longer, healthier lives.
+            </p>
+
+            <Link
+              href="/contact"
+              variant="button"
+              className="motion-cta mt-10 inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-brand-primary)] px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-[var(--color-brand-primary-hover)]"
+            >
+              CONTACT US
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
         </div>
       </FadeInOnView>

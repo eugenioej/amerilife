@@ -17,6 +17,27 @@ export function AcquisitionPartnerTeam() {
           ))}
         </div>
       </div>
+
+      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] pt-16">
+        <h2 className="mb-4 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+          Questions? We&apos;ve Got Answers.
+        </h2>
+              
+        <p className="mx-auto mb-12 max-w-3xl text-center text-base leading-relaxed text-[var(--color-muted)]">
+          <strong>
+            I&apos;m a business owner and ready to partner with AmeriLife. Who do I contact? -
+          </strong>
+          <br />
+          We can&apos;t wait to speak with you! Please email Stephen Smith, AmeriLife&apos;s Senior Vice President of Corporate Development, at{" "}
+          <a
+            className="text-[var(--color-brand-primary)] font-bold"
+            href="mailto:SJSmith@Amerilife.com"
+          >
+            SJSmith@Amerilife.com
+          </a>{" "}
+          to get started.
+        </p>
+      </div>
     </section>
   );
 }

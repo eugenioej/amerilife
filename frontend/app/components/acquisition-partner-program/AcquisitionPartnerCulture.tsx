@@ -3,7 +3,7 @@ import { CULTURE_VIDEOS } from "./constants";
 
 export function AcquisitionPartnerCulture() {
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-[#f0f0f0] py-16 sm:py-20">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
         <p className="mx-auto mb-12 max-w-4xl text-center text-base leading-relaxed text-[var(--color-fg)]">
           Core values and culture are critical to us when considering a partnership. Take a look
@@ -25,15 +25,15 @@ export function AcquisitionPartnerCulture() {
                 />
               </div>
             </div>
-          ))}
-        </div>
-        <div className="mt-10 text-center">
-          <Link
-            href="/givesback/"
-            className="text-[var(--color-link)] underline-offset-4 hover:text-[var(--color-link-hover)] hover:underline"
-          >
-            Learn more about AmeriLife Gives Back
-          </Link>
+          ))}          
+          <div className="lg:col-start-2 text-center">
+            <Link
+              href="/givesback/"
+              className="text-[var(--color-link)] underline-offset-4 hover:text-[var(--color-link-hover)] hover:underline"
+            >
+              Learn more about AmeriLife Gives Back
+            </Link>
+          </div>
         </div>
       </div>
     </section>
