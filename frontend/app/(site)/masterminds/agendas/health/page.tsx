@@ -209,14 +209,14 @@ function AgendaSection() {
         {
           text: "11:30 AM: Carrier Raffles",
           children: [
-            { text: "Moderated by: Jim Palmer" },
+            { text: "Moderated by: Steve Patton & Matt Graham" },
           ],
         },
       ],
     },
     { text: "12:00 PM – 12:30 PM: Grab ‘n’ Go Lunches, Audubon Foyer" },
     { text: "12:00 PM – 12:30 PM – Carrier booth break-down, Audubon Ballroom" },
-    { text: "Departures – please utilize Ubers/Lyft" },
+    { text: "Departures – Please utilize rideshare. Hotel shuttles are available at the hotel valet." },
   ]}
 />
 

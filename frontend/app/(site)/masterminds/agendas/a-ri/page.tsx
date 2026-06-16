@@ -192,7 +192,7 @@ function AgendaSection() {
       ],
     },
     { text: "11:00 AM: Grab ‘n’ Go Lunches, Audubon Foyer" },
-    { text: "Departures – please utilize Ubers/Lyft" },
+    { text: "Departures – Please utilize rideshare. Hotel shuttles are available at the hotel valet." },
   ]}
 />
 
