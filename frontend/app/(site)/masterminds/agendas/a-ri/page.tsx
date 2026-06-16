@@ -112,7 +112,7 @@ function AgendaSection() {
   items={[
     { text: "8:00 AM – 8:30 AM: Group Breakfast, Audubon Ballroom A" },
     {
-      text: "8:30 AM – 12:00 PM: General Session, White Ibis",
+      text: "8:30 AM – 12:00 PM: General Session, Audubon BC",
       children: [
         {
           text: "8:30 AM – 8:45 AM: Day 1 Recap",
@@ -136,7 +136,7 @@ function AgendaSection() {
     },
     { text: "12:00 PM – 12:45 PM: Group Lunch, Audubon Ballroom A" },
     {
-      text: "12:45 PM – 4:00 PM: General Session, White Ibis",
+      text: "12:45 PM – 4:00 PM: General Session, Audubon BC",
       children: [
         {
           text: "12:45 PM – 2:15 PM: Carrier Speed Dating",
@@ -175,7 +175,7 @@ function AgendaSection() {
   items={[
     { text: "8:00 AM – 9:00 AM: Group Breakfast, Audubon Ballroom A" },
     {
-      text: "9:00 AM – 11:00 AM: General Session, White Ibis",
+      text: "9:00 AM – 11:00 AM: General Session, Audubon BC",
       children: [
         {
           text: "9:00 AM – 10:30 AM: Wholesaler Showdown",
