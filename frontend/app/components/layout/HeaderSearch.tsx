@@ -78,12 +78,12 @@ export function HeaderSearch() {
           <div
             className="absolute inset-0 bg-black/50"
             aria-hidden="true"
+            
           />
           <div className="absolute inset-0 flex items-start justify-center pt-[15vh] px-4">
             <div
               className="w-full max-w-xl rounded-lg bg-white p-4 shadow-xl"
               onClick={(e) => e.stopPropagation()}
-              
             >
               <form onSubmit={handleSubmit} className="flex gap-3">
                 <div className="relative flex-1">
