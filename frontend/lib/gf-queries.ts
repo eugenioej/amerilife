@@ -18,23 +18,28 @@ query GetGfForm($id: ID!) {
           label
           isRequired
           placeholder
+          cssClass
         }
         ... on EmailField {
           label
           isRequired
+          cssClass
         }
         ... on PhoneField {
           label
           isRequired
+          cssClass
         }
         ... on TextAreaField {
           label
           isRequired
           placeholder
+          cssClass
         }
         ... on SelectField {
           label
           isRequired
+          cssClass
           choices {
             text
             value
@@ -43,6 +48,7 @@ query GetGfForm($id: ID!) {
         ... on CheckboxField {
           label
           isRequired
+          cssClass
           inputs {
             id
             label
@@ -55,6 +61,7 @@ query GetGfForm($id: ID!) {
         ... on RadioField {
           label
           isRequired
+          cssClass
           choices {
             text
             value
@@ -63,6 +70,7 @@ query GetGfForm($id: ID!) {
         ... on NameField {
           label
           isRequired
+          cssClass
           inputs {
             id
             label
