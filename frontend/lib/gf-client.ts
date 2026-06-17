@@ -6,6 +6,9 @@ import type { GfFormData } from "@/lib/gf-types";
 /** Gravity Forms database ID for `/contact/` (Contact Us). */
 export const CONTACT_US_FORM_ID = 1;
 
+/** Gravity Forms database ID for `/become-a-contributor/` (Become a Contributor). */
+export const CONTRIBUTOR_FORM_ID = 70;
+
 /** Gravity Forms database ID for `/valspar/`. */
 export const VALSPAR_FORM_ID = 37;
 

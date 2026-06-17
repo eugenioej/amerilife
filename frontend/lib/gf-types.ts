@@ -21,6 +21,7 @@ export type GfFieldNode = {
   /** Name / Checkbox sub-fields */
   inputs?: GfNameInput[] | null;
   checkboxLabel?: string | null;
+  cssClass?: string | null;
   description?: string
 };
 
