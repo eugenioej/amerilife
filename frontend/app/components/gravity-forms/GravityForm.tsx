@@ -7,6 +7,73 @@ import { submitGravityForm } from "@/lib/gf-client";
 import { Button } from "@/app/components/ui/Button";
 import { GfRecaptchaField } from "./GfRecaptchaField";
 
+function RepeaterField({
+  onChange,
+  inputClass
+}: {
+  fieldId: number;
+  onChange: (value: string) => void;
+  inputClass: string;
+}) {
+  const [values, setValues] = useState<string[]>([""]);
+
+  const update = (index: number, val: string) => {
+    const updated = [...values];
+    updated[index] = val;
+    setValues(updated);
+    onChange(updated.filter(Boolean).join(", "));
+  };
+
+  const add = () => {
+    setValues([...values, ""]);
+  };
+
+  const remove = (index: number) => {
+    const updated = values.filter((_, i) => i !== index);
+    setValues(updated.length ? updated : [""]);
+    onChange(updated.filter(Boolean).join(", "));
+  };
+
+  return (
+    <div className="space-y-3">
+      {values.map((value, index) => (
+        <div key={index} className="relative">
+
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => update(index, e.target.value)}
+            className={`${inputClass} pr-16`}
+          />
+
+          {/* ADD BUTTON */}
+          {index === values.length - 1 && (
+            <button
+              type="button"
+              onClick={add}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 hover:text-[var(--color-brand-primary)]"
+            >
+              +
+            </button>
+          )}
+
+          {/* REMOVE BUTTON */}
+          {values.length > 1 && (
+            <button
+              type="button"
+              onClick={() => remove(index)}
+              className="absolute right-10 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 hover:text-red-500"
+            >
+              −
+            </button>
+          )}
+
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const inputClass =
   "w-full rounded border border-[var(--color-border)] px-4 py-3 text-[var(--color-fg)] placeholder:text-[var(--color-muted)] focus:border-[var(--color-brand-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-primary)]";
 
@@ -496,7 +563,48 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
           case "PAGE":
             return null;
 
-          case "TEXT":
+          case "TEXT": {
+  const isRepeater =
+    field.type === "TEXT" &&
+    typeof field.cssClass === "string" &&
+    field.cssClass.includes("gf-repeater");
+
+
+  return (
+    <div key={fid}>
+      <label htmlFor={`gf-${fid}`} className={labelBlock}>
+        {label}
+        {req}
+      </label>
+
+      {isRepeater ? (
+        <RepeaterField
+          fieldId={fid}
+          inputClass={inputCn}
+          onChange={(value) => setStr(fid, value)}
+        />
+      ) : (
+        <input
+          id={`gf-${fid}`}
+          type="text"
+          value={stringValues[fid] ?? ""}
+          onChange={(e) => setStr(fid, e.target.value)}
+          placeholder={
+            field.placeholder
+              ? decodeHtmlEntities(field.placeholder)
+              : undefined
+          }
+          className={inputCn}
+          aria-invalid={Boolean(err)}
+        />
+      )}
+
+      {err && (
+        <p className="mt-1 text-sm text-red-600">{err}</p>
+      )}
+    </div>
+  );
+}
           case "NUMBER":
           case "DATE":
           case "PHONE":
