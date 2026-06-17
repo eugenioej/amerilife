@@ -83,6 +83,7 @@ export function HeaderSearch() {
             <div
               className="w-full max-w-xl rounded-lg bg-white p-4 shadow-xl"
               onClick={(e) => e.stopPropagation()}
+              
             >
               <form onSubmit={handleSubmit} className="flex gap-3">
                 <div className="relative flex-1">
