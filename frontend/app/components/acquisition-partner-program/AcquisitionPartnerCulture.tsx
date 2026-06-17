@@ -11,9 +11,20 @@ export function AcquisitionPartnerCulture() {
           commitment to improving the lives of our clients, employees and our affiliate partners.
         </p>
         <div className="grid gap-10 lg:grid-cols-2">
-          {CULTURE_VIDEOS.map((video) => (
-            <div key={video.title}>
-              <h3 className="mb-4 text-xl font-bold text-[var(--color-fg)]">{video.title}</h3>
+          {CULTURE_VIDEOS.map((video, index) => (
+            <div className="text-center" key={video.title}>
+              <h3 className="mb-4 text-xl font-bold text-[var(--color-fg)]">
+                {index === 1 ? (
+                  <Link
+                    href="/givesback/"
+                  >
+                    {video.title}
+                  </Link>
+                ) : (
+                  video.title
+                )}
+              </h3>
+              
               <div className="relative aspect-video w-full overflow-hidden bg-[var(--color-brand-dark)]">
                 <iframe
                   src={video.embedSrc}
@@ -25,15 +36,7 @@ export function AcquisitionPartnerCulture() {
                 />
               </div>
             </div>
-          ))}          
-          <div className="lg:col-start-2 text-center">
-            <Link
-              href="/givesback/"
-              className="text-[var(--color-link)] underline-offset-4 hover:text-[var(--color-link-hover)] hover:underline"
-            >
-              Learn more about AmeriLife Gives Back
-            </Link>
-          </div>
+          ))}
         </div>
       </div>
     </section>
