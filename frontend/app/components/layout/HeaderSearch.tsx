@@ -73,11 +73,11 @@ export function HeaderSearch() {
           aria-modal="true"
           aria-label="Search"
           className="fixed inset-0 z-[var(--z-drawer)]"
+          onClick={() => setOpen(false)}
         >
           <div
             className="absolute inset-0 bg-black/50"
             aria-hidden="true"
-            onClick={() => setOpen(false)}
           />
           <div className="absolute inset-0 flex items-start justify-center pt-[15vh] px-4">
             <div
@@ -105,9 +105,7 @@ export function HeaderSearch() {
                   Search
                 </button>
               </form>
-              <p className="mt-3 text-sm text-[var(--color-muted)]">
-                Press Escape to close
-              </p>
+              
             </div>
           </div>
         </div>
