@@ -1,23 +1,36 @@
 import Image from "next/image";
-import type { TeamMember } from "./constants";
+import Link from "next/link";
+import type { Contributor } from "@/lib/queries";
 
 type Props = {
-  member: TeamMember;
+  member: Contributor;
 };
 
 export function ContributorTeamCard({ member }: Props) {
+  const fields = member.userFields;
+
   return (
-    <article className="flex flex-col items-center text-center">
-      <div className="relative mb-4 h-[200px] w-[200px] overflow-hidden rounded-full bg-[#e2e5ed] sm:h-[200px] sm:w-[200px]">
-        <Image
-          src={member.imageSrc}
-          alt={member.name}
-          fill
-          className="object-cover object-top"
-          sizes="200px"
-        />
+    <Link href={`/contributors/${member.slug ?? ""}`}>
+      <div className="cursor-pointer">
+        <article className="flex flex-col items-center text-center">
+
+          <div className="relative mb-4 h-[200px] w-[200px] overflow-hidden rounded-full bg-[#e2e5ed]">
+            <Image
+              src={fields?.headshot || "/images/default-avatar.png"}
+              alt={member.name || ""}
+              fill
+              className="object-cover object-top"
+              sizes="200px"
+              priority={false}
+            />
+          </div>
+
+          <h3 className="mb-1 text-xl font-bold text-[var(--color-link)]">
+            {member.name}
+          </h3>
+
+        </article>
       </div>
-      <h3 className="mb-1 text-xl font-bold text-[var(--color-link)]">{member.name}</h3>
-    </article>
+    </Link>
   );
 }

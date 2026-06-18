@@ -87,6 +87,74 @@ export type PostByUri = {
   } | null;
 };
 
+export const GET_LATEST_INSIGHTS_BY_TOPICS = `
+query GetLatestInsightsByTopics {
+  insights(
+    first: 10
+    where: {
+      orderby: { field: DATE, order: DESC }
+    }
+  ) {
+    nodes {
+      id
+      slug
+      title
+      excerpt
+      date
+      insightTopics {
+        nodes {
+          name
+          slug
+        }
+      }
+      featuredImage {
+        node {
+          sourceUrl
+        }
+      }
+    }
+  }
+}
+`;
+
+
+export type LatestInsightsByTopicsResult = {
+  insights: {
+    nodes: InsightListItem[]; 
+  };
+};
+
+export const GET_CONTRIBUTORS = `
+query GetContributors {
+  contributors {
+    id
+    name
+    slug
+    userFields {
+      jobTitle
+      company
+      headshot
+      featured
+      isContributor
+    }
+  }
+}
+`;
+
+export type Contributor = {
+  id: string;
+  name?: string | null;
+  slug?: string | null;
+  userFields?: {
+    jobTitle?: string | null;
+    company?: string | null;
+    headshot?: string | null;
+    linkedin?: string | null;
+    featured?: boolean | null;
+    isContributor?: boolean | null;
+  };
+};
+
 export const GET_POST_BY_URI = `
   query GetPostByUri($uri: String!) {
     nodeByUri(uri: $uri) {
