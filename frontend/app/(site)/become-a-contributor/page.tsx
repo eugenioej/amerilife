@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import ContributorForm from "@/app/components/contributors/ContributorForm";
-import { ContributorTeam } from "@/app/components/contributors/ContributorTeam";
+import { ContributorFeaturedTeam } from "@/app/components/contributors/ContributorFeaturedTeam";
 import { ContributorDisclaimer } from "@/app/components/contributors/ContributorDisclaimer";
 import { JsonLd } from "@/app/components/seo/JsonLd";
 import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
+
+import { fetchGraphQL } from "@/lib/wp-client";
+import { GET_CONTRIBUTORS, type Contributor } from "@/lib/queries";
 
 export const metadata: Metadata = staticPageMetadata(
   "Become A Contributor | AmeriLife",
@@ -13,6 +16,13 @@ export const metadata: Metadata = staticPageMetadata(
 );
 
 export default async function BecomeAContributorPage() {
+
+  // ✅ ADD THIS
+  const data = await fetchGraphQL<{ contributors: Contributor[] }>(
+    GET_CONTRIBUTORS
+  );
+
+  const contributors = data?.contributors ?? [];
 
   return (
     <article className="bg-white">
@@ -28,7 +38,8 @@ export default async function BecomeAContributorPage() {
       </FadeInOnView>
 
       <FadeInOnView direction="up" className="w-full">
-        <ContributorTeam />
+        {/* ✅ PASS DATA */}
+        <ContributorFeaturedTeam contributors={contributors} />
       </FadeInOnView>
 
       <FadeInOnView direction="up" className="w-full">
