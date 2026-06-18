@@ -6,13 +6,29 @@ import { ContributorDisclaimer } from "@/app/components/contributors/Contributor
 import { JsonLd } from "@/app/components/seo/JsonLd";
 import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 
+// ✅ ADD THESE
+import { fetchGraphQL } from "@/lib/wp-client";
+import { GET_CONTRIBUTORS, type Contributor } from "@/lib/queries";
+
 export const metadata: Metadata = staticPageMetadata(
   "Contributors | AmeriLife",
   "Partner with AmeriLife to accelerate growth. Learn about our contributors and how you can become one.",
   "/contributors/"
 );
 
+export type GetContributorsResult = {
+  contributors: Contributor[];
+};
+
 export default async function ContributorPage() {
+
+  // ✅ ADD THIS (fetch + filter)
+  const data = await fetchGraphQL<GetContributorsResult>(
+  GET_CONTRIBUTORS
+);
+console.log("CONTRIBUTORS DATA:", data);
+
+  const contributors: Contributor[] = data?.contributors ?? [];
 
   return (
     <article className="bg-white">
@@ -24,7 +40,8 @@ export default async function ContributorPage() {
       />
 
       <FadeInOnView direction="up" className="w-full">
-        <ContributorTeam />
+        {/* ✅ PASS CONTRIBUTORS (this was missing) */}
+        <ContributorTeam contributors={contributors} />
       </FadeInOnView>
 
       <FadeInOnView direction="up" className="w-full">
