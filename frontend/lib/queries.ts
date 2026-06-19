@@ -133,7 +133,20 @@ query GetContributors {
     userFields {
       jobTitle
       company
+      companyWebsite
       headshot
+      bio
+      website
+      facebook
+      instagram
+      linkedin
+      myspace
+      pinterest
+      soundcloud
+      tumblr
+      wikipedia
+      twitter
+      youtube
       featured
       isContributor
     }
@@ -148,8 +161,20 @@ export type Contributor = {
   userFields?: {
     jobTitle?: string | null;
     company?: string | null;
+    companyWebsite?: string | null;
     headshot?: string | null;
+    bio?: string | null;
+    website?: string | null;
+    facebook?: string | null;
+    instagram?: string | null;
     linkedin?: string | null;
+    myspace?: string | null;
+    pinterest?: string | null;
+    soundcloud?: string | null;
+    tumblr?: string | null;
+    wikipedia?: string | null;
+    twitter?: string | null;
+    youtube?: string | null;
     featured?: boolean | null;
     isContributor?: boolean | null;
   };

@@ -6,9 +6,10 @@ import { ContributorDisclaimer } from "@/app/components/contributors/Contributor
 import { JsonLd } from "@/app/components/seo/JsonLd";
 import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 
-// ✅ ADD THESE
 import { fetchGraphQL } from "@/lib/wp-client";
 import { GET_CONTRIBUTORS, type Contributor } from "@/lib/queries";
+
+import { cache } from "react";
 
 export const metadata: Metadata = staticPageMetadata(
   "Contributors | AmeriLife",
@@ -23,10 +24,12 @@ export type GetContributorsResult = {
 export default async function ContributorPage() {
 
   // ✅ ADD THIS (fetch + filter)
-  const data = await fetchGraphQL<GetContributorsResult>(
-  GET_CONTRIBUTORS
-);
-console.log("CONTRIBUTORS DATA:", data);
+  
+  const getContributors = cache(async () => {
+    return fetchGraphQL<GetContributorsResult>(GET_CONTRIBUTORS);
+  });
+  
+  const data = await getContributors();
 
   const contributors: Contributor[] = data?.contributors ?? [];
 
