@@ -9,10 +9,8 @@ import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import { fetchGraphQL } from "@/lib/wp-client";
 import { GET_CONTRIBUTORS, type Contributor } from "@/lib/queries";
 
-// ✅ ADD THIS
 import { cache } from "react";
 
-// ✅ ADD THIS (dedupes requests)
 const getContributors = cache(async () => {
   return fetchGraphQL<{ contributors: Contributor[] }>(GET_CONTRIBUTORS);
 });
@@ -43,6 +41,25 @@ export default async function ContributorPage({
 
   const fields = contributor.userFields;
 
+  // const socialLinks = [
+  //   { label: "Company Website", value: fields?.companyWebsite },
+  //   { label: "Website", value: fields?.website },
+  //   { label: "LinkedIn", value: fields?.linkedin },
+  //   { label: "Facebook", value: fields?.facebook },
+  //   { label: "Instagram", value: fields?.instagram },
+  //   { label: "X", value: fields?.twitter ? `https://x.com/${fields.twitter}` : undefined },
+  //   { label: "YouTube", value: fields?.youtube },
+  //   { label: "Pinterest", value: fields?.pinterest },
+  //   { label: "SoundCloud", value: fields?.soundcloud },
+  //   { label: "Tumblr", value: fields?.tumblr },
+  //   { label: "Wikipedia", value: fields?.wikipedia },
+  // ];
+
+  // const filteredLinks: { label: string; value: string }[] = socialLinks.filter(
+  //   (link): link is { label: string; value: string } =>
+  //     typeof link.value === "string" && link.value.length > 0
+  // );
+
   return (
     <article className="py-16">
       <JsonLd
@@ -54,12 +71,12 @@ export default async function ContributorPage({
 
       <div className="mx-auto max-w-5xl bg-white p-8 flex flex-col md:flex-row gap-8">
         {/* IMAGE */}
-        <div className="w-full md:w-[260px] flex-shrink-0">
+        <div className="w-full md:w-[300px] flex-shrink-0">
           <Image
             src={fields?.headshot || "/images/default-avatar.png"}
             alt={contributor.name || ""}
-            width={260}
-            height={260}
+            width={300}
+            height={300}
             className="rounded-lg object-cover"
           />
         </div>
@@ -69,42 +86,88 @@ export default async function ContributorPage({
           <h1 className="text-4xl font-bold text-[var(--color-fg)] mb-3">
             {contributor.name}
           </h1>
-
+              
           <p className="text-lg leading-relaxed text-black mt-4">
-            <span className="underline">{contributor.name}</span>{" "}
-            is the{" "}
-            <span className="underline">
-              {fields?.jobTitle || "Contributor"}
-            </span>{" "}
-            at{" "}
-            {fields?.company ? (
-              <span className="underline">{fields.company}</span>
-            ) : (
-              "AmeriLife"
-            )}
-            , an{" "}
-            <a
-              href="https://amerilife.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-[var(--color-brand-primary)]"
-            >
-              AmeriLife
-            </a>{" "}
-            company.
-          </p>
-
-          {/* LinkedIn */}
-          {fields?.linkedin && (
+          {/* NAME */}
+          {fields?.linkedin ? (
             <a
               href={fields.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-[var(--color-brand-primary)] font-medium mt-4"
+              className="underline hover:text-[var(--color-brand-primary)]"
             >
-              LinkedIn
+              {contributor.name}
             </a>
+          ) : (
+            <span>{contributor.name}</span>
+          )}{" "}
+        
+          is the{" "}
+        
+          {/* JOB TITLE */}
+          <span>{fields?.jobTitle || "Contributor"}</span>{" "}
+        
+          at{" "}
+        
+          {/* COMPANY */}
+          {fields?.company ? (
+            fields?.companyWebsite ? (
+              <a
+                href={fields.companyWebsite}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-[var(--color-brand-primary)]"
+              >
+                {fields.company}
+              </a>
+            ) : (
+              <span>{fields.company}</span>
+            )
+          ) : (
+            "AmeriLife"
           )}
+          , an{" "}
+        
+          {/* AMERILIFE LINK (unchanged) */}
+          <a
+            href="https://amerilife.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-[var(--color-brand-primary)]"
+          >
+            AmeriLife
+          </a>{" "}
+          company.
+        </p>
+        
+        {/* LINKEDIN IMAGE */}
+        {fields?.linkedin && (
+          <a
+            href={fields.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center mt-10"
+          >
+            <Image
+              src="https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/06/Linkedin-grey-300x86-1.png"
+              alt="LinkedIn"
+              width={150}
+              height={50}
+            />
+          </a>
+        )}
+        
+        {/* BIO */}
+        {fields?.bio && (
+          <div className="mt-6 space-y-4 text-sm leading-relaxed text-black">
+            {fields.bio.split("\n").map((paragraph, i) => {
+              if (!paragraph.trim()) return null;
+            
+              return <p key={i}>{paragraph}</p>;
+            })}
+          </div>
+        )}
+
         </div>
       </div>
 
