@@ -87,14 +87,14 @@ export default async function ContributorPage({
             {contributor.name}
           </h1>
               
-          <p className="text-lg leading-relaxed text-black mt-4">
+          <p className="text-lg leading-relaxed text-black mt-4 font-semibold">
           {/* NAME */}
           {fields?.linkedin ? (
             <a
               href={fields.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-[var(--color-brand-primary)]"
+              className="underline hover:text-[var(--color-brand-primary)] font-semibold"
             >
               {contributor.name}
             </a>
@@ -116,7 +116,7 @@ export default async function ContributorPage({
                 href={fields.companyWebsite}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline hover:text-[var(--color-brand-primary)]"
+                className="underline hover:text-[var(--color-brand-primary)] font-semibold"
               >
                 {fields.company}
               </a>
@@ -133,12 +133,23 @@ export default async function ContributorPage({
             href="https://amerilife.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-[var(--color-brand-primary)]"
+            className="underline hover:text-[var(--color-brand-primary)] font-semibold"
           >
             AmeriLife
           </a>{" "}
           company.
         </p>
+
+        {/* BIO */}
+        {fields?.bio && (
+          <div className="mt-2 space-y-4 text-sm leading-relaxed text-black">
+            {fields.bio.split("\n").map((paragraph, i) => {
+              if (!paragraph.trim()) return null;
+            
+              return <p key={i}>{paragraph}</p>;
+            })}
+          </div>
+        )}
         
         {/* LINKEDIN IMAGE */}
         {fields?.linkedin && (
@@ -155,17 +166,6 @@ export default async function ContributorPage({
               height={50}
             />
           </a>
-        )}
-        
-        {/* BIO */}
-        {fields?.bio && (
-          <div className="mt-6 space-y-4 text-sm leading-relaxed text-black">
-            {fields.bio.split("\n").map((paragraph, i) => {
-              if (!paragraph.trim()) return null;
-            
-              return <p key={i}>{paragraph}</p>;
-            })}
-          </div>
         )}
 
         </div>
