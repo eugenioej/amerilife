@@ -1,12 +1,8 @@
-import { rewriteUploadsUrl } from "@/lib/wp-media";
-
-const BANNER_10 = "https://headlessameril.wpenginepowered.com/wp-content/uploads/2021/12/banner-10.png";
 
 export function AcquisitionPartnerHero() {
   return (
       <div
-        className="relative w-full overflow-hidden bg-cover bg-center "
-        style={{ backgroundImage: `url(${rewriteUploadsUrl(BANNER_10)})` }}
+        className="relative w-full overflow-hidden bg-cover bg-center bg-[var(--color-brand-dark)]"
       >
         <div className="absolute inset-0 bg-black/20" aria-hidden />
         <div className="relative mx-auto flex w-full items-center justify-center px-[var(--container-padding-x)]">

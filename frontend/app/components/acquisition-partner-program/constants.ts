@@ -8,9 +8,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-const UAT_UPLOADS = "https://uatamerilife.wpengine.com/wp-content/uploads";
-
-export const HERO_IMAGE = `${UAT_UPLOADS}/2021/12/business_people_hands_high_five_2880x764.png`;
+const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 
 export type TeamMember = {
   name: string;
@@ -23,7 +21,7 @@ export const CORP_DEV_TEAM: TeamMember[] = [
   {
     name: "Mike Tobitsch",
     title: "Head of Corporate Development",
-    imageSrc: `${UAT_UPLOADS}/2025/02/Mike-Tobitsch.png`,
+    imageSrc: `${UPLOADS}/2026/06/Mike-Tobitsch.webp`,
   },
   {
     name: "Stephen Smith",
@@ -33,12 +31,12 @@ export const CORP_DEV_TEAM: TeamMember[] = [
   {
     name: "Victoria Lucas",
     title: "Corporate Development Manager",
-    imageSrc: `${UAT_UPLOADS}/2025/02/Victoria-Lucas.png`,
+    imageSrc: `${UPLOADS}/2026/06/Victoria-Lucas.webp`,
   },
   {
     name: "Lauren Pacifico",
     title: "Corporate Development Manager",
-    imageSrc: `${UAT_UPLOADS}/2025/02/Lauren-Pacifico.png`,
+    imageSrc: `${UPLOADS}/2026/06/Lauren-Pacifico.webp`,
   },
   {
     name: "Austin Sellers",
@@ -58,12 +56,12 @@ export const CORP_DEV_TEAM: TeamMember[] = [
   {
     name: "Laurel Jones",
     title: "Corporate Development Associate",
-    imageSrc: `${UAT_UPLOADS}/2025/02/Laurel-Jones.png`,
+    imageSrc: `${UPLOADS}/2026/06/Laurel-Jones.webp`,
   },
   {
     name: "Michael Ogden",
     title: "Corporate Development Associate",
-    imageSrc: `${UAT_UPLOADS}/2025/02/Michael-Ogden.png`,
+    imageSrc: `${UPLOADS}/2026/06/Michael-Ogden.webp`,
   },
 ];
 

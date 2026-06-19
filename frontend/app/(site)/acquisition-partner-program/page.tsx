@@ -7,10 +7,12 @@ import { AcquisitionPartnerHero } from "@/app/components/acquisition-partner-pro
 import { AcquisitionPartnerApproach } from "@/app/components/acquisition-partner-program/AcquisitionPartnerApproach";
 import { AcquisitionPartnerTeam } from "@/app/components/acquisition-partner-program/AcquisitionPartnerTeam";
 import { AcquisitionPartnerCulture } from "@/app/components/acquisition-partner-program/AcquisitionPartnerCulture";
+import { AcquisitionPartnerForm } from "@/app/components/acquisition-partner-program/AcquisitionPartnerForm";
 import { JsonLd } from "@/app/components/seo/JsonLd";
 import { fetchGraphQL } from "@/lib/wp-client";
 import { GET_POSTS, type PostsListItem, type PostsListResult } from "@/lib/queries";
 import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
+import { Star } from "lucide-react";
 
 export const metadata: Metadata = staticPageMetadata(
   "Acquisition Partner Program | AmeriLife",
@@ -101,32 +103,44 @@ export default async function AcquisitionPartnerProgramPage() {
               walk through details of our partnership program:
             </p>
 
-            <p className="text-base leading-relaxed text-[var(--color-fg)]">
-              At AmeriLife, our mission is to provide your agents and advisors with
-              the health and wealth solutions they need to deliver peace of mind and
-              help their clients live longer, healthier lives.
-            </p>
+            <div className="mt-8 flex justify-center">
+              <a
+                href="#acquisitionPartnerForm"
+                className="group inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#1f3a4d] hover:bg-[#1a3140] transition"
+              >
+                <svg
+                  className="w-6 h-6 text-white transition-transform group-hover:translate-y-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 9l6 6 6-6"
+                  />
+                </svg>
+              </a>
+            </div>
 
-            <Link
-              href="/contact"
-              variant="button"
-              className="motion-cta mt-10 inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-brand-primary)] px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-[var(--color-brand-primary-hover)]"
-            >
-              CONTACT US
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </Link>
           </div>
         </div>
+      </FadeInOnView>
+
+      <FadeInOnView direction="up" className="w-full">
+        <AcquisitionPartnerForm/>
       </FadeInOnView>
 
       <FadeInOnView direction="up" className="w-full">
         <AcquisitionPartnerApproach />
       </FadeInOnView>
 
-      <FadeInOnView direction="up" className="w-full bg-[#f0f0f0] py-16 sm:py-20">
+      <FadeInOnView direction="up" className="w-full bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
+          <div className="flex justify-center mt-6">
+            <Star className="w-8 h-8 text-[var(--color-brand-primary)] fill-[var(--color-brand-primary)] mb-2" />
+          </div>
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-base leading-relaxed text-[var(--color-fg)]">
               At AmeriLife, our mission is to provide your agents and advisors with

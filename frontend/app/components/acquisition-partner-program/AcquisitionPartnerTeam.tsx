@@ -3,7 +3,7 @@ import { AcquisitionPartnerTeamCard } from "./AcquisitionPartnerTeamCard";
 
 export function AcquisitionPartnerTeam() {
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-[#f0f0f0] py-16 sm:py-20">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
         <h2 className="mb-4 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
           Meet Our Team

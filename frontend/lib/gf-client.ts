@@ -22,7 +22,7 @@ export const HEADER_CONTACT_POPUP_FORM_ID = 54;
 export const FIND_AN_AGENT_FORM_ID = 26;
 
 /** Gravity Forms database ID for `/acquisition-partner-program/` (Exploratory Discussion). */
-export const ACQUISITION_PARTNER_FORM_ID = 90;
+export const ACQUISITION_PARTNER_FORM_ID = 58;
 
 /** Headless default “Connect with an Agent” form when agency has no `gravityFormId`. */
 export const DEFAULT_CONNECT_GF_FORM_ID = 31;
