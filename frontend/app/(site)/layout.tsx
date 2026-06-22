@@ -1,14 +1,14 @@
 import { LayoutShell } from "@/app/components/layout/LayoutShell";
 
 export const metadata = {
-  title: "Masterminds",
-  description: "Masterminds Agenda",
+  title: "AmeriLife",
+  description: "AmeriLife",
 
   manifest: "/manifest.json",
 
   appleWebApp: {
     capable: true,
-    title: "Masterminds",
+    title: "AmeriLife",
   },
 
   icons: {

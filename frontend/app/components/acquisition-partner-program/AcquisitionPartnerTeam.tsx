@@ -21,7 +21,7 @@ export function AcquisitionPartnerTeam() {
           Questions? We&apos;ve Got Answers.
         </h2>
               
-        <p className="mx-auto mb-12 max-w-3xl text-center text-base leading-relaxed text-[var(--color-muted)]">
+        <p className="mx-auto max-w-3xl text-center text-base leading-relaxed text-[var(--color-muted)]">
           Please feel free to contact a member of our <a
                href="mailto:corporatedevelopment@amerilife.com"
                className="text-[var(--color-link)] underline-offset-4 hover:text-[var(--color-link-hover)] hover:underline font-bold"

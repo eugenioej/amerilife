@@ -7,7 +7,7 @@ export function AcquisitionPartnerCulture() {
   return (
     <section className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-        <div className="flex justify-center mt-6">
+        <div className="flex justify-center">
           <Star className="w-8 h-8 text-[var(--color-brand-primary)] fill-[var(--color-brand-primary)] mb-2" />
         </div>
         <p className="mx-auto mb-12 max-w-4xl text-center text-base leading-relaxed text-[var(--color-fg)]">

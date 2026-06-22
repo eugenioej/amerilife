@@ -136,9 +136,9 @@ export default async function AcquisitionPartnerProgramPage() {
         <AcquisitionPartnerApproach />
       </FadeInOnView>
 
-      <FadeInOnView direction="up" className="w-full bg-white py-16 sm:py-20">
+      <FadeInOnView direction="up" className="w-full bg-white py-10 sm:py-10">
         <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center">
             <Star className="w-8 h-8 text-[var(--color-brand-primary)] fill-[var(--color-brand-primary)] mb-2" />
           </div>
           <div className="mx-auto max-w-3xl text-center">
@@ -147,17 +147,6 @@ export default async function AcquisitionPartnerProgramPage() {
               the health and wealth solutions they need to deliver peace of mind and
               help their clients live longer, healthier lives.
             </p>
-
-            <Link
-              href="/contact"
-              variant="button"
-              className="motion-cta mt-10 inline-flex w-fit items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-brand-primary)] px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-[var(--color-brand-primary-hover)]"
-            >
-              CONTACT US
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </Link>
           </div>
         </div>
       </FadeInOnView>
