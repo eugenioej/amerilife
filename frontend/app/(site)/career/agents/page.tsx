@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Link } from "@/app/components/ui/Link";
-import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { staticPageMetadata } from "@/lib/seo";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
@@ -37,8 +35,7 @@ const AGENT_BENEFITS = [
 ] as const;
 
 const GET_STARTED_URL = "https://amerilife.avature.net/careers";
-const AGENT_PORTAL_URL = "https://amerilifecareers.com/wp-login.php";
-const WHAT_TO_EXPECT_URL = "https://amerilife.com/career/agents/process";
+const AGENT_PORTAL_URL = "https://dashboard.amerilifecareers.com/wp-login.php?redirect_to=https%3A%2F%2Fdashboard.amerilifecareers.com%2Fwp-admin%2F&reauth=1";
 
 export default function CareerAgentsPage() {
   return (
@@ -46,14 +43,6 @@ export default function CareerAgentsPage() {
       {/* Breadcrumb + Title - white background */}
       <div className="bg-white px-[var(--container-padding-x)] py-6">
         <div className="mx-auto max-w-[var(--container-max)]">
-          <SiteBreadcrumb
-            className="mb-4"
-            items={[
-              { label: "Home", href: "/" },
-              { label: "AmeriLife Offices", href: "/career/" },
-              { label: "Career Agents" },
-            ]}
-          />
           <h1 className="text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
             Career Agents
           </h1>
@@ -136,17 +125,6 @@ export default function CareerAgentsPage() {
 
           {/* CTAs */}
           <div className="flex flex-wrap items-center gap-4">
-            <Link
-              href={WHAT_TO_EXPECT_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-[var(--radius-full)] border-2 border-[var(--color-brand-primary)] bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary)] hover:text-white no-underline"
-            >
-              What to Expect as an Agent
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </Link>
             <a
               href={GET_STARTED_URL}
               target="_blank"
