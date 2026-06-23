@@ -87,23 +87,7 @@ export default async function ContributorPage({
             {contributor.name}
           </h1>
               
-          <p className="text-lg leading-relaxed text-black mt-4 font-semibold">
-          {/* NAME */}
-          {fields?.linkedin ? (
-            <a
-              href={fields.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-[var(--color-brand-primary)] font-semibold"
-            >
-              {contributor.name}
-            </a>
-          ) : (
-            <span>{contributor.name}</span>
-          )}{" "}
-        
-          is the{" "}
-        
+          <p className="text-lg leading-relaxed text-black mt-4 font-semibold">                  
           {/* JOB TITLE */}
           <span>{fields?.jobTitle || "Contributor"}</span>{" "}
         
@@ -126,18 +110,24 @@ export default async function ContributorPage({
           ) : (
             "AmeriLife"
           )}
-          , an{" "}
-        
-          {/* AMERILIFE LINK (unchanged) */}
-          <a
-            href="https://amerilife.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-[var(--color-brand-primary)] font-semibold"
-          >
-            AmeriLife
-          </a>{" "}
-          company.
+              
+          {fields?.company?.trim() !== "AmeriLife" ? (
+            <>
+              , an{" "}
+              <a
+                href="https://amerilife.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-[var(--color-brand-primary)] font-semibold"
+              >
+                AmeriLife
+              </a>{" "}
+              company.
+            </>
+          ) : (
+            "."
+          )}
+
         </p>
 
         {/* BIO */}

@@ -6,7 +6,6 @@ type Props = {
 };
 
 export function ContributorTeam({ contributors = [] }: Props) {
-  console.log("RENDER TEAM:", contributors);
 
   return (
     <section className="bg-white py-16 sm:py-20">
