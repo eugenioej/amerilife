@@ -33,24 +33,37 @@ export async function fetchGraphQL<T>(
   signal?: AbortSignal,
 ): Promise<T> {
   const graphqlEndpoint = getGraphQLEndpoint();
-  const res = await fetch(graphqlEndpoint, {
-    method: "POST",
+
+  // ✅ Build GET URL (cacheable)
+  const params = new URLSearchParams({
+    query,
+  });
+
+  if (variables && Object.keys(variables).length > 0) {
+    params.append("variables", JSON.stringify(variables));
+  }
+
+  const url = `${graphqlEndpoint}?${params.toString()}`;
+
+  const res = await fetch(url, {
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
+      "User-Agent": "Next.js GraphQL Client",
     },
-    body: JSON.stringify({
-      query,
-      variables,
-    }),
-    cache: "no-store",
+
+    // ✅ IMPORTANT: enable caching (fixes 429 issues)
+    next: { revalidate: 120 }, // adjust to your needs (60–300 range is safe)
+
     ...(signal ? { signal } : {}),
   });
 
   if (!res.ok) {
-    throw new Error(`GraphQL request failed: ${res.statusText}`);
+    throw new Error(`GraphQL request failed: ${res.status} ${res.statusText}`);
   }
 
-  const json: { data?: T | null; errors?: { message?: string }[] } = await res.json();
+  const json: { data?: T | null; errors?: { message?: string }[] } =
+    await res.json();
 
   const errorMsgs =
     json.errors?.map((e) => e.message).filter((m): m is string => Boolean(m)) ?? [];
@@ -59,11 +72,12 @@ export async function fetchGraphQL<T>(
 
   if (!hasData) {
     throw new Error(
-      errorMsgs.length ? `GraphQL failed: ${errorMsgs.join("; ")}` : "GraphQL returned no data",
+      errorMsgs.length
+        ? `GraphQL failed: ${errorMsgs.join("; ")}`
+        : "GraphQL returned no data",
     );
   }
 
-  // WPGraphQL may attach warnings or field-level errors while still returning usable data.
   if (errorMsgs.length && process.env.NODE_ENV === "development") {
     console.warn("[GraphQL errors alongside data]", errorMsgs);
   }
