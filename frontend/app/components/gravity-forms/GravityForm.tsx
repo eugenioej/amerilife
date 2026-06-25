@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import type { GfFieldNode, GfFormData } from "@/lib/gf-types";
 import { nameInputsForDisplay } from "@/lib/gf-name-field";
 import { submitGravityForm } from "@/lib/gf-client";
 import { Button } from "@/app/components/ui/Button";
 import { GfRecaptchaField } from "./GfRecaptchaField";
+
 
 const inputClass =
   "w-full rounded border border-[var(--color-border)] px-4 py-3 text-[var(--color-fg)] placeholder:text-[var(--color-muted)] focus:border-[var(--color-brand-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-primary)]";
@@ -163,6 +164,7 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
   const submitImageUrl = submitBtn?.imageUrl?.trim() ?? "";
 
   const [stringValues, setStringValues] = useState<Record<number, string>>({});
+  const [frontendUrl, setFrontendUrl] = useState("");
   const [nameParts, setNameParts] = useState<Record<string, string>>({});
   const [checkboxChecked, setCheckboxChecked] = useState<Record<string, boolean>>({});
   const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null);
@@ -171,6 +173,26 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
   const [clientError, setClientError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [successHtml, setSuccessHtml] = useState<string | null>(null);
+
+  useEffect(() => {
+    setFrontendUrl(window.location.href);
+  }, []);
+
+  useEffect(() => {
+    if (!frontendUrl) return;
+
+    const TARGET_FORM_ID = 31;   
+    const TARGET_FIELD_ID = 17;  
+
+    if (form.databaseId !== TARGET_FORM_ID) return;
+
+    setStringValues((prev) => ({
+      ...prev,
+      [TARGET_FIELD_ID]: frontendUrl,
+    }));
+
+  }, [frontendUrl, form.databaseId]);
+
 
   const inputCn = onDarkPanel ? inputClassOnDark : inputClass;
   const labelBlock =
@@ -250,6 +272,7 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
     }
     return null;
   }, [checkboxChecked, nameParts, nodes, recaptchaWidgetId, siteKey, stringValues]);
+  
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
