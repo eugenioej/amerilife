@@ -56,11 +56,13 @@ export async function submitGravityForm(
   fieldValues: Record<string, unknown>[],
 ): Promise<SubmitGfFormPayload | null> {
   const data = await fetchGraphQL<{ submitGfForm: SubmitGfFormPayload | null }>(
-    SUBMIT_GF_FORM,
-    {
-      id: String(formDatabaseId),
-      values: fieldValues,
-    },
-  );
+  SUBMIT_GF_FORM,
+  {
+    id: String(formDatabaseId),
+    values: fieldValues,
+  },
+  undefined,
+  true 
+);
   return data?.submitGfForm ?? null;
 }

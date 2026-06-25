@@ -27,17 +27,36 @@ function getGraphQLEndpoint(): string {
   );
 }
 
+
 export async function fetchGraphQL<T>(
   query: string,
   variables?: Record<string, unknown>,
   signal?: AbortSignal,
-): Promise<T> {
+  isMutation = false // ✅ ADD THIS
+): Promise<T>
+ {
   const graphqlEndpoint = getGraphQLEndpoint();
 
   // ✅ Build GET URL (cacheable)
-  const params = new URLSearchParams({
-    query,
+  let res: Response;
+
+if (isMutation) {
+  // ✅ POST for mutations (fixes your form)
+  res = await fetch(graphqlEndpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent": "Next.js GraphQL Client",
+    },
+    body: JSON.stringify({
+      query,
+      variables,
+    }),
+    ...(signal ? { signal } : {}),
   });
+} else {
+  // ✅ GET for queries (keeps your caching benefits)
+  const params = new URLSearchParams({ query });
 
   if (variables && Object.keys(variables).length > 0) {
     params.append("variables", JSON.stringify(variables));
@@ -45,19 +64,16 @@ export async function fetchGraphQL<T>(
 
   const url = `${graphqlEndpoint}?${params.toString()}`;
 
-  const res = await fetch(url, {
+  res = await fetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "User-Agent": "Next.js GraphQL Client",
     },
-
-    // ✅ IMPORTANT: enable caching (fixes 429 issues)
-    next: { revalidate: 120 }, // adjust to your needs (60–300 range is safe)
-
+    next: { revalidate: 120 }, // keep your cache
     ...(signal ? { signal } : {}),
   });
-
+}
   if (!res.ok) {
     throw new Error(`GraphQL request failed: ${res.status} ${res.statusText}`);
   }
