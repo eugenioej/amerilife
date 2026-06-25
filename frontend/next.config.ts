@@ -94,6 +94,7 @@ const nextConfig: NextConfig = {
         "https://recaptcha.net",
         "https://www.google.com/recaptcha/",
       ].join(" "),
+      "worker-src 'self' blob:",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
@@ -110,6 +111,7 @@ const nextConfig: NextConfig = {
         "https://www.google.com",
         "https://www.gstatic.com",
         "https://recaptcha.net",
+        "https://tracking.crazyegg.com",
       ].join(" "),
       [
         "frame-src 'self'",
