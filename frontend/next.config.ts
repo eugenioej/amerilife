@@ -83,52 +83,75 @@ const nextConfig: NextConfig = {
     // - connect-src covers GA4, GTM, Crazy Egg, and the headless WP GraphQL endpoint.
     // - frame-src covers GTM noscript iframe, YouTube video embeds, and Vimeo (e.g. /givesback).
     const csp = [
-      "default-src 'self'",
-      [
-        "script-src 'self' 'unsafe-inline'",
-        "https://www.googletagmanager.com",
-        "https://www.google-analytics.com",
-        "https://script.crazyegg.com",
-        "https://www.google.com",
-        "https://www.gstatic.com",
-        "https://recaptcha.net",
-        "https://www.google.com/recaptcha/",
-      ].join(" "),
-      "worker-src 'self' blob:",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https:",
-      [
-        "connect-src 'self'",
-        "https://www.googletagmanager.com",
-        "https://www.google-analytics.com",
-        "https://analytics.google.com",
-        "https://stats.g.doubleclick.net",
-        "https://region1.google-analytics.com",
-        "https://script.crazyegg.com",
-        "https://headlessameril.wpenginepowered.com",
-        "https://amerilife.com",        
-        "https://www.google.com",
-        "https://www.gstatic.com",
-        "https://recaptcha.net",
-        "https://tracking.crazyegg.com",
-      ].join(" "),
-      [
-        "frame-src 'self'",
-        "https://www.googletagmanager.com",
-        "https://www.youtube.com",
-        "https://www.youtube-nocookie.com",
-        "https://player.vimeo.com",
-        "https://www.google.com",
-        "https://maps.google.com",
-        "https://recaptcha.net",
-      ].join(" "),
-      "media-src 'self' https:",
-      "object-src 'none'",
-      "base-uri 'self'",
-      "form-action 'self' https://headlessameril.wpenginepowered.com",
-      "upgrade-insecure-requests",
-    ].join("; ");
+  "default-src 'self'",
+
+  [
+    "script-src 'self' 'unsafe-inline'",
+    "https://www.googletagmanager.com",
+    "https://www.google-analytics.com",
+    "https://script.crazyegg.com",
+    "https://www.google.com",
+    "https://www.gstatic.com",
+    "https://recaptcha.net",
+    "blob:", // ✅ needed for worker fallback edge cases
+  ].join(" "),
+
+  // ✅ FIXES WORKER ERROR
+  "worker-src 'self' blob:",
+
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  "img-src 'self' data: blob: https:",
+
+  [
+    "connect-src 'self'",
+    "https://www.googletagmanager.com",
+    "https://www.google-analytics.com",
+    "https://analytics.google.com",
+    "https://stats.g.doubleclick.net",
+    "https://region1.google-analytics.com",
+
+    // ✅ CrazyEgg full coverage
+    "https://script.crazyegg.com",
+    "https://tracking.crazyegg.com",
+    "https://assets-tracking.crazyegg.com",
+    "https://pagestates-tracking.crazyegg.com",
+
+    // ✅ Your APIs
+    "https://headlessameril.wpenginepowered.com",
+    "https://amerilife.com",
+
+    // ✅ reCAPTCHA
+    "https://www.google.com",
+    "https://www.gstatic.com",
+    "https://recaptcha.net",
+  ].join(" "),
+
+  [
+    "frame-src 'self'",
+    "https://www.googletagmanager.com",
+    "https://www.youtube.com",
+    "https://www.youtube-nocookie.com",
+    "https://player.vimeo.com",
+
+    // ✅ Google + reCAPTCHA
+    "https://www.google.com",
+    "https://maps.google.com",
+    "https://recaptcha.net",
+
+    // ✅ FIXES CrazyEgg iframe error
+    "https://script.crazyegg.com",
+  ].join(" "),
+
+  "media-src 'self' https:",
+  "object-src 'none'",
+  "base-uri 'self'",
+
+  // ✅ Important for your form submission
+  "form-action 'self' https://headlessameril.wpenginepowered.com",
+
+  "upgrade-insecure-requests",
+].join("; ");
 
     return [
       {
