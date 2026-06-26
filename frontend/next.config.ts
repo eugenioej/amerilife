@@ -72,6 +72,7 @@ const nextConfig: NextConfig = {
       { source: "/about/news", destination: "/newsroom", permanent: true },
       { source: "/about/news/", destination: "/newsroom", permanent: true },
       { source: "/our-leaders/:slug", destination: "/about-us/our-leaders/:slug", permanent: true },
+      { source: "/amerilife-of-rock-hill-llc", destination: "/rockhill", permanent: true },
       ...wp,
     ];
   },
