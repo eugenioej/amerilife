@@ -142,7 +142,7 @@ body:has(.masterminds-page) header, body:has(.masterminds-page) footer, body:has
 body:has(.kickoff-page) header,
 body:has(.kickoff-page) footer,
 body:has(.kickoff-page) .topbar {
-  display: none;
+  display: none !important;
 }
 body:has(.masterminds-page),body:has(.kickoff-page) {
   margin-top: 0 !important;

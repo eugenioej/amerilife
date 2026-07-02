@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import { JsonLd } from "@/app/components/seo/JsonLd";
-import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
 import Link from "next/link";
 import { breadcrumbJsonLd, staticPageMetadata } from "@/lib/seo";
 
@@ -32,7 +31,6 @@ export default function KickoffRecapPage() {
       <KickoffHero />
 
       <section className="mx-auto max-w-[1000px] px-6 py-16">
-        <FadeInOnView direction="up">
           <h2 className="mb-6 text-center text-5xl font-semibold text-[#244260]">
             Thank You!
           </h2>
@@ -493,7 +491,6 @@ export default function KickoffRecapPage() {
                 </div>
             </KickoffAccordion>
           </div>
-        </FadeInOnView>
       </section>
       <KickoffFooter/>
     </article>
