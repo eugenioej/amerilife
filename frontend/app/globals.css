@@ -138,10 +138,13 @@
   outline: 3px solid var(--color-brand-secondary);
   outline-offset: 2px;
 }
-body:has(.masterminds-page) header, body:has(.masterminds-page) footer, body:has(.masterminds-page) .topbar {
+body:has(.masterminds-page) header, body:has(.masterminds-page) footer, body:has(.masterminds-page) .topbar,
+body:has(.kickoff-page) header,
+body:has(.kickoff-page) footer,
+body:has(.kickoff-page) .topbar {
   display: none;
 }
-body:has(.masterminds-page) {
+body:has(.masterminds-page),body:has(.kickoff-page) {
   margin-top: 0 !important;
 }
 .contact-form-disclaimer {

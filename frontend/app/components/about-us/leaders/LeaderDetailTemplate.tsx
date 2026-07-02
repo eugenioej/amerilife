@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { ExternalLink } from "lucide-react";
 import { FadeInOnView } from "@/app/components/ui/FadeInOnView";
-import { Link } from "@/app/components/ui/Link";
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import type { LeaderDetail, LeaderListItem } from "@/lib/queries";
 import { rewriteUploadsInHtml, rewriteUploadsUrl } from "@/lib/wp-media";
