@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import type { Account, Profile } from "next-auth";
+import type { Profile } from "next-auth";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
 import { isMicrosoftIdeaxchangeAuthEnabled } from "@/lib/ideaxchange-auth-config";
 import { resolveIdeaxchangePersona } from "@/lib/ideaxchange-persona";
@@ -20,24 +20,34 @@ function extractEntraClaims(profile: Profile | undefined) {
   };
 }
 
-const providers = isMicrosoftIdeaxchangeAuthEnabled()
-  ? [
-      MicrosoftEntraID({
-        clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID,
-        clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET,
-        issuer: process.env.AUTH_MICROSOFT_ENTRA_ID_ISSUER,
-        authorization: {
-          params: {
-            scope: "openid profile email User.Read",
-          },
-        },
-      }),
-    ]
-  : [];
+function getMicrosoftEntraProvider() {
+  const clientId = process.env.AUTH_MICROSOFT_ENTRA_ID_ID?.trim();
+  const clientSecret = process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET?.trim();
+  const issuer = process.env.AUTH_MICROSOFT_ENTRA_ID_ISSUER?.trim();
+  if (!clientId || !clientSecret || !issuer) return null;
+
+  return MicrosoftEntraID({
+    clientId,
+    clientSecret,
+    issuer,
+    authorization: {
+      params: {
+        scope: "openid profile email User.Read",
+      },
+    },
+  });
+}
+
+function getAuthProviders() {
+  if (!isMicrosoftIdeaxchangeAuthEnabled()) return [];
+  const provider = getMicrosoftEntraProvider();
+  return provider ? [provider] : [];
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  secret: process.env.AUTH_SECRET,
   trustHost: true,
-  providers,
+  providers: getAuthProviders(),
   pages: {
     signIn: IDEAXCHANGE_LOGIN_PATH,
   },
