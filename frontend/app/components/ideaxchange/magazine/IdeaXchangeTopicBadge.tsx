@@ -5,13 +5,15 @@ import { ideaxchangeCategoryHref, topicLabel } from "./ideaxchange-utils";
 type Props = {
   post: Pick<IdeaxchangeListItem, "ideaxchangeTopics">;
   className: string;
+  /** When set, overrides the topic name (e.g. fixed "SALES" badge). */
+  label?: string;
 };
 
 const badgeLayout = "inline-block w-fit max-w-full self-start";
 
-export function IdeaXchangeTopicBadge({ post, className }: Props) {
-  const slug = post.ideaxchangeTopics?.nodes?.[0]?.slug?.trim();
-  const label = topicLabel(post);
+export function IdeaXchangeTopicBadge({ post, className, label: labelOverride }: Props) {
+  const slug = labelOverride ? undefined : post.ideaxchangeTopics?.nodes?.[0]?.slug?.trim();
+  const label = labelOverride ?? topicLabel(post);
   const merged = `${badgeLayout} ${className}`.trim();
   if (slug) {
     return (

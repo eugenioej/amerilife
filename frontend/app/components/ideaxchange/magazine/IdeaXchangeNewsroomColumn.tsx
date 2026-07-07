@@ -6,16 +6,17 @@ import { Button } from "@/app/components/ui/Button";
 import { Link } from "@/app/components/ui/Link";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
+import {
+  ideaxchangeFeaturedImageSrc,
+} from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import { IdeaXchangeTopicBadge } from "./IdeaXchangeTopicBadge";
 import {
   formatInsightExcerptPlain,
   formatBylineDate,
   ideaxchangeHref,
   INSIGHT_IMG_QUALITY,
+  topicLabel,
 } from "./ideaxchange-utils";
-
-const PLACEHOLDER_IMG =
-  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AML-Wealth-II-Announcement-040532023-HERO-1024x358-1.png";
 
 type Props = {
   initialPosts: IdeaxchangeListItem[];
@@ -26,9 +27,25 @@ type Props = {
   initialHasNextPage: boolean;
   /** When set, “Load more” requests the next page of this topic only. */
   topicSlug?: string;
+  /** When set, “Load more” requests the next page of magazine posts with this tag (e.g. sales). */
+  tagSlug?: string;
+  /** Override topic badge label (e.g. SALES on leaderboard blog section). */
+  badgeLabel?: string;
+  /** Base path for article singles (e.g. /ideaxchange/sales-success/). Defaults to magazine. */
+  articleBasePath?: string;
   /** When false, hides infinite “Load more” (e.g. category archives use numbered pages). Default true. */
   enableLoadMore?: boolean;
 };
+
+function articleHrefForBase(
+  slug: string | null | undefined,
+  articleBasePath?: string,
+): string {
+  if (!articleBasePath) return ideaxchangeHref(slug);
+  const base = articleBasePath.replace(/\/+$/, "");
+  if (!slug) return `${base}/`;
+  return `${base}/${slug}/`;
+}
 
 export function IdeaXchangeNewsroomColumn({
   initialPosts,
@@ -36,6 +53,9 @@ export function IdeaXchangeNewsroomColumn({
   initialEndCursor,
   initialHasNextPage,
   topicSlug,
+  tagSlug,
+  badgeLabel,
+  articleBasePath,
   enableLoadMore = true,
 }: Props) {
   const [posts, setPosts] = useState(initialPosts);
@@ -78,12 +98,13 @@ export function IdeaXchangeNewsroomColumn({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/ideaxchange/magazine/load-more", {
+      const res = await fetch("/api/ideaxchange/load-more", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           after: endCursor,
           ...(topicSlug ? { topicSlug } : {}),
+          ...(tagSlug ? { tagSlug } : {}),
         }),
       });
       const json = (await res.json()) as {
@@ -114,7 +135,7 @@ export function IdeaXchangeNewsroomColumn({
     } finally {
       setLoading(false);
     }
-  }, [deferredRest, endCursor, enableLoadMore, loading, topicSlug]);
+  }, [deferredRest, endCursor, enableLoadMore, loading, tagSlug, topicSlug]);
 
   const showLoadMore =
     enableLoadMore &&
@@ -123,9 +144,9 @@ export function IdeaXchangeNewsroomColumn({
   return (
     <div className="flex flex-col">
       {posts.map((post, index) => {
-        const img =
-          post.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
-        const href = ideaxchangeHref(post.slug);
+        const img = ideaxchangeFeaturedImageSrc(post.featuredImage?.node?.sourceUrl);
+        const href = articleHrefForBase(post.slug, articleBasePath);
+        const badge = badgeLabel ?? topicLabel(post);
         return (
           <article
             key={post.id}
@@ -150,6 +171,7 @@ export function IdeaXchangeNewsroomColumn({
               <IdeaXchangeTopicBadge
                 post={post}
                 className="pointer-events-auto absolute bottom-2 left-2 z-[1] bg-[var(--color-brand-primary)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white"
+                label={badgeLabel}
               />
             </div>
             <div className="min-w-0 flex-1">

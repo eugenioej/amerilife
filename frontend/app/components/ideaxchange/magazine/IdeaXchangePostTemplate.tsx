@@ -7,6 +7,7 @@ import { rewriteUploadsInHtml, rewriteUploadsUrl } from "@/lib/wp-media";
 import { InsightPostChrome } from "@/app/components/insights/InsightPostChrome";
 import { InsightSharePanel } from "@/app/components/insights/InsightSharePanel";
 import { IdeaXchangeTopicBadge } from "./IdeaXchangeTopicBadge";
+import { ideaxchangeFeaturedImageSrc } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import {
   formatBylineDate,
   formatInsightExcerptPlain,
@@ -16,9 +17,6 @@ import {
   INSIGHT_IMG_QUALITY,
   topicLabel,
 } from "./ideaxchange-utils";
-
-const PLACEHOLDER_IMG =
-  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AML-Wealth-II-Announcement-040532023-HERO-1024x358-1.png";
 
 type Props = {
   post: IdeaxchangeDetail;
@@ -46,7 +44,7 @@ function RelatedArticlesSidebar({ posts }: { posts: IdeaxchangeListItem[] }) {
       <ul className="divide-y divide-[var(--color-border)]">
         {posts.map((item) => {
           const img =
-            item.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
+            ideaxchangeFeaturedImageSrc(item.featuredImage?.node?.sourceUrl);
           const href = ideaxchangeHref(item.slug);
           return (
             <li key={item.id} className="flex gap-3 py-4 first:pt-0">
@@ -96,7 +94,7 @@ function RelatedPostsGrid({ posts }: { posts: IdeaxchangeListItem[] }) {
       <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
         {posts.map((item) => {
           const img =
-            item.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
+            ideaxchangeFeaturedImageSrc(item.featuredImage?.node?.sourceUrl);
           const href = ideaxchangeHref(item.slug);
           return (
             <article key={item.id} className="group flex flex-col">
@@ -162,10 +160,7 @@ export function IdeaXchangePostTemplate({
   shareUrl,
 }: Props) {
   const html = post.content ? rewriteUploadsInHtml(post.content) : "";
-  const rawImg =
-    post.featuredImage?.node?.sourceUrl?.trim() ||
-    "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1600&q=80";
-  const img = rewriteUploadsUrl(rawImg);
+  const img = rewriteUploadsUrl(ideaxchangeFeaturedImageSrc(post.featuredImage?.node?.sourceUrl));
   const excerptPlain = formatInsightExcerptPlain(post.excerpt);
   const topic = post.ideaxchangeTopics?.nodes?.[0];
   const topicName = topic?.name?.trim() || "Insights";

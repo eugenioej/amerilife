@@ -6,6 +6,10 @@ import {
   GET_INSIGHTS_ADS_SETTINGS,
   GET_INSIGHT_TOPIC_BY_SLUG,
   GET_INSIGHT_TOPIC_SLUGS,
+  GET_INSIGHT_TAG_BY_SLUG,
+  INSIGHT_SALES_TAG_SLUG,
+  INSIGHT_RECRUIT_TAG_SLUG,
+  INSIGHT_INITIATIVE_TAG_SLUG,
   type InsightBySlugResult,
   type InsightDetail,
   type InsightListItem,
@@ -14,6 +18,7 @@ import {
   type InsightsConnectionResult,
   type InsightTopicBySlugResult,
   type InsightTopicsSlugListResult,
+  type InsightTagBySlugResult,
 } from "@/lib/queries";
 
 /** First batch size for /insights/ magazine (hero + sidebar slots + main column page-one). */
@@ -297,6 +302,138 @@ export const getInsightCategoryPageData = cache(async function getInsightCategor
     return null;
   }
 });
+
+/** First batch for Sales-tagged magazine posts on the leaderboard page. */
+export const INSIGHTS_SALES_MAGAZINE_FIRST = 12;
+
+async function fetchInsightTagBySlugResult(
+  slug: string,
+  first: number,
+  after: string | null,
+): Promise<InsightTagBySlugResult> {
+  const variables = { slug, first, after };
+  try {
+    return await fetchGraphQL<InsightTagBySlugResult>(GET_INSIGHT_TAG_BY_SLUG, variables);
+  } catch (err) {
+    if (!isInsightFieldsSchemaGapError(err)) throw err;
+    const { GET_INSIGHT_TAG_BY_SLUG_MINIMAL: minimalQuery } = await import("@/lib/queries");
+    return await fetchGraphQL<InsightTagBySlugResult>(minimalQuery, variables);
+  }
+}
+
+export async function getInsightsSalesMagazineBundle(): Promise<{
+  posts: InsightListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  try {
+    const data = await fetchInsightTagBySlugResult(
+      INSIGHT_SALES_TAG_SLUG,
+      INSIGHTS_SALES_MAGAZINE_FIRST,
+      null,
+    );
+    const conn = data?.insightTag?.insights;
+    return {
+      posts: conn?.nodes ?? [],
+      pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
+    };
+  } catch (err) {
+    console.error("[insights] getInsightsSalesMagazineBundle failed:", err);
+    return { posts: [], pageInfo: { hasNextPage: false, endCursor: null } };
+  }
+}
+
+export async function fetchInsightsSalesAfterCursor(
+  after: string,
+  first = INSIGHTS_LOAD_MORE_FIRST,
+): Promise<{
+  nodes: InsightListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  const data = await fetchInsightTagBySlugResult(INSIGHT_SALES_TAG_SLUG, first, after);
+  const conn = data?.insightTag?.insights;
+  return {
+    nodes: conn?.nodes ?? [],
+    pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
+  };
+}
+
+/** First batch for Recruit-tagged magazine posts on the Recruiting Hub page. */
+export const INSIGHTS_RECRUIT_MAGAZINE_FIRST = 12;
+
+export async function getInsightsRecruitMagazineBundle(): Promise<{
+  posts: InsightListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  try {
+    const data = await fetchInsightTagBySlugResult(
+      INSIGHT_RECRUIT_TAG_SLUG,
+      INSIGHTS_RECRUIT_MAGAZINE_FIRST,
+      null,
+    );
+    const conn = data?.insightTag?.insights;
+    return {
+      posts: conn?.nodes ?? [],
+      pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
+    };
+  } catch (err) {
+    console.error("[insights] getInsightsRecruitMagazineBundle failed:", err);
+    return { posts: [], pageInfo: { hasNextPage: false, endCursor: null } };
+  }
+}
+
+export async function fetchInsightsRecruitAfterCursor(
+  after: string,
+  first = INSIGHTS_LOAD_MORE_FIRST,
+): Promise<{
+  nodes: InsightListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  const data = await fetchInsightTagBySlugResult(INSIGHT_RECRUIT_TAG_SLUG, first, after);
+  const conn = data?.insightTag?.insights;
+  return {
+    nodes: conn?.nodes ?? [],
+    pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
+  };
+}
+
+/** First batch for Initiative-tagged magazine posts on the Sales Success page. */
+export const INSIGHTS_INITIATIVE_MAGAZINE_FIRST = 12;
+
+export async function getInsightsInitiativeMagazineBundle(): Promise<{
+  posts: InsightListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  try {
+    const data = await fetchInsightTagBySlugResult(
+      INSIGHT_INITIATIVE_TAG_SLUG,
+      INSIGHTS_INITIATIVE_MAGAZINE_FIRST,
+      null,
+    );
+    const conn = data?.insightTag?.insights;
+    return {
+      posts: conn?.nodes ?? [],
+      pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
+    };
+  } catch (err) {
+    console.error("[insights] getInsightsInitiativeMagazineBundle failed:", err);
+    return { posts: [], pageInfo: { hasNextPage: false, endCursor: null } };
+  }
+}
+
+export async function fetchInsightsInitiativeAfterCursor(
+  after: string,
+  first = INSIGHTS_LOAD_MORE_FIRST,
+): Promise<{
+  nodes: InsightListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  const data = await fetchInsightTagBySlugResult(INSIGHT_INITIATIVE_TAG_SLUG, first, after);
+  const conn = data?.insightTag?.insights;
+  return {
+    nodes: conn?.nodes ?? [],
+    pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
+  };
+}
 
 export async function fetchInsightCategoryAfterCursor(
   topicSlug: string,

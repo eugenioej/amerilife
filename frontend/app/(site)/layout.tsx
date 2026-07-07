@@ -1,4 +1,8 @@
+import { headers } from "next/headers";
 import { LayoutShell } from "@/app/components/layout/LayoutShell";
+import { getIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
+import { isMicrosoftIdeaxchangeAuthEnabled } from "@/lib/ideaxchange-auth-config";
+import { isIdeaxchangePath } from "@/lib/ideaxchange-nav";
 
 export const metadata = {
   title: "AmeriLife",
@@ -20,11 +24,22 @@ export const viewport = {
   themeColor: "#091229",
 };
 
-
-export default function SiteLayout({
+export default async function SiteLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <LayoutShell>{children}</LayoutShell>;
+  const ideaxchangeAuth = await getIdeaxchangeAuth();
+  const pathname = (await headers()).get("x-pathname") ?? "";
+  const inIdeaxchange = isIdeaxchangePath(pathname);
+
+  return (
+    <LayoutShell
+      ideaxchangePersona={ideaxchangeAuth?.persona ?? null}
+      microsoftAuthEnabled={isMicrosoftIdeaxchangeAuthEnabled()}
+      inIdeaxchange={inIdeaxchange}
+    >
+      {children}
+    </LayoutShell>
+  );
 }

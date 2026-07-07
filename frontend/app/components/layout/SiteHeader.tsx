@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { Link } from "../ui/Link";
 import { ChevronDownIcon, ChevronRightIcon } from "../ui/ChevronDownIcon";
 import { MobileNav } from "./MobileNav";
@@ -12,14 +11,18 @@ import type { NavItem } from "@/lib/wp-menus";
 import { isContactNavItem } from "@/lib/nav-contact";
 import {
   IDEAXCHANGE_LOGO_SRC,
-  IDEAXCHANGE_VERTICAL_NAV,
-  isIdeaxchangePath,
 } from "@/lib/ideaxchange-nav";
-import { IDEAXCHANGE_MAGAZINE_PATH } from "@/lib/ideaxchange-constants";
+import {
+  type IdeaxchangePersona,
+  getIdeaxchangeHomeForPersona,
+  getIdeaxchangeNavForPersona,
+} from "@/lib/ideaxchange-persona";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 type SiteHeaderProps = {
   primaryMenu: NavItem[];
+  ideaxchangePersona?: IdeaxchangePersona | null;
+  inIdeaxchange?: boolean;
 };
 
 function HamburgerIcon({ open }: { open: boolean }) {
@@ -36,19 +39,25 @@ function HamburgerIcon({ open }: { open: boolean }) {
   );
 }
 
-export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
+export function SiteHeader({
+  primaryMenu,
+  ideaxchangePersona = null,
+  inIdeaxchange = false,
+}: SiteHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { openContactPopup } = useContactPopup();
-  const pathname = usePathname() ?? "";
-  const inIdeaxchange = isIdeaxchangePath(pathname);
 
-  const navItems = inIdeaxchange ? IDEAXCHANGE_VERTICAL_NAV : primaryMenu;
+  const navItems = inIdeaxchange
+    ? getIdeaxchangeNavForPersona(ideaxchangePersona ?? "sales")
+    : primaryMenu;
   const logoUrl = rewriteUploadsUrl(
     inIdeaxchange
       ? IDEAXCHANGE_LOGO_SRC
       : "https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/01/amerilife.svg",
   );
-  const logoHref = inIdeaxchange ? IDEAXCHANGE_MAGAZINE_PATH : "/";
+  const logoHref = inIdeaxchange
+    ? getIdeaxchangeHomeForPersona(ideaxchangePersona ?? "sales")
+    : "/";
   const logoAlt = inIdeaxchange ? "AmeriLife ideaXchange" : "AmeriLife";
   const logoAriaLabel = inIdeaxchange ? "ideaXchange Home" : "AmeriLife Home";
 
@@ -75,9 +84,21 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
           {/* Desktop nav */}
           <nav
             className="hidden items-center gap-8 lg:flex"
-            aria-label={inIdeaxchange ? "Content verticals" : "Main navigation"}
+            aria-label={inIdeaxchange ? "ideaXchange pillars" : "Main navigation"}
           >
             {navItems.map((item) => {
+              if (inIdeaxchange && item.disabled) {
+                return (
+                  <span
+                    key={item.label}
+                    className="cursor-not-allowed px-2 py-1 text-base font-semibold text-[var(--color-muted)] opacity-60"
+                    aria-disabled="true"
+                  >
+                    {item.label}
+                  </span>
+                );
+              }
+
               if (!inIdeaxchange && isContactNavItem(item)) {
                 return (
                   <div key={item.href + item.label} className="relative">

@@ -1,0 +1,187 @@
+/** Recruiting Hub — case studies and company profiles. */
+
+export type IdeaxchangeCampaignAsset = {
+  label?: string | null;
+  fileUrl?: string | null;
+  mimeType?: string | null;
+};
+
+export type IdeaxchangeCompanySummary = {
+  id: string;
+  slug?: string | null;
+  title?: string | null;
+  excerpt?: string | null;
+  content?: string | null;
+  featuredImage?: {
+    node?: { sourceUrl?: string | null; altText?: string | null };
+  } | null;
+  ideaxchangeCompanyFields?: {
+    websiteUrl?: string | null;
+    learnMoreUrl?: string | null;
+  } | null;
+};
+
+export type CaseStudyListItem = {
+  id: string;
+  slug?: string | null;
+  title?: string | null;
+  date?: string | null;
+  excerpt?: string | null;
+  featuredImage?: {
+    node?: { sourceUrl?: string | null; altText?: string | null };
+  } | null;
+  ideaxchangeCaseStudyFields?: {
+    isSpotlight?: boolean | null;
+    isFeatured?: boolean | null;
+    marketingCtaUrl?: string | null;
+    targetAudience?: string | null;
+    campaignSpend?: string | null;
+    campaignResults?: string | null;
+    campaignOverview?: string | null;
+    campaignAssets?: IdeaxchangeCampaignAsset[] | null;
+  } | null;
+  caseStudyCompany?: IdeaxchangeCompanySummary | null;
+};
+
+export type CaseStudyDetail = CaseStudyListItem & {
+  content?: string | null;
+  seo?: {
+    title?: string | null;
+    metaDesc?: string | null;
+    canonical?: string | null;
+    opengraphTitle?: string | null;
+    opengraphDescription?: string | null;
+  } | null;
+};
+
+export type CaseStudiesConnectionResult = {
+  ideaxchangeCaseStudies?: {
+    nodes: CaseStudyListItem[];
+    pageInfo?: {
+      hasNextPage?: boolean;
+      endCursor?: string | null;
+    };
+  };
+};
+
+export type CaseStudyBySlugResult = {
+  ideaxchangeCaseStudy?: CaseStudyDetail | null;
+};
+
+export type CompanyBySlugResult = {
+  ideaxchangeCompany?: IdeaxchangeCompanySummary | null;
+};
+
+const CASE_STUDY_LIST_FIELDS = `
+  id
+  slug
+  title
+  date
+  excerpt
+  featuredImage {
+    node {
+      sourceUrl
+      altText
+    }
+  }
+  ideaxchangeCaseStudyFields {
+    isSpotlight
+    isFeatured
+    targetAudience
+    campaignSpend
+    campaignResults
+    campaignOverview
+  }
+  caseStudyCompany {
+    id
+    slug
+    title
+  }
+`;
+
+export const GET_CASE_STUDIES = `
+  query GetCaseStudies($first: Int!, $after: String) {
+    ideaxchangeCaseStudies(
+      first: $first
+      after: $after
+      where: { orderby: { field: DATE, order: DESC }, status: PUBLISH }
+    ) {
+      nodes {
+        ${CASE_STUDY_LIST_FIELDS}
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`;
+
+export const GET_CASE_STUDY_BY_SLUG = `
+  query GetCaseStudyBySlug($slug: ID!) {
+    ideaxchangeCaseStudy(id: $slug, idType: SLUG) {
+      id
+      slug
+      title
+      date
+      excerpt
+      content
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      ideaxchangeCaseStudyFields {
+        isSpotlight
+        isFeatured
+        marketingCtaUrl
+        campaignAssets {
+          label
+          fileUrl
+          mimeType
+        }
+      }
+      caseStudyCompany {
+        id
+        slug
+        title
+        excerpt
+        ideaxchangeCompanyFields {
+          websiteUrl
+          learnMoreUrl
+        }
+      }
+      seo {
+        title
+        metaDesc
+        canonical
+        opengraphTitle
+        opengraphDescription
+      }
+    }
+  }
+`;
+
+export const GET_COMPANY_BY_SLUG = `
+  query GetCompanyBySlug($slug: ID!) {
+    ideaxchangeCompany(id: $slug, idType: SLUG) {
+      id
+      slug
+      title
+      excerpt
+      content
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      ideaxchangeCompanyFields {
+        websiteUrl
+        learnMoreUrl
+      }
+    }
+  }
+`;
+

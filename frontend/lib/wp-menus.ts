@@ -14,6 +14,8 @@ export type NavItem = {
   label: string;
   href: string;
   children?: NavItem[];
+  /** When true, render as non-interactive label (ideaXchange placeholder pillars). */
+  disabled?: boolean;
 };
 
 /** Static fallback when WP menus are empty (e.g. not yet configured). */

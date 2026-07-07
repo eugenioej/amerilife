@@ -1,35 +1,46 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { isIdeaxchangeSession } from "@/lib/ideaxchange-auth";
-import { IDEAXCHANGE_SESSION_COOKIE } from "@/lib/ideaxchange-constants";
+import { hasIdeaxchangeAccess } from "@/lib/ideaxchange-auth";
 import {
   fetchIdeaxchangeAfterCursor,
   fetchIdeaxchangeCategoryAfterCursor,
+  fetchIdeaxchangeSalesAfterCursor,
+  fetchIdeaxchangeRecruitAfterCursor,
+  fetchIdeaxchangeInitiativeAfterCursor,
   IDEAXCHANGE_LOAD_MORE_FIRST,
+  IDEAXCHANGE_RECRUIT_TAG_SLUG,
+  IDEAXCHANGE_SALES_TAG_SLUG,
+  IDEAXCHANGE_INITIATIVE_TAG_SLUG,
 } from "@/lib/ideaxchange-data";
 
 export async function POST(req: Request) {
-  const session = (await cookies()).get(IDEAXCHANGE_SESSION_COOKIE)?.value;
-  if (!isIdeaxchangeSession(session)) {
+  if (!(await hasIdeaxchangeAccess())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const body = (await req.json()) as { after?: unknown; topicSlug?: unknown };
+    const body = (await req.json()) as { after?: unknown; topicSlug?: unknown; tagSlug?: unknown };
     const after = typeof body.after === "string" ? body.after.trim() : "";
     if (!after) {
       return NextResponse.json({ error: "Missing or invalid after cursor" }, { status: 400 });
     }
 
     const topicSlug = typeof body.topicSlug === "string" ? body.topicSlug.trim() : "";
+    const tagSlug = typeof body.tagSlug === "string" ? body.tagSlug.trim() : "";
 
-    const result = topicSlug
-      ? await fetchIdeaxchangeCategoryAfterCursor(
-          topicSlug,
-          after,
-          IDEAXCHANGE_LOAD_MORE_FIRST,
-        )
-      : await fetchIdeaxchangeAfterCursor(after, IDEAXCHANGE_LOAD_MORE_FIRST);
+    const result =
+      tagSlug === IDEAXCHANGE_SALES_TAG_SLUG
+        ? await fetchIdeaxchangeSalesAfterCursor(after, IDEAXCHANGE_LOAD_MORE_FIRST)
+        : tagSlug === IDEAXCHANGE_RECRUIT_TAG_SLUG
+          ? await fetchIdeaxchangeRecruitAfterCursor(after, IDEAXCHANGE_LOAD_MORE_FIRST)
+          : tagSlug === IDEAXCHANGE_INITIATIVE_TAG_SLUG
+            ? await fetchIdeaxchangeInitiativeAfterCursor(after, IDEAXCHANGE_LOAD_MORE_FIRST)
+            : topicSlug
+          ? await fetchIdeaxchangeCategoryAfterCursor(
+              topicSlug,
+              after,
+              IDEAXCHANGE_LOAD_MORE_FIRST,
+            )
+          : await fetchIdeaxchangeAfterCursor(after, IDEAXCHANGE_LOAD_MORE_FIRST);
 
     return NextResponse.json(result);
   } catch (err) {

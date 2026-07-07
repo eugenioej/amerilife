@@ -1,8 +1,7 @@
 <?php
 /**
- * Plugin Name: AmeriLife ideaXchange CPT (MU)
- * Description: Gated ideaXchange magazine articles, topic & tag taxonomies, spotlight meta, WPGraphQL.
- * Version: 1.0.0
+ * AmeriLife ideaXchange Magazine CPT — loaded by amerilife-ideaxchange.php (not a standalone MU plugin).
+ * Description: Gated ideaXchange magazine (separate from public Insights) — topics, tags, spotlight meta, WPGraphQL.
  */
 
 if (!defined('ABSPATH')) {
@@ -21,7 +20,7 @@ function amerilife_ideaxchange_default_topics() {
 add_action('init', function () {
   register_post_type('ideaxchange_article', [
     'labels' => [
-      'name' => 'ideaXchange',
+      'name' => 'ideaXchange Magazine',
       'singular_name' => 'ideaXchange Article',
       'add_new' => 'Add Article',
       'add_new_item' => 'Add New Article',
@@ -31,7 +30,7 @@ add_action('init', function () {
       'search_items' => 'Search ideaXchange',
       'not_found' => 'No articles found',
       'not_found_in_trash' => 'No articles found in Trash',
-      'menu_name' => 'ideaXchange',
+      'menu_name' => 'ideaXchange Magazine',
     ],
     'public' => true,
     'has_archive' => false,
@@ -111,6 +110,11 @@ add_action('init', function () {
   if (!term_exists('featured', 'ideaxchange_tag')) {
     wp_insert_term('Featured', 'ideaxchange_tag', ['slug' => 'featured']);
   }
+  foreach (['sales' => 'Sales', 'recruit' => 'Recruit', 'initiative' => 'Initiative'] as $slug => $name) {
+    if (!term_exists($slug, 'ideaxchange_tag')) {
+      wp_insert_term($name, 'ideaxchange_tag', ['slug' => $slug]);
+    }
+  }
 }, 20);
 
 add_action('graphql_register_types', function () {
@@ -160,6 +164,102 @@ add_action('graphql_register_types', function () {
         'isSpotlight' => $spotlight,
         'isFeatured' => $featured,
       ];
+    },
+  ]);
+});
+
+/**
+ * Seed demo magazine articles from JSON.
+ *
+ * @return array{ok: bool, articles: int}
+ */
+function amerilife_ideaxchange_magazine_seed_demo($force = false) {
+  $path = __DIR__ . '/seed/ideaxchange-magazine-seed.json';
+  if (!is_readable($path)) {
+    return ['ok' => false, 'articles' => 0, 'error' => 'seed file missing'];
+  }
+
+  $raw = file_get_contents($path);
+  $data = json_decode((string) $raw, true);
+  if (!is_array($data)) {
+    return ['ok' => false, 'articles' => 0, 'error' => 'invalid json'];
+  }
+
+  if (!$force && get_option('amerilife_ideaxchange_magazine_seeded_v1')) {
+    return ['ok' => true, 'articles' => 0, 'skipped' => true];
+  }
+
+  $created = 0;
+
+  foreach ($data['articles'] ?? [] as $row) {
+    if (empty($row['slug']) || empty($row['title'])) {
+      continue;
+    }
+    $existing = get_page_by_path((string) $row['slug'], OBJECT, 'ideaxchange_article');
+    if ($existing && !$force) {
+      continue;
+    }
+    if ($existing && $force) {
+      wp_delete_post((int) $existing->ID, true);
+    }
+
+    $aid = wp_insert_post([
+      'post_type' => 'ideaxchange_article',
+      'post_status' => 'publish',
+      'post_title' => (string) $row['title'],
+      'post_name' => (string) $row['slug'],
+      'post_content' => isset($row['content']) ? (string) $row['content'] : '',
+      'post_excerpt' => isset($row['excerpt']) ? (string) $row['excerpt'] : '',
+      'post_date' => isset($row['date']) ? (string) $row['date'] : current_time('mysql'),
+    ], true);
+
+    if (is_wp_error($aid) || !$aid) {
+      continue;
+    }
+    $created++;
+
+    if (!empty($row['spotlight'])) {
+      update_post_meta($aid, 'is_spotlight', '1');
+    }
+    if (!empty($row['featured'])) {
+      update_post_meta($aid, 'is_featured', '1');
+    }
+
+    if (!empty($row['topic']) && taxonomy_exists('ideaxchange_topic')) {
+      $term = get_term_by('slug', (string) $row['topic'], 'ideaxchange_topic');
+      if ($term && !is_wp_error($term)) {
+        wp_set_object_terms($aid, [(int) $term->term_id], 'ideaxchange_topic');
+      }
+    }
+
+    if (!empty($row['tags']) && is_array($row['tags']) && taxonomy_exists('ideaxchange_tag')) {
+      $tag_ids = [];
+      foreach ($row['tags'] as $tag_slug) {
+        $term = get_term_by('slug', (string) $tag_slug, 'ideaxchange_tag');
+        if ($term && !is_wp_error($term)) {
+          $tag_ids[] = (int) $term->term_id;
+        }
+      }
+      if ($tag_ids) {
+        wp_set_object_terms($aid, $tag_ids, 'ideaxchange_tag');
+      }
+    }
+  }
+
+  update_option('amerilife_ideaxchange_magazine_seeded_v1', 1);
+
+  return ['ok' => true, 'articles' => $created];
+}
+
+add_action('rest_api_init', function () {
+  register_rest_route('amerilife/v1', '/seed-ideaxchange-magazine', [
+    'methods' => 'POST',
+    'permission_callback' => function () {
+      return current_user_can('edit_posts');
+    },
+    'callback' => function ($req) {
+      $force = (bool) $req->get_param('force');
+      return rest_ensure_response(amerilife_ideaxchange_magazine_seed_demo($force));
     },
   ]);
 });

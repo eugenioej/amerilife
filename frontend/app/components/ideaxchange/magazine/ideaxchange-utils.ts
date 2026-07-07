@@ -54,3 +54,38 @@ export const INSIGHT_IMG_QUALITY = 90;
 
 /** Main column posts before first “Load more” on /ideaxchange/magazine/. */
 export const INSIGHTS_NEWSROOM_INITIAL = 6;
+
+export function dedupeIdeaxchangePosts(
+  posts: IdeaxchangeListItem[],
+): IdeaxchangeListItem[] {
+  const seen = new Set<string>();
+  const out: IdeaxchangeListItem[] = [];
+  for (const p of posts) {
+    const id = p.id?.trim();
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    out.push(p);
+  }
+  return out;
+}
+
+/** Spotlight + recent sidebar slots for the magazine-style newsroom grid. */
+export function partitionNewsroomWithSidebar(posts: IdeaxchangeListItem[]) {
+  const unique = dedupeIdeaxchangePosts(posts);
+  let remaining = [...unique];
+
+  let spotlight: IdeaxchangeListItem | null = null;
+  const spotlightIdx = remaining.findIndex((p) => p.ideaxchangeFields?.isSpotlight);
+  if (spotlightIdx >= 0) {
+    spotlight = remaining[spotlightIdx]!;
+    remaining = remaining.filter((_, i) => i !== spotlightIdx);
+  } else if (remaining.length > 0) {
+    spotlight = remaining[0]!;
+    remaining = remaining.slice(1);
+  }
+
+  const recentSidebar = remaining.slice(0, 4);
+  const newsroomRest = remaining.slice(4);
+
+  return { spotlight, recentSidebar, newsroomRest };
+}

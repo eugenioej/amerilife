@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: AmeriLife Insights CPT (MU)
- * Description: Magazine-style Insights custom post type, topic & tag taxonomies, spotlight meta, WPGraphQL, optional demo seed.
+ * Description: Public magazine at /insights/ — separate from gated ideaXchange Magazine (`ideaxchange_article`).
  * Version: 1.0.0
  */
 
@@ -147,6 +147,15 @@ add_action('init', function () {
   }
   if (!term_exists('featured', 'insight_tag')) {
     wp_insert_term('Featured', 'insight_tag', ['slug' => 'featured']);
+  }
+  if (!term_exists('sales', 'insight_tag')) {
+    wp_insert_term('Sales', 'insight_tag', ['slug' => 'sales']);
+  }
+  if (!term_exists('recruit', 'insight_tag')) {
+    wp_insert_term('Recruit', 'insight_tag', ['slug' => 'recruit']);
+  }
+  if (!term_exists('initiative', 'insight_tag')) {
+    wp_insert_term('Initiative', 'insight_tag', ['slug' => 'initiative']);
   }
 }, 20);
 

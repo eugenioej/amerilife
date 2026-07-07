@@ -1,0 +1,96 @@
+{
+  "articles": [
+    {
+      "slug": "power-of-hobbies-productivity",
+      "title": "The Power Of Hobbies To Boost Productivity, Creativity, And Connection",
+      "excerpt": "How personal interests fuel professional performance across AmeriLife affiliates.",
+      "content": "<p>Exploring hobbies as a lever for creativity, resilience, and team connection in distribution organizations.</p>",
+      "date": "2025-10-01 10:00:00",
+      "topic": "leadership",
+      "tags": ["sales", "featured"],
+      "spotlight": true,
+      "featured": true
+    },
+    {
+      "slug": "medicare-aep-playbook",
+      "title": "Medicare AEP Playbook For Agent Teams",
+      "excerpt": "Tactics for structuring outreach, appointments, and follow-up during Annual Enrollment Period.",
+      "content": "<p>A practical AEP playbook for team leaders scaling Medicare production.</p>",
+      "date": "2025-09-15 10:00:00",
+      "topic": "health",
+      "tags": ["sales"],
+      "featured": true
+    },
+    {
+      "slug": "recruiting-pipeline-basics",
+      "title": "Building A Recruiting Pipeline That Compounds",
+      "excerpt": "Foundational steps for affiliate leaders growing agent headcount sustainably.",
+      "content": "<p>Pipeline design, nurture sequences, and interview readiness for recruiting leaders.</p>",
+      "date": "2025-09-10 10:00:00",
+      "topic": "leadership",
+      "tags": ["recruit"],
+      "featured": true
+    },
+    {
+      "slug": "annuity-conversation-framework",
+      "title": "A Framework For Annuity Conversations",
+      "excerpt": "Client-first language for retirement and income planning discussions.",
+      "content": "<p>Position annuities around goals, risk tolerance, and legacy planning.</p>",
+      "date": "2025-08-20 10:00:00",
+      "topic": "wealth",
+      "tags": ["sales"],
+      "featured": true
+    },
+    {
+      "slug": "campus-recruiting-tips",
+      "title": "Campus Recruiting Tips For MSB Teams",
+      "excerpt": "How Maximum Senior Benefits activates early-career talent on campus.",
+      "content": "<p>Event formats, follow-up cadence, and onboarding for campus recruits.</p>",
+      "date": "2025-08-05 10:00:00",
+      "topic": "life",
+      "tags": ["recruit"],
+      "featured": false
+    },
+    {
+      "slug": "carrier-alignment-best-practices",
+      "title": "Carrier Alignment Best Practices",
+      "excerpt": "Building productive carrier relationships that unlock training and product access.",
+      "content": "<p>Partnership habits that help affiliates grow with carrier support.</p>",
+      "date": "2025-07-18 10:00:00",
+      "topic": "health",
+      "tags": ["sales"],
+      "featured": false
+    },
+    {
+      "slug": "amerilife-best-in-class-2026",
+      "title": "AmeriLife Best in Class 2026",
+      "excerpt": "Say bonjour to the French Riviera! Contest period January 1 – December 31, 2026.",
+      "content": "<p>Join AmeriLife associates competing for recognition and an unforgettable incentive trip to the French Riviera, April 27 – May 2, 2027.</p>",
+      "date": "2025-12-01 10:00:00",
+      "topic": "health",
+      "tags": ["initiative", "featured"],
+      "spotlight": true,
+      "featured": true
+    },
+    {
+      "slug": "health-best-in-class-standings",
+      "title": "Health Best in Class 2026 Standings",
+      "excerpt": "View current standings for Health Distribution associates during the contest period.",
+      "content": "<p>Track top Health Sales Associates, marketing codes, commissions, and year-over-year growth.</p>",
+      "date": "2025-11-15 10:00:00",
+      "topic": "health",
+      "tags": ["initiative"],
+      "featured": true
+    },
+    {
+      "slug": "wealth-best-in-class-standings",
+      "title": "Wealth Best in Class 2026 Standings",
+      "excerpt": "Track Wealth Distribution performance throughout the contest period.",
+      "content": "<p>Current standings for Wealth Distribution associates competing in Best in Class 2026.</p>",
+      "date": "2025-11-10 10:00:00",
+      "topic": "wealth",
+      "tags": ["initiative"],
+      "featured": true
+    }
+  ]
+}

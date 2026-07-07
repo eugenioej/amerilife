@@ -100,3 +100,25 @@ if (isMutation) {
 
   return json.data as T;
 }
+
+const DEFAULT_GRAPHQL_TIMEOUT_MS = 8_000;
+
+/** Abort slow WP GraphQL calls so ideaXchange pages can fall back to mock data quickly. */
+export async function fetchGraphQLWithTimeout<T>(
+  query: string,
+  variables?: Record<string, unknown>,
+  timeoutMs = DEFAULT_GRAPHQL_TIMEOUT_MS,
+): Promise<T> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetchGraphQL<T>(query, variables, controller.signal);
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new Error(`GraphQL request timed out after ${timeoutMs}ms`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}

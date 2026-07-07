@@ -1,0 +1,47 @@
+{
+  "report_date": "2025-06-25",
+  "apply_to_all_tables": true,
+  "tables": [
+    {
+      "table_slug": "life",
+      "rows": [
+        { "affiliate": "Amerilife Marketing Group", "ytd": 18308, "lytd": 15001, "vs_lytd": 22.1, "vs_lqtd": 35.7, "vs_lmtd": 27.9, "trend": "up" },
+        { "affiliate": "Pinnacle Financial Services Group LLC", "ytd": 15232, "lytd": 14665, "vs_lytd": 3.9, "vs_lqtd": 7.3, "vs_lmtd": -5.9, "trend": "up" },
+        { "affiliate": "Jack Schroeder & Associates", "ytd": 9761, "lytd": 13057, "vs_lytd": -25.2, "vs_lqtd": -26.6, "vs_lmtd": -31.0, "trend": "down" },
+        { "affiliate": "Stephens-Matthews Marketing", "ytd": 7613, "lytd": 7297, "vs_lytd": 4.3, "vs_lqtd": -10.9, "vs_lmtd": -21.8, "trend": "up" },
+        { "affiliate": "Precision Senior Marketing", "ytd": 7354, "lytd": 7995, "vs_lytd": -8.0, "vs_lqtd": -6.0, "vs_lmtd": -18.7, "trend": "down" },
+        { "affiliate": "Gordon Marketing", "ytd": 6644, "lytd": 6338, "vs_lytd": 4.8, "vs_lqtd": 4.0, "vs_lmtd": 4.4, "trend": "up" },
+        { "affiliate": "Network Insurance", "ytd": 5921, "lytd": 6801, "vs_lytd": -12.9, "vs_lqtd": 32.8, "vs_lmtd": 29.8, "trend": "down" },
+        { "affiliate": "zOther", "ytd": 1782, "lytd": 514, "vs_lytd": 246.7, "vs_lqtd": 292.2, "vs_lmtd": 284.0, "trend": "up" },
+        { "affiliate": "Career Group", "ytd": 1757, "lytd": 1982, "vs_lytd": -11.3, "vs_lqtd": 13.8, "vs_lmtd": -5.3, "trend": "down" },
+        { "affiliate": "Senior Market Advisors", "ytd": 1304, "lytd": 1390, "vs_lytd": -6.2, "vs_lqtd": -3.9, "vs_lmtd": -4.5, "trend": "down" },
+        { "affiliate": "Insurance Services, LLC", "ytd": 986, "lytd": 869, "vs_lytd": 13.5, "vs_lqtd": 43.0, "vs_lmtd": 9.6, "trend": "up" },
+        { "affiliate": "Bobby Brock Insurance", "ytd": 904, "lytd": 792, "vs_lytd": 14.1, "vs_lqtd": 44.4, "vs_lmtd": 11.1, "trend": "up" },
+        { "affiliate": "MCC Brokerage", "ytd": 890, "lytd": 696, "vs_lytd": 27.9, "vs_lqtd": 20.0, "vs_lmtd": -5.3, "trend": "up" },
+        { "affiliate": "Premier Insurance Partners", "ytd": 850, "lytd": 994, "vs_lytd": -14.5, "vs_lqtd": -9.2, "vs_lmtd": -26.8, "trend": "down" },
+        { "affiliate": "Bachmeier, Gudis & Associates LLC.", "ytd": 600, "lytd": 717, "vs_lytd": -16.3, "vs_lqtd": -31.6, "vs_lmtd": -42.5, "trend": "down" },
+        { "affiliate": "Brokers Interstate Group", "ytd": 340, "lytd": 286, "vs_lytd": 18.9, "vs_lqtd": 50.4, "vs_lmtd": 16.9, "trend": "up" },
+        { "affiliate": "MidWestern Marketing", "ytd": 339, "lytd": 301, "vs_lytd": 12.8, "vs_lqtd": -4.1, "vs_lmtd": -19.3, "trend": "up" },
+        { "affiliate": "AAA Marketing Services LLC", "ytd": 233, "lytd": 240, "vs_lytd": -2.9, "vs_lqtd": -7.8, "vs_lmtd": -26.7, "trend": "flat" },
+        { "affiliate": "Health Resource Advisors", "ytd": 228, "lytd": 202, "vs_lytd": 12.9, "vs_lqtd": 90.4, "vs_lmtd": 87.5, "trend": "up" },
+        { "affiliate": "Senior Services of Illinois", "ytd": 140, "lytd": 132, "vs_lytd": 6.1, "vs_lqtd": 33.3, "vs_lmtd": 6.7, "trend": "up" },
+        { "affiliate": "The Senior Resource Group, LLC", "ytd": 140, "lytd": 137, "vs_lytd": 2.2, "vs_lqtd": 30.0, "vs_lmtd": 8.3, "trend": "up" },
+        { "affiliate": "The Equita Group", "ytd": 124, "lytd": 145, "vs_lytd": -14.5, "vs_lqtd": 24.0, "vs_lmtd": 3.9, "trend": "down" },
+        { "affiliate": "Senior Healthcare Direct", "ytd": 112, "lytd": 345, "vs_lytd": -67.5, "vs_lqtd": -82.6, "vs_lmtd": -89.9, "trend": "down" },
+        { "affiliate": "Grupo Latino Marketing", "ytd": 99, "lytd": 66, "vs_lytd": 50.0, "vs_lqtd": 80.7, "vs_lmtd": 6.2, "trend": "up" },
+        { "affiliate": "Southern Life Insurance Group", "ytd": 60, "lytd": 51, "vs_lytd": 17.6, "vs_lqtd": -26.1, "vs_lmtd": -32.6, "trend": "up" },
+        { "affiliate": "GS National Insurance", "ytd": 58, "lytd": 33, "vs_lytd": 75.8, "vs_lqtd": 141.7, "vs_lmtd": 137.5, "trend": "up" },
+        { "affiliate": "Axis Medicare Advisors", "ytd": 25, "lytd": 31, "vs_lytd": -19.4, "vs_lqtd": 9.1, "vs_lmtd": 166.7, "trend": "down" },
+        { "affiliate": "Senior Health Insurance Direct", "ytd": 24, "lytd": 22, "vs_lytd": 9.1, "vs_lqtd": 33.3, "vs_lmtd": -20.0, "trend": "up" },
+        { "affiliate": "American Benefits Exchange", "ytd": 22, "lytd": 20, "vs_lytd": 10.0, "vs_lqtd": 125.0, "vs_lmtd": 100.0, "trend": "up" },
+        { "affiliate": "Insurance 360", "ytd": 21, "lytd": 16, "vs_lytd": 31.2, "vs_lqtd": 42.9, "vs_lmtd": 100.0, "trend": "up" },
+        { "affiliate": "Health Legacy", "ytd": 16, "lytd": 4, "vs_lytd": 300.0, "vs_lqtd": 300.0, "vs_lmtd": 300.0, "trend": "up" },
+        { "affiliate": "Maximum Senior Benefits", "ytd": 15, "lytd": 16, "vs_lytd": -6.2, "vs_lqtd": 100.0, "vs_lmtd": 100.0, "trend": "down" },
+        { "affiliate": "USA Benefits Group", "ytd": 15, "lytd": 14, "vs_lytd": 7.1, "vs_lqtd": 0.0, "vs_lmtd": 0.0, "trend": "up" },
+        { "affiliate": "Insurance Services of Zelienople", "ytd": 5, "lytd": 7, "vs_lytd": -28.6, "vs_lqtd": 50.0, "vs_lmtd": -50.0, "trend": "down" },
+        { "affiliate": "AmeriLife Home Protection Services", "ytd": 0, "lytd": 228, "vs_lytd": -100.0, "vs_lqtd": -100.0, "vs_lmtd": -100.0, "trend": "down" },
+        { "affiliate": "ORCA Life", "ytd": 0, "lytd": 1, "vs_lytd": -100.0, "vs_lqtd": -100.0, "vs_lmtd": -100.0, "trend": "down" }
+      ]
+    }
+  ]
+}

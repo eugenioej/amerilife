@@ -1,5 +1,5 @@
 import type { YoastSeoData } from "@/lib/queries";
-/** ideaXchange CPT — magazine index cards and hero. */
+/** ideaXchange Magazine CPT — gated magazine at /ideaxchange/magazine/ (separate from public Insights). */
 export type IdeaxchangeListItem = {
   id: string;
   slug?: string | null;
@@ -322,6 +322,119 @@ export const GET_IDEAXCHANGE_TOPIC_SLUGS = `
       nodes {
         slug
         name
+      }
+    }
+  }
+`;
+
+/** Magazine posts tagged Sales — leaderboard & carrier spotlight sidebars. */
+export const IDEAXCHANGE_SALES_TAG_SLUG = "sales";
+
+/** Magazine posts tagged Recruit — recruiting hub blog section. */
+export const IDEAXCHANGE_RECRUIT_TAG_SLUG = "recruit";
+
+/** Magazine posts tagged Initiative — Sales Success vertical. */
+export const IDEAXCHANGE_INITIATIVE_TAG_SLUG = "initiative";
+
+export type IdeaxchangeTagBySlugResult = {
+  ideaxchangeTag?: {
+    id: string;
+    name?: string | null;
+    slug?: string | null;
+    ideaxchangeArticles?: {
+      nodes: IdeaxchangeListItem[];
+      pageInfo: {
+        hasNextPage: boolean;
+        endCursor: string | null;
+      };
+    } | null;
+  } | null;
+};
+
+const IDEAXCHANGE_TAG_ARTICLE_FIELDS = `
+  id
+  slug
+  title
+  date
+  excerpt
+  ideaxchangeFields {
+    isSpotlight
+    isFeatured
+  }
+  ideaxchangeTopics {
+    nodes {
+      name
+      slug
+    }
+  }
+  featuredImage {
+    node {
+      sourceUrl
+      altText
+    }
+  }
+`;
+
+export const GET_IDEAXCHANGE_TAG_BY_SLUG = `
+  query GetIdeaxchangeTagBySlug($slug: ID!, $first: Int!, $after: String) {
+    ideaxchangeTag(id: $slug, idType: SLUG) {
+      id
+      name
+      slug
+      ideaxchangeArticles(
+        first: $first
+        after: $after
+        where: { orderby: { field: DATE, order: DESC } }
+      ) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          ${IDEAXCHANGE_TAG_ARTICLE_FIELDS}
+        }
+      }
+    }
+  }
+`;
+
+export const GET_IDEAXCHANGE_TAG_BY_SLUG_MINIMAL = `
+  query GetIdeaxchangeTagBySlugMinimal($slug: ID!, $first: Int!, $after: String) {
+    ideaxchangeTag(id: $slug, idType: SLUG) {
+      id
+      name
+      slug
+      ideaxchangeArticles(
+        first: $first
+        after: $after
+        where: { orderby: { field: DATE, order: DESC } }
+      ) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          id
+          slug
+          title
+          date
+          excerpt
+          ideaxchangeFields {
+            isSpotlight
+          }
+          ideaxchangeTopics {
+            nodes {
+              name
+              slug
+            }
+          }
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+        }
       }
     }
   }

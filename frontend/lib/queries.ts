@@ -1520,3 +1520,112 @@ export const GET_INSIGHT_TOPIC_SLUGS = `
     }
   }
 `;
+
+/** Magazine posts tagged "Sales" — used on ideaXchange Sales Leaderboard. */
+export const INSIGHT_SALES_TAG_SLUG = "sales";
+
+/** Magazine posts tagged "Recruit" — used on ideaXchange Recruiting Hub. */
+export const INSIGHT_RECRUIT_TAG_SLUG = "recruit";
+
+/** Magazine posts tagged "Initiative" — used on ideaXchange Sales Success. */
+export const INSIGHT_INITIATIVE_TAG_SLUG = "initiative";
+
+export type InsightTagBySlugResult = {
+  insightTag?: {
+    id: string;
+    name?: string | null;
+    slug?: string | null;
+    insights?: {
+      nodes: InsightListItem[];
+      pageInfo: {
+        hasNextPage: boolean;
+        endCursor: string | null;
+      };
+    } | null;
+  } | null;
+};
+
+export const GET_INSIGHT_TAG_BY_SLUG = `
+  query GetInsightTagBySlug($slug: ID!, $first: Int!, $after: String) {
+    insightTag(id: $slug, idType: SLUG) {
+      id
+      name
+      slug
+      insights(
+        first: $first
+        after: $after
+        where: { orderby: { field: DATE, order: DESC } }
+      ) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          id
+          slug
+          title
+          date
+          excerpt
+          insightFields {
+            isSpotlight
+            isFeatured
+          }
+          insightTopics {
+            nodes {
+              name
+              slug
+            }
+          }
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_INSIGHT_TAG_BY_SLUG_MINIMAL = `
+  query GetInsightTagBySlugMinimal($slug: ID!, $first: Int!, $after: String) {
+    insightTag(id: $slug, idType: SLUG) {
+      id
+      name
+      slug
+      insights(
+        first: $first
+        after: $after
+        where: { orderby: { field: DATE, order: DESC } }
+      ) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          id
+          slug
+          title
+          date
+          excerpt
+          insightFields {
+            isSpotlight
+          }
+          insightTopics {
+            nodes {
+              name
+              slug
+            }
+          }
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+        }
+      }
+    }
+  }
+`;
