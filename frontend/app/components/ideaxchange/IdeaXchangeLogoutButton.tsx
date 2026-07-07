@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { IDEAXCHANGE_LOGIN_PATH } from "@/lib/ideaxchange-constants";
+import { signOutIdeaxchange } from "./ideaxchange-auth-actions";
 
 const buttonClassName =
   "text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60";
@@ -19,16 +20,10 @@ export function IdeaXchangeLogoutButton({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  async function logout() {
+  async function logoutLegacy() {
     if (loading) return;
     setLoading(true);
     try {
-      if (microsoftAuthEnabled) {
-        const params = new URLSearchParams({ callbackUrl: IDEAXCHANGE_LOGIN_PATH });
-        window.location.assign(`/api/auth/signout?${params.toString()}`);
-        return;
-      }
-
       const res = await fetch("/api/ideaxchange/logout", { method: "POST" });
       const json = (await res.json()) as { redirect?: string };
       if (!res.ok) throw new Error("Logout failed");
@@ -39,8 +34,23 @@ export function IdeaXchangeLogoutButton({
     }
   }
 
+  if (microsoftAuthEnabled) {
+    return (
+      <form action={signOutIdeaxchange}>
+        <button type="submit" className={className ?? buttonClassName} disabled={loading}>
+          {loading ? "Signing out…" : "Log out"}
+        </button>
+      </form>
+    );
+  }
+
   return (
-    <button type="button" className={className ?? buttonClassName} disabled={loading} onClick={logout}>
+    <button
+      type="button"
+      className={className ?? buttonClassName}
+      disabled={loading}
+      onClick={logoutLegacy}
+    >
       {loading ? "Signing out…" : "Log out"}
     </button>
   );

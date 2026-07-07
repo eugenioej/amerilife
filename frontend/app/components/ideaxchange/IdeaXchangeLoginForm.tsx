@@ -7,6 +7,7 @@ import {
   IDEAXCHANGE_HOME_PATH,
   isIdeaxchangeReturnPath,
 } from "@/lib/ideaxchange-constants";
+import { signInWithMicrosoftEntra } from "./ideaxchange-auth-actions";
 
 const loginButtonClassName =
   "w-full cursor-pointer rounded-[var(--radius-full)] bg-[var(--color-brand-primary)] px-5 py-3 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-white transition-colors hover:bg-[var(--color-brand-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
@@ -53,8 +54,6 @@ export function IdeaXchangeLoginForm({
   function signInWithMicrosoft() {
     if (loading) return;
     setLoading(true);
-    const params = new URLSearchParams({ callbackUrl: nextPath });
-    window.location.assign(`/api/auth/signin/microsoft-entra-id?${params.toString()}`);
   }
 
   async function signInWithPassword(e: React.FormEvent) {
@@ -97,14 +96,12 @@ export function IdeaXchangeLoginForm({
 
       {microsoftAuthEnabled ? (
         <div className="space-y-4">
-          <button
-            type="button"
-            className={microsoftButtonClassName}
-            disabled={loading}
-            onClick={signInWithMicrosoft}
-          >
-            {loading ? "Redirecting…" : "Sign in with Microsoft"}
-          </button>
+          <form action={signInWithMicrosoftEntra} onSubmit={signInWithMicrosoft}>
+            <input type="hidden" name="callbackUrl" value={nextPath} />
+            <button type="submit" className={microsoftButtonClassName} disabled={loading}>
+              {loading ? "Redirecting…" : "Sign in with Microsoft"}
+            </button>
+          </form>
           <p className="text-center text-xs leading-relaxed text-[var(--color-muted)]">
             Use your AmeriLife Microsoft work account. Access is created automatically on your
             first sign-in.
