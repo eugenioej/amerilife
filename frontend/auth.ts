@@ -2,23 +2,15 @@ import NextAuth from "next-auth";
 import type { Profile } from "next-auth";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
 import { isMicrosoftIdeaxchangeAuthEnabled } from "@/lib/ideaxchange-auth-config";
-import { resolveIdeaxchangePersona } from "@/lib/ideaxchange-persona";
-import { IDEAXCHANGE_LOGIN_PATH } from "@/lib/ideaxchange-constants";
-
-function readStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value.map((entry) => String(entry));
-}
-
-function extractEntraClaims(profile: Profile | undefined) {
-  const record = (profile ?? {}) as Record<string, unknown>;
-  return {
-    roles: readStringArray(record.roles),
-    groups: readStringArray(record.groups),
-    oid: typeof record.oid === "string" ? record.oid : undefined,
-    tid: typeof record.tid === "string" ? record.tid : undefined,
-  };
-}
+import {
+  extractEntraAuthClaims,
+  resolvePersonaFromEntraClaims,
+} from "@/lib/ideaxchange-entra-claims";
+import {
+  IDEAXCHANGE_HOME_PATH,
+  IDEAXCHANGE_LOGIN_PATH,
+  isIdeaxchangeLoginPath,
+} from "@/lib/ideaxchange-constants";
 
 function getMicrosoftEntraProvider() {
   const clientId = process.env.AUTH_MICROSOFT_ENTRA_ID_ID?.trim();
@@ -56,30 +48,52 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     maxAge: 60 * 60 * 24 * 7,
   },
   callbacks: {
-    async signIn({ profile }) {
+    async redirect({ url, baseUrl }) {
+      const base = baseUrl.replace(/\/$/, "");
+      const pathname = url.split("?")[0] ?? url;
+
+      if (pathname.startsWith("/ideaxchange/") && !isIdeaxchangeLoginPath(pathname)) {
+        return url.startsWith("/") ? `${base}${url}` : url;
+      }
+
+      try {
+        const parsed = new URL(url);
+        if (parsed.origin === new URL(base).origin && parsed.pathname.startsWith("/ideaxchange/")) {
+          if (!isIdeaxchangeLoginPath(parsed.pathname)) return url;
+        }
+      } catch {
+        // ignore invalid callback URLs
+      }
+
+      return `${base}${IDEAXCHANGE_HOME_PATH}`;
+    },
+    async signIn({ profile, account }) {
       if (!isMicrosoftIdeaxchangeAuthEnabled()) return false;
 
       const tenantId = process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID?.trim();
-      const { tid } = extractEntraClaims(profile);
+      const { tid } = extractEntraAuthClaims(profile, account);
       if (tenantId && tid && tid !== tenantId) return false;
 
       return true;
     },
     async jwt({ token, account, profile }) {
       if (account?.provider === "microsoft-entra-id") {
-        const { roles, groups, oid } = extractEntraClaims(profile);
-        const persona = resolveIdeaxchangePersona(roles, groups);
+        const claims = extractEntraAuthClaims(profile, account);
+        const persona = resolvePersonaFromEntraClaims(claims);
 
-        token.oid = oid ?? token.sub ?? undefined;
-        token.roles = roles;
-        token.groups = groups;
+        token.oid = claims.oid ?? token.sub ?? undefined;
+        token.roles = claims.roles;
+        token.groups = claims.groups;
         token.persona = persona;
 
         console.info("[ideaxchange-auth] JIT session", {
           id: token.oid,
           persona,
-          roles,
-          groupCount: groups.length,
+          roles: claims.roles,
+          groups: claims.groups,
+          groupCount: claims.groups.length,
+          claimKeys: claims.claimKeys,
+          personaClaimValue: claims.personaClaimValue,
         });
       }
 

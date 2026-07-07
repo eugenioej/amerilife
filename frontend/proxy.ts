@@ -12,6 +12,7 @@ import {
 } from "@/lib/ideaxchange-constants";
 import { getToken } from "next-auth/jwt";
 import { isMicrosoftIdeaxchangeAuthEnabled } from "@/lib/ideaxchange-auth-config";
+import { getIdeaxchangeJwtParams } from "@/lib/ideaxchange-auth-token";
 import { canAccessIdeaxchangePath, getIdeaxchangeHomeForPersona } from "@/lib/ideaxchange-persona";
 
 // ---------------------------------------------------------------------------
@@ -100,10 +101,7 @@ export async function proxy(request: NextRequest) {
     isIdeaxchangeProtectedPath(pathname) &&
     isMicrosoftIdeaxchangeAuthEnabled()
   ) {
-    const token = await getToken({
-      req: request,
-      secret: process.env.AUTH_SECRET,
-    });
+    const token = await getToken(getIdeaxchangeJwtParams(request));
     const persona = token?.persona ?? "sales";
     if (!canAccessIdeaxchangePath(pathname, persona)) {
       const home = getIdeaxchangeHomeForPersona(persona);

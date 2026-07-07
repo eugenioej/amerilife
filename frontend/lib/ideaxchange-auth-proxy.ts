@@ -1,6 +1,6 @@
-import { getToken } from "next-auth/jwt";
 import type { NextRequest } from "next/server";
 import { isMicrosoftIdeaxchangeAuthEnabled } from "@/lib/ideaxchange-auth-config";
+import { getIdeaxchangeJwtFromRequest } from "@/lib/ideaxchange-auth-token";
 import {
   IDEAXCHANGE_HOME_PATH,
   IDEAXCHANGE_SESSION_COOKIE,
@@ -17,10 +17,7 @@ export async function isIdeaxchangeRequestAuthenticated(
   request: NextRequest,
 ): Promise<boolean> {
   if (isMicrosoftIdeaxchangeAuthEnabled()) {
-    const token = await getToken({
-      req: request,
-      secret: process.env.AUTH_SECRET,
-    });
+    const token = await getIdeaxchangeJwtFromRequest(request);
     return Boolean(token?.sub);
   }
 
@@ -32,10 +29,7 @@ export async function getIdeaxchangeHomeFromRequest(
   request: NextRequest,
 ): Promise<string> {
   if (isMicrosoftIdeaxchangeAuthEnabled()) {
-    const token = await getToken({
-      req: request,
-      secret: process.env.AUTH_SECRET,
-    });
+    const token = await getIdeaxchangeJwtFromRequest(request);
     if (token?.persona) {
       return getIdeaxchangeHomeForPersona(token.persona);
     }
