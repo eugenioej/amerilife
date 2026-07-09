@@ -11,17 +11,6 @@ import { isIdeaxchangePath } from "@/lib/ideaxchange-nav";
 export const metadata = {
   title: "AmeriLife",
   description: "AmeriLife",
-
-  manifest: "/manifest.json",
-
-  appleWebApp: {
-    capable: true,
-    title: "AmeriLife",
-  },
-
-  icons: {
-    apple: "/icon-192.png",
-  },
 };
 
 export const viewport = {
