@@ -1,5 +1,5 @@
 import type { YoastSeoData } from "@/lib/queries";
-/** ideaXchange Magazine CPT — gated magazine at /ideaxchange/magazine/ (separate from public Insights). */
+/** ideaXchange Articles CPT — gated at /ideaxchange/article/ (separate from public Insights). */
 export type IdeaxchangeListItem = {
   id: string;
   slug?: string | null;
@@ -10,6 +10,7 @@ export type IdeaxchangeListItem = {
     isSpotlight?: boolean | null;
     /** Magazine “Featured articles” slot — from WP is_featured meta and/or Featured insight_tag (see mu-plugin). */
     isFeatured?: boolean | null;
+    visibility?: string | null;
   } | null;
   ideaxchangeTopics?: {
     nodes?: Array<{ name?: string | null; slug?: string | null }>;
@@ -49,6 +50,7 @@ export const GET_IDEAXCHANGE_ARTICLES = `
         ideaxchangeFields {
           isSpotlight
           isFeatured
+          visibility
         }
         ideaxchangeTopics {
           nodes {
@@ -87,6 +89,7 @@ export const GET_IDEAXCHANGE_ARTICLES_MINIMAL = `
         excerpt
         ideaxchangeFields {
           isSpotlight
+          visibility
         }
         ideaxchangeTopics {
           nodes {
@@ -126,6 +129,7 @@ export const GET_IDEAXCHANGE_BY_SLUG = `
       ideaxchangeFields {
         isSpotlight
         isFeatured
+        visibility
       }
       ideaxchangeTopics {
         nodes {
@@ -360,6 +364,7 @@ const IDEAXCHANGE_TAG_ARTICLE_FIELDS = `
   ideaxchangeFields {
     isSpotlight
     isFeatured
+    visibility
   }
   ideaxchangeTopics {
     nodes {

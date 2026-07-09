@@ -27,11 +27,11 @@ export async function generateMetadata({ params }: { params: PageParams }) {
 
 export default async function CaseStudyPage({ params }: { params: PageParams }) {
   const { slug } = await params;
-  await requireIdeaxchangeAuth(`/ideaxchange/recruiting-hub/${slug}/`);
+  const auth = await requireIdeaxchangeAuth(`/ideaxchange/recruiting-hub/${slug}/`);
 
   const [post, allPosts] = await Promise.all([
-    getCaseStudyBySlug(slug),
-    getCaseStudiesList(),
+    getCaseStudyBySlug(slug, auth.persona),
+    getCaseStudiesList(auth.persona),
   ]);
 
   if (!post) notFound();

@@ -29,16 +29,16 @@ export async function generateMetadata({ params }: { params: PageParams }) {
 
 export default async function SalesSuccessArticlePage({ params }: { params: PageParams }) {
   const { slug } = await params;
-  await requireIdeaxchangeAuth(`${IDEAXCHANGE_SALES_SUCCESS_PATH}${slug}/`);
+  const auth = await requireIdeaxchangeAuth(`${IDEAXCHANGE_SALES_SUCCESS_PATH}${slug}/`);
 
-  const post = await getIdeaxchangeInitiativeArticleBySlug(slug);
+  const post = await getIdeaxchangeInitiativeArticleBySlug(slug, auth.persona);
   if (!post) notFound();
 
   const isMockPost = post.id.startsWith("mock-");
   const relatedPosts = isMockPost
     ? getMockInitiativeMagazineBundle().posts.filter((p) => p.slug && p.slug !== slug)
     : (
-        await getIdeaxchangeInitiativeMagazineBundle()
+        await getIdeaxchangeInitiativeMagazineBundle(auth.persona)
       ).posts.filter((p) => p.slug && p.slug !== slug);
 
   const site = getSiteUrl().replace(/\/$/, "");

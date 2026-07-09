@@ -22,6 +22,7 @@ export function LeaderboardSection({ section, tableData }: Props) {
         {section.tables.map((table) => (
           <LeaderboardTable
             key={table.slug}
+            id={`leaderboard-table-${table.slug}`}
             title={table.title}
             rows={tableData[table.slug] ?? []}
           />

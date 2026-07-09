@@ -12,7 +12,7 @@ import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/id
 import type { CaseStudyListItem } from "@/lib/ideaxchange-recruiting-queries";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
 import type { InsightsAdsSettings } from "@/lib/queries";
-import { IDEAXCHANGE_MAGAZINE_PATH } from "@/lib/ideaxchange-constants";
+import { IDEAXCHANGE_RECRUITING_HUB_PATH } from "@/lib/ideaxchange-constants";
 import { IDEAXCHANGE_RECRUIT_TAG_SLUG } from "@/lib/ideaxchange-data";
 import {
   caseStudyHref,
@@ -140,15 +140,15 @@ export function RecruitingHubPage({
                 Recruit
               </h2>
               <p className="mt-2 text-sm text-[var(--color-muted)]">
-                Latest recruiting-focused articles from ideaXchange magazine.
+                Latest articles from the Recruiting Hub.
               </p>
             </div>
             <Link
-              href={IDEAXCHANGE_MAGAZINE_PATH}
+              href={IDEAXCHANGE_RECRUITING_HUB_PATH}
               variant="button"
               className="inline-flex min-h-[44px] items-center justify-center rounded-sm bg-[var(--color-brand-primary)] px-6 text-sm font-bold uppercase tracking-wide text-white hover:bg-[var(--color-brand-primary-hover)]"
             >
-              View magazine
+              View Recruiting Hub
             </Link>
           </div>
 

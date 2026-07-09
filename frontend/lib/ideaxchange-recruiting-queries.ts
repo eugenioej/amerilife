@@ -18,6 +18,7 @@ export type IdeaxchangeCompanySummary = {
   ideaxchangeCompanyFields?: {
     websiteUrl?: string | null;
     learnMoreUrl?: string | null;
+    visibility?: string | null;
   } | null;
 };
 
@@ -38,6 +39,7 @@ export type CaseStudyListItem = {
     campaignSpend?: string | null;
     campaignResults?: string | null;
     campaignOverview?: string | null;
+    visibility?: string | null;
     campaignAssets?: IdeaxchangeCampaignAsset[] | null;
   } | null;
   caseStudyCompany?: IdeaxchangeCompanySummary | null;
@@ -91,6 +93,7 @@ const CASE_STUDY_LIST_FIELDS = `
     campaignSpend
     campaignResults
     campaignOverview
+    visibility
   }
   caseStudyCompany {
     id
@@ -136,6 +139,7 @@ export const GET_CASE_STUDY_BY_SLUG = `
         isSpotlight
         isFeatured
         marketingCtaUrl
+        visibility
         campaignAssets {
           label
           fileUrl
@@ -150,6 +154,7 @@ export const GET_CASE_STUDY_BY_SLUG = `
         ideaxchangeCompanyFields {
           websiteUrl
           learnMoreUrl
+          visibility
         }
       }
       seo {
@@ -180,6 +185,7 @@ export const GET_COMPANY_BY_SLUG = `
       ideaxchangeCompanyFields {
         websiteUrl
         learnMoreUrl
+        visibility
       }
     }
   }

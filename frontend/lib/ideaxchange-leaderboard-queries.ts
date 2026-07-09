@@ -14,6 +14,7 @@ export type LeaderboardTableGraphql = {
   ideaxchangeLbTableFields?: {
     reportDate?: string | null;
     rowCount?: number | null;
+    visibility?: string | null;
     rows?: LeaderboardRowGraphql[] | null;
   } | null;
 };
@@ -33,6 +34,7 @@ export const GET_LEADERBOARD_TABLES = `
         ideaxchangeLbTableFields {
           reportDate
           rowCount
+          visibility
           rows {
             affiliate
             ytdAmount

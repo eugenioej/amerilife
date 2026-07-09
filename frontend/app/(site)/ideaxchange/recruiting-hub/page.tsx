@@ -16,12 +16,12 @@ export const metadata: Metadata = privatePageMetadata(
 );
 
 export default async function RecruitingHubIndexPage() {
-  await requireIdeaxchangeAuth(IDEAXCHANGE_RECRUITING_HUB_PATH);
+  const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_RECRUITING_HUB_PATH);
 
   const [{ posts }, allCampaigns, recruitBundle, insightsAds] = await Promise.all([
-    getRecruitingHubBundle(),
-    getCaseStudiesList(),
-    getIdeaxchangeRecruitMagazineBundle(),
+    getRecruitingHubBundle(auth.persona),
+    getCaseStudiesList(auth.persona),
+    getIdeaxchangeRecruitMagazineBundle(auth.persona),
     getInsightsAdsSettings(),
   ]);
 

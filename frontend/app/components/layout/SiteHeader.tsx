@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { Link } from "../ui/Link";
 import { ChevronDownIcon, ChevronRightIcon } from "../ui/ChevronDownIcon";
@@ -17,11 +18,13 @@ import {
   getIdeaxchangeHomeForPersona,
   getIdeaxchangeNavForPersona,
 } from "@/lib/ideaxchange-persona";
+import type { IdeaxchangeDevViewMode } from "@/lib/ideaxchange-dev";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 type SiteHeaderProps = {
   primaryMenu: NavItem[];
   ideaxchangePersona?: IdeaxchangePersona | null;
+  ideaxchangeDevView?: IdeaxchangeDevViewMode;
   inIdeaxchange?: boolean;
 };
 
@@ -42,13 +45,23 @@ function HamburgerIcon({ open }: { open: boolean }) {
 export function SiteHeader({
   primaryMenu,
   ideaxchangePersona = null,
+  ideaxchangeDevView = "off",
   inIdeaxchange = false,
 }: SiteHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
   const { openContactPopup } = useContactPopup();
 
+  const isActiveNavHref = (href: string) => {
+    const normalizedPath = pathname.replace(/\/+$/, "") || "/";
+    const normalizedHref = href.replace(/\/+$/, "") || "/";
+    return (
+      normalizedPath === normalizedHref || normalizedPath.startsWith(`${normalizedHref}/`)
+    );
+  };
+
   const navItems = inIdeaxchange
-    ? getIdeaxchangeNavForPersona(ideaxchangePersona ?? "sales")
+    ? getIdeaxchangeNavForPersona(ideaxchangePersona ?? "brokerage", ideaxchangeDevView)
     : primaryMenu;
   const logoUrl = rewriteUploadsUrl(
     inIdeaxchange
@@ -56,7 +69,7 @@ export function SiteHeader({
       : "https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/01/amerilife.svg",
   );
   const logoHref = inIdeaxchange
-    ? getIdeaxchangeHomeForPersona(ideaxchangePersona ?? "sales")
+    ? getIdeaxchangeHomeForPersona(ideaxchangePersona ?? "brokerage")
     : "/";
   const logoAlt = inIdeaxchange ? "AmeriLife ideaXchange" : "AmeriLife";
   const logoAriaLabel = inIdeaxchange ? "ideaXchange Home" : "AmeriLife Home";
@@ -114,12 +127,18 @@ export function SiteHeader({
               }
 
               const hasChildren = !inIdeaxchange && item.children && item.children.length > 0;
+              const isActive = inIdeaxchange && isActiveNavHref(item.href);
               return (
                 <div key={item.href + item.label} className="relative group">
                   <Link
                     href={item.href}
                     variant="button"
-                    className="inline-flex items-center gap-1 px-2 py-1 text-base font-semibold text-[var(--color-brand-dark)] transition-colors hover:text-[var(--color-brand-primary)]"
+                    aria-current={isActive ? "page" : undefined}
+                    className={`inline-flex items-center gap-1 px-2 py-1 text-base font-semibold transition-colors ${
+                      isActive
+                        ? "text-[var(--color-brand-primary)]"
+                        : "text-[var(--color-brand-dark)] hover:text-[var(--color-brand-primary)]"
+                    }`}
                   >
                     {item.label}
                     {hasChildren ? (

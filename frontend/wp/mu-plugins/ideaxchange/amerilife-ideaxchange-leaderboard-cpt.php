@@ -635,6 +635,7 @@ add_action('graphql_register_types', function () {
       'reportDate' => ['type' => 'String'],
       'rowCount' => ['type' => 'Int'],
       'rows' => ['type' => ['list_of' => 'IdeaxchangeLeaderboardRow']],
+      'visibility' => ['type' => 'IdeaxchangeVisibility'],
     ],
   ]);
 
@@ -643,7 +644,7 @@ add_action('graphql_register_types', function () {
     'resolve' => function ($post) {
       $id = amerilife_ideaxchange_leaderboard_post_id($post);
       if (!$id) {
-        return ['sectionLabel' => null, 'reportDate' => null, 'rowCount' => 0, 'rows' => []];
+        return ['sectionLabel' => null, 'reportDate' => null, 'rowCount' => 0, 'rows' => [], 'visibility' => 'BROKERAGE_CAREER'];
       }
       $stored = amerilife_ideaxchange_leaderboard_get_rows($id);
       $rows = array_map(static function ($row) {
@@ -663,6 +664,7 @@ add_action('graphql_register_types', function () {
         'reportDate' => amerilife_ideaxchange_leaderboard_meta_string($id, 'report_date'),
         'rowCount' => count($rows),
         'rows' => $rows,
+        'visibility' => amerilife_ideaxchange_visibility_graphql_enum($id),
       ];
     },
   ]);

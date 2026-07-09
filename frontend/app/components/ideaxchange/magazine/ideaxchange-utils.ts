@@ -1,4 +1,5 @@
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
+import { IDEAXCHANGE_ARTICLE_PATH, IDEAXCHANGE_HOME_FEED_PATH } from "@/lib/ideaxchange-constants";
 
 export { formatInsightExcerptPlain } from "@/lib/insight-excerpt";
 
@@ -39,20 +40,20 @@ export function isIdeaxchangeFeatured(
 }
 
 export function ideaxchangeHref(slug: string | null | undefined): string {
-  if (!slug) return "/ideaxchange/magazine/";
-  return `/ideaxchange/magazine/${slug}/`;
+  if (!slug) return IDEAXCHANGE_HOME_FEED_PATH;
+  return `${IDEAXCHANGE_ARTICLE_PATH}${slug}/`;
 }
 
 /** Insight topic taxonomy archive on the Next.js site (not WP `/insight-topic/`). */
 export function ideaxchangeCategoryHref(slug: string | null | undefined): string {
-  if (!slug) return "/ideaxchange/magazine/";
+  if (!slug) return IDEAXCHANGE_HOME_FEED_PATH;
   return `/ideaxchange/magazine/category/${slug}/`;
 }
 
-/** Next/Image quality (1–100) for magazine — balances sharpness vs. payload. */
+/** Next/Image quality (1–100) for ideaXchange cards — balances sharpness vs. payload. */
 export const INSIGHT_IMG_QUALITY = 90;
 
-/** Main column posts before first “Load more” on /ideaxchange/magazine/. */
+/** Main column posts before first “Load more” on /ideaxchange/home/. */
 export const INSIGHTS_NEWSROOM_INITIAL = 6;
 
 export function dedupeIdeaxchangePosts(

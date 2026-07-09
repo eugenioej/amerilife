@@ -21,19 +21,15 @@ function amerilife_ideaxchange_carrier_post_id($post) {
 }
 
 function amerilife_ideaxchange_carrier_attachment_asset($attachment_id, $label) {
-  $aid = (int) $attachment_id;
-  if ($aid < 1) {
-    return null;
-  }
-  $url = wp_get_attachment_url($aid);
-  if (!$url) {
-    return null;
-  }
-  $mime = get_post_mime_type($aid);
+  return amerilife_ideaxchange_attachment_asset($attachment_id, $label);
+}
+
+/** @var array<string, string> */
+function amerilife_ideaxchange_carrier_legacy_resource_map() {
   return [
-    'label' => $label,
-    'fileUrl' => $url,
-    'mimeType' => $mime ? (string) $mime : null,
+    'product_portfolio_attachment_id' => 'Product Portfolio',
+    'state_rate_sheets_attachment_id' => 'State Rate Sheets',
+    'agent_resources_attachment_id' => 'Agent Resources',
   ];
 }
 
@@ -98,15 +94,16 @@ add_action('init', function () {
     ]);
   }
 
-  foreach (
-    [
-      'product_portfolio_attachment_id' => 'integer',
-      'state_rate_sheets_attachment_id' => 'integer',
-      'agent_resources_attachment_id' => 'integer',
-    ] as $key => $type
-  ) {
+  register_post_meta('ideaxchange_carrier', 'resources_json', [
+    'type' => 'string',
+    'single' => true,
+    'show_in_rest' => true,
+    'auth_callback' => $meta_auth,
+  ]);
+
+  foreach (amerilife_ideaxchange_carrier_legacy_resource_map() as $key => $label) {
     register_post_meta('ideaxchange_carrier', $key, [
-      'type' => $type,
+      'type' => 'integer',
       'single' => true,
       'show_in_rest' => true,
       'default' => 0,
@@ -143,10 +140,12 @@ add_action('add_meta_boxes', function () {
       amerilife_ideaxchange_render_highlights_repeater((int) $post->ID);
 
       echo '<p style="margin-top:20px"><strong>Carrier resources</strong></p>';
-      echo '<p class="description">PDFs and downloads shown in the carrier profile sidebar.</p>';
-      amerilife_ideaxchange_render_attachment_picker($post->ID, 'product_portfolio_attachment_id', 'Product Portfolio');
-      amerilife_ideaxchange_render_attachment_picker($post->ID, 'state_rate_sheets_attachment_id', 'State Rate Sheets');
-      amerilife_ideaxchange_render_attachment_picker($post->ID, 'agent_resources_attachment_id', 'Agent Resources');
+      amerilife_ideaxchange_render_resources_repeater(
+        (int) $post->ID,
+        'resources_json',
+        amerilife_ideaxchange_carrier_legacy_resource_map(),
+        'PDFs and downloads shown in the carrier profile sidebar. Add a name and file for each resource.'
+      );
     },
     'ideaxchange_carrier',
     'normal',
@@ -177,15 +176,11 @@ add_action('save_post_ideaxchange_carrier', function ($post_id) {
   $parsed = amerilife_ideaxchange_highlights_from_post_request();
   update_post_meta($post_id, 'highlights_json', wp_json_encode($parsed));
 
-  foreach (
-    [
-      'product_portfolio_attachment_id',
-      'state_rate_sheets_attachment_id',
-      'agent_resources_attachment_id',
-    ] as $key
-  ) {
-    $n = isset($_POST[$key]) ? absint($_POST[$key]) : 0;
-    update_post_meta($post_id, $key, $n);
+  $resources = amerilife_ideaxchange_resources_from_post_request();
+  update_post_meta($post_id, 'resources_json', wp_json_encode($resources));
+
+  foreach (array_keys(amerilife_ideaxchange_carrier_legacy_resource_map()) as $key) {
+    delete_post_meta($post_id, $key);
   }
 }, 10, 1);
 
@@ -225,6 +220,10 @@ add_action('graphql_register_types', function () {
       'carrierResources' => [
         'type' => ['list_of' => 'IdeaxchangeCarrierResource'],
       ],
+      'visibility' => [
+        'type' => 'IdeaxchangeVisibility',
+        'description' => 'Brokerage / Career / Brokerage+Career audience',
+      ],
     ],
   ]);
 
@@ -241,6 +240,7 @@ add_action('graphql_register_types', function () {
           'websiteUrl' => null,
           'highlights' => [],
           'carrierResources' => [],
+          'visibility' => 'BROKERAGE_CAREER',
         ];
       }
 
@@ -251,18 +251,11 @@ add_action('graphql_register_types', function () {
       $website = get_post_meta($id, 'website_url', true);
       $highlights = amerilife_ideaxchange_carrier_parse_highlights(get_post_meta($id, 'highlights_json', true));
 
-      $resources = [];
-      $map = [
-        'product_portfolio_attachment_id' => 'Product Portfolio',
-        'state_rate_sheets_attachment_id' => 'State Rate Sheets',
-        'agent_resources_attachment_id' => 'Agent Resources',
-      ];
-      foreach ($map as $meta_key => $label) {
-        $row = amerilife_ideaxchange_carrier_attachment_asset(get_post_meta($id, $meta_key, true), $label);
-        if ($row) {
-          $resources[] = $row;
-        }
-      }
+      $resources = amerilife_ideaxchange_resolve_resources_graphql(
+        $id,
+        'resources_json',
+        amerilife_ideaxchange_carrier_legacy_resource_map()
+      );
 
       return [
         'isSpotlight' => $spot,
@@ -272,6 +265,7 @@ add_action('graphql_register_types', function () {
         'websiteUrl' => $website !== '' ? (string) $website : null,
         'highlights' => $highlights,
         'carrierResources' => $resources,
+        'visibility' => amerilife_ideaxchange_visibility_graphql_enum($id),
       ];
     },
   ]);

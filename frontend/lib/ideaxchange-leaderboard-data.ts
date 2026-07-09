@@ -12,6 +12,8 @@ import {
   mapSeedRowToDisplay,
   type LeaderboardSeedRow,
 } from "@/lib/ideaxchange-leaderboard-format";
+import type { IdeaxchangePersona } from "@/lib/ideaxchange-persona";
+import { isItemVisibleToPersona } from "@/lib/ideaxchange-visibility";
 import leaderboardSeed from "../wp/mu-plugins/ideaxchange/seed/ideaxchange-leaderboard-seed.json";
 
 export type LeaderboardRow = {
@@ -91,7 +93,11 @@ function mapGraphqlRow(row: {
   };
 }
 
-function mapTableNode(node: LeaderboardTableGraphql): [string, LeaderboardRow[]] | null {
+function mapTableNode(
+  node: LeaderboardTableGraphql,
+  persona: IdeaxchangePersona,
+): [string, LeaderboardRow[]] | null {
+  if (!isItemVisibleToPersona(node, persona)) return null;
   const slug = node.slug?.trim();
   if (!slug) return null;
   const rows = (node.ideaxchangeLbTableFields?.rows ?? [])
@@ -100,7 +106,9 @@ function mapTableNode(node: LeaderboardTableGraphql): [string, LeaderboardRow[]]
   return [slug, rows.length > 0 ? rows : FALLBACK_BY_TABLE[slug] ?? []];
 }
 
-export async function getLeaderboardTables(): Promise<Record<string, LeaderboardRow[]>> {
+export async function getLeaderboardTables(
+  persona: IdeaxchangePersona = "brokerage",
+): Promise<Record<string, LeaderboardRow[]>> {
   const fallback = { ...FALLBACK_BY_TABLE };
   try {
     const data = await fetchGraphQL<LeaderboardTablesResult>(GET_LEADERBOARD_TABLES);
@@ -109,7 +117,7 @@ export async function getLeaderboardTables(): Promise<Record<string, Leaderboard
 
     const out = { ...fallback };
     for (const node of nodes) {
-      const mapped = mapTableNode(node);
+      const mapped = mapTableNode(node, persona);
       if (mapped) {
         out[mapped[0]] = mapped[1];
       }

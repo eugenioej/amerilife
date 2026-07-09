@@ -16,9 +16,12 @@ import {
 
 export {
   IDEAXCHANGE_HOME_PATH,
+  IDEAXCHANGE_HOME_FEED_PATH,
+  IDEAXCHANGE_ARTICLE_PATH,
   IDEAXCHANGE_LOGIN_PATH,
   IDEAXCHANGE_MAGAZINE_PATH,
   IDEAXCHANGE_RECRUITING_HUB_PATH,
+  IDEAXCHANGE_CAREER_LEADERBOARD_PATH,
   IDEAXCHANGE_LEADERBOARD_PATH,
   IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH,
   IDEAXCHANGE_SESSION_COOKIE,
@@ -65,7 +68,7 @@ export async function getIdeaxchangeAuth(): Promise<IdeaxchangeAuthState | null>
     const session = await auth();
     if (!session?.user?.id) return null;
 
-    const persona = session.user.persona ?? "sales";
+    const persona = session.user.persona ?? "brokerage";
     return {
       mode: "microsoft",
       persona,
@@ -85,7 +88,7 @@ export async function getIdeaxchangeAuth(): Promise<IdeaxchangeAuthState | null>
 
   return {
     mode: "legacy",
-    persona: "sales",
+    persona: "brokerage",
     homePath: IDEAXCHANGE_HOME_PATH,
     user: null,
   };

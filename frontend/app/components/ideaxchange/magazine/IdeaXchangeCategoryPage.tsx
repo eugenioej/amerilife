@@ -1,4 +1,5 @@
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
+import { IDEAXCHANGE_HOME_FEED_PATH } from "@/lib/ideaxchange-constants";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
 import { IdeaXchangeCategoryArticlesSection } from "./IdeaXchangeCategoryArticlesSection";
 import { IdeaXchangeCategoryPagination } from "./IdeaXchangeCategoryPagination";
@@ -26,7 +27,7 @@ export function IdeaXchangeCategoryPage({
           className="mb-6"
           items={[
             { label: "Home", href: "/" },
-            { label: "ideaXchange", href: "/ideaxchange/magazine/" },
+            { label: "ideaXchange", href: IDEAXCHANGE_HOME_FEED_PATH },
             { label: topicName, className: "max-w-[min(100%,20rem)] truncate" },
           ]}
         />

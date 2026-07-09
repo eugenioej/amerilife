@@ -10,9 +10,13 @@ import {
   type LeaderboardSortColumn,
   type LeaderboardSortState,
 } from "@/lib/ideaxchange-leaderboard-sort";
+import { Button } from "@/app/components/ui/Button";
 import { ChevronDownIcon } from "@/app/components/ui/ChevronDownIcon";
 
+const INITIAL_VISIBLE_ROWS = 10;
+
 type Props = {
+  id?: string;
   title: string;
   rows: LeaderboardRow[];
 };
@@ -69,10 +73,14 @@ function SortableHeader({
   );
 }
 
-export function LeaderboardTable({ title, rows }: Props) {
+export function LeaderboardTable({ id, title, rows }: Props) {
   const [sort, setSort] = useState<LeaderboardSortState>(DEFAULT_LEADERBOARD_SORT);
+  const [showAll, setShowAll] = useState(false);
 
   const sortedRows = useMemo(() => sortLeaderboardRows(rows, sort), [rows, sort]);
+  const hasMoreRows = sortedRows.length > INITIAL_VISIBLE_ROWS;
+  const visibleRows = showAll ? sortedRows : sortedRows.slice(0, INITIAL_VISIBLE_ROWS);
+  const hiddenCount = sortedRows.length - INITIAL_VISIBLE_ROWS;
 
   const handleSort = (column: LeaderboardSortColumn) => {
     setSort((current) => nextLeaderboardSort(current, column));
@@ -83,7 +91,10 @@ export function LeaderboardTable({ title, rows }: Props) {
   const sortSummary = `${LEADERBOARD_SORT_LABELS[sort.column]} (${sort.direction === "asc" ? "low → high" : "high → low"})`;
 
   return (
-    <div className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-[0_4px_20px_rgba(36,66,96,0.06)]">
+    <div
+      id={id}
+      className="scroll-mt-[calc(var(--header-height)+1rem)] overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-[0_4px_20px_rgba(36,66,96,0.06)]"
+    >
       <div className="flex flex-col gap-3 border-b border-[var(--color-border)] bg-[var(--color-brand-primary)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <h3 className="text-center text-sm font-bold uppercase tracking-wider text-white sm:text-left">
           {title}
@@ -166,7 +177,7 @@ export function LeaderboardTable({ title, rows }: Props) {
             </tr>
           </thead>
           <tbody>
-            {sortedRows.map((row, i) => (
+            {visibleRows.map((row, i) => (
               <tr
                 key={`${row.affiliate}-${i}`}
                 className={i % 2 === 0 ? "bg-white" : "bg-[#f7faf9]"}
@@ -206,6 +217,18 @@ export function LeaderboardTable({ title, rows }: Props) {
           </tbody>
         </table>
       </div>
+      {hasMoreRows ? (
+        <div className="flex justify-center border-t border-[var(--color-border)] bg-[#f7faf9] px-4 py-4 sm:px-6">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setShowAll((current) => !current)}
+            aria-expanded={showAll}
+          >
+            {showAll ? "View less" : `View more (${hiddenCount})`}
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }

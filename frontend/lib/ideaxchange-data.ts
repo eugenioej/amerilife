@@ -26,8 +26,8 @@ import {
   INSIGHTS_RECRUIT_MAGAZINE_FIRST,
   INSIGHTS_INITIATIVE_MAGAZINE_FIRST,
 } from "@/lib/insights-data";
-import { getMockSalesMagazineBundle, getMockSalesMagazineAfterCursor } from "@/lib/ideaxchange-sales-magazine-mock";
-import { getMockRecruitMagazineBundle, getMockRecruitMagazineAfterCursor } from "@/lib/ideaxchange-recruit-magazine-mock";
+import { getMockSalesMagazineBundle, getMockSalesMagazineAfterCursor, MOCK_SALES_MAGAZINE_POSTS } from "@/lib/ideaxchange-sales-magazine-mock";
+import { getMockRecruitMagazineBundle, getMockRecruitMagazineAfterCursor, MOCK_RECRUIT_MAGAZINE_POSTS } from "@/lib/ideaxchange-recruit-magazine-mock";
 import { getMockInitiativeMagazineBundle, getMockInitiativeMagazineAfterCursor, getMockInitiativeArticleBySlug } from "@/lib/ideaxchange-initiative-magazine-mock";
 import {
   GET_IDEAXCHANGE_ARTICLES,
@@ -50,6 +50,30 @@ import {
   type IdeaxchangeTopicBySlugResult,
   type IdeaxchangeTopicsSlugListResult,
 } from "@/lib/ideaxchange-queries";
+import type { IdeaxchangePersona } from "@/lib/ideaxchange-persona";
+import {
+  filterItemsByPersonaVisibility,
+  isItemVisibleToPersona,
+} from "@/lib/ideaxchange-visibility";
+import { formatInsightExcerptPlain } from "@/lib/insight-excerpt";
+
+function mockListItemToDetail(post: IdeaxchangeListItem): IdeaxchangeDetail {
+  const body = formatInsightExcerptPlain(post.excerpt) || post.title || "";
+  return {
+    ...post,
+    content: body ? `<p>${body}</p>` : "<p></p>",
+  };
+}
+
+/** Demo article singles when the slug exists in mock sidebars but not yet in WordPress. */
+function getMockIdeaxchangeArticleBySlug(slug: string): IdeaxchangeDetail | null {
+  const trimmed = slug.trim();
+  if (!trimmed) return null;
+  const found = [...MOCK_SALES_MAGAZINE_POSTS, ...MOCK_RECRUIT_MAGAZINE_POSTS].find(
+    (p) => p.slug === trimmed,
+  );
+  return found ? mockListItemToDetail(found) : null;
+}
 
 export const IDEAXCHANGE_MAGAZINE_FIRST = INSIGHTS_MAGAZINE_FIRST;
 export const IDEAXCHANGE_CATEGORY_PAGE_FIRST = INSIGHT_CATEGORY_PAGE_FIRST;
@@ -167,14 +191,34 @@ async function fetchIdeaxchangeTagBySlugResult(
   }
 }
 
-export async function getIdeaxchangeList(): Promise<IdeaxchangeListItem[]> {
+export async function getIdeaxchangeList(
+  persona: IdeaxchangePersona = "brokerage",
+): Promise<IdeaxchangeListItem[]> {
   const { nodes } = await fetchIdeaxchangeArticlesConnection(100);
-  if (nodes.length > 0) return nodes;
+  if (nodes.length > 0) return filterArticles(nodes, persona);
   const posts = await getInsightsList();
-  return posts.map(mapInsightListItem);
+  return filterArticles(posts.map(mapInsightListItem), persona);
 }
 
-export async function getIdeaxchangeMagazineBundle(): Promise<{
+function filterArticles(
+  posts: IdeaxchangeListItem[],
+  persona: IdeaxchangePersona,
+): IdeaxchangeListItem[] {
+  return filterItemsByPersonaVisibility(posts, persona);
+}
+
+function visibleArticle(
+  post: IdeaxchangeDetail | null,
+  persona?: IdeaxchangePersona,
+): IdeaxchangeDetail | null {
+  if (!post) return null;
+  if (persona && !isItemVisibleToPersona(post, persona)) return null;
+  return post;
+}
+
+export async function getIdeaxchangeMagazineBundle(
+  persona: IdeaxchangePersona = "brokerage",
+): Promise<{
   posts: IdeaxchangeListItem[];
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
 }> {
@@ -182,25 +226,30 @@ export async function getIdeaxchangeMagazineBundle(): Promise<{
     IDEAXCHANGE_MAGAZINE_FIRST,
     null,
   );
-  return { posts: nodes, pageInfo };
+  return { posts: filterArticles(nodes, persona), pageInfo };
 }
 
 export async function fetchIdeaxchangeAfterCursor(
   after: string,
   first = IDEAXCHANGE_LOAD_MORE_FIRST,
+  persona: IdeaxchangePersona = "brokerage",
 ): Promise<{
   nodes: IdeaxchangeListItem[];
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
 }> {
-  return fetchIdeaxchangeArticlesConnection(first, after);
+  const result = await fetchIdeaxchangeArticlesConnection(first, after);
+  return { nodes: filterArticles(result.nodes, persona), pageInfo: result.pageInfo };
 }
 
 export async function getIdeaxchangeArticleBySlug(
   slug: string,
+  persona?: IdeaxchangePersona,
 ): Promise<IdeaxchangeDetail | null> {
   try {
     const data = await fetchGraphQL<IdeaxchangeBySlugResult>(GET_IDEAXCHANGE_BY_SLUG, { slug });
-    if (data?.ideaxchangeArticle?.slug) return data.ideaxchangeArticle;
+    if (data?.ideaxchangeArticle?.slug) {
+      return visibleArticle(data.ideaxchangeArticle, persona);
+    }
   } catch (err) {
     if (!isIdeaxchangeFieldsSchemaGapError(err)) {
       console.error("[ideaxchange] getIdeaxchangeArticleBySlug failed:", err);
@@ -210,7 +259,9 @@ export async function getIdeaxchangeArticleBySlug(
           GET_IDEAXCHANGE_BY_SLUG_MINIMAL,
           { slug },
         );
-        if (data?.ideaxchangeArticle?.slug) return data.ideaxchangeArticle;
+        if (data?.ideaxchangeArticle?.slug) {
+          return visibleArticle(data.ideaxchangeArticle, persona);
+        }
       } catch (err2) {
         console.error("[ideaxchange] getIdeaxchangeArticleBySlug minimal failed:", err2);
       }
@@ -218,12 +269,17 @@ export async function getIdeaxchangeArticleBySlug(
   }
 
   const post = await getInsightBySlug(slug);
-  return post ? mapInsightDetail(post) : null;
+  const fromInsights = visibleArticle(post ? mapInsightDetail(post) : null, persona);
+  if (fromInsights) return fromInsights;
+
+  const mock = getMockIdeaxchangeArticleBySlug(slug);
+  return visibleArticle(mock, persona);
 }
 
 /** Single article for Sales Success — WP with short timeout, then mock fallback. */
 export async function getIdeaxchangeInitiativeArticleBySlug(
   slug: string,
+  persona?: IdeaxchangePersona,
 ): Promise<IdeaxchangeDetail | null> {
   const trimmed = slug.trim();
   if (!trimmed) return null;
@@ -236,7 +292,9 @@ export async function getIdeaxchangeInitiativeArticleBySlug(
         GET_IDEAXCHANGE_BY_SLUG,
         { slug: trimmed },
       );
-      if (data?.ideaxchangeArticle?.slug) return data.ideaxchangeArticle;
+      if (data?.ideaxchangeArticle?.slug) {
+        return visibleArticle(data.ideaxchangeArticle, persona) ?? mock;
+      }
     } catch (err) {
       if (isIdeaxchangeFieldsSchemaGapError(err)) {
         try {
@@ -244,7 +302,9 @@ export async function getIdeaxchangeInitiativeArticleBySlug(
             GET_IDEAXCHANGE_BY_SLUG_MINIMAL,
             { slug: trimmed },
           );
-          if (data?.ideaxchangeArticle?.slug) return data.ideaxchangeArticle;
+          if (data?.ideaxchangeArticle?.slug) {
+            return visibleArticle(data.ideaxchangeArticle, persona) ?? mock;
+          }
         } catch (minimalErr) {
           console.error("[ideaxchange] getIdeaxchangeInitiativeArticleBySlug minimal failed:", minimalErr);
         }
@@ -344,6 +404,7 @@ async function cursorAfterSkippingIdeaxchangeTopicPosts(
 export const getIdeaxchangeCategoryPageData = cache(async function getIdeaxchangeCategoryPageData(
   slug: string,
   page: number,
+  persona: IdeaxchangePersona = "brokerage",
 ): Promise<IdeaxchangeCategoryPageData | null> {
   const trimmed = slug.trim();
   if (!trimmed) return null;
@@ -374,7 +435,7 @@ export const getIdeaxchangeCategoryPageData = cache(async function getIdeaxchang
     return {
       topicName: topic.name?.trim() ?? null,
       topicSlug: topic.slug.trim(),
-      posts,
+      posts: filterArticles(posts, persona),
       totalCount,
       currentPage: safePage,
       pageSize,
@@ -390,7 +451,7 @@ export const getIdeaxchangeCategoryPageData = cache(async function getIdeaxchang
   if (!data) return null;
   return {
     ...data,
-    posts: data.posts.map(mapInsightListItem),
+    posts: filterArticles(data.posts.map(mapInsightListItem), persona),
   };
 });
 
@@ -398,6 +459,7 @@ export async function fetchIdeaxchangeCategoryAfterCursor(
   topicSlug: string,
   after: string,
   first = IDEAXCHANGE_LOAD_MORE_FIRST,
+  persona: IdeaxchangePersona = "brokerage",
 ): Promise<{
   nodes: IdeaxchangeListItem[];
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
@@ -411,7 +473,7 @@ export async function fetchIdeaxchangeCategoryAfterCursor(
     const nodes = conn?.nodes ?? [];
     if (nodes.length > 0) {
       return {
-        nodes,
+        nodes: filterArticles(nodes, persona),
         pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
       };
     }
@@ -420,11 +482,13 @@ export async function fetchIdeaxchangeCategoryAfterCursor(
   }
 
   const { nodes, pageInfo } = await fetchInsightCategoryAfterCursor(topicSlug, after, first);
-  return { nodes: nodes.map(mapInsightListItem), pageInfo };
+  return { nodes: filterArticles(nodes.map(mapInsightListItem), persona), pageInfo };
 }
 
 /** ideaXchange-tagged Sales posts — leaderboard & carrier spotlight sidebars. */
-export async function getIdeaxchangeSalesMagazineBundle(): Promise<{
+export async function getIdeaxchangeSalesMagazineBundle(
+  persona: IdeaxchangePersona = "brokerage",
+): Promise<{
   posts: IdeaxchangeListItem[];
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
 }> {
@@ -438,7 +502,7 @@ export async function getIdeaxchangeSalesMagazineBundle(): Promise<{
     const posts = conn?.nodes ?? [];
     if (posts.length > 0) {
       return {
-        posts,
+        posts: filterArticles(posts, persona),
         pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
       };
     }
@@ -448,14 +512,16 @@ export async function getIdeaxchangeSalesMagazineBundle(): Promise<{
 
   const { posts, pageInfo } = await getInsightsSalesMagazineBundle();
   if (posts.length > 0) {
-    return { posts: posts.map(mapInsightListItem), pageInfo };
+    return { posts: filterArticles(posts.map(mapInsightListItem), persona), pageInfo };
   }
-  return getMockSalesMagazineBundle();
+  const mock = getMockSalesMagazineBundle();
+  return { posts: filterArticles(mock.posts, persona), pageInfo: mock.pageInfo };
 }
 
 export async function fetchIdeaxchangeSalesAfterCursor(
   after: string,
   first = IDEAXCHANGE_LOAD_MORE_FIRST,
+  persona: IdeaxchangePersona = "brokerage",
 ): Promise<{
   nodes: IdeaxchangeListItem[];
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
@@ -466,7 +532,7 @@ export async function fetchIdeaxchangeSalesAfterCursor(
     const nodes = conn?.nodes ?? [];
     if (nodes.length > 0) {
       return {
-        nodes,
+        nodes: filterArticles(nodes, persona),
         pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
       };
     }
@@ -477,18 +543,20 @@ export async function fetchIdeaxchangeSalesAfterCursor(
   try {
     const { nodes, pageInfo } = await fetchInsightsSalesAfterCursor(after, first);
     if (nodes.length > 0) {
-      return { nodes: nodes.map(mapInsightListItem), pageInfo };
+      return { nodes: filterArticles(nodes.map(mapInsightListItem), persona), pageInfo };
     }
   } catch (err) {
     console.error("[ideaxchange] fetchIdeaxchangeSalesAfterCursor insights failed:", err);
   }
 
   const mock = getMockSalesMagazineAfterCursor(after);
-  return { nodes: mock.nodes, pageInfo: mock.pageInfo };
+  return { nodes: filterArticles(mock.nodes, persona), pageInfo: mock.pageInfo };
 }
 
 /** ideaXchange-tagged Recruit posts — recruiting hub blog section. */
-export async function getIdeaxchangeRecruitMagazineBundle(): Promise<{
+export async function getIdeaxchangeRecruitMagazineBundle(
+  persona: IdeaxchangePersona = "brokerage",
+): Promise<{
   posts: IdeaxchangeListItem[];
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
 }> {
@@ -502,7 +570,7 @@ export async function getIdeaxchangeRecruitMagazineBundle(): Promise<{
     const posts = conn?.nodes ?? [];
     if (posts.length > 0) {
       return {
-        posts,
+        posts: filterArticles(posts, persona),
         pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
       };
     }
@@ -512,14 +580,16 @@ export async function getIdeaxchangeRecruitMagazineBundle(): Promise<{
 
   const { posts, pageInfo } = await getInsightsRecruitMagazineBundle();
   if (posts.length > 0) {
-    return { posts: posts.map(mapInsightListItem), pageInfo };
+    return { posts: filterArticles(posts.map(mapInsightListItem), persona), pageInfo };
   }
-  return getMockRecruitMagazineBundle();
+  const mock = getMockRecruitMagazineBundle();
+  return { posts: filterArticles(mock.posts, persona), pageInfo: mock.pageInfo };
 }
 
 export async function fetchIdeaxchangeRecruitAfterCursor(
   after: string,
   first = IDEAXCHANGE_LOAD_MORE_FIRST,
+  persona: IdeaxchangePersona = "brokerage",
 ): Promise<{
   nodes: IdeaxchangeListItem[];
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
@@ -534,7 +604,7 @@ export async function fetchIdeaxchangeRecruitAfterCursor(
     const nodes = conn?.nodes ?? [];
     if (nodes.length > 0) {
       return {
-        nodes,
+        nodes: filterArticles(nodes, persona),
         pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
       };
     }
@@ -545,14 +615,14 @@ export async function fetchIdeaxchangeRecruitAfterCursor(
   try {
     const { nodes, pageInfo } = await fetchInsightsRecruitAfterCursor(after, first);
     if (nodes.length > 0) {
-      return { nodes: nodes.map(mapInsightListItem), pageInfo };
+      return { nodes: filterArticles(nodes.map(mapInsightListItem), persona), pageInfo };
     }
   } catch (err) {
     console.error("[ideaxchange] fetchIdeaxchangeRecruitAfterCursor insights failed:", err);
   }
 
   const mock = getMockRecruitMagazineAfterCursor(after);
-  return { nodes: mock.nodes, pageInfo: mock.pageInfo };
+  return { nodes: filterArticles(mock.nodes, persona), pageInfo: mock.pageInfo };
 }
 
 /** ideaXchange-tagged Initiative posts — Sales Success vertical. */
@@ -586,7 +656,9 @@ async function fetchIdeaxchangeInitiativeTagBySlugResult(
   }
 }
 
-export async function getIdeaxchangeInitiativeMagazineBundle(): Promise<{
+export async function getIdeaxchangeInitiativeMagazineBundle(
+  persona: IdeaxchangePersona = "brokerage",
+): Promise<{
   posts: IdeaxchangeListItem[];
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
 }> {
@@ -598,7 +670,7 @@ export async function getIdeaxchangeInitiativeMagazineBundle(): Promise<{
   const posts = conn?.nodes ?? [];
   if (posts.length > 0) {
     return {
-      posts,
+      posts: filterArticles(posts, persona),
       pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
     };
   }
@@ -606,18 +678,23 @@ export async function getIdeaxchangeInitiativeMagazineBundle(): Promise<{
   try {
     const { posts: insightPosts, pageInfo } = await getInsightsInitiativeMagazineBundle();
     if (insightPosts.length > 0) {
-      return { posts: insightPosts.map(mapInsightListItem), pageInfo };
+      return {
+        posts: filterArticles(insightPosts.map(mapInsightListItem), persona),
+        pageInfo,
+      };
     }
   } catch (err) {
     console.error("[ideaxchange] getIdeaxchangeInitiativeMagazineBundle insights failed:", err);
   }
 
-  return getMockInitiativeMagazineBundle();
+  const mock = getMockInitiativeMagazineBundle();
+  return { posts: filterArticles(mock.posts, persona), pageInfo: mock.pageInfo };
 }
 
 export async function fetchIdeaxchangeInitiativeAfterCursor(
   after: string,
   first = IDEAXCHANGE_LOAD_MORE_FIRST,
+  persona: IdeaxchangePersona = "brokerage",
 ): Promise<{
   nodes: IdeaxchangeListItem[];
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
@@ -627,7 +704,7 @@ export async function fetchIdeaxchangeInitiativeAfterCursor(
   const nodes = conn?.nodes ?? [];
   if (nodes.length > 0) {
     return {
-      nodes,
+      nodes: filterArticles(nodes, persona),
       pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
     };
   }
@@ -635,12 +712,12 @@ export async function fetchIdeaxchangeInitiativeAfterCursor(
   try {
     const { nodes: insightNodes, pageInfo } = await fetchInsightsInitiativeAfterCursor(after, first);
     if (insightNodes.length > 0) {
-      return { nodes: insightNodes.map(mapInsightListItem), pageInfo };
+      return { nodes: filterArticles(insightNodes.map(mapInsightListItem), persona), pageInfo };
     }
   } catch (err) {
     console.error("[ideaxchange] fetchIdeaxchangeInitiativeAfterCursor insights failed:", err);
   }
 
   const mock = getMockInitiativeMagazineAfterCursor(after);
-  return { nodes: mock.nodes, pageInfo: mock.pageInfo };
+  return { nodes: filterArticles(mock.nodes, persona), pageInfo: mock.pageInfo };
 }

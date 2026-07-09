@@ -1,33 +1,39 @@
 import type { NavItem } from "@/lib/wp-menus";
 import {
+  IDEAXCHANGE_ARTICLE_PATH,
   IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH,
+  IDEAXCHANGE_CAREER_LEADERBOARD_PATH,
+  IDEAXCHANGE_HOME_FEED_PATH,
   IDEAXCHANGE_LEADERBOARD_PATH,
   IDEAXCHANGE_MAGAZINE_PATH,
   IDEAXCHANGE_RECRUITING_HUB_PATH,
   IDEAXCHANGE_SALES_SUCCESS_PATH,
 } from "@/lib/ideaxchange-constants";
-import { IDEAXCHANGE_PILLAR_NAV } from "@/lib/ideaxchange-nav";
+import { getIdeaxchangeHeaderNav } from "@/lib/ideaxchange-nav";
+import type { IdeaxchangeDevViewMode } from "@/lib/ideaxchange-dev";
 
-export type IdeaxchangePersona = "sales" | "recruit" | "carrier" | "leadership" | "admin";
+/** Entra audience — Brokerage or Career only. */
+export type IdeaxchangePersona = "brokerage" | "career";
 
-/** App role values configured in Entra (Token configuration → App roles). */
+/** Legacy app role values in Entra (still accepted on tokens). */
 export const IDEAXCHANGE_APP_ROLES = {
-  ADMIN: "IDEAXCHANGE_ADMIN",
-  LEADERSHIP: "IDEAXCHANGE_LEADERSHIP",
-  CARRIER: "IDEAXCHANGE_CARRIER",
-  RECRUIT: "IDEAXCHANGE_RECRUIT",
+  BROKERAGE: "IDEAXCHANGE_BROKERAGE",
+  CAREER: "IDEAXCHANGE_CAREER",
+  /** @deprecated use IDEAXCHANGE_BROKERAGE */
   SALES: "IDEAXCHANGE_SALES",
+  /** @deprecated use IDEAXCHANGE_CAREER */
+  RECRUIT: "IDEAXCHANGE_RECRUIT",
 } as const;
 
-function entraGroupIdForPersona(persona: Exclude<IdeaxchangePersona, "admin">): string | undefined {
-  // Env vars map Entra security groups → personas (Brokerage=sales, Career=recruit, etc.)
-  const map: Record<Exclude<IdeaxchangePersona, "admin">, string | undefined> = {
-    sales: process.env.IDEAXCHANGE_ENTRA_GROUP_SALES_ID,
-    recruit: process.env.IDEAXCHANGE_ENTRA_GROUP_RECRUIT_ID,
-    carrier: process.env.IDEAXCHANGE_ENTRA_GROUP_CARRIER_ID,
-    leadership: process.env.IDEAXCHANGE_ENTRA_GROUP_LEADERSHIP_ID,
-  };
-  return map[persona]?.trim() || undefined;
+function entraGroupIdForPersona(persona: IdeaxchangePersona): string | undefined {
+  const brokerage =
+    process.env.IDEAXCHANGE_ENTRA_GROUP_BROKERAGE_ID?.trim() ||
+    process.env.IDEAXCHANGE_ENTRA_GROUP_SALES_ID?.trim();
+  const career =
+    process.env.IDEAXCHANGE_ENTRA_GROUP_CAREER_ID?.trim() ||
+    process.env.IDEAXCHANGE_ENTRA_GROUP_RECRUIT_ID?.trim();
+
+  return persona === "brokerage" ? brokerage : career;
 }
 
 function hasRole(roles: Set<string>, role: string): boolean {
@@ -59,7 +65,27 @@ export function mergeEntraMembershipIds(
   return [...merged];
 }
 
-/** Map Entra app roles and/or security group object IDs to an IdeaXchange persona. */
+function isCareerRole(role: string): boolean {
+  const upper = role.toUpperCase();
+  return (
+    upper === IDEAXCHANGE_APP_ROLES.CAREER ||
+    upper === IDEAXCHANGE_APP_ROLES.RECRUIT ||
+    upper.includes("CAREER") ||
+    upper.includes("RECRUIT")
+  );
+}
+
+function isBrokerageRole(role: string): boolean {
+  const upper = role.toUpperCase();
+  return (
+    upper === IDEAXCHANGE_APP_ROLES.BROKERAGE ||
+    upper === IDEAXCHANGE_APP_ROLES.SALES ||
+    upper.includes("BROKERAGE") ||
+    upper.includes("SALES")
+  );
+}
+
+/** Map Entra app roles and/or security group object IDs to Brokerage or Career. */
 export function resolveIdeaxchangePersona(
   roles: string[] | undefined,
   groupIds: string[] | undefined,
@@ -67,71 +93,88 @@ export function resolveIdeaxchangePersona(
   const roleSet = new Set((roles ?? []).map((r) => r.toUpperCase()));
   const membershipSet = new Set(mergeEntraMembershipIds(roles, groupIds));
 
-  if (hasRole(roleSet, IDEAXCHANGE_APP_ROLES.ADMIN)) return "admin";
-  if (hasRole(roleSet, IDEAXCHANGE_APP_ROLES.LEADERSHIP)) return "leadership";
-  if (hasMembership(membershipSet, entraGroupIdForPersona("leadership"))) return "leadership";
-  if (hasRole(roleSet, IDEAXCHANGE_APP_ROLES.CARRIER)) return "carrier";
-  if (hasMembership(membershipSet, entraGroupIdForPersona("carrier"))) return "carrier";
-  if (hasRole(roleSet, IDEAXCHANGE_APP_ROLES.RECRUIT)) return "recruit";
-  if (hasMembership(membershipSet, entraGroupIdForPersona("recruit"))) return "recruit";
-  if (hasRole(roleSet, IDEAXCHANGE_APP_ROLES.SALES)) return "sales";
-  if (hasMembership(membershipSet, entraGroupIdForPersona("sales"))) return "sales";
+  for (const role of roleSet) {
+    if (isCareerRole(role)) return "career";
+  }
+  if (hasMembership(membershipSet, entraGroupIdForPersona("career"))) return "career";
 
-  return "sales";
+  for (const role of roleSet) {
+    if (isBrokerageRole(role)) return "brokerage";
+  }
+  if (hasMembership(membershipSet, entraGroupIdForPersona("brokerage"))) return "brokerage";
+
+  return "brokerage";
 }
 
-export function getIdeaxchangeHomeForPersona(persona: IdeaxchangePersona): string {
-  switch (persona) {
-    case "recruit":
-      return IDEAXCHANGE_RECRUITING_HUB_PATH;
-    case "carrier":
-      return IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH;
-    case "leadership":
-    case "admin":
-      return IDEAXCHANGE_LEADERBOARD_PATH;
-    case "sales":
-    default:
-      return IDEAXCHANGE_MAGAZINE_PATH;
-  }
+export function getIdeaxchangeHomeForPersona(_persona: IdeaxchangePersona): string {
+  return IDEAXCHANGE_HOME_FEED_PATH;
 }
 
 function navHrefAllowedForPersona(href: string, persona: IdeaxchangePersona): boolean {
   if (href === "#" || href.startsWith("#")) return true;
+  if (href.startsWith(IDEAXCHANGE_HOME_FEED_PATH)) return true;
 
-  switch (persona) {
-    case "admin":
-    case "leadership":
-      return true;
-    case "sales":
-      return (
-        href.startsWith(IDEAXCHANGE_MAGAZINE_PATH) ||
-        href.startsWith(IDEAXCHANGE_LEADERBOARD_PATH) ||
-        href.startsWith(IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH) ||
-        href.startsWith(IDEAXCHANGE_SALES_SUCCESS_PATH)
-      );
-    case "recruit":
-      return (
-        href.startsWith(IDEAXCHANGE_MAGAZINE_PATH) ||
-        href.startsWith(IDEAXCHANGE_RECRUITING_HUB_PATH)
-      );
-    case "carrier":
-      return (
-        href.startsWith(IDEAXCHANGE_MAGAZINE_PATH) ||
-        href.startsWith(IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH)
-      );
-    default:
-      return true;
+  if (persona === "career") {
+    return (
+      href.startsWith(IDEAXCHANGE_RECRUITING_HUB_PATH) ||
+      href.startsWith(IDEAXCHANGE_CAREER_LEADERBOARD_PATH)
+    );
   }
+
+  return (
+    href.startsWith(IDEAXCHANGE_RECRUITING_HUB_PATH) ||
+    href.startsWith(IDEAXCHANGE_LEADERBOARD_PATH) ||
+    href.startsWith(IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH) ||
+    href.startsWith(IDEAXCHANGE_SALES_SUCCESS_PATH)
+  );
 }
 
-/** Filter pillar nav items based on the signed-in member's persona. */
-export function getIdeaxchangeNavForPersona(persona: IdeaxchangePersona): NavItem[] {
-  return IDEAXCHANGE_PILLAR_NAV.filter((item) => navHrefAllowedForPersona(item.href, persona));
+/** ideaXchange SiteHeader / mobile nav for Brokerage or Career. */
+export function getIdeaxchangeNavForPersona(
+  persona: IdeaxchangePersona,
+  devView: IdeaxchangeDevViewMode = "off",
+): NavItem[] {
+  return getIdeaxchangeHeaderNav(persona, devView);
 }
 
-export function canAccessIdeaxchangePath(pathname: string, persona: IdeaxchangePersona): boolean {
+export function canAccessIdeaxchangePath(
+  pathname: string,
+  persona: IdeaxchangePersona,
+  devView: IdeaxchangeDevViewMode = "off",
+): boolean {
+  if (devView === "all") {
+    const normalized = pathname.replace(/\/+$/, "") || "/";
+    if (!normalized.startsWith("/ideaxchange")) return true;
+    return normalized !== "/ideaxchange" && normalized !== "/ideaxchange/";
+  }
+  if (devView === "career") {
+    return canAccessIdeaxchangePath(pathname, "career", "off");
+  }
+  if (devView === "brokerage") {
+    return canAccessIdeaxchangePath(pathname, "brokerage", "off");
+  }
+
   const normalized = pathname.replace(/\/+$/, "") || "/";
   if (!normalized.startsWith("/ideaxchange")) return true;
+
+  const homeBase = IDEAXCHANGE_HOME_FEED_PATH.replace(/\/$/, "");
+  if (normalized === homeBase || normalized.startsWith(`${homeBase}/`)) {
+    return true;
+  }
+
+  const articleBase = IDEAXCHANGE_ARTICLE_PATH.replace(/\/$/, "");
+  if (normalized.startsWith(`${articleBase}/`) && normalized !== articleBase) {
+    return true;
+  }
+
+  // Legacy magazine article URLs — redirect to /article/ (index redirects to /home).
+  if (
+    normalized.startsWith(IDEAXCHANGE_MAGAZINE_PATH.replace(/\/$/, "")) &&
+    normalized !== IDEAXCHANGE_MAGAZINE_PATH.replace(/\/$/, "") &&
+    !normalized.includes("/category/")
+  ) {
+    return true;
+  }
 
   const allowedPrefixes = getIdeaxchangeNavForPersona(persona)
     .map((item) => item.href.replace(/\/+$/, ""))

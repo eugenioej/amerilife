@@ -48,19 +48,21 @@ function personaFromCustomClaim(value: unknown): IdeaxchangePersona | null {
   if (typeof value !== "string" || !value.trim()) return null;
   const normalized = value.trim().toUpperCase();
 
-  if (normalized.includes("ADMIN")) return "admin";
-  if (normalized.includes("LEADER")) return "leadership";
-  if (normalized.includes("CARRIER")) return "carrier";
-  if (normalized.includes("RECRUIT")) return "recruit";
-  if (normalized.includes("SALES")) return "sales";
+  if (normalized.includes("CAREER") || normalized.includes("RECRUIT")) return "career";
+  if (normalized.includes("BROKERAGE") || normalized.includes("SALES")) return "brokerage";
 
-  const roleValues = Object.values(IDEAXCHANGE_APP_ROLES);
-  const match = roleValues.find((role) => normalized === role || normalized.includes(role));
-  if (match === IDEAXCHANGE_APP_ROLES.ADMIN) return "admin";
-  if (match === IDEAXCHANGE_APP_ROLES.LEADERSHIP) return "leadership";
-  if (match === IDEAXCHANGE_APP_ROLES.CARRIER) return "carrier";
-  if (match === IDEAXCHANGE_APP_ROLES.RECRUIT) return "recruit";
-  if (match === IDEAXCHANGE_APP_ROLES.SALES) return "sales";
+  if (
+    normalized === IDEAXCHANGE_APP_ROLES.CAREER ||
+    normalized === IDEAXCHANGE_APP_ROLES.RECRUIT
+  ) {
+    return "career";
+  }
+  if (
+    normalized === IDEAXCHANGE_APP_ROLES.BROKERAGE ||
+    normalized === IDEAXCHANGE_APP_ROLES.SALES
+  ) {
+    return "brokerage";
+  }
 
   return null;
 }

@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
-import { hasIdeaxchangeAccess } from "@/lib/ideaxchange-auth";
+import { getIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import {
   fetchCaseStudiesAfterCursor,
 } from "@/lib/ideaxchange-recruiting-data";
 import { RECRUITING_LOAD_MORE_FIRST } from "@/lib/ideaxchange-recruiting-utils";
 
 export async function POST(req: Request) {
-  if (!(await hasIdeaxchangeAccess())) {
+  const auth = await getIdeaxchangeAuth();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -17,7 +18,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing or invalid after cursor" }, { status: 400 });
     }
 
-    const result = await fetchCaseStudiesAfterCursor(after, RECRUITING_LOAD_MORE_FIRST);
+    const result = await fetchCaseStudiesAfterCursor(
+      after,
+      RECRUITING_LOAD_MORE_FIRST,
+      auth.persona,
+    );
     return NextResponse.json(result);
   } catch (err) {
     console.error("[api/ideaxchange/recruiting/load-more]", err);

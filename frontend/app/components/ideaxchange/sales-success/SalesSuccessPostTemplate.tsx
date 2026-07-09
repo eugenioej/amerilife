@@ -96,7 +96,7 @@ export function SalesSuccessPostTemplate({ post, relatedPosts, shareUrl }: Props
         className="mb-6"
         items={[
           { label: "Home", href: "/" },
-          { label: "ideaXchange", href: "/ideaxchange/magazine/" },
+          { label: "Sales Success", href: "/ideaxchange/sales-success/" },
           { label: "Sales Success", href: IDEAXCHANGE_SALES_SUCCESS_PATH },
           {
             label: post.title ?? "Article",

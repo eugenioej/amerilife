@@ -20,6 +20,11 @@ import {
   RECRUITING_HUB_FIRST,
   RECRUITING_LOAD_MORE_FIRST,
 } from "@/lib/ideaxchange-recruiting-utils";
+import type { IdeaxchangePersona } from "@/lib/ideaxchange-persona";
+import {
+  filterItemsByPersonaVisibility,
+  isItemVisibleToPersona,
+} from "@/lib/ideaxchange-visibility";
 
 async function fetchCaseStudiesConnection(
   first: number,
@@ -58,12 +63,16 @@ async function fetchCaseStudiesConnection(
   return { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } };
 }
 
-export async function getCaseStudiesList(): Promise<CaseStudyListItem[]> {
+export async function getCaseStudiesList(
+  persona: IdeaxchangePersona = "brokerage",
+): Promise<CaseStudyListItem[]> {
   const { nodes } = await fetchCaseStudiesConnection(100);
-  return nodes;
+  return filterItemsByPersonaVisibility(nodes, persona);
 }
 
-export async function getRecruitingHubBundle(): Promise<{
+export async function getRecruitingHubBundle(
+  persona: IdeaxchangePersona = "brokerage",
+): Promise<{
   posts: CaseStudyListItem[];
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
 }> {
@@ -71,43 +80,63 @@ export async function getRecruitingHubBundle(): Promise<{
     RECRUITING_HUB_FIRST,
     null,
   );
-  return { posts: nodes, pageInfo };
+  return { posts: filterItemsByPersonaVisibility(nodes, persona), pageInfo };
 }
 
 export async function fetchCaseStudiesAfterCursor(
   after: string,
   first = RECRUITING_LOAD_MORE_FIRST,
+  persona: IdeaxchangePersona = "brokerage",
 ): Promise<{
   nodes: CaseStudyListItem[];
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
 }> {
   const result = await fetchCaseStudiesConnection(first, after);
-  if (result.nodes.length > 0) return result;
+  if (result.nodes.length > 0) {
+    return {
+      nodes: filterItemsByPersonaVisibility(result.nodes, persona),
+      pageInfo: result.pageInfo,
+    };
+  }
   return { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } };
 }
 
-export async function getCaseStudyBySlug(slug: string): Promise<CaseStudyDetail | null> {
+export async function getCaseStudyBySlug(
+  slug: string,
+  persona?: IdeaxchangePersona,
+): Promise<CaseStudyDetail | null> {
   try {
     const data = await fetchGraphQL<CaseStudyBySlugResult>(GET_CASE_STUDY_BY_SLUG, {
       slug,
     });
     const post = data?.ideaxchangeCaseStudy;
-    if (post) return post;
+    if (post) {
+      if (persona && !isItemVisibleToPersona(post, persona)) return null;
+      return post;
+    }
   } catch (err) {
     console.error("[recruiting] getCaseStudyBySlug failed:", err);
   }
-  return getMockCaseStudyBySlug(slug);
+  const mock = getMockCaseStudyBySlug(slug);
+  if (mock && persona && !isItemVisibleToPersona(mock, persona)) return null;
+  return mock;
 }
 
 export const getCompanyBySlug = cache(async function getCompanyBySlug(
   slug: string,
+  persona?: IdeaxchangePersona,
 ): Promise<IdeaxchangeCompanySummary | null> {
   try {
     const data = await fetchGraphQL<CompanyBySlugResult>(GET_COMPANY_BY_SLUG, { slug });
     const company = data?.ideaxchangeCompany;
-    if (company) return company;
+    if (company) {
+      if (persona && !isItemVisibleToPersona(company, persona)) return null;
+      return company;
+    }
   } catch (err) {
     console.error("[recruiting] getCompanyBySlug failed:", err);
   }
-  return getMockCompanyBySlug(slug);
+  const mock = getMockCompanyBySlug(slug);
+  if (mock && persona && !isItemVisibleToPersona(mock, persona)) return null;
+  return mock;
 });

@@ -24,19 +24,15 @@ function amerilife_ideaxchange_case_study_post_id($post) {
 }
 
 function amerilife_ideaxchange_case_study_attachment_asset($attachment_id, $label) {
-  $aid = (int) $attachment_id;
-  if ($aid < 1) {
-    return null;
-  }
-  $url = wp_get_attachment_url($aid);
-  if (!$url) {
-    return null;
-  }
-  $mime = get_post_mime_type($aid);
+  return amerilife_ideaxchange_attachment_asset($attachment_id, $label);
+}
+
+/** @return array<string, string> */
+function amerilife_ideaxchange_case_study_legacy_asset_map() {
   return [
-    'label' => $label,
-    'fileUrl' => $url,
-    'mimeType' => $mime ? (string) $mime : null,
+    'call_scripts_attachment_id' => 'Call Scripts',
+    'interview_questions_attachment_id' => 'Interview Questions',
+    'email_templates_attachment_id' => 'Email Templates',
   ];
 }
 
@@ -106,15 +102,16 @@ add_action('init', function () {
     ]);
   }
 
-  foreach (
-    [
-      'call_scripts_attachment_id' => 'integer',
-      'interview_questions_attachment_id' => 'integer',
-      'email_templates_attachment_id' => 'integer',
-    ] as $key => $type
-  ) {
+  register_post_meta(AMERILIFE_IX_CASE_STUDY_PT, 'campaign_assets_json', [
+    'type' => 'string',
+    'single' => true,
+    'show_in_rest' => true,
+    'auth_callback' => $meta_auth,
+  ]);
+
+  foreach (amerilife_ideaxchange_case_study_legacy_asset_map() as $key => $label) {
     register_post_meta(AMERILIFE_IX_CASE_STUDY_PT, $key, [
-      'type' => $type,
+      'type' => 'integer',
       'single' => true,
       'show_in_rest' => true,
       'default' => 0,
@@ -225,15 +222,12 @@ add_action('add_meta_boxes', function () {
       if ($post->post_type !== AMERILIFE_IX_CASE_STUDY_PT) {
         return;
       }
-      $fields = [
-        'call_scripts_attachment_id' => 'Call Scripts',
-        'interview_questions_attachment_id' => 'Interview Questions',
-        'email_templates_attachment_id' => 'Email Templates',
-      ];
-      echo '<p class="description">Downloads in the &ldquo;Run this campaign&rdquo; sidebar. Choose a PDF or document from the Media Library for each slot.</p>';
-      foreach ($fields as $key => $label) {
-        amerilife_ideaxchange_render_attachment_picker($post->ID, $key, $label);
-      }
+      amerilife_ideaxchange_render_resources_repeater(
+        (int) $post->ID,
+        'campaign_assets_json',
+        amerilife_ideaxchange_case_study_legacy_asset_map(),
+        'Downloads in the "Run this campaign" sidebar. Add a name and file for each download.'
+      );
     },
     AMERILIFE_IX_CASE_STUDY_PT,
     'normal',
@@ -266,15 +260,11 @@ add_action('save_post_' . AMERILIFE_IX_CASE_STUDY_PT, function ($post_id) {
     update_post_meta($post_id, $key, $val);
   }
 
-  foreach (
-    [
-      'call_scripts_attachment_id',
-      'interview_questions_attachment_id',
-      'email_templates_attachment_id',
-    ] as $key
-  ) {
-    $n = isset($_POST[$key]) ? absint($_POST[$key]) : 0;
-    update_post_meta($post_id, $key, $n);
+  $assets = amerilife_ideaxchange_resources_from_post_request();
+  update_post_meta($post_id, 'campaign_assets_json', wp_json_encode($assets));
+
+  foreach (array_keys(amerilife_ideaxchange_case_study_legacy_asset_map()) as $key) {
+    delete_post_meta($post_id, $key);
   }
 }, 10, 1);
 
@@ -306,6 +296,10 @@ add_action('graphql_register_types', function () {
         'type' => ['list_of' => 'IdeaxchangeCampaignAsset'],
         'description' => 'Run this campaign download files',
       ],
+      'visibility' => [
+        'type' => 'IdeaxchangeVisibility',
+        'description' => 'Brokerage / Career / Brokerage+Career audience',
+      ],
     ],
   ]);
 
@@ -323,6 +317,7 @@ add_action('graphql_register_types', function () {
           'campaignResults' => null,
           'campaignOverview' => null,
           'campaignAssets' => [],
+          'visibility' => 'BROKERAGE_CAREER',
         ];
       }
 
@@ -337,18 +332,11 @@ add_action('graphql_register_types', function () {
       $campaign_spend = get_post_meta($id, 'campaign_spend', true);
       $campaign_results = get_post_meta($id, 'campaign_results', true);
       $campaign_overview = get_post_meta($id, 'campaign_overview', true);
-      $assets = [];
-      $map = [
-        'call_scripts_attachment_id' => 'Call Scripts',
-        'interview_questions_attachment_id' => 'Interview Questions',
-        'email_templates_attachment_id' => 'Email Templates',
-      ];
-      foreach ($map as $meta_key => $label) {
-        $row = amerilife_ideaxchange_case_study_attachment_asset(get_post_meta($id, $meta_key, true), $label);
-        if ($row) {
-          $assets[] = $row;
-        }
-      }
+      $assets = amerilife_ideaxchange_resolve_resources_graphql(
+        $id,
+        'campaign_assets_json',
+        amerilife_ideaxchange_case_study_legacy_asset_map()
+      );
 
       return [
         'isSpotlight' => $spot,
@@ -359,6 +347,7 @@ add_action('graphql_register_types', function () {
         'campaignResults' => $campaign_results !== '' ? (string) $campaign_results : null,
         'campaignOverview' => $campaign_overview !== '' ? (string) $campaign_overview : null,
         'campaignAssets' => $assets,
+        'visibility' => amerilife_ideaxchange_visibility_graphql_enum($id),
       ];
     },
   ]);
@@ -427,6 +416,14 @@ function amerilife_ideaxchange_case_study_apply_seed_meta($sid, $row, $company_m
       update_post_meta($sid, $key, sanitize_text_field((string) $row[$key]));
     }
   }
+
+  if (!empty($row['visibility'])) {
+    update_post_meta(
+      $sid,
+      AMERILIFE_IX_VISIBILITY_META,
+      amerilife_ideaxchange_sanitize_visibility($row['visibility'])
+    );
+  }
 }
 
 /**
@@ -487,6 +484,13 @@ function amerilife_ideaxchange_recruiting_seed_demo($force = false) {
     }
     if (!empty($row['learn_more_url'])) {
       update_post_meta($cid, 'learn_more_url', esc_url_raw((string) $row['learn_more_url']));
+    }
+    if (!empty($row['visibility'])) {
+      update_post_meta(
+        $cid,
+        AMERILIFE_IX_VISIBILITY_META,
+        amerilife_ideaxchange_sanitize_visibility($row['visibility'])
+      );
     }
   }
 

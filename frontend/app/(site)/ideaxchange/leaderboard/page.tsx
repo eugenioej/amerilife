@@ -16,12 +16,12 @@ export const metadata: Metadata = privatePageMetadata(
 );
 
 export default async function LeaderboardIndexPage() {
-  await requireIdeaxchangeAuth(IDEAXCHANGE_LEADERBOARD_PATH);
+  const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_LEADERBOARD_PATH);
 
   const [tableData, heroStories, salesBundle, insightsAds] = await Promise.all([
-    getLeaderboardTables(),
+    getLeaderboardTables(auth.persona),
     Promise.resolve(getLeaderboardHeroStories()),
-    getIdeaxchangeSalesMagazineBundle(),
+    getIdeaxchangeSalesMagazineBundle(auth.persona),
     getInsightsAdsSettings(),
   ]);
 

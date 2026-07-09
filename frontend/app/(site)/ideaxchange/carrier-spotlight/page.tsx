@@ -11,9 +11,9 @@ export const metadata: Metadata = privatePageMetadata(
 );
 
 export default async function CarrierSpotlightIndexPage() {
-  await requireIdeaxchangeAuth(IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH);
+  const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH);
 
-  const { carriers } = await getCarrierSpotlightBundle();
+  const { carriers } = await getCarrierSpotlightBundle(auth.persona);
 
   return <CarrierSpotlightPage carriers={carriers} />;
 }

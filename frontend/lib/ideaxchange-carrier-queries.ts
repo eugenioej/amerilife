@@ -25,6 +25,7 @@ export type CarrierListItem = {
     isHero?: boolean | null;
     brandColor?: string | null;
     websiteUrl?: string | null;
+    visibility?: string | null;
     highlights?: IdeaxchangeCarrierHighlight[] | null;
     carrierResources?: IdeaxchangeCarrierResource[] | null;
   } | null;
@@ -72,6 +73,7 @@ const CARRIER_LIST_FIELDS = `
     isHero
     brandColor
     websiteUrl
+    visibility
   }
 `;
 
@@ -113,6 +115,7 @@ export const GET_CARRIER_BY_SLUG = `
         isHero
         brandColor
         websiteUrl
+        visibility
         highlights {
           icon
           label

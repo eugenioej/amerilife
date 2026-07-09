@@ -26,11 +26,11 @@ export async function generateMetadata({ params }: { params: PageParams }) {
 
 export default async function CarrierDetailPage({ params }: { params: PageParams }) {
   const { slug } = await params;
-  await requireIdeaxchangeAuth(`/ideaxchange/carrier-spotlight/${slug}/`);
+  const auth = await requireIdeaxchangeAuth(`/ideaxchange/carrier-spotlight/${slug}/`);
 
   const [carrier, salesBundle, insightsAds] = await Promise.all([
-    getCarrierBySlug(slug),
-    getIdeaxchangeSalesMagazineBundle(),
+    getCarrierBySlug(slug, auth.persona),
+    getIdeaxchangeSalesMagazineBundle(auth.persona),
     getInsightsAdsSettings(),
   ]);
 

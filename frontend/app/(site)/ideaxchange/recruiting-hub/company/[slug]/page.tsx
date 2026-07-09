@@ -21,9 +21,9 @@ export async function generateMetadata({ params }: { params: PageParams }) {
 
 export default async function CompanyPage({ params }: { params: PageParams }) {
   const { slug } = await params;
-  await requireIdeaxchangeAuth(`/ideaxchange/recruiting-hub/company/${slug}/`);
+  const auth = await requireIdeaxchangeAuth(`/ideaxchange/recruiting-hub/company/${slug}/`);
 
-  const company = await getCompanyBySlug(slug);
+  const company = await getCompanyBySlug(slug, auth.persona);
   if (!company) notFound();
 
   return <CompanyPageTemplate company={company} />;

@@ -108,6 +108,7 @@ add_action('graphql_register_types', function () {
     'fields' => [
       'websiteUrl' => ['type' => 'String'],
       'learnMoreUrl' => ['type' => 'String'],
+      'visibility' => ['type' => 'IdeaxchangeVisibility'],
     ],
   ]);
 
@@ -117,13 +118,14 @@ add_action('graphql_register_types', function () {
     'resolve' => function ($post) {
       $id = amerilife_ideaxchange_company_post_id($post);
       if (!$id) {
-        return ['websiteUrl' => null, 'learnMoreUrl' => null];
+        return ['websiteUrl' => null, 'learnMoreUrl' => null, 'visibility' => 'BROKERAGE_CAREER'];
       }
       $website = get_post_meta($id, 'website_url', true);
       $learn = get_post_meta($id, 'learn_more_url', true);
       return [
         'websiteUrl' => $website !== '' ? (string) $website : null,
         'learnMoreUrl' => $learn !== '' ? (string) $learn : null,
+        'visibility' => amerilife_ideaxchange_visibility_graphql_enum($id),
       ];
     },
   ]);

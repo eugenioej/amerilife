@@ -10,12 +10,13 @@ import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/Ide
 import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
 import type { InsightsAdsSettings } from "@/lib/queries";
-import { IDEAXCHANGE_MAGAZINE_PATH } from "@/lib/ideaxchange-constants";
+import { IDEAXCHANGE_LEADERBOARD_PATH } from "@/lib/ideaxchange-constants";
 import { IDEAXCHANGE_SALES_TAG_SLUG } from "@/lib/ideaxchange-data";
 import {
   LEADERBOARD_TABLE_CONFIG,
   type LeaderboardRow,
 } from "@/lib/ideaxchange-leaderboard-data";
+import { LeaderboardQuickNav } from "./LeaderboardQuickNav";
 import { LeaderboardSection } from "./LeaderboardSection";
 import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeHorizontalAdSlot";
 
@@ -50,6 +51,8 @@ export function SalesLeaderboardPage({
         className="mt-0 min-h-[100px] md:min-h-[120px]"
       />
 
+      <LeaderboardQuickNav />
+
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 md:py-14">
         {LEADERBOARD_TABLE_CONFIG.map((section) => (
           <LeaderboardSection key={section.slug} section={section} tableData={tableData} />
@@ -62,15 +65,15 @@ export function SalesLeaderboardPage({
                 Sales
               </h2>
               <p className="mt-2 text-sm text-[var(--color-muted)]">
-                Latest sales-focused articles from ideaXchange magazine.
+                Latest articles for Brokerage teams.
               </p>
             </div>
             <Link
-              href={IDEAXCHANGE_MAGAZINE_PATH}
+              href={IDEAXCHANGE_LEADERBOARD_PATH}
               variant="button"
               className="inline-flex min-h-[44px] items-center justify-center rounded-sm bg-[var(--color-brand-primary)] px-6 text-sm font-bold uppercase tracking-wide text-white hover:bg-[var(--color-brand-primary-hover)]"
             >
-              View magazine
+              View Leaderboard
             </Link>
           </div>
 

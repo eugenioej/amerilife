@@ -13,7 +13,12 @@ import {
 import { getToken } from "next-auth/jwt";
 import { isMicrosoftIdeaxchangeAuthEnabled } from "@/lib/ideaxchange-auth-config";
 import { getIdeaxchangeJwtParams } from "@/lib/ideaxchange-auth-token";
-import { canAccessIdeaxchangePath, getIdeaxchangeHomeForPersona } from "@/lib/ideaxchange-persona";
+import { getIdeaxchangeDevViewFromRequest } from "@/lib/ideaxchange-dev";
+import {
+  canAccessIdeaxchangePath,
+  getIdeaxchangeHomeForPersona,
+  type IdeaxchangePersona,
+} from "@/lib/ideaxchange-persona";
 
 // ---------------------------------------------------------------------------
 // Blocked user-agent substrings — vulnerability scanners & automated tools
@@ -102,8 +107,9 @@ export async function proxy(request: NextRequest) {
     isMicrosoftIdeaxchangeAuthEnabled()
   ) {
     const token = await getToken(getIdeaxchangeJwtParams(request));
-    const persona = token?.persona ?? "sales";
-    if (!canAccessIdeaxchangePath(pathname, persona)) {
+    const persona = (token?.persona ?? "brokerage") as IdeaxchangePersona;
+    const devView = getIdeaxchangeDevViewFromRequest(request);
+    if (!canAccessIdeaxchangePath(pathname, persona, devView)) {
       const home = getIdeaxchangeHomeForPersona(persona);
       return NextResponse.redirect(new URL(home, request.url));
     }

@@ -8,6 +8,7 @@ import { InsightPostChrome } from "@/app/components/insights/InsightPostChrome";
 import { InsightSharePanel } from "@/app/components/insights/InsightSharePanel";
 import { IdeaXchangeTopicBadge } from "./IdeaXchangeTopicBadge";
 import { ideaxchangeFeaturedImageSrc } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
+import { IDEAXCHANGE_HOME_FEED_PATH } from "@/lib/ideaxchange-constants";
 import {
   formatBylineDate,
   formatInsightExcerptPlain,
@@ -179,7 +180,7 @@ export function IdeaXchangePostTemplate({
         className="mb-6"
         items={[
           { label: "Home", href: "/" },
-          { label: "ideaXchange", href: "/ideaxchange/magazine/" },
+          { label: "ideaXchange", href: IDEAXCHANGE_HOME_FEED_PATH },
           {
             label: topicName,
             href: topicSlug ? ideaxchangeCategoryHref(topicSlug) : undefined,

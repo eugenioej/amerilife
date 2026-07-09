@@ -12,10 +12,10 @@ export const metadata: Metadata = privatePageMetadata(
 );
 
 export default async function SalesSuccessIndexPage() {
-  await requireIdeaxchangeAuth(IDEAXCHANGE_SALES_SUCCESS_PATH);
+  const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_SALES_SUCCESS_PATH);
 
   const [initiativeBundle, insightsAds] = await Promise.all([
-    getIdeaxchangeInitiativeMagazineBundle(),
+    getIdeaxchangeInitiativeMagazineBundle(auth.persona),
     getInsightsAdsSettings(),
   ]);
 

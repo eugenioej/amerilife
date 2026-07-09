@@ -20,17 +20,17 @@ function amerilife_ideaxchange_default_topics() {
 add_action('init', function () {
   register_post_type('ideaxchange_article', [
     'labels' => [
-      'name' => 'ideaXchange Magazine',
-      'singular_name' => 'ideaXchange Article',
+      'name' => 'ideaXchange Articles',
+      'singular_name' => 'Article',
       'add_new' => 'Add Article',
       'add_new_item' => 'Add New Article',
       'edit_item' => 'Edit Article',
       'new_item' => 'New Article',
       'view_item' => 'View Article',
-      'search_items' => 'Search ideaXchange',
+      'search_items' => 'Search Articles',
       'not_found' => 'No articles found',
       'not_found_in_trash' => 'No articles found in Trash',
-      'menu_name' => 'ideaXchange Magazine',
+      'menu_name' => 'ideaXchange Articles',
     ],
     'public' => true,
     'has_archive' => false,
@@ -133,6 +133,10 @@ add_action('graphql_register_types', function () {
         'type' => 'Boolean',
         'description' => 'Shown in the Featured articles row',
       ],
+      'visibility' => [
+        'type' => 'IdeaxchangeVisibility',
+        'description' => 'Brokerage / Career / Brokerage+Career audience',
+      ],
     ],
   ]);
 
@@ -149,7 +153,7 @@ add_action('graphql_register_types', function () {
         }
       }
       if (!$id) {
-        return ['isSpotlight' => false, 'isFeatured' => false];
+        return ['isSpotlight' => false, 'isFeatured' => false, 'visibility' => 'BROKERAGE_CAREER'];
       }
       $raw_spot = get_post_meta($id, 'is_spotlight', true);
       $spotlight = (bool) filter_var($raw_spot, FILTER_VALIDATE_BOOLEAN);
@@ -163,6 +167,7 @@ add_action('graphql_register_types', function () {
       return [
         'isSpotlight' => $spotlight,
         'isFeatured' => $featured,
+        'visibility' => amerilife_ideaxchange_visibility_graphql_enum($id),
       ];
     },
   ]);
@@ -223,6 +228,9 @@ function amerilife_ideaxchange_magazine_seed_demo($force = false) {
     }
     if (!empty($row['featured'])) {
       update_post_meta($aid, 'is_featured', '1');
+    }
+    if (!empty($row['visibility'])) {
+      update_post_meta($aid, AMERILIFE_IX_VISIBILITY_META, amerilife_ideaxchange_sanitize_visibility($row['visibility']));
     }
 
     if (!empty($row['topic']) && taxonomy_exists('ideaxchange_topic')) {

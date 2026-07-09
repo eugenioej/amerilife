@@ -18,9 +18,9 @@ export function IdeaXchangeLoginView() {
               Welcome to <IdeaXchangeWordmark />.
             </h1>
             <p className="mt-6 text-base leading-relaxed text-[var(--color-muted)] sm:text-lg">
-              ideaXchange is AmeriLife&apos;s internal online magazine, created to keep our employees and
-              affiliates informed and inspired. Check back often for the latest company news, product
-              updates, and more.
+              ideaXchange is AmeriLife&apos;s internal hub for Brokerage and Career teams — recruiting
+              campaigns, sales leaderboards, carrier resources, and more. Check back often for the latest
+              company news, product updates, and success stories.
             </p>
 
             <div className="mt-10">

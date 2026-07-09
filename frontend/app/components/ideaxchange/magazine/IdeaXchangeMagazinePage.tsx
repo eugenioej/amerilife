@@ -21,6 +21,10 @@ type Props = {
     endCursor: string | null;
   };
   insightsAds?: InsightsAdsSettings | null;
+  /** Accessible page title (sr-only). */
+  pageTitle?: string;
+  defaultBadge?: string;
+  featuredHeading?: string;
 };
 
 function dedupeById(posts: IdeaxchangeListItem[]): IdeaxchangeListItem[] {
@@ -100,22 +104,29 @@ function toCardItem(post: IdeaxchangeListItem): IdeaxchangeCardItem {
   };
 }
 
-export function IdeaXchangeMagazinePage({ posts, listPageInfo, insightsAds }: Props) {
+export function IdeaXchangeMagazinePage({
+  posts,
+  listPageInfo,
+  insightsAds,
+  pageTitle = "ideaXchange Home",
+  defaultBadge = "IDEAXCHANGE",
+  featuredHeading = "Featured articles",
+}: Props) {
   const { hero, spotlight, featured, recentSidebar, newsroomRest } = partitionPosts(posts);
 
   return (
     <div className="bg-white">
-      <h1 className="sr-only">ideaXchange Magazine</h1>
+      <h1 className="sr-only">{pageTitle}</h1>
 
-      <IdeaXchangeHeroGrid items={hero.map(toCardItem)} defaultBadge="MAGAZINE" />
+      <IdeaXchangeHeroGrid items={hero.map(toCardItem)} defaultBadge={defaultBadge} />
 
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 md:py-14">
         <IdeaxchangeHorizontalAdSlot slot={insightsAds?.primaryHorizontal} />
 
         <IdeaXchangeFeaturedGrid
           items={featured.map(toCardItem)}
-          heading="Featured articles"
-          defaultBadge="MAGAZINE"
+          heading={featuredHeading}
+          defaultBadge={defaultBadge}
         />
 
         <IdeaXchangeLeaderboardCtaBanner className="mt-12 md:mt-16" />

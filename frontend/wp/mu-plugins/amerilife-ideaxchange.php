@@ -2,7 +2,7 @@
 /**
  * Plugin Name: AmeriLife ideaXchange
  * Description: Loads ideaXchange MU plugins (magazine, companies, case studies, carriers, leaderboard).
- * Version: 1.0.0
+ * Version: 1.1.0
  */
 
 if (!defined('ABSPATH')) {
@@ -13,6 +13,7 @@ $ideaxchange_mu_dir = __DIR__ . '/ideaxchange';
 
 $ideaxchange_mu_plugins = [
   'amerilife-ideaxchange-admin-ui.php',
+  'amerilife-ideaxchange-visibility.php',
   'amerilife-ideaxchange-cpt.php',
   'amerilife-ideaxchange-company-cpt.php',
   'amerilife-ideaxchange-case-study-cpt.php',

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { hasIdeaxchangeAccess } from "@/lib/ideaxchange-auth";
+import { getIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import {
   fetchIdeaxchangeAfterCursor,
   fetchIdeaxchangeCategoryAfterCursor,
@@ -13,7 +13,8 @@ import {
 } from "@/lib/ideaxchange-data";
 
 export async function POST(req: Request) {
-  if (!(await hasIdeaxchangeAccess())) {
+  const auth = await getIdeaxchangeAuth();
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -26,21 +27,23 @@ export async function POST(req: Request) {
 
     const topicSlug = typeof body.topicSlug === "string" ? body.topicSlug.trim() : "";
     const tagSlug = typeof body.tagSlug === "string" ? body.tagSlug.trim() : "";
+    const persona = auth.persona;
 
     const result =
       tagSlug === IDEAXCHANGE_SALES_TAG_SLUG
-        ? await fetchIdeaxchangeSalesAfterCursor(after, IDEAXCHANGE_LOAD_MORE_FIRST)
+        ? await fetchIdeaxchangeSalesAfterCursor(after, IDEAXCHANGE_LOAD_MORE_FIRST, persona)
         : tagSlug === IDEAXCHANGE_RECRUIT_TAG_SLUG
-          ? await fetchIdeaxchangeRecruitAfterCursor(after, IDEAXCHANGE_LOAD_MORE_FIRST)
+          ? await fetchIdeaxchangeRecruitAfterCursor(after, IDEAXCHANGE_LOAD_MORE_FIRST, persona)
           : tagSlug === IDEAXCHANGE_INITIATIVE_TAG_SLUG
-            ? await fetchIdeaxchangeInitiativeAfterCursor(after, IDEAXCHANGE_LOAD_MORE_FIRST)
+            ? await fetchIdeaxchangeInitiativeAfterCursor(after, IDEAXCHANGE_LOAD_MORE_FIRST, persona)
             : topicSlug
           ? await fetchIdeaxchangeCategoryAfterCursor(
               topicSlug,
               after,
               IDEAXCHANGE_LOAD_MORE_FIRST,
+              persona,
             )
-          : await fetchIdeaxchangeAfterCursor(after, IDEAXCHANGE_LOAD_MORE_FIRST);
+          : await fetchIdeaxchangeAfterCursor(after, IDEAXCHANGE_LOAD_MORE_FIRST, persona);
 
     return NextResponse.json(result);
   } catch (err) {
