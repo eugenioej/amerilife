@@ -20,6 +20,7 @@ export const IDEAXCHANGE_APP_ROLES = {
 } as const;
 
 function entraGroupIdForPersona(persona: Exclude<IdeaxchangePersona, "admin">): string | undefined {
+  // Env vars map Entra security groups → personas (Brokerage=sales, Career=recruit, etc.)
   const map: Record<Exclude<IdeaxchangePersona, "admin">, string | undefined> = {
     sales: process.env.IDEAXCHANGE_ENTRA_GROUP_SALES_ID,
     recruit: process.env.IDEAXCHANGE_ENTRA_GROUP_RECRUIT_ID,
@@ -33,8 +34,29 @@ function hasRole(roles: Set<string>, role: string): boolean {
   return roles.has(role.toUpperCase());
 }
 
-function hasGroup(groupIds: Set<string>, groupId: string | undefined): boolean {
-  return Boolean(groupId && groupIds.has(groupId));
+const GUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isGuid(value: string): boolean {
+  return GUID_PATTERN.test(value);
+}
+
+function hasMembership(membershipIds: Set<string>, groupId: string | undefined): boolean {
+  if (!groupId) return false;
+  const normalized = groupId.toLowerCase();
+  return membershipIds.has(normalized) || membershipIds.has(groupId);
+}
+
+/** Entra may emit security group object IDs in `roles` or `groups` — merge both for lookup. */
+export function mergeEntraMembershipIds(
+  roles: string[] | undefined,
+  groupIds: string[] | undefined,
+): string[] {
+  const merged = new Set<string>();
+  for (const value of [...(roles ?? []), ...(groupIds ?? [])]) {
+    if (isGuid(value)) merged.add(value.toLowerCase());
+  }
+  return [...merged];
 }
 
 /** Map Entra app roles and/or security group object IDs to an IdeaXchange persona. */
@@ -43,17 +65,17 @@ export function resolveIdeaxchangePersona(
   groupIds: string[] | undefined,
 ): IdeaxchangePersona {
   const roleSet = new Set((roles ?? []).map((r) => r.toUpperCase()));
-  const groupSet = new Set(groupIds ?? []);
+  const membershipSet = new Set(mergeEntraMembershipIds(roles, groupIds));
 
   if (hasRole(roleSet, IDEAXCHANGE_APP_ROLES.ADMIN)) return "admin";
   if (hasRole(roleSet, IDEAXCHANGE_APP_ROLES.LEADERSHIP)) return "leadership";
-  if (hasGroup(groupSet, entraGroupIdForPersona("leadership"))) return "leadership";
+  if (hasMembership(membershipSet, entraGroupIdForPersona("leadership"))) return "leadership";
   if (hasRole(roleSet, IDEAXCHANGE_APP_ROLES.CARRIER)) return "carrier";
-  if (hasGroup(groupSet, entraGroupIdForPersona("carrier"))) return "carrier";
+  if (hasMembership(membershipSet, entraGroupIdForPersona("carrier"))) return "carrier";
   if (hasRole(roleSet, IDEAXCHANGE_APP_ROLES.RECRUIT)) return "recruit";
-  if (hasGroup(groupSet, entraGroupIdForPersona("recruit"))) return "recruit";
+  if (hasMembership(membershipSet, entraGroupIdForPersona("recruit"))) return "recruit";
   if (hasRole(roleSet, IDEAXCHANGE_APP_ROLES.SALES)) return "sales";
-  if (hasGroup(groupSet, entraGroupIdForPersona("sales"))) return "sales";
+  if (hasMembership(membershipSet, entraGroupIdForPersona("sales"))) return "sales";
 
   return "sales";
 }
