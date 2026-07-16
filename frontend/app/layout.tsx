@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Open_Sans, Poppins } from "next/font/google";
+import Script from "next/script";
 import {
   CrazyEggScript,
   GoogleTagManagerNoScript,
   GoogleTagManagerScript,
 } from "@/app/components/analytics/ThirdPartyScripts";
 import { getSiteUrl } from "@/lib/seo";
-import "./globals.css";
+import "./globals.css"
 
 const openSans = Open_Sans({
   variable: "--font-sans",
@@ -61,6 +62,18 @@ export default function RootLayout({
         className={`${openSans.variable} ${poppins.variable} antialiased`}
         style={{ fontFamily: "var(--font-sans)" }}
       >
+        <Script
+          src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
+          strategy="afterInteractive"
+          data-document-language="true"
+          data-domain-script="019ae616-08df-7cc6-bd3a-4ecab492d976-test"
+          charSet="UTF-8"
+        />
+        <Script id="onetrust-wrapper" strategy="afterInteractive">
+          {`
+            function OptanonWrapper() {}
+          `}
+        </Script>
         <GoogleTagManagerNoScript />
         <GoogleTagManagerScript />
         <CrazyEggScript />

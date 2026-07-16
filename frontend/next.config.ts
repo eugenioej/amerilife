@@ -4,7 +4,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const turbopackRoot =
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   typeof __dirname !== "undefined"
     ? __dirname
     : path.dirname(fileURLToPath(import.meta.url));
@@ -94,6 +93,7 @@ const nextConfig: NextConfig = {
         "https://www.google.com",
         "https://www.gstatic.com",
         "https://recaptcha.net",
+        "https://cdn.cookielaw.org",
         "blob:",
       ].join(" "),
       "worker-src 'self' blob:",
@@ -118,6 +118,7 @@ const nextConfig: NextConfig = {
         "https://www.google.com",
         "https://www.gstatic.com",
         "https://recaptcha.net",
+        "https://cdn.cookielaw.org",
       ].join(" "),
       [
         "frame-src 'self'",
