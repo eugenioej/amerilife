@@ -1,6 +1,10 @@
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 import type { IdeaxchangePersona } from "@/lib/ideaxchange-persona";
+import {
+  canPersonaAccessPillar,
+  type IdeaxchangePillarKey,
+} from "@/lib/ideaxchange-pillar-visibility";
 
 export const IDEAXCHANGE_DEV_VIEW_COOKIE = "ideaxchange_dev_view";
 
@@ -48,8 +52,28 @@ export function canAccessCareerLeaderboard(
   entraPersona: IdeaxchangePersona,
   devView: IdeaxchangeDevViewMode,
 ): boolean {
-  if (devView === "all" || devView === "career") return true;
-  return entraPersona === "career";
+  if (devView === "all") return true;
+  const persona = devView === "brokerage" ? "brokerage" : devView === "career" ? "career" : entraPersona;
+  return canPersonaAccessPillar("career-leaderboard", persona);
+}
+
+export function canAccessSalesLeaderboard(
+  entraPersona: IdeaxchangePersona,
+  devView: IdeaxchangeDevViewMode,
+): boolean {
+  if (devView === "all") return true;
+  const persona = devView === "brokerage" ? "brokerage" : devView === "career" ? "career" : entraPersona;
+  return canPersonaAccessPillar("sales-leaderboard", persona);
+}
+
+export function canAccessIdeaxchangePillar(
+  pillarKey: IdeaxchangePillarKey,
+  entraPersona: IdeaxchangePersona,
+  devView: IdeaxchangeDevViewMode,
+): boolean {
+  if (devView === "all") return true;
+  const persona = devView === "brokerage" ? "brokerage" : devView === "career" ? "career" : entraPersona;
+  return canPersonaAccessPillar(pillarKey, persona);
 }
 
 export function devViewCookieOptions(maxAgeSeconds = 60 * 60 * 24 * 30) {

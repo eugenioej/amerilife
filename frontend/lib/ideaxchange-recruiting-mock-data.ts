@@ -418,3 +418,7 @@ export function getMockCaseStudyBySlug(slug: string): CaseStudyDetail | null {
 export function getMockCompanyBySlug(slug: string): IdeaxchangeCompanySummary | null {
   return MOCK_COMPANIES[slug] ?? null;
 }
+
+export function getMockCompaniesList(): IdeaxchangeCompanySummary[] {
+  return Object.values(MOCK_COMPANIES);
+}

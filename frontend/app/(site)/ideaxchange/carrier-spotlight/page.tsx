@@ -6,8 +6,8 @@ import { getCarrierSpotlightBundle } from "@/lib/ideaxchange-carrier-data";
 import { privatePageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = privatePageMetadata(
-  "Carrier Spotlight | ideaXchange",
-  "Carrier profiles, resources, and spotlight articles for AmeriLife distribution partners.",
+  "Career Spotlight | ideaXchange",
+  "Carrier and career partner profiles, resources, and spotlight articles on AmeriLife ideaXchange.",
 );
 
 export default async function CarrierSpotlightIndexPage() {

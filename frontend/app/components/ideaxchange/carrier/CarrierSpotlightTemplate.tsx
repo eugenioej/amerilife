@@ -41,7 +41,7 @@ export function CarrierSpotlightTemplate({ carrier, relatedArticles, insightsAds
         items={[
           { label: "Home", href: "/" },
           { label: "ideaXchange", href: IDEAXCHANGE_HOME_PATH },
-          { label: "Carrier Spotlight", href: IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH },
+          { label: "Career Spotlight", href: IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH },
           {
             label: carrier.title ?? "Carrier",
             className: "truncate text-[var(--color-muted)] sm:max-w-[28rem]",

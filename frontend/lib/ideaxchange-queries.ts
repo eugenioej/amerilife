@@ -444,3 +444,61 @@ export const GET_IDEAXCHANGE_TAG_BY_SLUG_MINIMAL = `
     }
   }
 `;
+
+/** Paginated articles for server-side search (includes body + topics). */
+export type IdeaxchangeArticleSearchNode = {
+  id: string;
+  slug?: string | null;
+  title?: string | null;
+  date?: string | null;
+  excerpt?: string | null;
+  content?: string | null;
+  ideaxchangeFields?: {
+    visibility?: string | null;
+  } | null;
+  ideaxchangeTopics?: {
+    nodes?: Array<{ name?: string | null; slug?: string | null }>;
+  } | null;
+};
+
+export type IdeaxchangeArticlesSearchBatchResult = {
+  ideaxchangeArticles?: {
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+    nodes: IdeaxchangeArticleSearchNode[];
+  } | null;
+};
+
+export const GET_IDEAXCHANGE_ARTICLES_SEARCH_BATCH = `
+  query GetIdeaxchangeArticlesSearchBatch($first: Int!, $after: String) {
+    ideaxchangeArticles(
+      first: $first
+      after: $after
+      where: { orderby: { field: DATE, order: DESC } }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        id
+        slug
+        title
+        date
+        excerpt
+        content
+        ideaxchangeFields {
+          visibility
+        }
+        ideaxchangeTopics {
+          nodes {
+            name
+            slug
+          }
+        }
+      }
+    }
+  }
+`;

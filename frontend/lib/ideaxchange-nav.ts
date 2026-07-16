@@ -1,12 +1,9 @@
 import type { NavItem } from "@/lib/wp-menus";
+import { IDEAXCHANGE_CARRIER_SPOTLIGHT_NAV_ENABLED } from "@/lib/ideaxchange-constants";
 import {
-  IDEAXCHANGE_CAREER_LEADERBOARD_PATH,
-  IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH,
-  IDEAXCHANGE_HOME_FEED_PATH,
-  IDEAXCHANGE_LEADERBOARD_PATH,
-  IDEAXCHANGE_RECRUITING_HUB_PATH,
-  IDEAXCHANGE_SALES_SUCCESS_PATH,
-} from "@/lib/ideaxchange-constants";
+  getIdeaxchangeNavItemsForPersona,
+  IDEAXCHANGE_PILLARS,
+} from "@/lib/ideaxchange-pillar-visibility";
 
 export const IDEAXCHANGE_LOGO_SRC =
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/05/ideaXchange-2-scaled.png";
@@ -18,31 +15,19 @@ export function isIdeaxchangePath(pathname: string): boolean {
   return normalized.startsWith("/ideaxchange/");
 }
 
-/** ideaXchange header nav — Career audience (Piper leaderboard). */
-export const IDEAXCHANGE_CAREER_NAV: NavItem[] = [
-  { label: "Home", href: IDEAXCHANGE_HOME_FEED_PATH },
-  { label: "Recruiting Hub", href: IDEAXCHANGE_RECRUITING_HUB_PATH },
-  { label: "Career Leaderboard", href: IDEAXCHANGE_CAREER_LEADERBOARD_PATH },
-];
-
-/** ideaXchange header nav — Brokerage audience (SFTP sales leaderboard). */
-export const IDEAXCHANGE_BROKERAGE_NAV: NavItem[] = [
-  { label: "Home", href: IDEAXCHANGE_HOME_FEED_PATH },
-  { label: "Recruiting Hub", href: IDEAXCHANGE_RECRUITING_HUB_PATH },
-  { label: "Sales Leaderboard", href: IDEAXCHANGE_LEADERBOARD_PATH },
-  { label: "Carrier Spotlight", href: IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH },
-  { label: "Sales Success", href: IDEAXCHANGE_SALES_SUCCESS_PATH },
-];
-
 /** Dev-only: all pillars visible in the header (requires IDEAXCHANGE_DEV_UNLOCK=1). */
-export const IDEAXCHANGE_DEV_ALL_NAV: NavItem[] = [
-  { label: "Home", href: IDEAXCHANGE_HOME_FEED_PATH },
-  { label: "Recruiting Hub", href: IDEAXCHANGE_RECRUITING_HUB_PATH },
-  { label: "Career Leaderboard", href: IDEAXCHANGE_CAREER_LEADERBOARD_PATH },
-  { label: "Sales Leaderboard", href: IDEAXCHANGE_LEADERBOARD_PATH },
-  { label: "Carrier Spotlight", href: IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH },
-  { label: "Sales Success", href: IDEAXCHANGE_SALES_SUCCESS_PATH },
-];
+export const IDEAXCHANGE_DEV_ALL_NAV: NavItem[] = IDEAXCHANGE_PILLARS.filter(
+  (pillar) => pillar.key !== "career-spotlight" || IDEAXCHANGE_CARRIER_SPOTLIGHT_NAV_ENABLED,
+).map(({ label, href }) => ({
+  label,
+  href,
+}));
+
+/** @deprecated Use getIdeaxchangeNavItemsForPersona("career") */
+export const IDEAXCHANGE_CAREER_NAV: NavItem[] = getIdeaxchangeNavItemsForPersona("career");
+
+/** @deprecated Use getIdeaxchangeNavItemsForPersona("brokerage") */
+export const IDEAXCHANGE_BROKERAGE_NAV: NavItem[] = getIdeaxchangeNavItemsForPersona("brokerage");
 
 /** Header nav for the signed-in member's audience (optional dev override). */
 export function getIdeaxchangeHeaderNav(
@@ -50,16 +35,13 @@ export function getIdeaxchangeHeaderNav(
   devView: "off" | "all" | "brokerage" | "career" = "off",
 ): NavItem[] {
   if (devView === "all") return IDEAXCHANGE_DEV_ALL_NAV;
-  if (devView === "career") return IDEAXCHANGE_CAREER_NAV;
-  if (devView === "brokerage") return IDEAXCHANGE_BROKERAGE_NAV;
-  return persona === "career" ? IDEAXCHANGE_CAREER_NAV : IDEAXCHANGE_BROKERAGE_NAV;
+  if (devView === "career") return getIdeaxchangeNavItemsForPersona("career");
+  if (devView === "brokerage") return getIdeaxchangeNavItemsForPersona("brokerage");
+  return getIdeaxchangeNavItemsForPersona(persona);
 }
 
 /** @deprecated Use getIdeaxchangeHeaderNav(persona) */
-export const IDEAXCHANGE_PILLAR_NAV: NavItem[] = [
-  ...IDEAXCHANGE_BROKERAGE_NAV,
-  { label: "Career Leaderboard", href: IDEAXCHANGE_CAREER_LEADERBOARD_PATH },
-];
+export const IDEAXCHANGE_PILLAR_NAV: NavItem[] = IDEAXCHANGE_DEV_ALL_NAV;
 
 /** @deprecated Use IDEAXCHANGE_PILLAR_NAV */
 export const IDEAXCHANGE_VERTICAL_NAV: NavItem[] = IDEAXCHANGE_PILLAR_NAV;

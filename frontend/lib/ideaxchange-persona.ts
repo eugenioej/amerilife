@@ -1,15 +1,13 @@
 import type { NavItem } from "@/lib/wp-menus";
 import {
   IDEAXCHANGE_ARTICLE_PATH,
-  IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH,
-  IDEAXCHANGE_CAREER_LEADERBOARD_PATH,
+  IDEAXCHANGE_CATEGORY_PATH,
   IDEAXCHANGE_HOME_FEED_PATH,
-  IDEAXCHANGE_LEADERBOARD_PATH,
   IDEAXCHANGE_MAGAZINE_PATH,
-  IDEAXCHANGE_RECRUITING_HUB_PATH,
-  IDEAXCHANGE_SALES_SUCCESS_PATH,
+  IDEAXCHANGE_SEARCH_PATH,
 } from "@/lib/ideaxchange-constants";
 import { getIdeaxchangeHeaderNav } from "@/lib/ideaxchange-nav";
+import { canPersonaAccessIdeaxchangePillarPath } from "@/lib/ideaxchange-pillar-visibility";
 import type { IdeaxchangeDevViewMode } from "@/lib/ideaxchange-dev";
 
 /** Entra audience — Brokerage or Career only. */
@@ -110,23 +108,13 @@ export function getIdeaxchangeHomeForPersona(_persona: IdeaxchangePersona): stri
   return IDEAXCHANGE_HOME_FEED_PATH;
 }
 
-function navHrefAllowedForPersona(href: string, persona: IdeaxchangePersona): boolean {
-  if (href === "#" || href.startsWith("#")) return true;
-  if (href.startsWith(IDEAXCHANGE_HOME_FEED_PATH)) return true;
-
-  if (persona === "career") {
-    return (
-      href.startsWith(IDEAXCHANGE_RECRUITING_HUB_PATH) ||
-      href.startsWith(IDEAXCHANGE_CAREER_LEADERBOARD_PATH)
-    );
-  }
-
-  return (
-    href.startsWith(IDEAXCHANGE_RECRUITING_HUB_PATH) ||
-    href.startsWith(IDEAXCHANGE_LEADERBOARD_PATH) ||
-    href.startsWith(IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH) ||
-    href.startsWith(IDEAXCHANGE_SALES_SUCCESS_PATH)
-  );
+function effectivePersonaForAccess(
+  persona: IdeaxchangePersona,
+  devView: IdeaxchangeDevViewMode,
+): IdeaxchangePersona {
+  if (devView === "career") return "career";
+  if (devView === "brokerage") return "brokerage";
+  return persona;
 }
 
 /** ideaXchange SiteHeader / mobile nav for Brokerage or Career. */
@@ -157,6 +145,8 @@ export function canAccessIdeaxchangePath(
   const normalized = pathname.replace(/\/+$/, "") || "/";
   if (!normalized.startsWith("/ideaxchange")) return true;
 
+  const accessPersona = effectivePersonaForAccess(persona, devView);
+
   const homeBase = IDEAXCHANGE_HOME_FEED_PATH.replace(/\/$/, "");
   if (normalized === homeBase || normalized.startsWith(`${homeBase}/`)) {
     return true;
@@ -164,6 +154,16 @@ export function canAccessIdeaxchangePath(
 
   const articleBase = IDEAXCHANGE_ARTICLE_PATH.replace(/\/$/, "");
   if (normalized.startsWith(`${articleBase}/`) && normalized !== articleBase) {
+    return true;
+  }
+
+  const categoryBase = IDEAXCHANGE_CATEGORY_PATH.replace(/\/$/, "");
+  if (normalized === categoryBase || normalized.startsWith(`${categoryBase}/`)) {
+    return true;
+  }
+
+  const searchBase = IDEAXCHANGE_SEARCH_PATH.replace(/\/$/, "");
+  if (normalized === searchBase || normalized.startsWith(`${searchBase}/`)) {
     return true;
   }
 
@@ -176,11 +176,5 @@ export function canAccessIdeaxchangePath(
     return true;
   }
 
-  const allowedPrefixes = getIdeaxchangeNavForPersona(persona)
-    .map((item) => item.href.replace(/\/+$/, ""))
-    .filter((href) => href && href !== "#");
-
-  return allowedPrefixes.some(
-    (prefix) => normalized === prefix || normalized.startsWith(`${prefix}/`),
-  );
+  return canPersonaAccessIdeaxchangePillarPath(normalized, accessPersona);
 }

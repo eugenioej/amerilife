@@ -7,13 +7,13 @@ import { IdeaxchangeSidebarAdSlot } from "@/app/components/ideaxchange/shared/Id
 import {
   ideaxchangeFeaturedImageSrc,
 } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
+import { IdeaXchangeTopicBadge } from "./IdeaXchangeTopicBadge";
 import {
   formatBylineDate,
   formatInsightExcerptPlain,
   formatMonthYear,
   ideaxchangeHref,
   INSIGHT_IMG_QUALITY,
-  topicLabel,
 } from "./ideaxchange-utils";
 
 type Props = {
@@ -36,29 +36,40 @@ export function IdeaXchangeMagazineSidebar({
       {spotlight ? (
         <div className="mb-10">
           <div className="border border-[var(--color-border)] bg-white p-0">
-            <Link
-              href={ideaxchangeHref(spotlight.slug)}
-              variant="button"
-              className="group block"
-            >
+            <div className="group">
               <div className="relative aspect-[16/11] w-full overflow-hidden bg-[var(--color-border)]/30">
-                <Image
-                  src={rewriteUploadsUrl(
-                    ideaxchangeFeaturedImageSrc(spotlight.featuredImage?.node?.sourceUrl),
-                  )}
-                  alt=""
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                  sizes="(max-width:1024px) 100vw, min(400px, 33vw)"
-                  quality={INSIGHT_IMG_QUALITY}
+                <Link
+                  href={ideaxchangeHref(spotlight.slug)}
+                  variant="button"
+                  className="absolute inset-0 block"
+                  aria-label={spotlight.title ?? "Read article"}
+                >
+                  <Image
+                    src={rewriteUploadsUrl(
+                      ideaxchangeFeaturedImageSrc(spotlight.featuredImage?.node?.sourceUrl),
+                    )}
+                    alt=""
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                    sizes="(max-width:1024px) 100vw, min(400px, 33vw)"
+                    quality={INSIGHT_IMG_QUALITY}
+                  />
+                </Link>
+                <IdeaXchangeTopicBadge
+                  post={spotlight}
+                  label={spotlightBadgeLabel}
+                  className="pointer-events-auto absolute bottom-3 left-3 z-[1] bg-[var(--color-brand-primary)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white"
                 />
-                <span className="absolute bottom-3 left-3 inline-block w-fit max-w-full bg-[var(--color-brand-primary)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
-                  {spotlightBadgeLabel ?? topicLabel(spotlight)}
-                </span>
               </div>
               <div className="p-5">
                 <h3 className="text-lg font-bold leading-snug text-[var(--color-fg)]">
-                  {spotlight.title}
+                  <Link
+                    href={ideaxchangeHref(spotlight.slug)}
+                    variant="button"
+                    className="hover:text-[var(--color-brand-primary)]"
+                  >
+                    {spotlight.title}
+                  </Link>
                 </h3>
                 {spotlight.date ? (
                   <p className="mt-2 text-sm text-[var(--color-muted)]">
@@ -70,7 +81,7 @@ export function IdeaXchangeMagazineSidebar({
                     "Explore this spotlight story in full."}
                 </div>
               </div>
-            </Link>
+            </div>
           </div>
         </div>
       ) : null}

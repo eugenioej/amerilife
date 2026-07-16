@@ -17,10 +17,10 @@ export async function generateMetadata({ params }: { params: PageParams }) {
   if (carrier.seo) {
     return yoastSeoToMetadata(carrier.seo, carrier.title ?? "Carrier");
   }
-  const title = `${carrier.title ?? "Carrier"} | Carrier Spotlight`;
+  const title = `${carrier.title ?? "Carrier"} | Career Spotlight`;
   const description =
     formatInsightExcerptPlain(carrier.excerpt).slice(0, 320) ||
-    `Learn about ${carrier.title ?? "this carrier"} on AmeriLife ideaXchange Carrier Spotlight.`;
+    `Learn about ${carrier.title ?? "this carrier"} on AmeriLife ideaXchange Career Spotlight.`;
   return privatePageMetadata(title, description);
 }
 

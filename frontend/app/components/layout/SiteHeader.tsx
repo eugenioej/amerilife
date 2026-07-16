@@ -199,7 +199,14 @@ export function SiteHeader({
           </nav>
 
           <div className="flex items-center gap-4">
-            {!inIdeaxchange ? <HeaderSearch /> : null}
+            {inIdeaxchange ? (
+              <HeaderSearch
+                resultsPath="/ideaxchange/search"
+                placeholder="Search ideaXchange..."
+              />
+            ) : (
+              <HeaderSearch />
+            )}
             <button
               type="button"
               onClick={() => setMobileOpen((o) => !o)}

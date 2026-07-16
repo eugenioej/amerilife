@@ -136,3 +136,54 @@ export const GET_CARRIER_BY_SLUG = `
     }
   }
 `;
+
+/** Paginated carriers for server-side search. */
+export type CarrierSearchNode = {
+  id: string;
+  slug?: string | null;
+  title?: string | null;
+  excerpt?: string | null;
+  content?: string | null;
+  ideaxchangeCarrierFields?: {
+    visibility?: string | null;
+    highlights?: Array<{ label?: string | null } | null> | null;
+  } | null;
+};
+
+export type CarriersSearchBatchResult = {
+  ideaxchangeCarriers?: {
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+    nodes: CarrierSearchNode[];
+  };
+};
+
+export const GET_CARRIERS_SEARCH_BATCH = `
+  query GetCarriersSearchBatch($first: Int!, $after: String) {
+    ideaxchangeCarriers(
+      first: $first
+      after: $after
+      where: { orderby: { field: TITLE, order: ASC }, status: PUBLISH }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        id
+        slug
+        title
+        excerpt
+        content
+        ideaxchangeCarrierFields {
+          visibility
+          highlights {
+            label
+          }
+        }
+      }
+    }
+  }
+`;

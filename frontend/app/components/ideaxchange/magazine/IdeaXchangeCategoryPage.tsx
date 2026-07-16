@@ -1,6 +1,8 @@
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
+import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeHorizontalAdSlot";
 import { IDEAXCHANGE_HOME_FEED_PATH } from "@/lib/ideaxchange-constants";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
+import type { InsightsAdsSettings } from "@/lib/queries";
 import { IdeaXchangeCategoryArticlesSection } from "./IdeaXchangeCategoryArticlesSection";
 import { IdeaXchangeCategoryPagination } from "./IdeaXchangeCategoryPagination";
 import { IdeaXchangeNewsroomColumn } from "./IdeaXchangeNewsroomColumn";
@@ -11,6 +13,7 @@ type Props = {
   posts: IdeaxchangeListItem[];
   currentPage: number;
   totalPages: number;
+  insightsAds?: InsightsAdsSettings | null;
 };
 
 export function IdeaXchangeCategoryPage({
@@ -19,6 +22,7 @@ export function IdeaXchangeCategoryPage({
   posts,
   currentPage,
   totalPages,
+  insightsAds,
 }: Props) {
   return (
     <div className="bg-white pb-16 md:pb-20">
@@ -38,6 +42,7 @@ export function IdeaXchangeCategoryPage({
           Articles and resources in the {topicName} category.
         </p>
 
+        <IdeaxchangeHorizontalAdSlot slot={insightsAds?.primaryHorizontal} className="mt-10" />
 
         <IdeaXchangeCategoryArticlesSection>
           <IdeaXchangeNewsroomColumn

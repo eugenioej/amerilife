@@ -1,8 +1,9 @@
 import { Link } from "@/app/components/ui/Link";
+import { IDEAXCHANGE_CATEGORY_PATH } from "@/lib/ideaxchange-constants";
 
 function categoryPagePath(topicSlug: string, page: number): string {
-  if (page <= 1) return `/ideaxchange/magazine/category/${topicSlug}/`;
-  return `/ideaxchange/magazine/category/${topicSlug}/?page=${page}`;
+  if (page <= 1) return `${IDEAXCHANGE_CATEGORY_PATH}${topicSlug}/`;
+  return `${IDEAXCHANGE_CATEGORY_PATH}${topicSlug}/?page=${page}`;
 }
 
 function paginationRange(current: number, total: number): (number | "gap")[] {

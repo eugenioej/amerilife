@@ -6,10 +6,12 @@ import { IdeaXchangeLeaderboardCtaBanner } from "@/app/components/ideaxchange/sh
 import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeHorizontalAdSlot";
 import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import {
+  ideaxchangeCategoryHref,
   ideaxchangeHref,
   INSIGHTS_NEWSROOM_INITIAL,
   isIdeaxchangeFeatured,
   topicLabel,
+  topicSlug,
 } from "./ideaxchange-utils";
 import { IdeaXchangeMagazineSidebar } from "./IdeaXchangeMagazineSidebar";
 import { IdeaXchangeNewsroomColumn } from "./IdeaXchangeNewsroomColumn";
@@ -25,6 +27,11 @@ type Props = {
   pageTitle?: string;
   defaultBadge?: string;
   featuredHeading?: string;
+  leaderboardCta?: {
+    href: string;
+    heading: string;
+    buttonLabel?: string;
+  };
 };
 
 function dedupeById(posts: IdeaxchangeListItem[]): IdeaxchangeListItem[] {
@@ -90,6 +97,7 @@ function partitionPosts(posts: IdeaxchangeListItem[]) {
 }
 
 function toCardItem(post: IdeaxchangeListItem): IdeaxchangeCardItem {
+  const slug = topicSlug(post);
   return {
     id: post.id,
     slug: post.slug,
@@ -97,6 +105,7 @@ function toCardItem(post: IdeaxchangeListItem): IdeaxchangeCardItem {
     date: post.date,
     excerpt: post.excerpt,
     badgeLabel: topicLabel(post),
+    badgeHref: slug ? ideaxchangeCategoryHref(slug) : null,
     href: ideaxchangeHref(post.slug),
     featuredImage: post.featuredImage,
     isFeatured: isIdeaxchangeFeatured(post),
@@ -111,6 +120,7 @@ export function IdeaXchangeMagazinePage({
   pageTitle = "ideaXchange Home",
   defaultBadge = "IDEAXCHANGE",
   featuredHeading = "Featured articles",
+  leaderboardCta,
 }: Props) {
   const { hero, spotlight, featured, recentSidebar, newsroomRest } = partitionPosts(posts);
 
@@ -129,7 +139,14 @@ export function IdeaXchangeMagazinePage({
           defaultBadge={defaultBadge}
         />
 
-        <IdeaXchangeLeaderboardCtaBanner className="mt-12 md:mt-16" />
+        {leaderboardCta ? (
+          <IdeaXchangeLeaderboardCtaBanner
+            className="mt-12 md:mt-16"
+            href={leaderboardCta.href}
+            heading={leaderboardCta.heading}
+            buttonLabel={leaderboardCta.buttonLabel}
+          />
+        ) : null}
 
         <IdeaxchangeHorizontalAdSlot
           slot={insightsAds?.secondaryHorizontal}

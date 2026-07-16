@@ -1,34 +1,24 @@
 /**
  * ideaXchange magazine — dedicated `ideaxchange_article` CPT (gated content, own tags).
- * Falls back to public Insights CPT while ideaxchange_article posts are being populated.
+ * Does not fall back to public Insights CPT; Insights remains the public site content.
  */
 import { cache } from "react";
 import { fetchGraphQL, fetchGraphQLWithTimeout, isWpGraphqlConfigured } from "@/lib/wp-client";
-import type { InsightDetail, InsightListItem } from "@/lib/queries";
 import {
-  fetchInsightCategoryAfterCursor,
-  fetchInsightsAfterCursor,
-  fetchInsightsSalesAfterCursor,
-  fetchInsightsRecruitAfterCursor,
-  fetchInsightsInitiativeAfterCursor,
-  getInsightBySlug,
-  getInsightCategoryPageData,
-  getInsightsList,
-  getInsightsMagazineBundle,
-  getInsightsSalesMagazineBundle,
-  getInsightsRecruitMagazineBundle,
-  getInsightsInitiativeMagazineBundle,
-  getInsightTopicSlugs,
-  INSIGHT_CATEGORY_PAGE_FIRST,
-  INSIGHTS_LOAD_MORE_FIRST,
-  INSIGHTS_MAGAZINE_FIRST,
-  INSIGHTS_SALES_MAGAZINE_FIRST,
-  INSIGHTS_RECRUIT_MAGAZINE_FIRST,
-  INSIGHTS_INITIATIVE_MAGAZINE_FIRST,
-} from "@/lib/insights-data";
-import { getMockSalesMagazineBundle, getMockSalesMagazineAfterCursor, MOCK_SALES_MAGAZINE_POSTS } from "@/lib/ideaxchange-sales-magazine-mock";
-import { getMockRecruitMagazineBundle, getMockRecruitMagazineAfterCursor, MOCK_RECRUIT_MAGAZINE_POSTS } from "@/lib/ideaxchange-recruit-magazine-mock";
-import { getMockInitiativeMagazineBundle, getMockInitiativeMagazineAfterCursor, getMockInitiativeArticleBySlug } from "@/lib/ideaxchange-initiative-magazine-mock";
+  getMockSalesMagazineBundle,
+  getMockSalesMagazineAfterCursor,
+  MOCK_SALES_MAGAZINE_POSTS,
+} from "@/lib/ideaxchange-sales-magazine-mock";
+import {
+  getMockRecruitMagazineBundle,
+  getMockRecruitMagazineAfterCursor,
+  MOCK_RECRUIT_MAGAZINE_POSTS,
+} from "@/lib/ideaxchange-recruit-magazine-mock";
+import {
+  getMockInitiativeMagazineBundle,
+  getMockInitiativeMagazineAfterCursor,
+  getMockInitiativeArticleBySlug,
+} from "@/lib/ideaxchange-initiative-magazine-mock";
 import {
   GET_IDEAXCHANGE_ARTICLES,
   GET_IDEAXCHANGE_ARTICLES_MINIMAL,
@@ -75,41 +65,20 @@ function getMockIdeaxchangeArticleBySlug(slug: string): IdeaxchangeDetail | null
   return found ? mockListItemToDetail(found) : null;
 }
 
-export const IDEAXCHANGE_MAGAZINE_FIRST = INSIGHTS_MAGAZINE_FIRST;
-export const IDEAXCHANGE_CATEGORY_PAGE_FIRST = INSIGHT_CATEGORY_PAGE_FIRST;
-export const IDEAXCHANGE_LOAD_MORE_FIRST = INSIGHTS_LOAD_MORE_FIRST;
+export const IDEAXCHANGE_MAGAZINE_FIRST = 36;
+export const IDEAXCHANGE_CATEGORY_PAGE_FIRST = 8;
+export const IDEAXCHANGE_LOAD_MORE_FIRST = 12;
+export const IDEAXCHANGE_SALES_MAGAZINE_FIRST = 12;
+export const IDEAXCHANGE_RECRUIT_MAGAZINE_FIRST = 12;
+export const IDEAXCHANGE_INITIATIVE_MAGAZINE_FIRST = 12;
 
 export { IDEAXCHANGE_SALES_TAG_SLUG, IDEAXCHANGE_RECRUIT_TAG_SLUG, IDEAXCHANGE_INITIATIVE_TAG_SLUG };
+
+const EMPTY_PAGE_INFO = { hasNextPage: false, endCursor: null as string | null };
 
 function isIdeaxchangeFieldsSchemaGapError(err: unknown): boolean {
   const m = err instanceof Error ? err.message : String(err);
   return m.includes("isFeatured");
-}
-
-function mapInsightListItem(post: InsightListItem): IdeaxchangeListItem {
-  return {
-    id: post.id,
-    slug: post.slug,
-    title: post.title,
-    date: post.date,
-    excerpt: post.excerpt,
-    ideaxchangeFields: post.insightFields
-      ? {
-          isSpotlight: post.insightFields.isSpotlight,
-          isFeatured: post.insightFields.isFeatured,
-        }
-      : null,
-    ideaxchangeTopics: post.insightTopics,
-    featuredImage: post.featuredImage,
-  };
-}
-
-function mapInsightDetail(post: InsightDetail): IdeaxchangeDetail {
-  return {
-    ...mapInsightListItem(post),
-    content: post.content,
-    seo: post.seo,
-  };
 }
 
 async function fetchIdeaxchangeArticlesConnection(
@@ -126,49 +95,30 @@ async function fetchIdeaxchangeArticlesConnection(
       variables,
     );
     const conn = data?.ideaxchangeArticles;
-    const nodes = conn?.nodes ?? [];
-    if (nodes.length > 0) {
-      return {
-        nodes,
-        pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
-      };
-    }
+    return {
+      nodes: conn?.nodes ?? [],
+      pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
+    };
   } catch (err) {
     if (!isIdeaxchangeFieldsSchemaGapError(err)) {
       console.error("[ideaxchange] fetchIdeaxchangeArticlesConnection failed:", err);
-    } else {
-      try {
-        const data = await fetchGraphQL<IdeaxchangeConnectionResult>(
-          GET_IDEAXCHANGE_ARTICLES_MINIMAL,
-          variables,
-        );
-        const conn = data?.ideaxchangeArticles;
-        const nodes = conn?.nodes ?? [];
-        if (nodes.length > 0) {
-          return {
-            nodes,
-            pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
-          };
-        }
-      } catch (err2) {
-        console.error("[ideaxchange] fetchIdeaxchangeArticlesConnection minimal failed:", err2);
-      }
+      return { nodes: [], pageInfo: EMPTY_PAGE_INFO };
     }
-  }
-
-  if (!after) {
-    const bundle = await getInsightsMagazineBundle();
-    if (bundle.posts.length > 0) {
+    try {
+      const data = await fetchGraphQL<IdeaxchangeConnectionResult>(
+        GET_IDEAXCHANGE_ARTICLES_MINIMAL,
+        variables,
+      );
+      const conn = data?.ideaxchangeArticles;
       return {
-        nodes: bundle.posts.map(mapInsightListItem),
-        pageInfo: bundle.pageInfo,
+        nodes: conn?.nodes ?? [],
+        pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
       };
+    } catch (err2) {
+      console.error("[ideaxchange] fetchIdeaxchangeArticlesConnection minimal failed:", err2);
+      return { nodes: [], pageInfo: EMPTY_PAGE_INFO };
     }
-    return { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } };
   }
-
-  const { nodes, pageInfo } = await fetchInsightsAfterCursor(after, first);
-  return { nodes: nodes.map(mapInsightListItem), pageInfo };
 }
 
 async function fetchIdeaxchangeTagBySlugResult(
@@ -195,9 +145,7 @@ export async function getIdeaxchangeList(
   persona: IdeaxchangePersona = "brokerage",
 ): Promise<IdeaxchangeListItem[]> {
   const { nodes } = await fetchIdeaxchangeArticlesConnection(100);
-  if (nodes.length > 0) return filterArticles(nodes, persona);
-  const posts = await getInsightsList();
-  return filterArticles(posts.map(mapInsightListItem), persona);
+  return filterArticles(nodes, persona);
 }
 
 function filterArticles(
@@ -268,10 +216,6 @@ export async function getIdeaxchangeArticleBySlug(
     }
   }
 
-  const post = await getInsightBySlug(slug);
-  const fromInsights = visibleArticle(post ? mapInsightDetail(post) : null, persona);
-  if (fromInsights) return fromInsights;
-
   const mock = getMockIdeaxchangeArticleBySlug(slug);
   return visibleArticle(mock, persona);
 }
@@ -306,7 +250,10 @@ export async function getIdeaxchangeInitiativeArticleBySlug(
             return visibleArticle(data.ideaxchangeArticle, persona) ?? mock;
           }
         } catch (minimalErr) {
-          console.error("[ideaxchange] getIdeaxchangeInitiativeArticleBySlug minimal failed:", minimalErr);
+          console.error(
+            "[ideaxchange] getIdeaxchangeInitiativeArticleBySlug minimal failed:",
+            minimalErr,
+          );
         }
       } else {
         console.error("[ideaxchange] getIdeaxchangeInitiativeArticleBySlug failed:", err);
@@ -323,14 +270,13 @@ export async function getIdeaxchangeTopicSlugs(): Promise<string[]> {
       GET_IDEAXCHANGE_TOPIC_SLUGS,
       { first: 100 },
     );
-    const slugs = (data?.ideaxchangeTopics?.nodes ?? [])
+    return (data?.ideaxchangeTopics?.nodes ?? [])
       .map((n) => n.slug?.trim())
       .filter((s): s is string => Boolean(s));
-    if (slugs.length > 0) return slugs;
   } catch (err) {
     console.error("[ideaxchange] getIdeaxchangeTopicSlugs failed:", err);
+    return [];
   }
-  return getInsightTopicSlugs();
 }
 
 export type IdeaxchangeCategoryPageData = {
@@ -379,7 +325,7 @@ async function fetchIdeaxchangeTopicArticlesSlice(
   const conn = data?.ideaxchangeTopic?.ideaxchangeArticles;
   return {
     nodes: conn?.nodes ?? [],
-    pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
+    pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
   };
 }
 
@@ -445,14 +391,8 @@ export const getIdeaxchangeCategoryPageData = cache(async function getIdeaxchang
     };
   } catch (err) {
     console.error("[ideaxchange] getIdeaxchangeCategoryPageData failed:", err);
+    return null;
   }
-
-  const data = await getInsightCategoryPageData(trimmed, safePage);
-  if (!data) return null;
-  return {
-    ...data,
-    posts: filterArticles(data.posts.map(mapInsightListItem), persona),
-  };
 });
 
 export async function fetchIdeaxchangeCategoryAfterCursor(
@@ -465,27 +405,19 @@ export async function fetchIdeaxchangeCategoryAfterCursor(
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
 }> {
   try {
-    const data = await fetchGraphQL<IdeaxchangeTopicBySlugResult>(
-      GET_IDEAXCHANGE_TOPIC_BY_SLUG,
-      { slug: topicSlug, first, after },
-    );
+    const data = await fetchIdeaxchangeTopicBySlugResult(topicSlug, first, after);
     const conn = data?.ideaxchangeTopic?.ideaxchangeArticles;
-    const nodes = conn?.nodes ?? [];
-    if (nodes.length > 0) {
-      return {
-        nodes: filterArticles(nodes, persona),
-        pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
-      };
-    }
+    return {
+      nodes: filterArticles(conn?.nodes ?? [], persona),
+      pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
+    };
   } catch (err) {
     console.error("[ideaxchange] fetchIdeaxchangeCategoryAfterCursor failed:", err);
+    return { nodes: [], pageInfo: EMPTY_PAGE_INFO };
   }
-
-  const { nodes, pageInfo } = await fetchInsightCategoryAfterCursor(topicSlug, after, first);
-  return { nodes: filterArticles(nodes.map(mapInsightListItem), persona), pageInfo };
 }
 
-/** ideaXchange-tagged Sales posts — leaderboard & carrier spotlight sidebars. */
+/** ideaXchange-tagged Sales articles — leaderboard & carrier spotlight sidebars. */
 export async function getIdeaxchangeSalesMagazineBundle(
   persona: IdeaxchangePersona = "brokerage",
 ): Promise<{
@@ -495,7 +427,7 @@ export async function getIdeaxchangeSalesMagazineBundle(
   try {
     const data = await fetchIdeaxchangeTagBySlugResult(
       IDEAXCHANGE_SALES_TAG_SLUG,
-      INSIGHTS_SALES_MAGAZINE_FIRST,
+      IDEAXCHANGE_SALES_MAGAZINE_FIRST,
       null,
     );
     const conn = data?.ideaxchangeTag?.ideaxchangeArticles;
@@ -503,17 +435,13 @@ export async function getIdeaxchangeSalesMagazineBundle(
     if (posts.length > 0) {
       return {
         posts: filterArticles(posts, persona),
-        pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
+        pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
       };
     }
   } catch (err) {
     console.error("[ideaxchange] getIdeaxchangeSalesMagazineBundle failed:", err);
   }
 
-  const { posts, pageInfo } = await getInsightsSalesMagazineBundle();
-  if (posts.length > 0) {
-    return { posts: filterArticles(posts.map(mapInsightListItem), persona), pageInfo };
-  }
   const mock = getMockSalesMagazineBundle();
   return { posts: filterArticles(mock.posts, persona), pageInfo: mock.pageInfo };
 }
@@ -533,27 +461,18 @@ export async function fetchIdeaxchangeSalesAfterCursor(
     if (nodes.length > 0) {
       return {
         nodes: filterArticles(nodes, persona),
-        pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
+        pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
       };
     }
   } catch (err) {
     console.error("[ideaxchange] fetchIdeaxchangeSalesAfterCursor failed:", err);
   }
 
-  try {
-    const { nodes, pageInfo } = await fetchInsightsSalesAfterCursor(after, first);
-    if (nodes.length > 0) {
-      return { nodes: filterArticles(nodes.map(mapInsightListItem), persona), pageInfo };
-    }
-  } catch (err) {
-    console.error("[ideaxchange] fetchIdeaxchangeSalesAfterCursor insights failed:", err);
-  }
-
   const mock = getMockSalesMagazineAfterCursor(after);
   return { nodes: filterArticles(mock.nodes, persona), pageInfo: mock.pageInfo };
 }
 
-/** ideaXchange-tagged Recruit posts — recruiting hub blog section. */
+/** ideaXchange-tagged Recruit articles — recruiting hub blog section. */
 export async function getIdeaxchangeRecruitMagazineBundle(
   persona: IdeaxchangePersona = "brokerage",
 ): Promise<{
@@ -563,7 +482,7 @@ export async function getIdeaxchangeRecruitMagazineBundle(
   try {
     const data = await fetchIdeaxchangeTagBySlugResult(
       IDEAXCHANGE_RECRUIT_TAG_SLUG,
-      INSIGHTS_RECRUIT_MAGAZINE_FIRST,
+      IDEAXCHANGE_RECRUIT_MAGAZINE_FIRST,
       null,
     );
     const conn = data?.ideaxchangeTag?.ideaxchangeArticles;
@@ -571,17 +490,13 @@ export async function getIdeaxchangeRecruitMagazineBundle(
     if (posts.length > 0) {
       return {
         posts: filterArticles(posts, persona),
-        pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
+        pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
       };
     }
   } catch (err) {
     console.error("[ideaxchange] getIdeaxchangeRecruitMagazineBundle failed:", err);
   }
 
-  const { posts, pageInfo } = await getInsightsRecruitMagazineBundle();
-  if (posts.length > 0) {
-    return { posts: filterArticles(posts.map(mapInsightListItem), persona), pageInfo };
-  }
   const mock = getMockRecruitMagazineBundle();
   return { posts: filterArticles(mock.posts, persona), pageInfo: mock.pageInfo };
 }
@@ -605,27 +520,18 @@ export async function fetchIdeaxchangeRecruitAfterCursor(
     if (nodes.length > 0) {
       return {
         nodes: filterArticles(nodes, persona),
-        pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
+        pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
       };
     }
   } catch (err) {
     console.error("[ideaxchange] fetchIdeaxchangeRecruitAfterCursor failed:", err);
   }
 
-  try {
-    const { nodes, pageInfo } = await fetchInsightsRecruitAfterCursor(after, first);
-    if (nodes.length > 0) {
-      return { nodes: filterArticles(nodes.map(mapInsightListItem), persona), pageInfo };
-    }
-  } catch (err) {
-    console.error("[ideaxchange] fetchIdeaxchangeRecruitAfterCursor insights failed:", err);
-  }
-
   const mock = getMockRecruitMagazineAfterCursor(after);
   return { nodes: filterArticles(mock.nodes, persona), pageInfo: mock.pageInfo };
 }
 
-/** ideaXchange-tagged Initiative posts — Sales Success vertical. */
+/** ideaXchange-tagged Initiative articles — Sales Success vertical. */
 async function fetchIdeaxchangeInitiativeTagBySlugResult(
   first: number,
   after: string | null,
@@ -663,7 +569,7 @@ export async function getIdeaxchangeInitiativeMagazineBundle(
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
 }> {
   const data = await fetchIdeaxchangeInitiativeTagBySlugResult(
-    INSIGHTS_INITIATIVE_MAGAZINE_FIRST,
+    IDEAXCHANGE_INITIATIVE_MAGAZINE_FIRST,
     null,
   );
   const conn = data?.ideaxchangeTag?.ideaxchangeArticles;
@@ -671,20 +577,8 @@ export async function getIdeaxchangeInitiativeMagazineBundle(
   if (posts.length > 0) {
     return {
       posts: filterArticles(posts, persona),
-      pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
+      pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
     };
-  }
-
-  try {
-    const { posts: insightPosts, pageInfo } = await getInsightsInitiativeMagazineBundle();
-    if (insightPosts.length > 0) {
-      return {
-        posts: filterArticles(insightPosts.map(mapInsightListItem), persona),
-        pageInfo,
-      };
-    }
-  } catch (err) {
-    console.error("[ideaxchange] getIdeaxchangeInitiativeMagazineBundle insights failed:", err);
   }
 
   const mock = getMockInitiativeMagazineBundle();
@@ -705,17 +599,8 @@ export async function fetchIdeaxchangeInitiativeAfterCursor(
   if (nodes.length > 0) {
     return {
       nodes: filterArticles(nodes, persona),
-      pageInfo: conn?.pageInfo ?? { hasNextPage: false, endCursor: null },
+      pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
     };
-  }
-
-  try {
-    const { nodes: insightNodes, pageInfo } = await fetchInsightsInitiativeAfterCursor(after, first);
-    if (insightNodes.length > 0) {
-      return { nodes: filterArticles(insightNodes.map(mapInsightListItem), persona), pageInfo };
-    }
-  } catch (err) {
-    console.error("[ideaxchange] fetchIdeaxchangeInitiativeAfterCursor insights failed:", err);
   }
 
   const mock = getMockInitiativeMagazineAfterCursor(after);

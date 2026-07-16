@@ -74,6 +74,16 @@ export type CompanyBySlugResult = {
   ideaxchangeCompany?: IdeaxchangeCompanySummary | null;
 };
 
+export type CompaniesConnectionResult = {
+  ideaxchangeCompanies?: {
+    nodes: IdeaxchangeCompanySummary[];
+    pageInfo?: {
+      hasNextPage?: boolean;
+      endCursor?: string | null;
+    };
+  };
+};
+
 const CASE_STUDY_LIST_FIELDS = `
   id
   slug
@@ -115,6 +125,69 @@ export const GET_CASE_STUDIES = `
       pageInfo {
         hasNextPage
         endCursor
+      }
+    }
+  }
+`;
+
+/** Paginated case studies for server-side search (includes body + campaign fields). */
+export type CaseStudySearchNode = {
+  id: string;
+  slug?: string | null;
+  title?: string | null;
+  date?: string | null;
+  excerpt?: string | null;
+  content?: string | null;
+  ideaxchangeCaseStudyFields?: {
+    targetAudience?: string | null;
+    campaignOverview?: string | null;
+    campaignResults?: string | null;
+    visibility?: string | null;
+  } | null;
+  caseStudyCompany?: {
+    title?: string | null;
+    slug?: string | null;
+  } | null;
+};
+
+export type CaseStudiesSearchBatchResult = {
+  ideaxchangeCaseStudies?: {
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+    nodes: CaseStudySearchNode[];
+  };
+};
+
+export const GET_CASE_STUDIES_SEARCH_BATCH = `
+  query GetCaseStudiesSearchBatch($first: Int!, $after: String) {
+    ideaxchangeCaseStudies(
+      first: $first
+      after: $after
+      where: { orderby: { field: DATE, order: DESC }, status: PUBLISH }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        id
+        slug
+        title
+        date
+        excerpt
+        content
+        ideaxchangeCaseStudyFields {
+          targetAudience
+          campaignOverview
+          campaignResults
+          visibility
+        }
+        caseStudyCompany {
+          title
+          slug
+        }
       }
     }
   }
@@ -186,6 +259,34 @@ export const GET_COMPANY_BY_SLUG = `
         websiteUrl
         learnMoreUrl
         visibility
+      }
+    }
+  }
+`;
+
+/** Paginated companies for server-side search. */
+export const GET_COMPANIES_SEARCH_BATCH = `
+  query GetCompaniesSearchBatch($first: Int!, $after: String) {
+    ideaxchangeCompanies(
+      first: $first
+      after: $after
+      where: { orderby: { field: TITLE, order: ASC }, status: PUBLISH }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        id
+        slug
+        title
+        excerpt
+        content
+        ideaxchangeCompanyFields {
+          websiteUrl
+          learnMoreUrl
+          visibility
+        }
       }
     }
   }

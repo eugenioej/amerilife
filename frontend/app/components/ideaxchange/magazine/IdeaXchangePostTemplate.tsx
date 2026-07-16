@@ -164,7 +164,7 @@ export function IdeaXchangePostTemplate({
   const img = rewriteUploadsUrl(ideaxchangeFeaturedImageSrc(post.featuredImage?.node?.sourceUrl));
   const excerptPlain = formatInsightExcerptPlain(post.excerpt);
   const topic = post.ideaxchangeTopics?.nodes?.[0];
-  const topicName = topic?.name?.trim() || "Insights";
+  const topicName = topic?.name?.trim() || "Articles";
   const topicSlug = topic?.slug?.trim();
   const readMin = estimateReadMinutes(html);
 
