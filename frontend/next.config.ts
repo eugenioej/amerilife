@@ -119,6 +119,7 @@ const nextConfig: NextConfig = {
         "https://www.gstatic.com",
         "https://recaptcha.net",
         "https://cdn.cookielaw.org",
+        "https://geolocation.onetrust.com",
       ].join(" "),
       [
         "frame-src 'self'",
