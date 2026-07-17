@@ -120,6 +120,7 @@ const nextConfig: NextConfig = {
         "https://recaptcha.net",
         "https://cdn.cookielaw.org",
         "https://geolocation.onetrust.com",
+        "https://privacyportal.onetrust.com",
       ].join(" "),
       [
         "frame-src 'self'",
