@@ -37,7 +37,7 @@ export function IdeaXchangeLogoutButton({
   if (microsoftAuthEnabled) {
     return (
       <form action={signOutIdeaxchange}>
-        <button type="submit" className={className ?? buttonClassName} disabled={loading}>
+        <button type="submit" className={`${className ?? buttonClassName} underline-offset-4 cursor-pointer text-sm font-medium text-white hover:text-[var(--color-link-hover)] hover:!underline transition-colors`} disabled={loading}>
           {loading ? "Signing out…" : "Log out"}
         </button>
       </form>
