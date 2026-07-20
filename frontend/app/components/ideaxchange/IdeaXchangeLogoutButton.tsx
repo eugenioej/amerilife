@@ -47,7 +47,7 @@ export function IdeaXchangeLogoutButton({
   return (
     <button
       type="button"
-      className={className ?? buttonClassName}
+      className={`${className ?? buttonClassName} underline-offset-4 cursor-pointer text-sm font-medium text-white hover:text-[var(--color-link-hover)] hover:!underline transition-colors`}
       disabled={loading}
       onClick={logoutLegacy}
     >
