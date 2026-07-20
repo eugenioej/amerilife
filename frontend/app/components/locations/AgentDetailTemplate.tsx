@@ -185,7 +185,7 @@ export function AgentDetailTemplate({ agent, location }: Props) {
                   More Details
                 </p>
                 <p className="text-base leading-relaxed text-[var(--color-fg)]">
-                  This agent is committed to helping you find the right coverage. Reach out today to discuss your Medicare, health, life, and retirement needs.
+                  This Licensed Insurance Agent is committed to helping you find the right coverage. Reach out today to discuss your Medicare, health, life, and retirement needs.
                 </p>
               </div>
 
