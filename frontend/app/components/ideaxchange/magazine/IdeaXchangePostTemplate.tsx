@@ -3,15 +3,17 @@ import { Clock } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import type { IdeaxchangeDetail, IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
+import type { IdeaxchangeAdsSettings } from "@/lib/queries";
 import { rewriteUploadsInHtml, rewriteUploadsUrl } from "@/lib/wp-media";
 import { InsightPostChrome } from "@/app/components/insights/InsightPostChrome";
 import { InsightSharePanel } from "@/app/components/insights/InsightSharePanel";
+import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeHorizontalAdSlot";
+import { IdeaxchangeSidebarAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeSidebarAdSlot";
 import { IdeaXchangeTopicBadge } from "./IdeaXchangeTopicBadge";
 import { ideaxchangeFeaturedImageSrc } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import { IDEAXCHANGE_HOME_FEED_PATH } from "@/lib/ideaxchange-constants";
 import {
   formatBylineDate,
-  formatInsightExcerptPlain,
   formatMonthYear,
   ideaxchangeCategoryHref,
   ideaxchangeHref,
@@ -24,6 +26,7 @@ type Props = {
   /** Other insights for sidebar + bottom grid (same list; template slices). */
   relatedPosts: IdeaxchangeListItem[];
   shareUrl: string;
+  ideaxchangeAds?: IdeaxchangeAdsSettings | null;
 };
 
 function estimateReadMinutes(html: string): number {
@@ -159,10 +162,10 @@ export function IdeaXchangePostTemplate({
   post,
   relatedPosts,
   shareUrl,
+  ideaxchangeAds,
 }: Props) {
   const html = post.content ? rewriteUploadsInHtml(post.content) : "";
   const img = rewriteUploadsUrl(ideaxchangeFeaturedImageSrc(post.featuredImage?.node?.sourceUrl));
-  const excerptPlain = formatInsightExcerptPlain(post.excerpt);
   const topic = post.ideaxchangeTopics?.nodes?.[0];
   const topicName = topic?.name?.trim() || "Articles";
   const topicSlug = topic?.slug?.trim();
@@ -246,6 +249,10 @@ export function IdeaXchangePostTemplate({
               )}
             </div>
 
+            <IdeaxchangeHorizontalAdSlot
+              slot={ideaxchangeAds?.articleInArticle}
+              className="mt-12"
+            />
 
             <div className="mt-10 flex flex-nowrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-8">
               {topicSlug ? (
@@ -270,6 +277,9 @@ export function IdeaXchangePostTemplate({
 
           <aside className="lg:col-span-4">
             <RelatedArticlesSidebar posts={sidebarList} />
+            <div className="mt-10">
+              <IdeaxchangeSidebarAdSlot slot={ideaxchangeAds?.articleSidebarVertical} />
+            </div>
           </aside>
         </div>
 

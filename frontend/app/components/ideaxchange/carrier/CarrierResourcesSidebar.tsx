@@ -10,13 +10,13 @@ import {
   ideaxchangeHref,
   INSIGHT_IMG_QUALITY,
 } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
-import type { InsightsAdsSettings } from "@/lib/queries";
+import type { IdeaxchangeAdSlot } from "@/lib/queries";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 type Props = {
   resources: IdeaxchangeCarrierResource[];
   articles: IdeaxchangeListItem[];
-  insightsAds?: InsightsAdsSettings | null;
+  adSlot?: IdeaxchangeAdSlot | null;
 };
 
 function fileTypeLabel(mimeType: string | null | undefined): string {
@@ -89,7 +89,7 @@ function CarrierArticleItem({ article }: { article: IdeaxchangeListItem }) {
   );
 }
 
-export function CarrierResourcesSidebar({ resources, articles, insightsAds }: Props) {
+export function CarrierResourcesSidebar({ resources, articles, adSlot }: Props) {
   const visibleResources = resources.filter((r) => r.fileUrl?.trim());
 
   return (
@@ -124,7 +124,7 @@ export function CarrierResourcesSidebar({ resources, articles, insightsAds }: Pr
         </section>
       ) : null}
 
-      <IdeaxchangeSidebarAdSlot slot={insightsAds?.sidebarVertical} />
+      <IdeaxchangeSidebarAdSlot slot={adSlot} />
     </aside>
   );
 }

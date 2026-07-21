@@ -1,11 +1,12 @@
-import type { InsightsAdSlotSetting } from "@/lib/queries";
+import type { IdeaxchangeAdSlot } from "@/lib/queries";
 import {
   AdSidebarVertical,
   hasInsightsAdSlotImage,
 } from "@/app/components/insights/InsightsAds";
+import { pickIdeaxchangeAdCreative } from "./ideaxchange-ads";
 
 type Props = {
-  slot?: InsightsAdSlotSetting | null;
+  slot?: IdeaxchangeAdSlot | null;
   /** When false, hide the gray placeholder if WP has no creative. Default true. */
   showPlaceholder?: boolean;
 };
@@ -14,13 +15,15 @@ export function IdeaxchangeSidebarAdSlot({
   slot,
   showPlaceholder = true,
 }: Props) {
-  if (hasInsightsAdSlotImage(slot)) {
+  const creative = pickIdeaxchangeAdCreative(slot);
+
+  if (hasInsightsAdSlotImage(creative)) {
     return (
       <div className="lg:sticky lg:top-[calc(var(--header-height)+1rem)] lg:self-start">
         <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-muted)]">
           Advertisement
         </p>
-        <AdSidebarVertical slot={slot} />
+        <AdSidebarVertical slot={creative} />
       </div>
     );
   }

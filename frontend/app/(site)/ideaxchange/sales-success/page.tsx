@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { SalesSuccessPage } from "@/app/components/ideaxchange/sales-success/SalesSuccessPage";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { IDEAXCHANGE_SALES_SUCCESS_PATH } from "@/lib/ideaxchange-constants";
-import { getIdeaxchangeInitiativeMagazineBundle } from "@/lib/ideaxchange-data";
-import { getInsightsAdsSettings } from "@/lib/insights-data";
+import {
+  getIdeaxchangeAdsSettings,
+  getIdeaxchangeInitiativeMagazineBundle,
+} from "@/lib/ideaxchange-data";
 import { privatePageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = privatePageMetadata(
@@ -14,16 +16,16 @@ export const metadata: Metadata = privatePageMetadata(
 export default async function SalesSuccessIndexPage() {
   const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_SALES_SUCCESS_PATH);
 
-  const [initiativeBundle, insightsAds] = await Promise.all([
+  const [initiativeBundle, ideaxchangeAds] = await Promise.all([
     getIdeaxchangeInitiativeMagazineBundle(auth.persona),
-    getInsightsAdsSettings(),
+    getIdeaxchangeAdsSettings(),
   ]);
 
   return (
     <SalesSuccessPage
       posts={initiativeBundle.posts}
       pageInfo={initiativeBundle.pageInfo}
-      insightsAds={insightsAds}
+      ideaxchangeAds={ideaxchangeAds}
     />
   );
 }

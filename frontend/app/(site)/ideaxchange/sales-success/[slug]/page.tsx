@@ -3,6 +3,7 @@ import { SalesSuccessPostTemplate } from "@/app/components/ideaxchange/sales-suc
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { IDEAXCHANGE_SALES_SUCCESS_PATH } from "@/lib/ideaxchange-constants";
 import {
+  getIdeaxchangeAdsSettings,
   getIdeaxchangeInitiativeArticleBySlug,
   getIdeaxchangeInitiativeMagazineBundle,
 } from "@/lib/ideaxchange-data";
@@ -31,7 +32,10 @@ export default async function SalesSuccessArticlePage({ params }: { params: Page
   const { slug } = await params;
   const auth = await requireIdeaxchangeAuth(`${IDEAXCHANGE_SALES_SUCCESS_PATH}${slug}/`);
 
-  const post = await getIdeaxchangeInitiativeArticleBySlug(slug, auth.persona);
+  const [post, ideaxchangeAds] = await Promise.all([
+    getIdeaxchangeInitiativeArticleBySlug(slug, auth.persona),
+    getIdeaxchangeAdsSettings(),
+  ]);
   if (!post) notFound();
 
   const isMockPost = post.id.startsWith("mock-");
@@ -50,6 +54,7 @@ export default async function SalesSuccessArticlePage({ params }: { params: Page
       post={post}
       relatedPosts={relatedPosts}
       shareUrl={articleUrl}
+      ideaxchangeAds={ideaxchangeAds}
     />
   );
 }

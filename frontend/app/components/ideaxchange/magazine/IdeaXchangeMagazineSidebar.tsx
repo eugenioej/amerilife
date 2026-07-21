@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Link } from "@/app/components/ui/Link";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
-import type { InsightsAdsSettings } from "@/lib/queries";
+import type { IdeaxchangeAdSlot } from "@/lib/queries";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 import { IdeaxchangeSidebarAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeSidebarAdSlot";
 import {
@@ -21,7 +21,7 @@ type Props = {
   recentSidebar: IdeaxchangeListItem[];
   spotlightBadgeLabel?: string;
   recentHeading?: string;
-  insightsAds?: InsightsAdsSettings | null;
+  adSlot?: IdeaxchangeAdSlot | null;
 };
 
 export function IdeaXchangeMagazineSidebar({
@@ -29,7 +29,7 @@ export function IdeaXchangeMagazineSidebar({
   recentSidebar,
   spotlightBadgeLabel,
   recentHeading = "Recent articles",
-  insightsAds,
+  adSlot,
 }: Props) {
   return (
     <>
@@ -132,7 +132,7 @@ export function IdeaXchangeMagazineSidebar({
         </div>
       ) : null}
 
-      <IdeaxchangeSidebarAdSlot slot={insightsAds?.sidebarVertical} />
+      <IdeaxchangeSidebarAdSlot slot={adSlot} />
     </>
   );
 }

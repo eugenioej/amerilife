@@ -1399,6 +1399,92 @@ export const GET_INSIGHTS_ADS_SETTINGS = `
   }
 `;
 
+export type IdeaxchangeAdCreative = {
+  imageUrl?: string | null;
+  targetUrl?: string | null;
+  altText?: string | null;
+};
+
+export type IdeaxchangeAdSlot = {
+  creatives?: IdeaxchangeAdCreative[] | null;
+};
+
+export type IdeaxchangeAdsSettings = {
+  homePrimaryHorizontal?: IdeaxchangeAdSlot | null;
+  homeSecondaryHorizontal?: IdeaxchangeAdSlot | null;
+  homeSidebarVertical?: IdeaxchangeAdSlot | null;
+  categoryPrimaryHorizontal?: IdeaxchangeAdSlot | null;
+  recruitingPrimaryHorizontal?: IdeaxchangeAdSlot | null;
+  recruitingSecondaryHorizontal?: IdeaxchangeAdSlot | null;
+  recruitingSidebarVertical?: IdeaxchangeAdSlot | null;
+  salesSuccessPrimaryHorizontal?: IdeaxchangeAdSlot | null;
+  salesSuccessSidebarVertical?: IdeaxchangeAdSlot | null;
+  leaderboardSecondaryHorizontal?: IdeaxchangeAdSlot | null;
+  leaderboardSidebarVertical?: IdeaxchangeAdSlot | null;
+  carrierSidebarVertical?: IdeaxchangeAdSlot | null;
+  articleInArticle?: IdeaxchangeAdSlot | null;
+  articleSidebarVertical?: IdeaxchangeAdSlot | null;
+};
+
+export type IdeaxchangeAdsSettingsResult = {
+  ideaxchangeAdsSettings?: IdeaxchangeAdsSettings | null;
+};
+
+const IDEAXCHANGE_AD_CREATIVE_FIELDS = `
+  imageUrl
+  targetUrl
+  altText
+`;
+
+export const GET_IDEAXCHANGE_ADS_SETTINGS = `
+  query GetIdeaxchangeAdsSettings {
+    ideaxchangeAdsSettings {
+      homePrimaryHorizontal {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+      homeSecondaryHorizontal {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+      homeSidebarVertical {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+      categoryPrimaryHorizontal {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+      recruitingPrimaryHorizontal {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+      recruitingSecondaryHorizontal {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+      recruitingSidebarVertical {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+      salesSuccessPrimaryHorizontal {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+      salesSuccessSidebarVertical {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+      leaderboardSecondaryHorizontal {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+      leaderboardSidebarVertical {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+      carrierSidebarVertical {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+      articleInArticle {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+      articleSidebarVertical {
+        creatives { ${IDEAXCHANGE_AD_CREATIVE_FIELDS} }
+      }
+    }
+  }
+`;
+
 /** Topic archive — nested insights connection supports cursor pagination. */
 export type InsightTopicBySlugResult = {
   insightTopic?: {

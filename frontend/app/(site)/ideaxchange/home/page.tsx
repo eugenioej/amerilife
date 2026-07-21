@@ -6,8 +6,10 @@ import {
   IDEAXCHANGE_HOME_FEED_PATH,
   IDEAXCHANGE_LEADERBOARD_PATH,
 } from "@/lib/ideaxchange-constants";
-import { getIdeaxchangeMagazineBundle } from "@/lib/ideaxchange-data";
-import { getInsightsAdsSettings } from "@/lib/insights-data";
+import {
+  getIdeaxchangeAdsSettings,
+  getIdeaxchangeMagazineBundle,
+} from "@/lib/ideaxchange-data";
 import { privatePageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = privatePageMetadata(
@@ -18,9 +20,9 @@ export const metadata: Metadata = privatePageMetadata(
 export default async function IdeaxchangeHomePage() {
   const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_HOME_FEED_PATH);
 
-  const [bundle, insightsAds] = await Promise.all([
+  const [bundle, ideaxchangeAds] = await Promise.all([
     getIdeaxchangeMagazineBundle(auth.persona),
-    getInsightsAdsSettings(),
+    getIdeaxchangeAdsSettings(),
   ]);
 
   const leaderboardCta =
@@ -38,7 +40,7 @@ export default async function IdeaxchangeHomePage() {
     <IdeaXchangeMagazinePage
       posts={bundle.posts}
       listPageInfo={bundle.pageInfo}
-      insightsAds={insightsAds}
+      ideaxchangeAds={ideaxchangeAds}
       leaderboardCta={leaderboardCta}
     />
   );

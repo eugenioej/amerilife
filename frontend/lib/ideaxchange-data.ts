@@ -46,6 +46,11 @@ import {
   isItemVisibleToPersona,
 } from "@/lib/ideaxchange-visibility";
 import { formatInsightExcerptPlain } from "@/lib/insight-excerpt";
+import {
+  GET_IDEAXCHANGE_ADS_SETTINGS,
+  type IdeaxchangeAdsSettings,
+  type IdeaxchangeAdsSettingsResult,
+} from "@/lib/queries";
 
 function mockListItemToDetail(post: IdeaxchangeListItem): IdeaxchangeDetail {
   const body = formatInsightExcerptPlain(post.excerpt) || post.title || "";
@@ -605,4 +610,16 @@ export async function fetchIdeaxchangeInitiativeAfterCursor(
 
   const mock = getMockInitiativeMagazineAfterCursor(after);
   return { nodes: filterArticles(mock.nodes, persona), pageInfo: mock.pageInfo };
+}
+
+export async function getIdeaxchangeAdsSettings(): Promise<IdeaxchangeAdsSettings | null> {
+  try {
+    const data = await fetchGraphQL<IdeaxchangeAdsSettingsResult>(
+      GET_IDEAXCHANGE_ADS_SETTINGS,
+    );
+    return data?.ideaxchangeAdsSettings ?? null;
+  } catch (err) {
+    console.error("[ideaxchange] getIdeaxchangeAdsSettings GraphQL failed:", err);
+    return null;
+  }
 }

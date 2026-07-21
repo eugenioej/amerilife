@@ -11,7 +11,7 @@ import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/Ide
 import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import type { CaseStudyListItem } from "@/lib/ideaxchange-recruiting-queries";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
-import type { InsightsAdsSettings } from "@/lib/queries";
+import type { IdeaxchangeAdsSettings } from "@/lib/queries";
 import { IDEAXCHANGE_RECRUITING_HUB_PATH } from "@/lib/ideaxchange-constants";
 import { IDEAXCHANGE_RECRUIT_TAG_SLUG } from "@/lib/ideaxchange-data";
 import {
@@ -31,7 +31,7 @@ type Props = {
     hasNextPage: boolean;
     endCursor: string | null;
   };
-  insightsAds?: InsightsAdsSettings | null;
+  ideaxchangeAds?: IdeaxchangeAdsSettings | null;
 };
 
 function dedupeById(posts: CaseStudyListItem[]): CaseStudyListItem[] {
@@ -94,7 +94,7 @@ export function RecruitingHubPage({
   allCampaigns,
   recruitPosts,
   recruitListPageInfo,
-  insightsAds,
+  ideaxchangeAds,
 }: Props) {
   const { hero, featured } = partitionPosts(posts);
   const campaignRows = dedupeById(allCampaigns).map(toCampaignTableRow);
@@ -128,7 +128,7 @@ export function RecruitingHubPage({
           </div>
 
           <IdeaxchangeHorizontalAdSlot
-            slot={insightsAds?.primaryHorizontal}
+            slot={ideaxchangeAds?.recruitingPrimaryHorizontal}
             className="mt-10"
           />
         </section>
@@ -153,7 +153,7 @@ export function RecruitingHubPage({
           </div>
 
           <IdeaxchangeHorizontalAdSlot
-            slot={insightsAds?.secondaryHorizontal}
+            slot={ideaxchangeAds?.recruitingSecondaryHorizontal}
             className="mt-10"
           />
 
@@ -174,7 +174,7 @@ export function RecruitingHubPage({
                 spotlight={spotlight}
                 recentSidebar={recentSidebar}
                 spotlightBadgeLabel="RECRUIT"
-                insightsAds={insightsAds}
+                adSlot={ideaxchangeAds?.recruitingSidebarVertical}
               />
             </aside>
           </div>

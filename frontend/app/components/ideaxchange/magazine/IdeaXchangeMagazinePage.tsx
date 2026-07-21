@@ -1,5 +1,5 @@
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
-import type { InsightsAdsSettings } from "@/lib/queries";
+import type { IdeaxchangeAdsSettings } from "@/lib/queries";
 import { IdeaXchangeFeaturedGrid } from "@/app/components/ideaxchange/shared/IdeaXchangeFeaturedGrid";
 import { IdeaXchangeHeroGrid } from "@/app/components/ideaxchange/shared/IdeaXchangeHeroGrid";
 import { IdeaXchangeLeaderboardCtaBanner } from "@/app/components/ideaxchange/shared/IdeaXchangeLeaderboardCtaBanner";
@@ -22,7 +22,7 @@ type Props = {
     hasNextPage: boolean;
     endCursor: string | null;
   };
-  insightsAds?: InsightsAdsSettings | null;
+  ideaxchangeAds?: IdeaxchangeAdsSettings | null;
   /** Accessible page title (sr-only). */
   pageTitle?: string;
   defaultBadge?: string;
@@ -116,7 +116,7 @@ function toCardItem(post: IdeaxchangeListItem): IdeaxchangeCardItem {
 export function IdeaXchangeMagazinePage({
   posts,
   listPageInfo,
-  insightsAds,
+  ideaxchangeAds,
   pageTitle = "ideaXchange Home",
   defaultBadge = "IDEAXCHANGE",
   featuredHeading = "Featured articles",
@@ -131,7 +131,7 @@ export function IdeaXchangeMagazinePage({
       <IdeaXchangeHeroGrid items={hero.map(toCardItem)} defaultBadge={defaultBadge} />
 
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 md:py-14">
-        <IdeaxchangeHorizontalAdSlot slot={insightsAds?.primaryHorizontal} />
+        <IdeaxchangeHorizontalAdSlot slot={ideaxchangeAds?.homePrimaryHorizontal} />
 
         <IdeaXchangeFeaturedGrid
           items={featured.map(toCardItem)}
@@ -149,7 +149,7 @@ export function IdeaXchangeMagazinePage({
         ) : null}
 
         <IdeaxchangeHorizontalAdSlot
-          slot={insightsAds?.secondaryHorizontal}
+          slot={ideaxchangeAds?.homeSecondaryHorizontal}
           className="mt-12 md:mt-16"
         />
 
@@ -167,7 +167,7 @@ export function IdeaXchangeMagazinePage({
             <IdeaXchangeMagazineSidebar
               spotlight={spotlight}
               recentSidebar={recentSidebar}
-              insightsAds={insightsAds}
+              adSlot={ideaxchangeAds?.homeSidebarVertical}
             />
           </aside>
         </div>

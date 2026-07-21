@@ -4,10 +4,10 @@ import { IdeaXchangeCategoryPage } from "@/app/components/ideaxchange/magazine/I
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { IDEAXCHANGE_CATEGORY_PATH } from "@/lib/ideaxchange-constants";
 import {
+  getIdeaxchangeAdsSettings,
   getIdeaxchangeCategoryPageData,
   getIdeaxchangeTopicSlugs,
 } from "@/lib/ideaxchange-data";
-import { getInsightsAdsSettings } from "@/lib/insights-data";
 import { privatePageMetadata } from "@/lib/seo";
 
 type PageParams = Promise<{ slug: string }>;
@@ -58,9 +58,9 @@ export default async function IdeaxchangeCategoryArchivePage({
   const page = parseCategoryPage(await searchParams);
   const auth = await requireIdeaxchangeAuth(`${IDEAXCHANGE_CATEGORY_PATH}${slug}/`);
 
-  const [data, insightsAds] = await Promise.all([
+  const [data, ideaxchangeAds] = await Promise.all([
     getIdeaxchangeCategoryPageData(slug, page, auth.persona),
-    getInsightsAdsSettings(),
+    getIdeaxchangeAdsSettings(),
   ]);
 
   if (!data) notFound();
@@ -74,7 +74,7 @@ export default async function IdeaxchangeCategoryArchivePage({
       posts={data.posts}
       currentPage={data.currentPage}
       totalPages={data.totalPages}
-      insightsAds={insightsAds}
+      adSlot={ideaxchangeAds?.categoryPrimaryHorizontal}
     />
   );
 }
