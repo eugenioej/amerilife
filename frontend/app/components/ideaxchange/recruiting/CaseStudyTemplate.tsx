@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Clock } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
@@ -10,13 +9,11 @@ import {
   companyHref,
   companyLabel,
 } from "@/lib/ideaxchange-recruiting-utils";
-import { rewriteUploadsInHtml, rewriteUploadsUrl } from "@/lib/wp-media";
+import { rewriteUploadsInHtml } from "@/lib/wp-media";
 import {
   formatBylineDate,
   formatInsightExcerptPlain,
-  INSIGHT_IMG_QUALITY,
 } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
-import { ideaxchangeFeaturedImageSrc } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import { RunThisCampaignSidebar } from "./RunThisCampaignSidebar";
 
 type Props = {
@@ -32,7 +29,6 @@ function estimateReadMinutes(html: string): number {
 
 export function CaseStudyTemplate({ post, relatedPosts }: Props) {
   const html = post.content ? rewriteUploadsInHtml(post.content) : "";
-  const img = ideaxchangeFeaturedImageSrc(post.featuredImage?.node?.sourceUrl);
   const excerptPlain = formatInsightExcerptPlain(post.excerpt);
   const company = post.caseStudyCompany;
   const companyName = company?.title?.trim() || "Recruiting";
@@ -101,18 +97,6 @@ export function CaseStudyTemplate({ post, relatedPosts }: Props) {
               <Clock className="size-4 shrink-0" aria-hidden />
               {readMin} min read
             </span>
-          </div>
-
-          <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-md bg-[var(--color-border)]/30">
-            <Image
-              src={rewriteUploadsUrl(img)}
-              alt=""
-              fill
-              className="object-cover"
-              sizes="(max-width:1024px) 100vw, 66vw"
-              quality={INSIGHT_IMG_QUALITY}
-              priority
-            />
           </div>
 
           {html ? (

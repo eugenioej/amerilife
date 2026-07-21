@@ -151,6 +151,15 @@ body:has(.masterminds-page),body:has(.kickoff-page) {
   font-size: 11px !important;
 }
 
+.case-studies .entry-content iframe,
+.case-studies .post-content iframe,
+.case-studies .wp-block-embed iframe {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .skip-link { transition: none; }
 }
