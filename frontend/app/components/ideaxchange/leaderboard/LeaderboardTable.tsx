@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import type { LeaderboardRow } from "@/lib/ideaxchange-leaderboard-data";
+import { formatLeaderboardUpdatedDate } from "@/lib/ideaxchange-leaderboard-format";
 import {
   DEFAULT_LEADERBOARD_SORT,
   LEADERBOARD_SORT_LABELS,
@@ -19,6 +20,7 @@ type Props = {
   id?: string;
   title: string;
   rows: LeaderboardRow[];
+  lastUpdated?: string | null;
 };
 
 function percentClass(value: string): string {
@@ -73,9 +75,10 @@ function SortableHeader({
   );
 }
 
-export function LeaderboardTable({ id, title, rows }: Props) {
+export function LeaderboardTable({ id, title, rows, lastUpdated }: Props) {
   const [sort, setSort] = useState<LeaderboardSortState>(DEFAULT_LEADERBOARD_SORT);
   const [showAll, setShowAll] = useState(false);
+  const formattedUpdated = formatLeaderboardUpdatedDate(lastUpdated);
 
   const sortedRows = useMemo(() => sortLeaderboardRows(rows, sort), [rows, sort]);
   const hasMoreRows = sortedRows.length > INITIAL_VISIBLE_ROWS;
@@ -227,6 +230,12 @@ export function LeaderboardTable({ id, title, rows }: Props) {
           >
             {showAll ? "View less" : `View more (${hiddenCount})`}
           </Button>
+        </div>
+      ) : null}
+
+      {formattedUpdated ? (
+        <div className="border-t border-[var(--color-border)] bg-[#f7faf9] px-4 py-3 text-center text-xs text-[var(--color-muted)] sm:px-6 sm:text-right">
+          Data last updated on {formattedUpdated}
         </div>
       ) : null}
     </div>

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { IdeaXchangeHomeArchivePage } from "@/app/components/ideaxchange/magazine/IdeaXchangeHomeArchivePage";
 import { IdeaXchangeMagazinePage } from "@/app/components/ideaxchange/magazine/IdeaXchangeMagazinePage";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import {
@@ -8,17 +10,68 @@ import {
 } from "@/lib/ideaxchange-constants";
 import {
   getIdeaxchangeAdsSettings,
+  getIdeaxchangeHomeArchivePageData,
   getIdeaxchangeMagazineBundle,
+  IDEAXCHANGE_HOME_PAGE_FIRST,
 } from "@/lib/ideaxchange-data";
 import { privatePageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = privatePageMetadata(
-  "ideaXchange Home",
-  "Your personalized ideaXchange feed — articles and updates across AmeriLife pillars.",
-);
+type SearchParams = Promise<{ page?: string | string[] }>;
 
-export default async function IdeaxchangeHomePage() {
+function parseHomeArchivePage(sp: { page?: string | string[] }): number | null {
+  const raw = sp.page;
+  if (raw == null) return null;
+  const s = Array.isArray(raw) ? raw[0] : raw;
+  if (!s?.trim()) return null;
+  const n = parseInt(s, 10);
+  if (!Number.isFinite(n) || n < 1) return 1;
+  return Math.floor(n);
+}
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const page = parseHomeArchivePage(await searchParams);
+  if (page == null) {
+    return privatePageMetadata(
+      "ideaXchange Home",
+      "Your personalized ideaXchange feed — articles and updates across AmeriLife pillars.",
+    );
+  }
+
+  const titlePage = page > 1 ? ` (Page ${page})` : "";
+  return privatePageMetadata(
+    `All Articles${titlePage} | ideaXchange`,
+    `Browse every ideaXchange article by page${page > 1 ? ` (page ${page})` : ""}.`,
+  );
+}
+
+export default async function IdeaxchangeHomePage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const archivePage = parseHomeArchivePage(await searchParams);
   const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_HOME_FEED_PATH);
+
+  if (archivePage != null) {
+    const [data, ideaxchangeAds] = await Promise.all([
+      getIdeaxchangeHomeArchivePageData(archivePage, auth.persona),
+      getIdeaxchangeAdsSettings(),
+    ]);
+    if (!data) notFound();
+
+    return (
+      <IdeaXchangeHomeArchivePage
+        posts={data.posts}
+        currentPage={data.currentPage}
+        totalPages={data.totalPages}
+        adSlot={ideaxchangeAds?.homePrimaryHorizontal}
+      />
+    );
+  }
 
   const [bundle, ideaxchangeAds] = await Promise.all([
     getIdeaxchangeMagazineBundle(auth.persona),
@@ -42,6 +95,11 @@ export default async function IdeaxchangeHomePage() {
       listPageInfo={bundle.pageInfo}
       ideaxchangeAds={ideaxchangeAds}
       leaderboardCta={leaderboardCta}
+      paginationHref={
+        bundle.pageInfo.hasNextPage || bundle.posts.length > IDEAXCHANGE_HOME_PAGE_FIRST
+          ? `${IDEAXCHANGE_HOME_FEED_PATH}?page=2`
+          : undefined
+      }
     />
   );
 }

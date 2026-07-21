@@ -32,6 +32,8 @@ type Props = {
     heading: string;
     buttonLabel?: string;
   };
+  /** After “Load more”, show a link into numbered archive pagination (e.g. `?page=2`). */
+  paginationHref?: string;
 };
 
 function dedupeById(posts: IdeaxchangeListItem[]): IdeaxchangeListItem[] {
@@ -121,6 +123,7 @@ export function IdeaXchangeMagazinePage({
   defaultBadge = "IDEAXCHANGE",
   featuredHeading = "Featured articles",
   leaderboardCta,
+  paginationHref,
 }: Props) {
   const { hero, spotlight, featured, recentSidebar, newsroomRest } = partitionPosts(posts);
 
@@ -160,6 +163,7 @@ export function IdeaXchangeMagazinePage({
               deferredBatchPosts={newsroomRest.slice(INSIGHTS_NEWSROOM_INITIAL)}
               initialHasNextPage={listPageInfo?.hasNextPage ?? false}
               initialEndCursor={listPageInfo?.endCursor ?? null}
+              paginationHref={paginationHref}
             />
           </div>
 

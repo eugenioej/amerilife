@@ -27,6 +27,24 @@ export function formatLeaderboardTrendSymbol(trend: string): string {
   return "—";
 }
 
+/** Formats ISO timestamps or YYYY-MM-DD report dates as MM/DD/YYYY. */
+export function formatLeaderboardUpdatedDate(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const trimmed = iso.trim();
+  const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  if (dateOnly) {
+    const [, year, month, day] = dateOnly;
+    return `${month}/${day}/${year}`;
+  }
+  const date = new Date(trimmed);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toLocaleDateString("en-US", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
+  });
+}
+
 export function mapSeedRowToDisplay(row: LeaderboardSeedRow) {
   return {
     affiliate: row.affiliate,
