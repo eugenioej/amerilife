@@ -8,8 +8,31 @@ The **build does not upload images**. You upload images to headless WordPress yo
 |---------|-------|-------|
 | `NEXT_PUBLIC_GRAPHQL_ENDPOINT` | `https://headlessameril.wpenginepowered.com/graphql` | Headless WordPress GraphQL |
 | `NEXT_PUBLIC_USE_LIVE_IMAGES` | `0` | Use headless images (not live amerilife.com) |
+| `PIPER_API_BASE_URL` | `https://api-incentives-prod.piper.tools` | Career Leaderboard (server-only) |
+| `PIPER_API_KEY` | *(secret from AmeriLife IT)* | Required for live Career standings |
 
-Optional (only if you use the sync script manually):
+### Sales Leaderboard SFTP pull (brokerage outbound files)
+
+Brokerage product CSVs are dropped on `sftp.amerilife.com:/outbound` (usually weekly). Run the pull daily so new drops are picked up automatically:
+
+```bash
+# Local (credentials in frontend/.env.local)
+pnpm -C frontend sync:leaderboard-sftp:list   # inventory remote files
+pnpm -C frontend sync:leaderboard-sftp        # download new/changed CSVs
+```
+
+Artifacts land in `frontend/.cache/leaderboard-sftp/` (gitignored): `archive/YYYY-MM-DD/`, `latest/tables.json`, `manifest.json`, `sync-log.jsonl`.
+
+| Variable | Value | Notes |
+|---------|-------|-------|
+| `LEADERBOARD_SFTP_HOST` | `sftp.amerilife.com` | Outbound SFTP |
+| `LEADERBOARD_SFTP_PORT` | `22` | |
+| `LEADERBOARD_SFTP_USER` / `LEADERBOARD_SFTP_PASSWORD` | *(from AmeriLife TAB / Marketing)* | Repo secrets for GitHub Action |
+| `LEADERBOARD_SFTP_REMOTE_DIR` | `/outbound` | |
+
+Scheduled job: `.github/workflows/sync-leaderboard-sftp.yml` (daily 15:30 UTC + manual `workflow_dispatch`). Set `LEADERBOARD_SFTP_USER` and `LEADERBOARD_SFTP_PASSWORD` as GitHub Actions secrets. Auto-import into the WordPress CPT is a follow-up; today the job archives + parses into `latest/tables.json`.
+
+Optional (only if you use the image sync script manually):
 
 | Variable | Value | Notes |
 |---------|-------|-------|

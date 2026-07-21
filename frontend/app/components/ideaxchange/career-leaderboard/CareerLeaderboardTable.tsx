@@ -217,7 +217,7 @@ export function CareerLeaderboardTable({
 
       {lastUpdated ? (
         <div className="border-t border-[var(--color-border)] bg-[#f7faf9] px-4 py-3 text-center text-xs text-[var(--color-muted)] sm:px-6 sm:text-right">
-          Table updated {formatCareerLeaderboardUpdatedDate(lastUpdated)}
+          Data last updated on {formatCareerLeaderboardUpdatedDate(lastUpdated)}
         </div>
       ) : null}
     </div>

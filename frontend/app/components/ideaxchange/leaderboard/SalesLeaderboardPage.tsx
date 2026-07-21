@@ -14,7 +14,7 @@ import { IDEAXCHANGE_LEADERBOARD_PATH } from "@/lib/ideaxchange-constants";
 import { IDEAXCHANGE_SALES_TAG_SLUG } from "@/lib/ideaxchange-data";
 import {
   LEADERBOARD_TABLE_CONFIG,
-  type LeaderboardRow,
+  type LeaderboardTableData,
 } from "@/lib/ideaxchange-leaderboard-data";
 import { LeaderboardQuickNav } from "./LeaderboardQuickNav";
 import { LeaderboardSection } from "./LeaderboardSection";
@@ -22,7 +22,7 @@ import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared
 
 type Props = {
   heroStories: IdeaxchangeCardItem[];
-  tableData: Record<string, LeaderboardRow[]>;
+  tableData: Record<string, LeaderboardTableData>;
   salesPosts: IdeaxchangeListItem[];
   salesListPageInfo?: {
     hasNextPage: boolean;

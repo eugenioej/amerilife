@@ -35,6 +35,11 @@ type Props = {
   articleBasePath?: string;
   /** When false, hides infinite “Load more” (e.g. category archives use numbered pages). Default true. */
   enableLoadMore?: boolean;
+  /**
+   * After the user clicks “Load more” once, show a link into numbered pagination
+   * (e.g. `/ideaxchange/home/?page=2`).
+   */
+  paginationHref?: string;
 };
 
 function articleHrefForBase(
@@ -47,6 +52,9 @@ function articleHrefForBase(
   return `${base}/${slug}/`;
 }
 
+const browseByPageBtnClass =
+  "motion-cta inline-flex cursor-pointer items-center justify-center rounded-[var(--radius-full)] border-2 border-[var(--color-border)] bg-white px-5 py-2.5 text-sm font-bold uppercase tracking-[var(--tracking-normal)] text-[var(--color-fg)] transition-colors hover:border-[var(--color-brand-primary)] hover:text-[var(--color-brand-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)] focus:ring-offset-2 no-underline hover:no-underline";
+
 export function IdeaXchangeNewsroomColumn({
   initialPosts,
   deferredBatchPosts,
@@ -57,6 +65,7 @@ export function IdeaXchangeNewsroomColumn({
   badgeLabel,
   articleBasePath,
   enableLoadMore = true,
+  paginationHref,
 }: Props) {
   const [posts, setPosts] = useState(initialPosts);
   const [deferredRest, setDeferredRest] = useState(deferredBatchPosts);
@@ -64,6 +73,7 @@ export function IdeaXchangeNewsroomColumn({
   const [hasNextPage, setHasNextPage] = useState(initialHasNextPage);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasLoadedMore, setHasLoadedMore] = useState(false);
 
   // Numbered category pages navigate client-side; reset local list when the server feed changes.
   useEffect(() => {
@@ -90,6 +100,7 @@ export function IdeaXchangeNewsroomColumn({
     if (deferredRest.length > 0) {
       setPosts((prev) => [...prev, ...deferredRest]);
       setDeferredRest([]);
+      setHasLoadedMore(true);
       return;
     }
 
@@ -130,6 +141,7 @@ export function IdeaXchangeNewsroomColumn({
       const pi = json.pageInfo;
       setHasNextPage(pi?.hasNextPage ?? false);
       setEndCursor(pi?.endCursor ?? null);
+      setHasLoadedMore(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not load more.");
     } finally {
@@ -140,6 +152,9 @@ export function IdeaXchangeNewsroomColumn({
   const showLoadMore =
     enableLoadMore &&
     (deferredRest.length > 0 || (hasNextPage && Boolean(endCursor)));
+
+  const showBrowseByPage =
+    Boolean(paginationHref) && hasLoadedMore && enableLoadMore;
 
   return (
     <div className="flex flex-col">
@@ -204,17 +219,24 @@ export function IdeaXchangeNewsroomColumn({
         </p>
       ) : null}
 
-      {showLoadMore ? (
-        <div className="mt-6 flex justify-center">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={loadMore}
-            disabled={loading}
-            aria-busy={loading}
-          >
-            {loading ? "Loading…" : "Load more"}
-          </Button>
+      {showLoadMore || showBrowseByPage ? (
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          {showLoadMore ? (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={loadMore}
+              disabled={loading}
+              aria-busy={loading}
+            >
+              {loading ? "Loading…" : "Load more"}
+            </Button>
+          ) : null}
+          {showBrowseByPage && paginationHref ? (
+            <Link href={paginationHref} variant="button" className={browseByPageBtnClass}>
+              Browse by page
+            </Link>
+          ) : null}
         </div>
       ) : null}
     </div>

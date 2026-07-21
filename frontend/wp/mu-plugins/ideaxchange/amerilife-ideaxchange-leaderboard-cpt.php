@@ -103,10 +103,11 @@ function amerilife_ideaxchange_leaderboard_normalize_header_cell($cell) {
 }
 
 /**
- * @param list<string> $header
+ * @param list<string> $header Normalized header keys.
+ * @param list<string>|null $raw_header Original header cells (for ▲▼⬤ trend column).
  * @return array{affiliate: int, map: array<string, int|null>}|WP_Error
  */
-function amerilife_ideaxchange_leaderboard_header_indices($header) {
+function amerilife_ideaxchange_leaderboard_header_indices($header, $raw_header = null) {
   $idx = static function ($names) use ($header) {
     foreach ((array) $names as $name) {
       $i = array_search($name, $header, true);
@@ -122,15 +123,40 @@ function amerilife_ideaxchange_leaderboard_header_indices($header) {
     return new WP_Error('leaderboard_header_invalid', 'File must include an "affiliate" column', ['status' => 400]);
   }
 
+  // Prefer literal "vs LYTD" over a symbol header that normalizes to the same key.
+  $vs_lytd_i = null;
+  if (is_array($raw_header)) {
+    foreach ($raw_header as $i => $cell) {
+      $norm = amerilife_ideaxchange_leaderboard_normalize_header_cell($cell);
+      if ($norm === 'vs_lytd' && !preg_match('/[▲▼⬤]/u', (string) $cell)) {
+        $vs_lytd_i = (int) $i;
+        break;
+      }
+    }
+  }
+  if ($vs_lytd_i === null) {
+    $vs_lytd_i = $idx(['vs_lytd', 'vslytd', 'vs_ly', 'vs_last_year', 'vs_last_ytd']);
+  }
+
+  $trend_i = $idx(['trend', 'trend_indicator', 'indicator', 'arrow', 'direction', 'status']);
+  if ($trend_i === null && is_array($raw_header)) {
+    foreach ($raw_header as $i => $cell) {
+      if (preg_match('/[▲▼⬤]/u', (string) $cell)) {
+        $trend_i = (int) $i;
+        break;
+      }
+    }
+  }
+
   return [
     'affiliate' => $affiliate_i,
     'map' => [
       'ytd' => $idx(['ytd', 'ytd_amount', 'ytd_production']),
       'lytd' => $idx(['lytd', 'lytd_amount', 'lytd_production']),
-      'vs_lytd' => $idx(['vs_lytd', 'vslytd', 'vs_ly', 'vs_last_year', 'vs_last_ytd']),
+      'vs_lytd' => $vs_lytd_i,
       'vs_lqtd' => $idx(['vs_lqtd', 'vslqtd', 'vs_last_quarter', 'vs_lq']),
       'vs_lmtd' => $idx(['vs_lmtd', 'vslmtd', 'vs_last_month', 'vs_lm']),
-      'trend' => $idx(['trend', 'trend_indicator', 'indicator', 'arrow', 'direction', 'status']),
+      'trend' => $trend_i,
     ],
   ];
 }
@@ -219,6 +245,7 @@ function amerilife_ideaxchange_leaderboard_normalize_rows($rows) {
  * @return list<array<string, string>>|WP_Error
  */
 function amerilife_ideaxchange_leaderboard_parse_csv_content($content) {
+  $content = preg_replace('/^\xEF\xBB\xBF/', '', (string) $content);
   $content = trim((string) $content);
   if ($content === '') {
     return new WP_Error('leaderboard_csv_empty', 'CSV file is empty', ['status' => 400]);
@@ -232,9 +259,10 @@ function amerilife_ideaxchange_leaderboard_parse_csv_content($content) {
     return new WP_Error('leaderboard_csv_invalid', 'CSV needs a header row and at least one affiliate row', ['status' => 400]);
   }
 
-  $header = array_map('amerilife_ideaxchange_leaderboard_normalize_header_cell', str_getcsv((string) $lines[0]));
+  $raw_header = str_getcsv((string) $lines[0]);
+  $header = array_map('amerilife_ideaxchange_leaderboard_normalize_header_cell', $raw_header);
 
-  $indices = amerilife_ideaxchange_leaderboard_header_indices($header);
+  $indices = amerilife_ideaxchange_leaderboard_header_indices($header, $raw_header);
   if (is_wp_error($indices)) {
     return $indices;
   }
@@ -288,8 +316,9 @@ function amerilife_ideaxchange_leaderboard_parse_xlsx_file($path) {
     return new WP_Error('leaderboard_xlsx_invalid', 'Excel needs a header row and at least one affiliate row', ['status' => 400]);
   }
 
-  $header = array_map('amerilife_ideaxchange_leaderboard_normalize_header_cell', $sheet_rows[0]);
-  $indices = amerilife_ideaxchange_leaderboard_header_indices($header);
+  $raw_header = $sheet_rows[0];
+  $header = array_map('amerilife_ideaxchange_leaderboard_normalize_header_cell', $raw_header);
+  $indices = amerilife_ideaxchange_leaderboard_header_indices($header, $raw_header);
   if (is_wp_error($indices)) {
     return $indices;
   }

@@ -26,6 +26,11 @@ export type LeaderboardRow = {
   trend: string;
 };
 
+export type LeaderboardTableData = {
+  rows: LeaderboardRow[];
+  lastUpdated: string | null;
+};
+
 export type LeaderboardTableConfig = {
   slug: string;
   title: string;
@@ -67,8 +72,14 @@ const FALLBACK_ROWS: LeaderboardRow[] = (
   (leaderboardSeed.tables?.[0]?.rows as LeaderboardSeedRow[] | undefined) ?? []
 ).map(mapSeedRowToDisplay);
 
-const FALLBACK_BY_TABLE: Record<string, LeaderboardRow[]> = Object.fromEntries(
-  LEADERBOARD_TABLE_SLUGS.map((slug) => [slug, FALLBACK_ROWS]),
+const FALLBACK_REPORT_DATE =
+  typeof leaderboardSeed.report_date === "string" ? leaderboardSeed.report_date : null;
+
+const FALLBACK_BY_TABLE: Record<string, LeaderboardTableData> = Object.fromEntries(
+  LEADERBOARD_TABLE_SLUGS.map((slug) => [
+    slug,
+    { rows: FALLBACK_ROWS, lastUpdated: FALLBACK_REPORT_DATE },
+  ]),
 );
 
 function mapGraphqlRow(row: {
@@ -96,19 +107,26 @@ function mapGraphqlRow(row: {
 function mapTableNode(
   node: LeaderboardTableGraphql,
   persona: IdeaxchangePersona,
-): [string, LeaderboardRow[]] | null {
+): [string, LeaderboardTableData] | null {
   if (!isItemVisibleToPersona(node, persona)) return null;
   const slug = node.slug?.trim();
   if (!slug) return null;
   const rows = (node.ideaxchangeLbTableFields?.rows ?? [])
     .map((row) => mapGraphqlRow(row))
     .filter(Boolean) as LeaderboardRow[];
-  return [slug, rows.length > 0 ? rows : FALLBACK_BY_TABLE[slug] ?? []];
+  const reportDate = node.ideaxchangeLbTableFields?.reportDate?.trim() || null;
+  return [
+    slug,
+    {
+      rows: rows.length > 0 ? rows : FALLBACK_BY_TABLE[slug]?.rows ?? [],
+      lastUpdated: reportDate ?? FALLBACK_BY_TABLE[slug]?.lastUpdated ?? null,
+    },
+  ];
 }
 
 export async function getLeaderboardTables(
   persona: IdeaxchangePersona = "brokerage",
-): Promise<Record<string, LeaderboardRow[]>> {
+): Promise<Record<string, LeaderboardTableData>> {
   const fallback = { ...FALLBACK_BY_TABLE };
   try {
     const data = await fetchGraphQL<LeaderboardTablesResult>(GET_LEADERBOARD_TABLES);

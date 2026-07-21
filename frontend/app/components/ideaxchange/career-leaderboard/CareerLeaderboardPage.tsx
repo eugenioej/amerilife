@@ -2,7 +2,6 @@ import { Link } from "@/app/components/ui/Link";
 import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/IdeaXchangePillarBanner";
 import { IDEAXCHANGE_RECRUITING_HUB_PATH } from "@/lib/ideaxchange-constants";
 import {
-  formatCareerLeaderboardUpdatedDate,
   getCareerLeaderboardTablesBySlug,
   type CareerLeaderboardPageData,
 } from "@/lib/ideaxchange-career-leaderboard-data";
@@ -15,7 +14,6 @@ type Props = {
 
 export function CareerLeaderboardPage({ data }: Props) {
   const tablesBySlug = getCareerLeaderboardTablesBySlug(data.tables);
-  const formattedUpdated = formatCareerLeaderboardUpdatedDate(data.lastUpdated);
 
   return (
     <div className="bg-white pb-16 md:pb-20">
@@ -26,20 +24,23 @@ export function CareerLeaderboardPage({ data }: Props) {
         className="mt-0 min-h-[100px] md:min-h-[120px]"
       />
 
-      {formattedUpdated ? (
-        <div className="border-b border-[var(--color-border)] bg-[#f7faf9]">
-          <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-4 text-center text-sm text-[var(--color-muted)] sm:text-right">
-            Data last updated on {formattedUpdated}
-          </div>
-        </div>
-      ) : null}
-
       {data.usingSeedFallback ? (
         <div className="border-b border-amber-200 bg-amber-50">
           <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-3 text-center text-sm text-amber-900">
-            {data.piperConfigured
-              ? "Live Piper data is temporarily unavailable. Showing demo standings until the feed reconnects."
-              : "Piper API is not configured. Set PIPER_API_KEY in server env to load live Career standings."}
+            {data.piperConfigured ? (
+              <>
+                Live Piper data is temporarily unavailable
+                {data.piperStatus ? ` (HTTP ${data.piperStatus})` : ""}. Showing demo
+                standings until the feed reconnects.
+                {data.piperError ? (
+                  <span className="mt-1 block text-xs text-amber-800/90">
+                    {data.piperError}
+                  </span>
+                ) : null}
+              </>
+            ) : (
+              "Piper API is not configured. Set PIPER_API_KEY in server env to load live Career standings."
+            )}
           </div>
         </div>
       ) : null}

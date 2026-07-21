@@ -111,9 +111,10 @@ export async function fetchPiperLeaderboard(
   const url = `${config.baseUrl}${path}${query ? `?${query}` : ""}`;
 
   try {
+    // Always hit Piper fresh — auth/whitelist fixes must show up immediately.
     const response = await fetch(url, {
       headers: buildPiperAuthHeaders(config.apiKey, config.keyHeader),
-      next: { revalidate: 3600 },
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -136,4 +137,28 @@ export async function fetchPiperLeaderboard(
       error: error instanceof Error ? error.message : "Piper API request failed",
     };
   }
+}
+
+/** Safe diagnostics for health checks (never includes the API key). */
+export function getPiperApiDiagnostics(): {
+  configured: boolean;
+  baseUrl: string;
+  keyHeader: string;
+  keyLength: number;
+} {
+  const config = getPiperApiConfig();
+  if (!config) {
+    return {
+      configured: false,
+      baseUrl: DEFAULT_BASE_URL,
+      keyHeader: DEFAULT_KEY_HEADER,
+      keyLength: 0,
+    };
+  }
+  return {
+    configured: true,
+    baseUrl: config.baseUrl,
+    keyHeader: config.keyHeader,
+    keyLength: config.apiKey.length,
+  };
 }

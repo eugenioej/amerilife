@@ -1,12 +1,12 @@
 import type {
-  LeaderboardRow,
   LeaderboardSectionConfig,
+  LeaderboardTableData,
 } from "@/lib/ideaxchange-leaderboard-data";
 import { LeaderboardTable } from "./LeaderboardTable";
 
 type Props = {
   section: LeaderboardSectionConfig;
-  tableData: Record<string, LeaderboardRow[]>;
+  tableData: Record<string, LeaderboardTableData>;
 };
 
 export function LeaderboardSection({ section, tableData }: Props) {
@@ -19,14 +19,18 @@ export function LeaderboardSection({ section, tableData }: Props) {
         {section.title}
       </h2>
       <div className="flex flex-col gap-10 md:gap-12">
-        {section.tables.map((table) => (
-          <LeaderboardTable
-            key={table.slug}
-            id={`leaderboard-table-${table.slug}`}
-            title={table.title}
-            rows={tableData[table.slug] ?? []}
-          />
-        ))}
+        {section.tables.map((table) => {
+          const data = tableData[table.slug];
+          return (
+            <LeaderboardTable
+              key={table.slug}
+              id={`leaderboard-table-${table.slug}`}
+              title={table.title}
+              rows={data?.rows ?? []}
+              lastUpdated={data?.lastUpdated}
+            />
+          );
+        })}
       </div>
     </section>
   );

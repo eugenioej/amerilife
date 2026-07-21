@@ -225,13 +225,23 @@ function buildTableFromSeed(table: CareerLeaderboardTableConfig): CareerLeaderbo
   };
 }
 
+type CareerLeaderboardTableFetch = {
+  table: CareerLeaderboardTableData;
+  piperError?: string;
+  piperStatus?: number;
+};
+
 async function fetchCareerLeaderboardTable(
   table: CareerLeaderboardTableConfig,
-): Promise<CareerLeaderboardTableData> {
+): Promise<CareerLeaderboardTableFetch> {
   const { year, month } = getCurrentPiperPeriod();
 
   if (!isPiperApiConfigured()) {
-    return buildTableFromSeed(table);
+    return {
+      table: buildTableFromSeed(table),
+      piperError: "PIPER_API_KEY is not configured",
+      piperStatus: 0,
+    };
   }
 
   const result = await fetchPiperLeaderboard(table.incentiveType, year, month);
@@ -241,10 +251,16 @@ async function fetchCareerLeaderboardTable(
       `[career-leaderboard] Piper fetch failed for ${table.incentiveType}:`,
       result.error ?? result.status,
     );
-    return buildTableFromSeed(table);
+    return {
+      table: buildTableFromSeed(table),
+      piperError: result.error ?? `HTTP ${result.status}`,
+      piperStatus: result.status,
+    };
   }
 
-  return buildTableFromPiper(table, result.data, year, month);
+  const mapped = buildTableFromPiper(table, result.data, year, month);
+  // Empty live payload still counts as connected — keep it so we don't hide a real empty period.
+  return { table: mapped };
 }
 
 export type CareerLeaderboardPageData = {
@@ -252,41 +268,28 @@ export type CareerLeaderboardPageData = {
   tables: CareerLeaderboardTableData[];
   piperConfigured: boolean;
   usingSeedFallback: boolean;
-  lastUpdated: string | null;
+  piperError: string | null;
+  piperStatus: number | null;
 };
 
-export function formatCareerLeaderboardUpdatedDate(iso: string | null | undefined): string | null {
-  if (!iso) return null;
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return null;
-  return date.toLocaleDateString("en-US", {
-    month: "2-digit",
-    day: "2-digit",
-    year: "numeric",
-  });
-}
+export { formatLeaderboardUpdatedDate as formatCareerLeaderboardUpdatedDate } from "@/lib/ideaxchange-leaderboard-format";
 
 export async function getCareerLeaderboardPageData(): Promise<CareerLeaderboardPageData> {
   const allTables = CAREER_LEADERBOARD_CONFIG.flatMap((section) => section.tables);
-  const tables = await Promise.all(allTables.map((table) => fetchCareerLeaderboardTable(table)));
+  const results = await Promise.all(allTables.map((table) => fetchCareerLeaderboardTable(table)));
+  const tables = results.map((result) => result.table);
 
   const piperConfigured = isPiperApiConfigured();
   const usingSeedFallback = tables.some((table) => table.source === "seed");
-
-  const datedTables = tables
-    .map((table) => table.lastUpdated)
-    .filter((value): value is string => Boolean(value));
-  const lastUpdated =
-    datedTables.length > 0
-      ? datedTables.sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0]
-      : null;
+  const firstError = results.find((result) => result.piperError);
 
   return {
     sections: CAREER_LEADERBOARD_CONFIG,
     tables,
     piperConfigured,
     usingSeedFallback,
-    lastUpdated,
+    piperError: firstError?.piperError ?? null,
+    piperStatus: firstError?.piperStatus ?? null,
   };
 }
 
