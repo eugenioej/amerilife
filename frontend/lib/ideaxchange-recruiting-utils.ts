@@ -21,6 +21,12 @@ export function isCaseStudyFeatured(
   return post.ideaxchangeCaseStudyFields?.isFeatured === true;
 }
 
+export function isCaseStudyHeroFeatured(
+  post: Pick<CaseStudyListItem, "ideaxchangeCaseStudyFields">,
+): boolean {
+  return post.ideaxchangeCaseStudyFields?.isHeroFeatured === true;
+}
+
 export function companyLabel(
   post: Pick<CaseStudyListItem, "caseStudyCompany">,
 ): string {

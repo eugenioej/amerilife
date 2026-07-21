@@ -34,6 +34,7 @@ export function IdeaXchangeFeaturedGrid({
           const img = ideaxchangeFeaturedImageSrc(item.featuredImage?.node?.sourceUrl);
           const badge = item.badgeLabel?.trim() || defaultBadge;
           const badgeHref = item.badgeHref?.trim();
+
           return (
             <article key={item.id} className="group flex flex-col">
               <Link

@@ -34,6 +34,7 @@ export type CaseStudyListItem = {
   ideaxchangeCaseStudyFields?: {
     isSpotlight?: boolean | null;
     isFeatured?: boolean | null;
+    isHeroFeatured?: boolean | null;
     marketingCtaUrl?: string | null;
     targetAudience?: string | null;
     campaignSpend?: string | null;
@@ -99,6 +100,7 @@ const CASE_STUDY_LIST_FIELDS = `
   ideaxchangeCaseStudyFields {
     isSpotlight
     isFeatured
+    isHeroFeatured
     targetAudience
     campaignSpend
     campaignResults
@@ -211,6 +213,7 @@ export const GET_CASE_STUDY_BY_SLUG = `
       ideaxchangeCaseStudyFields {
         isSpotlight
         isFeatured
+        isHeroFeatured
         marketingCtaUrl
         visibility
         campaignAssets {

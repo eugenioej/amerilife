@@ -18,6 +18,7 @@ import {
   caseStudyHref,
   companyLabel,
   isCaseStudyFeatured,
+  isCaseStudyHeroFeatured,
   toCampaignTableRow,
 } from "@/lib/ideaxchange-recruiting-utils";
 import { RecruitingCampaignsTable } from "./RecruitingCampaignsTable";
@@ -66,13 +67,16 @@ function takeFeatured(pool: CaseStudyListItem[], count: number): CaseStudyListIt
   return out;
 }
 
+
 function partitionPosts(posts: CaseStudyListItem[]) {
   const unique = dedupeById(posts);
-  const hero = unique.slice(0, 3);
-  const remaining = unique.slice(3);
+  const hero = unique.filter(isCaseStudyHeroFeatured).slice(0, 3);
+  const heroIds = new Set(hero.map((p) => p.id));
+  const remaining = unique.filter((p) => !heroIds.has(p.id));
   const featured = takeFeatured(remaining, 4);
   return { hero, featured };
 }
+
 
 function toCardItem(post: CaseStudyListItem): IdeaxchangeCardItem {
   return {
