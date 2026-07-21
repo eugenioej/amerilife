@@ -8,9 +8,11 @@ import {
   getLeaderboardHeroStories,
   getLeaderboardTables,
 } from "@/lib/ideaxchange-leaderboard-data";
-import { getIdeaxchangeSalesMagazineBundle } from "@/lib/ideaxchange-data";
+import {
+  getIdeaxchangeAdsSettings,
+  getIdeaxchangeSalesMagazineBundle,
+} from "@/lib/ideaxchange-data";
 import { getIdeaxchangeHomeForPersona } from "@/lib/ideaxchange-persona";
-import { getInsightsAdsSettings } from "@/lib/insights-data";
 import { privatePageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = privatePageMetadata(
@@ -26,11 +28,11 @@ export default async function LeaderboardIndexPage() {
     redirect(getIdeaxchangeHomeForPersona(auth.persona));
   }
 
-  const [tableData, heroStories, salesBundle, insightsAds] = await Promise.all([
+  const [tableData, heroStories, salesBundle, ideaxchangeAds] = await Promise.all([
     getLeaderboardTables(auth.persona),
     Promise.resolve(getLeaderboardHeroStories()),
     getIdeaxchangeSalesMagazineBundle(auth.persona),
-    getInsightsAdsSettings(),
+    getIdeaxchangeAdsSettings(),
   ]);
 
   return (
@@ -39,7 +41,7 @@ export default async function LeaderboardIndexPage() {
       tableData={tableData}
       salesPosts={salesBundle.posts}
       salesListPageInfo={salesBundle.pageInfo}
-      insightsAds={insightsAds}
+      ideaxchangeAds={ideaxchangeAds}
     />
   );
 }

@@ -13,17 +13,17 @@ import {
   INSIGHT_IMG_QUALITY,
 } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
 import { ideaxchangeFeaturedImageSrc } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
-import type { InsightsAdsSettings } from "@/lib/queries";
+import type { IdeaxchangeAdSlot } from "@/lib/queries";
 import { CarrierHighlights } from "./CarrierHighlights";
 import { CarrierResourcesSidebar } from "./CarrierResourcesSidebar";
 
 type Props = {
   carrier: CarrierDetail;
   relatedArticles: IdeaxchangeListItem[];
-  insightsAds?: InsightsAdsSettings | null;
+  adSlot?: IdeaxchangeAdSlot | null;
 };
 
-export function CarrierSpotlightTemplate({ carrier, relatedArticles, insightsAds }: Props) {
+export function CarrierSpotlightTemplate({ carrier, relatedArticles, adSlot }: Props) {
   const fields = carrier.ideaxchangeCarrierFields;
   const html = carrier.content ? rewriteUploadsInHtml(carrier.content) : "";
   const logo = ideaxchangeFeaturedImageSrc(carrier.featuredImage?.node?.sourceUrl);
@@ -89,7 +89,7 @@ export function CarrierSpotlightTemplate({ carrier, relatedArticles, insightsAds
           <CarrierResourcesSidebar
             resources={resources}
             articles={relatedArticles}
-            insightsAds={insightsAds}
+            adSlot={adSlot}
           />
         </div>
       </div>

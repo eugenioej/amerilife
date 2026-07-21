@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: AmeriLife ideaXchange
- * Description: Loads ideaXchange MU plugins (magazine, companies, case studies, carriers, leaderboard).
- * Version: 1.1.0
+ * Description: Loads ideaXchange MU plugins (magazine, companies, case studies, carriers, leaderboard, ads).
+ * Version: 1.2.0
  */
 
 if (!defined('ABSPATH')) {
@@ -19,6 +19,7 @@ $ideaxchange_mu_plugins = [
   'amerilife-ideaxchange-case-study-cpt.php',
   'amerilife-ideaxchange-carrier-cpt.php',
   'amerilife-ideaxchange-leaderboard-cpt.php',
+  'amerilife-ideaxchange-ads.php',
 ];
 
 foreach ($ideaxchange_mu_plugins as $file) {

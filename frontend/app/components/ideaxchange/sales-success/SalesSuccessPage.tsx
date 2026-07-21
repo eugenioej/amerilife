@@ -4,7 +4,7 @@ import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/Ide
 import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeHorizontalAdSlot";
 import { IdeaxchangeSidebarAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeSidebarAdSlot";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
-import type { InsightsAdsSettings } from "@/lib/queries";
+import type { IdeaxchangeAdsSettings } from "@/lib/queries";
 import { IDEAXCHANGE_SALES_SUCCESS_PATH } from "@/lib/ideaxchange-constants";
 import { IDEAXCHANGE_INITIATIVE_TAG_SLUG } from "@/lib/ideaxchange-data";
 import { SalesSuccessFeaturedHero } from "./SalesSuccessFeaturedHero";
@@ -16,10 +16,10 @@ type Props = {
     hasNextPage: boolean;
     endCursor: string | null;
   };
-  insightsAds?: InsightsAdsSettings | null;
+  ideaxchangeAds?: IdeaxchangeAdsSettings | null;
 };
 
-export function SalesSuccessPage({ posts, pageInfo, insightsAds }: Props) {
+export function SalesSuccessPage({ posts, pageInfo, ideaxchangeAds }: Props) {
   const { featured, rest } = partitionSalesSuccessPosts(posts);
 
   return (
@@ -32,7 +32,10 @@ export function SalesSuccessPage({ posts, pageInfo, insightsAds }: Props) {
           Newsroom
         </h2>
 
-        <IdeaxchangeHorizontalAdSlot slot={insightsAds?.primaryHorizontal} className="mt-8" />
+        <IdeaxchangeHorizontalAdSlot
+          slot={ideaxchangeAds?.salesSuccessPrimaryHorizontal}
+          className="mt-8"
+        />
 
         <div className="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-8">
@@ -48,7 +51,7 @@ export function SalesSuccessPage({ posts, pageInfo, insightsAds }: Props) {
           </div>
 
           <aside className="lg:col-span-4">
-            <IdeaxchangeSidebarAdSlot slot={insightsAds?.sidebarVertical} />
+            <IdeaxchangeSidebarAdSlot slot={ideaxchangeAds?.salesSuccessSidebarVertical} />
           </aside>
         </div>
       </div>

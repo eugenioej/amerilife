@@ -3,9 +3,12 @@ import { Clock } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import type { IdeaxchangeDetail, IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
+import type { IdeaxchangeAdsSettings } from "@/lib/queries";
 import { rewriteUploadsInHtml, rewriteUploadsUrl } from "@/lib/wp-media";
 import { InsightPostChrome } from "@/app/components/insights/InsightPostChrome";
 import { InsightSharePanel } from "@/app/components/insights/InsightSharePanel";
+import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeHorizontalAdSlot";
+import { IdeaxchangeSidebarAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeSidebarAdSlot";
 import { ideaxchangeFeaturedImageSrc } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import {
   formatBylineDate,
@@ -20,6 +23,7 @@ type Props = {
   post: IdeaxchangeDetail;
   relatedPosts: IdeaxchangeListItem[];
   shareUrl: string;
+  ideaxchangeAds?: IdeaxchangeAdsSettings | null;
 };
 
 function estimateReadMinutes(html: string): number {
@@ -80,7 +84,12 @@ function AdditionalIncentivesSidebar({ posts }: { posts: IdeaxchangeListItem[] }
   );
 }
 
-export function SalesSuccessPostTemplate({ post, relatedPosts, shareUrl }: Props) {
+export function SalesSuccessPostTemplate({
+  post,
+  relatedPosts,
+  shareUrl,
+  ideaxchangeAds,
+}: Props) {
   const html = post.content ? rewriteUploadsInHtml(post.content) : "";
   const img = rewriteUploadsUrl(ideaxchangeFeaturedImageSrc(post.featuredImage?.node?.sourceUrl));
   const excerptPlain = formatInsightExcerptPlain(post.excerpt);
@@ -164,6 +173,11 @@ export function SalesSuccessPostTemplate({ post, relatedPosts, shareUrl }: Props
             )}
           </div>
 
+          <IdeaxchangeHorizontalAdSlot
+            slot={ideaxchangeAds?.articleInArticle}
+            className="mt-12"
+          />
+
           <div className="mt-10 flex flex-nowrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-8">
             <Link
               href={IDEAXCHANGE_SALES_SUCCESS_PATH}
@@ -180,6 +194,9 @@ export function SalesSuccessPostTemplate({ post, relatedPosts, shareUrl }: Props
 
         <aside className="lg:col-span-4">
           <AdditionalIncentivesSidebar posts={sidebarList} />
+          <div className="mt-10">
+            <IdeaxchangeSidebarAdSlot slot={ideaxchangeAds?.articleSidebarVertical} />
+          </div>
         </aside>
       </div>
     </InsightPostChrome>

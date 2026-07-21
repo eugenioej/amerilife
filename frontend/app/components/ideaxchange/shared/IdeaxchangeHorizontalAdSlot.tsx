@@ -1,11 +1,12 @@
-import type { InsightsAdSlotSetting } from "@/lib/queries";
+import type { IdeaxchangeAdSlot } from "@/lib/queries";
 import {
   AdBannerHorizontal,
   hasInsightsAdSlotImage,
 } from "@/app/components/insights/InsightsAds";
+import { pickIdeaxchangeAdCreative } from "./ideaxchange-ads";
 
 type Props = {
-  slot?: InsightsAdSlotSetting | null;
+  slot?: IdeaxchangeAdSlot | null;
   className?: string;
   showPlaceholder?: boolean;
 };
@@ -15,13 +16,15 @@ export function IdeaxchangeHorizontalAdSlot({
   className = "",
   showPlaceholder = true,
 }: Props) {
-  if (hasInsightsAdSlotImage(slot)) {
+  const creative = pickIdeaxchangeAdCreative(slot);
+
+  if (hasInsightsAdSlotImage(creative)) {
     return (
       <div className={className}>
         <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-muted)]">
           Advertisement
         </p>
-        <AdBannerHorizontal slot={slot} />
+        <AdBannerHorizontal slot={creative} />
       </div>
     );
   }

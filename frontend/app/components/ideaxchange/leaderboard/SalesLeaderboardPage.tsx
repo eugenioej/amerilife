@@ -9,7 +9,7 @@ import { IdeaXchangeHeroGrid } from "@/app/components/ideaxchange/shared/IdeaXch
 import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/IdeaXchangePillarBanner";
 import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
-import type { InsightsAdsSettings } from "@/lib/queries";
+import type { IdeaxchangeAdsSettings } from "@/lib/queries";
 import { IDEAXCHANGE_LEADERBOARD_PATH } from "@/lib/ideaxchange-constants";
 import { IDEAXCHANGE_SALES_TAG_SLUG } from "@/lib/ideaxchange-data";
 import {
@@ -28,7 +28,7 @@ type Props = {
     hasNextPage: boolean;
     endCursor: string | null;
   };
-  insightsAds?: InsightsAdsSettings | null;
+  ideaxchangeAds?: IdeaxchangeAdsSettings | null;
 };
 
 export function SalesLeaderboardPage({
@@ -36,7 +36,7 @@ export function SalesLeaderboardPage({
   tableData,
   salesPosts,
   salesListPageInfo,
-  insightsAds,
+  ideaxchangeAds,
 }: Props) {
   const { spotlight, recentSidebar, newsroomRest } =
     partitionNewsroomWithSidebar(salesPosts);
@@ -78,7 +78,7 @@ export function SalesLeaderboardPage({
           </div>
 
           <IdeaxchangeHorizontalAdSlot
-            slot={insightsAds?.secondaryHorizontal}
+            slot={ideaxchangeAds?.leaderboardSecondaryHorizontal}
             className="mt-10"
           />
 
@@ -99,7 +99,7 @@ export function SalesLeaderboardPage({
                 spotlight={spotlight}
                 recentSidebar={recentSidebar}
                 spotlightBadgeLabel="SALES"
-                insightsAds={insightsAds}
+                adSlot={ideaxchangeAds?.leaderboardSidebarVertical}
               />
             </aside>
           </div>

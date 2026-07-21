@@ -3,6 +3,7 @@ import { IdeaXchangePostTemplate } from "@/app/components/ideaxchange/magazine/I
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { IDEAXCHANGE_ARTICLE_PATH } from "@/lib/ideaxchange-constants";
 import {
+  getIdeaxchangeAdsSettings,
   getIdeaxchangeArticleBySlug,
   getIdeaxchangeList,
 } from "@/lib/ideaxchange-data";
@@ -31,9 +32,10 @@ export default async function IdeaxchangeArticlePage({ params }: { params: PageP
   const articlePath = `${IDEAXCHANGE_ARTICLE_PATH}${slug}/`;
   const auth = await requireIdeaxchangeAuth(articlePath);
 
-  const [post, allPosts] = await Promise.all([
+  const [post, allPosts, ideaxchangeAds] = await Promise.all([
     getIdeaxchangeArticleBySlug(slug, auth.persona),
     getIdeaxchangeList(auth.persona),
+    getIdeaxchangeAdsSettings(),
   ]);
 
   if (!post) notFound();
@@ -48,6 +50,7 @@ export default async function IdeaxchangeArticlePage({ params }: { params: PageP
       post={post}
       relatedPosts={relatedPosts}
       shareUrl={articleUrl}
+      ideaxchangeAds={ideaxchangeAds}
     />
   );
 }
