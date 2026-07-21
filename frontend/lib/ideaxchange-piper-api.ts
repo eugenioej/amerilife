@@ -1,10 +1,20 @@
 /**
  * Server-only Piper incentives API client (Career leaderboard).
+ * Partner/embed endpoint (API key auth):
+ *   GET /embed-leaderboard?incentive={type}&year={year}&month={month}
  * @see https://api-incentives-prod.piper.tools
  */
 
 const DEFAULT_BASE_URL = "https://api-incentives-prod.piper.tools";
 const DEFAULT_KEY_HEADER = "x-api-key";
+
+export type PiperLeaderboardColumnDef = {
+  field?: string;
+  headerName?: string;
+  order?: number;
+  formatter?: string;
+  renderer?: string;
+};
 
 export type PiperLeaderboardMetadata = {
   endDate?: string;
@@ -14,10 +24,18 @@ export type PiperLeaderboardMetadata = {
 };
 
 export type PiperLeaderboardResponse = {
-  data: Record<string, unknown>[];
+  /** Legacy Cognito web-app shape */
+  data?: Record<string, unknown>[];
+  /** Embed/partner API shape */
+  rows?: Record<string, unknown>[];
+  displayRows?: Record<string, unknown>[];
+  rowCount?: number;
+  columns?: PiperLeaderboardColumnDef[];
+  incentive?: string;
   period?: string;
   periodType?: string;
   updated?: string;
+  generatedAt?: number | string;
   isFallbackData?: boolean;
   fallbackMessage?: string;
   periodClosed?: boolean;
@@ -58,6 +76,41 @@ export function isPiperApiConfigured(): boolean {
 export function getCurrentPiperPeriod(): { year: number; month: number } {
   const now = new Date();
   return { year: now.getFullYear(), month: now.getMonth() + 1 };
+}
+
+/** Normalize embed + legacy response row arrays. */
+export function getPiperLeaderboardRows(
+  response: PiperLeaderboardResponse | null | undefined,
+): Record<string, unknown>[] {
+  if (!response) return [];
+  if (Array.isArray(response.rows)) return response.rows;
+  if (Array.isArray(response.displayRows)) return response.displayRows;
+  if (Array.isArray(response.data)) return response.data;
+  return [];
+}
+
+/** Prefer `updated`, else convert embed `generatedAt` to ISO. */
+export function getPiperLeaderboardUpdatedAt(
+  response: PiperLeaderboardResponse | null | undefined,
+): string | null {
+  if (!response) return null;
+  if (typeof response.updated === "string" && response.updated.trim()) {
+    return response.updated.trim();
+  }
+  if (typeof response.generatedAt === "number" && Number.isFinite(response.generatedAt)) {
+    const date = new Date(response.generatedAt);
+    return Number.isNaN(date.getTime()) ? null : date.toISOString();
+  }
+  if (typeof response.generatedAt === "string" && response.generatedAt.trim()) {
+    const asNumber = Number(response.generatedAt);
+    if (Number.isFinite(asNumber)) {
+      const date = new Date(asNumber);
+      return Number.isNaN(date.getTime()) ? null : date.toISOString();
+    }
+    const date = new Date(response.generatedAt);
+    return Number.isNaN(date.getTime()) ? null : date.toISOString();
+  }
+  return null;
 }
 
 function buildPiperAuthHeaders(apiKey: string, keyHeader: string): HeadersInit {
@@ -101,14 +154,16 @@ export async function fetchPiperLeaderboard(
     return { ok: false, status: 0, data: null, error: "PIPER_API_KEY is not configured" };
   }
 
-  const params = new URLSearchParams();
+  // Partner/embed API uses query params (not the Cognito web-app path style).
+  const params = new URLSearchParams({
+    incentive: incentiveType,
+    year: String(year),
+    month: String(month),
+  });
   if (options?.office) params.set("office", options.office);
   if (options?.processor) params.set("processor", options.processor);
-  const query = params.toString();
 
-  // Piper web app uses unpadded month in the path (e.g. /2026/7).
-  const path = `/leaderboard/${encodeURIComponent(incentiveType)}/${year}/${month}`;
-  const url = `${config.baseUrl}${path}${query ? `?${query}` : ""}`;
+  const url = `${config.baseUrl}/embed-leaderboard?${params.toString()}`;
 
   try {
     // Always hit Piper fresh — auth/whitelist fixes must show up immediately.

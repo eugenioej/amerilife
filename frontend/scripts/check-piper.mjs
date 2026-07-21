@@ -37,7 +37,7 @@ const keyHeader = (
 const now = new Date();
 const year = now.getFullYear();
 const month = now.getMonth() + 1;
-const samplePath = `/leaderboard/kickoff/${year}/${month}`;
+const samplePath = `/embed-leaderboard?incentive=kickoff&year=${year}&month=${month}`;
 const url = `${baseUrl}${samplePath}`;
 
 const headers = { Accept: "application/json" };
@@ -86,9 +86,17 @@ try {
     process.exit(1);
   }
 
-  const rows = Array.isArray(parsed?.data) ? parsed.data.length : 0;
+  const rows = Array.isArray(parsed?.rows)
+    ? parsed.rows.length
+    : Array.isArray(parsed?.displayRows)
+      ? parsed.displayRows.length
+      : Array.isArray(parsed?.data)
+        ? parsed.data.length
+        : 0;
   console.log(`  rowCount:   ${rows}`);
-  console.log(`  updated:    ${parsed?.updated ?? "(none)"}`);
+  console.log(
+    `  updated:    ${parsed?.updated ?? parsed?.generatedAt ?? "(none)"}`,
+  );
   console.log("\nOK: Piper is returning leaderboard data.");
 } catch (error) {
   console.error("\nFAIL:", error instanceof Error ? error.message : error);

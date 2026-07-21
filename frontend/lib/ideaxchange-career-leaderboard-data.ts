@@ -1,6 +1,8 @@
 import {
   fetchPiperLeaderboard,
   getCurrentPiperPeriod,
+  getPiperLeaderboardRows,
+  getPiperLeaderboardUpdatedAt,
   isPiperApiConfigured,
   type PiperLeaderboardResponse,
 } from "@/lib/ideaxchange-piper-api";
@@ -53,9 +55,9 @@ export const CAREER_LEADERBOARD_CONFIG: CareerLeaderboardSectionConfig[] = [
         columns: [
           { key: "rank", label: "Rank", align: "center" },
           { key: "agentName", label: "Agent" },
-          { key: "office", label: "Office" },
+          { key: "office", label: "Market" },
           { key: "agentPercentOfGoal", label: "% of Goal", align: "right" },
-          { key: "net", label: "Net", align: "right" },
+          { key: "agentFyc", label: "FYC", align: "right" },
         ],
       },
       {
@@ -65,7 +67,7 @@ export const CAREER_LEADERBOARD_CONFIG: CareerLeaderboardSectionConfig[] = [
         columns: [
           { key: "rank", label: "Rank", align: "center" },
           { key: "agentName", label: "Agent" },
-          { key: "office", label: "Office" },
+          { key: "office", label: "Market" },
           { key: "totalEligibleFyc", label: "Eligible FYC", align: "right" },
           { key: "totalBonusEarned", label: "Bonus Earned", align: "right" },
         ],
@@ -77,9 +79,9 @@ export const CAREER_LEADERBOARD_CONFIG: CareerLeaderboardSectionConfig[] = [
         columns: [
           { key: "rank", label: "Rank", align: "center" },
           { key: "agentName", label: "Agent" },
-          { key: "office", label: "Office" },
+          { key: "office", label: "Market" },
           { key: "agentPercentOfGoal", label: "% of Goal", align: "right" },
-          { key: "net", label: "Net", align: "right" },
+          { key: "agentFyc", label: "FYC", align: "right" },
         ],
       },
     ],
@@ -89,15 +91,16 @@ export const CAREER_LEADERBOARD_CONFIG: CareerLeaderboardSectionConfig[] = [
     title: "Production",
     tables: [
       {
-        slug: "fycbylos",
-        title: "FYC by LOS",
-        incentiveType: "fycbylos",
+        // embed-leaderboard does not support fycbylos; topproducer is the closest live feed.
+        slug: "topproducer",
+        title: "Top Producer",
+        incentiveType: "topproducer",
         columns: [
           { key: "rank", label: "Rank", align: "center" },
           { key: "agentName", label: "Agent" },
-          { key: "office", label: "Office" },
+          { key: "office", label: "Market" },
           { key: "losCategory", label: "LOS Category" },
-          { key: "agentFyc", label: "Agent FYC", align: "right" },
+          { key: "agentFyc", label: "FYC", align: "right" },
         ],
       },
     ],
@@ -111,20 +114,47 @@ export const CAREER_LEADERBOARD_TABLE_SLUGS = CAREER_LEADERBOARD_CONFIG.flatMap(
 const FIELD_ALIASES: Record<string, string[]> = {
   rank: ["rank", "Rank", "position", "Position"],
   agentName: ["agentName", "AgentName", "Agent Name", "agent name", "name", "Name"],
-  office: ["office", "Office", "officeCode", "OfficeCode", "agentOffice", "AgentOffice"],
+  office: [
+    "market",
+    "Market",
+    "office",
+    "Office",
+    "fieldOffice",
+    "officeCode",
+    "OfficeCode",
+    "agentOffice",
+    "AgentOffice",
+  ],
   agentPercentOfGoal: [
+    "percentOfGoal",
+    "PercentOfGoal",
     "agentPercentOfGoal",
     "Agent % of Goal",
     "agent % of goal",
-    "percentOfGoal",
-    "PercentOfGoal",
   ],
-  net: ["net", "Net", "NET"],
-  totalEligibleFyc: ["totalEligibleFyc", "Total Eligible FYC", "total eligible fyc"],
-  totalBonusEarned: ["totalBonusEarned", "Total Bonus Earned", "total bonus earned"],
-  agentFyc: ["agentFyc", "Agent FYC", "agent fyc", "AgentFYC"],
-  losCategory: ["losCategory", "LOS Category", "los category", "LOSCategory"],
+  totalEligibleFyc: [
+    "totalEligibleFYC",
+    "totalEligibleFyc",
+    "Total Eligible FYC",
+    "total eligible fyc",
+  ],
+  totalBonusEarned: [
+    "totalBonusEarned",
+    "Total Bonus Earned",
+    "total bonus earned",
+  ],
+  agentFyc: ["agentFYC", "agentFyc", "Agent FYC", "agent fyc", "AgentFYC", "total", "net", "Net"],
+  losCategory: [
+    "lOSCategory",
+    "losCategory",
+    "LOS Category",
+    "los category",
+    "LOSCategory",
+  ],
 };
+
+const CURRENCY_COLUMNS = new Set(["agentFyc", "totalEligibleFyc", "totalBonusEarned", "net"]);
+const PERCENT_COLUMNS = new Set(["agentPercentOfGoal"]);
 
 type SeedFile = {
   updated?: string;
@@ -137,21 +167,48 @@ function normalizeKey(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
+function formatCurrencyCell(value: unknown): string {
+  if (value == null || String(value).trim() === "") return "—";
+  const raw = String(value).replace(/[$,\s]/g, "");
+  const amount = Number(raw);
+  if (Number.isNaN(amount)) return String(value);
+  return amount.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  });
+}
+
+function formatPercentCell(value: unknown): string {
+  if (value == null || String(value).trim() === "") return "—";
+  const raw = String(value).replace(/%/g, "").trim();
+  const amount = Number(raw);
+  if (Number.isNaN(amount)) return String(value);
+  const rounded = Number.isInteger(amount) ? amount.toFixed(0) : amount.toFixed(1);
+  return `${rounded}%`;
+}
+
 function getCellValue(row: Record<string, unknown>, columnKey: string): string {
   const aliases = FIELD_ALIASES[columnKey] ?? [columnKey];
   for (const alias of aliases) {
     if (row[alias] != null && String(row[alias]).trim() !== "") {
-      return String(row[alias]);
+      return formatCellValue(columnKey, row[alias]);
     }
   }
 
   const target = normalizeKey(columnKey);
   for (const [key, value] of Object.entries(row)) {
     if (value == null || String(value).trim() === "") continue;
-    if (normalizeKey(key) === target) return String(value);
+    if (normalizeKey(key) === target) return formatCellValue(columnKey, value);
   }
 
   return "—";
+}
+
+function formatCellValue(columnKey: string, value: unknown): string {
+  if (CURRENCY_COLUMNS.has(columnKey)) return formatCurrencyCell(value);
+  if (PERCENT_COLUMNS.has(columnKey)) return formatPercentCell(value);
+  return String(value);
 }
 
 function mapPiperRows(
@@ -196,14 +253,14 @@ function buildTableFromPiper(
   year: number,
   month: number,
 ): CareerLeaderboardTableData {
-  const rawRows = Array.isArray(response.data) ? response.data : [];
+  const rawRows = getPiperLeaderboardRows(response);
   return {
     slug: table.slug,
     title: response.metadata?.title?.trim() || table.title,
     incentiveType: table.incentiveType,
     columns: table.columns,
     rows: mapPiperRows(rawRows, table.columns),
-    lastUpdated: response.updated ?? null,
+    lastUpdated: getPiperLeaderboardUpdatedAt(response),
     periodLabel: formatPeriodLabel(response.period, year, month),
     isFallback: response.isFallbackData === true,
     source: "piper",

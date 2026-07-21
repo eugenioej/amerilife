@@ -3,6 +3,8 @@ import {
   fetchPiperLeaderboard,
   getCurrentPiperPeriod,
   getPiperApiDiagnostics,
+  getPiperLeaderboardRows,
+  getPiperLeaderboardUpdatedAt,
   isPiperApiConfigured,
 } from "@/lib/ideaxchange-piper-api";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
@@ -17,7 +19,7 @@ export async function GET() {
 
   const diagnostics = getPiperApiDiagnostics();
   const { year, month } = getCurrentPiperPeriod();
-  const samplePath = `/leaderboard/kickoff/${year}/${month}`;
+  const samplePath = `/embed-leaderboard?incentive=kickoff&year=${year}&month=${month}`;
 
   if (!isPiperApiConfigured()) {
     return NextResponse.json({
@@ -50,8 +52,8 @@ export async function GET() {
       ok: true,
       status: sample.status,
       error: null,
-      rowCount: sample.data?.data?.length ?? 0,
-      updated: sample.data?.updated ?? null,
+      rowCount: getPiperLeaderboardRows(sample.data).length,
+      updated: getPiperLeaderboardUpdatedAt(sample.data),
       period: sample.data?.period ?? null,
       diagnosis: "ok",
       message: "Piper accepted the key and returned data.",
