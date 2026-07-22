@@ -1,5 +1,9 @@
 import { notFound } from "next/navigation";
 import { IdeaXchangePostTemplate } from "@/app/components/ideaxchange/magazine/IdeaXchangePostTemplate";
+import {
+  filterIdeaxchangeAdsSettingsByAudience,
+  getIdeaxchangeAdAudienceFromPersona,
+} from "@/app/components/ideaxchange/shared/ideaxchange-ads";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { IDEAXCHANGE_ARTICLE_PATH } from "@/lib/ideaxchange-constants";
 import {
@@ -20,17 +24,24 @@ export async function generateMetadata({ params }: { params: PageParams }) {
   if (post.seo) {
     return yoastSeoToMetadata(post.seo, post.title ?? "ideaXchange");
   }
+
   const title = `${post.title ?? "Article"} | ideaXchange`;
   const description =
     formatInsightExcerptPlain(post.excerpt).slice(0, 320) ||
     `Read ${post.title ?? "this article"} on AmeriLife ideaXchange.`;
+
   return privatePageMetadata(title, description);
 }
 
-export default async function IdeaxchangeArticlePage({ params }: { params: PageParams }) {
+export default async function IdeaxchangeArticlePage({
+  params,
+}: {
+  params: PageParams;
+}) {
   const { slug } = await params;
   const articlePath = `${IDEAXCHANGE_ARTICLE_PATH}${slug}/`;
   const auth = await requireIdeaxchangeAuth(articlePath);
+  const adAudience = getIdeaxchangeAdAudienceFromPersona(auth.persona);
 
   const [post, allPosts, ideaxchangeAds] = await Promise.all([
     getIdeaxchangeArticleBySlug(slug, auth.persona),
@@ -39,6 +50,11 @@ export default async function IdeaxchangeArticlePage({ params }: { params: PageP
   ]);
 
   if (!post) notFound();
+
+  const visibleIdeaxchangeAds = filterIdeaxchangeAdsSettingsByAudience(
+    ideaxchangeAds,
+    adAudience,
+  );
 
   const site = getSiteUrl().replace(/\/$/, "");
   const articleUrl = `${site}${articlePath}`;
@@ -50,7 +66,7 @@ export default async function IdeaxchangeArticlePage({ params }: { params: PageP
       post={post}
       relatedPosts={relatedPosts}
       shareUrl={articleUrl}
-      ideaxchangeAds={ideaxchangeAds}
+      ideaxchangeAds={visibleIdeaxchangeAds}
     />
   );
 }

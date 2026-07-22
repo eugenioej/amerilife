@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { SalesLeaderboardPage } from "@/app/components/ideaxchange/leaderboard/SalesLeaderboardPage";
+import {
+  filterIdeaxchangeAdsSettingsByAudience,
+  getIdeaxchangeAdAudienceFromPersona,
+} from "@/app/components/ideaxchange/shared/ideaxchange-ads";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { IDEAXCHANGE_LEADERBOARD_PATH } from "@/lib/ideaxchange-constants";
 import { canAccessSalesLeaderboard, getIdeaxchangeDevViewMode } from "@/lib/ideaxchange-dev";
@@ -22,6 +26,7 @@ export const metadata: Metadata = privatePageMetadata(
 
 export default async function LeaderboardIndexPage() {
   const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_LEADERBOARD_PATH);
+  const adAudience = getIdeaxchangeAdAudienceFromPersona(auth.persona);
   const devView = await getIdeaxchangeDevViewMode();
 
   if (!canAccessSalesLeaderboard(auth.persona, devView)) {
@@ -35,13 +40,18 @@ export default async function LeaderboardIndexPage() {
     getIdeaxchangeAdsSettings(),
   ]);
 
+  const visibleIdeaxchangeAds = filterIdeaxchangeAdsSettingsByAudience(
+    ideaxchangeAds,
+    adAudience,
+  );
+
   return (
     <SalesLeaderboardPage
       heroStories={heroStories}
       tableData={tableData}
       salesPosts={salesBundle.posts}
       salesListPageInfo={salesBundle.pageInfo}
-      ideaxchangeAds={ideaxchangeAds}
+      ideaxchangeAds={visibleIdeaxchangeAds}
     />
   );
 }

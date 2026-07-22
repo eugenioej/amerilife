@@ -250,7 +250,7 @@ export function IdeaXchangePostTemplate({
             </div>
 
             <IdeaxchangeHorizontalAdSlot
-              slot={ideaxchangeAds?.articleInArticle}
+              slot={ideaxchangeAds?.homeSecondaryHorizontal}
               className="mt-12"
             />
 
