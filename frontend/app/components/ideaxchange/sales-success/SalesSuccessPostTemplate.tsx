@@ -174,7 +174,7 @@ export function SalesSuccessPostTemplate({
           </div>
 
           <IdeaxchangeHorizontalAdSlot
-            slot={ideaxchangeAds?.articleInArticle}
+            slot={ideaxchangeAds?.homePrimaryHorizontal}
             className="mt-12"
           />
 

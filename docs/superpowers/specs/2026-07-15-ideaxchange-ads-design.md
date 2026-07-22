@@ -93,7 +93,7 @@ Resolver returns only creatives with a resolvable image URL.
 | `leaderboard_secondary_horizontal` / `homeSecondaryHorizontal` | Sales Leaderboard — secondary | 1200 × 280 px |
 | `leaderboard_sidebar_vertical` / `homeSidebarVertical` | Sales Leaderboard — sidebar | 400 × 600 px |
 | `carrier_sidebar_vertical` / `homeSidebarVertical` | Carrier Spotlight detail — sidebar | 400 × 600 px |
-| `article_in_article` / `articleInArticle` | Article mid-content (new) | 1200 × 280 px |
+| `article_in_article` / `homePrimaryHorizontal` | Article mid-content (new) | 1200 × 280 px |
 | `article_sidebar_vertical` / `homeSidebarVertical` | Article sidebar (new) | 400 × 600 px |
 
 Horizontal minimum guidance in admin copy: 960 × 200. Sidebar minimum: 300 × 450.
