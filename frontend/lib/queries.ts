@@ -1403,6 +1403,7 @@ export type IdeaxchangeAdCreative = {
   imageUrl?: string | null;
   targetUrl?: string | null;
   altText?: string | null;
+  visibility?: "brokerage" | "career" | "both" | null;
 };
 
 export type IdeaxchangeAdSlot = {
@@ -1423,6 +1424,7 @@ const IDEAXCHANGE_AD_CREATIVE_FIELDS = `
   imageUrl
   targetUrl
   altText
+  visibility
 `;
 
 export const GET_IDEAXCHANGE_ADS_SETTINGS = `

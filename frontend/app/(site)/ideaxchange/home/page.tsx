@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { IdeaXchangeHomeArchivePage } from "@/app/components/ideaxchange/magazine/IdeaXchangeHomeArchivePage";
 import { IdeaXchangeMagazinePage } from "@/app/components/ideaxchange/magazine/IdeaXchangeMagazinePage";
+import {
+  filterIdeaxchangeAdSlotByAudience,
+  filterIdeaxchangeAdsSettingsByAudience,
+  getIdeaxchangeAdAudienceFromPersona,
+} from "@/app/components/ideaxchange/shared/ideaxchange-ads";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import {
   IDEAXCHANGE_CAREER_LEADERBOARD_PATH,
@@ -55,12 +60,14 @@ export default async function IdeaxchangeHomePage({
 }) {
   const archivePage = parseHomeArchivePage(await searchParams);
   const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_HOME_FEED_PATH);
+  const adAudience = getIdeaxchangeAdAudienceFromPersona(auth.persona);
 
   if (archivePage != null) {
     const [data, ideaxchangeAds] = await Promise.all([
       getIdeaxchangeHomeArchivePageData(archivePage, auth.persona),
       getIdeaxchangeAdsSettings(),
     ]);
+
     if (!data) notFound();
 
     return (
@@ -68,7 +75,10 @@ export default async function IdeaxchangeHomePage({
         posts={data.posts}
         currentPage={data.currentPage}
         totalPages={data.totalPages}
-        adSlot={ideaxchangeAds?.homePrimaryHorizontal}
+        adSlot={filterIdeaxchangeAdSlotByAudience(
+          ideaxchangeAds?.homePrimaryHorizontal,
+          adAudience,
+        )}
       />
     );
   }
@@ -77,6 +87,11 @@ export default async function IdeaxchangeHomePage({
     getIdeaxchangeMagazineBundle(auth.persona),
     getIdeaxchangeAdsSettings(),
   ]);
+
+  const visibleIdeaxchangeAds = filterIdeaxchangeAdsSettingsByAudience(
+    ideaxchangeAds,
+    adAudience,
+  );
 
   const leaderboardCta =
     auth.persona === "career"
@@ -93,7 +108,7 @@ export default async function IdeaxchangeHomePage({
     <IdeaXchangeMagazinePage
       posts={bundle.posts}
       listPageInfo={bundle.pageInfo}
-      ideaxchangeAds={ideaxchangeAds}
+      ideaxchangeAds={visibleIdeaxchangeAds}
       leaderboardCta={leaderboardCta}
       paginationHref={
         bundle.pageInfo.hasNextPage || bundle.posts.length > IDEAXCHANGE_HOME_PAGE_FIRST
