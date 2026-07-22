@@ -1413,7 +1413,6 @@ export type IdeaxchangeAdsSettings = {
   homePrimaryHorizontal?: IdeaxchangeAdSlot | null;
   homeSecondaryHorizontal?: IdeaxchangeAdSlot | null;
   homeSidebarVertical?: IdeaxchangeAdSlot | null;
-  articleInArticle?: IdeaxchangeAdSlot | null;
 };
 
 export type IdeaxchangeAdsSettingsResult = {
