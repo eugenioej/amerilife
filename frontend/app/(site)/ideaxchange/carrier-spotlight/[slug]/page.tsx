@@ -43,7 +43,7 @@ export default async function CarrierDetailPage({ params }: { params: PageParams
       <CarrierSpotlightTemplate
         carrier={carrier}
         relatedArticles={salesBundle.posts}
-        adSlot={ideaxchangeAds?.carrierSidebarVertical}
+        adSlot={ideaxchangeAds?.homeSidebarVertical}
       />
     </div>
   );

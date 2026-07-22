@@ -84,17 +84,17 @@ Resolver returns only creatives with a resolvable image URL.
 | `home_primary_horizontal` / `homePrimaryHorizontal` | Home / Magazine — below featured | 1200 × 280 px |
 | `home_secondary_horizontal` / `homeSecondaryHorizontal` | Home / Magazine — main column | 1200 × 280 px |
 | `home_sidebar_vertical` / `homeSidebarVertical` | Home / Magazine — sidebar | 400 × 600 px |
-| `category_primary_horizontal` / `categoryPrimaryHorizontal` | Magazine category pages | 1200 × 280 px |
-| `recruiting_primary_horizontal` / `recruitingPrimaryHorizontal` | Recruiting Hub — primary | 1200 × 280 px |
-| `recruiting_secondary_horizontal` / `recruitingSecondaryHorizontal` | Recruiting Hub — secondary | 1200 × 280 px |
-| `recruiting_sidebar_vertical` / `recruitingSidebarVertical` | Recruiting Hub — sidebar | 400 × 600 px |
-| `sales_success_primary_horizontal` / `salesSuccessPrimaryHorizontal` | Sales Success — primary | 1200 × 280 px |
-| `sales_success_sidebar_vertical` / `salesSuccessSidebarVertical` | Sales Success — sidebar | 400 × 600 px |
-| `leaderboard_secondary_horizontal` / `leaderboardSecondaryHorizontal` | Sales Leaderboard — secondary | 1200 × 280 px |
-| `leaderboard_sidebar_vertical` / `leaderboardSidebarVertical` | Sales Leaderboard — sidebar | 400 × 600 px |
-| `carrier_sidebar_vertical` / `carrierSidebarVertical` | Carrier Spotlight detail — sidebar | 400 × 600 px |
+| `category_primary_horizontal` / `homePrimaryHorizontal` | Magazine category pages | 1200 × 280 px |
+| `recruiting_primary_horizontal` / `homePrimaryHorizontal` | Recruiting Hub — primary | 1200 × 280 px |
+| `recruiting_secondary_horizontal` / `homeSecondaryHorizontal` | Recruiting Hub — secondary | 1200 × 280 px |
+| `recruiting_sidebar_vertical` / `homeSidebarVertical` | Recruiting Hub — sidebar | 400 × 600 px |
+| `sales_success_primary_horizontal` / `homePrimaryHorizontal` | Sales Success — primary | 1200 × 280 px |
+| `sales_success_sidebar_vertical` / `homeSidebarVertical` | Sales Success — sidebar | 400 × 600 px |
+| `leaderboard_secondary_horizontal` / `homeSecondaryHorizontal` | Sales Leaderboard — secondary | 1200 × 280 px |
+| `leaderboard_sidebar_vertical` / `homeSidebarVertical` | Sales Leaderboard — sidebar | 400 × 600 px |
+| `carrier_sidebar_vertical` / `homeSidebarVertical` | Carrier Spotlight detail — sidebar | 400 × 600 px |
 | `article_in_article` / `articleInArticle` | Article mid-content (new) | 1200 × 280 px |
-| `article_sidebar_vertical` / `articleSidebarVertical` | Article sidebar (new) | 400 × 600 px |
+| `article_sidebar_vertical` / `homeSidebarVertical` | Article sidebar (new) | 400 × 600 px |
 
 Horizontal minimum guidance in admin copy: 960 × 200. Sidebar minimum: 300 × 450.
 

@@ -74,7 +74,7 @@ export default async function IdeaxchangeCategoryArchivePage({
       posts={data.posts}
       currentPage={data.currentPage}
       totalPages={data.totalPages}
-      adSlot={ideaxchangeAds?.categoryPrimaryHorizontal}
+      adSlot={ideaxchangeAds?.homePrimaryHorizontal}
     />
   );
 }

@@ -195,7 +195,7 @@ export function SalesSuccessPostTemplate({
         <aside className="lg:col-span-4">
           <AdditionalIncentivesSidebar posts={sidebarList} />
           <div className="mt-10">
-            <IdeaxchangeSidebarAdSlot slot={ideaxchangeAds?.articleSidebarVertical} />
+            <IdeaxchangeSidebarAdSlot slot={ideaxchangeAds?.homeSidebarVertical} />
           </div>
         </aside>
       </div>
