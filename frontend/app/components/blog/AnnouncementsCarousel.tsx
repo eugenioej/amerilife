@@ -16,7 +16,7 @@ type Props = {
   seeAllHref?: string;
 };
 
-export function AnnouncementsCarousel({ posts, seeAllHref = "/blog/announcements/" }: Props) {
+export function AnnouncementsCarousel({ posts, seeAllHref = "/newsroom/announcements/" }: Props) {
   const [page, setPage] = useState(0);
   const [cardsPerPage, setCardsPerPage] = useState(3);
 

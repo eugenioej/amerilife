@@ -49,7 +49,7 @@ export function BlogPostTemplate({ post, categorySlug }: Props) {
           { label: "Newsroom", href: "/newsroom/" },
           {
             label: categoryName,
-            href: `/blog/${categorySlug}/`,
+            href: `/newsroom/${categorySlug}/`,
             className: "max-w-[min(100%,12rem)] truncate sm:max-w-[min(100%,16rem)]",
           },
           {
@@ -73,7 +73,7 @@ export function BlogPostTemplate({ post, categorySlug }: Props) {
           </span>
         )}
         <Link
-          href={`/blog/${categorySlug}/`}
+          href={`/newsroom/${categorySlug}/`}
           variant="button"
           className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white"
           style={{ backgroundColor: getCategoryPillColor(categorySlug) }}

@@ -26,7 +26,7 @@ function stripHtml(html: string): string {
 export function BlogPostCard({ post, hideCategoryPill = false }: Props) {
   const category = post.categories?.nodes?.[0];
   const categorySlug = category?.slug ?? "announcements";
-  const href = `/blog/${categorySlug}/${post.slug}/`;
+  const href = `/newsroom/${categorySlug}/${post.slug}/`;
 
   const excerpt = post.excerpt
     ? stripHtml(post.excerpt).slice(0, 160)
