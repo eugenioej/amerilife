@@ -37,7 +37,7 @@ export async function generateMetadata({
   const label = toTitleCase(category);
   const title = `${label} | AmeriLife Newsroom`;
   const description = `Browse AmeriLife's latest ${label.toLowerCase()} news and announcements.`;
-  return staticPageMetadata(title, description, `/blog/${category}/`);
+  return staticPageMetadata(title, description, `/newsroom/${category}/`);
 }
 
 export default async function BlogCategoryPage({
@@ -141,7 +141,7 @@ export default async function BlogCategoryPage({
         hasNextPage={pageInfo?.hasNextPage ?? false}
         endCursor={pageInfo?.endCursor ?? null}
         stack={stack}
-        basePath={`/blog/${category}`}
+        basePath={`/news/${category}`}
         page={page}
         searchQuery={q || null}
       />

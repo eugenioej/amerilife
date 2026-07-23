@@ -141,7 +141,7 @@ export default async function BlogCategoryPage({
         hasNextPage={pageInfo?.hasNextPage ?? false}
         endCursor={pageInfo?.endCursor ?? null}
         stack={stack}
-        basePath={`/blog/${category}`}
+        basePath={`/newsroom/${category}`}
         page={page}
         searchQuery={q || null}
       />
