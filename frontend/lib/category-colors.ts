@@ -4,16 +4,11 @@
  * Known categories use navy / teal / seafoam / gold aligned with globals.css tokens.
  */
 const CATEGORY_COLORS: Record<string, string> = {
-  announcements: "#67c084", // seafoam (--color-gradient-end)
+  "mergers-and-acquisitions": "#67c084", // seafoam (--color-gradient-end)
   blog: "#009b7c", // teal (--color-gradient-mid2)
-  partnerships: "#003a74", // blue (--color-gradient-mid)
-  "in-the-news": "#e67e22", // orange
-  leadership: "#244260", // navy (--color-brand-dark)
-  "mergers-and-acquisitions": "#e67e22", // orange
-  "merger-and-acquisitions": "#e67e22", // orange (alternate slug)
-  "gives-back": "#6b4c9a", // purple
-  awards: "#8a6419", // gold (readable with white label text)
-  award: "#8a6419", // WP may use singular slug
+  "company-news": "#244260", // navy (--color-brand-dark)
+  technology: "#e67e22", // orange
+  community: "#6b4c9a", // purple
 };
 
 const FALLBACK_COLORS = [
