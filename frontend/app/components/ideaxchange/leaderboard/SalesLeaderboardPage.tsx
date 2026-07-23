@@ -78,7 +78,7 @@ export function SalesLeaderboardPage({
           </div>
 
           <IdeaxchangeHorizontalAdSlot
-            slot={ideaxchangeAds?.leaderboardSecondaryHorizontal}
+            slot={ideaxchangeAds?.homeSecondaryHorizontal}
             className="mt-10"
           />
 
@@ -99,7 +99,7 @@ export function SalesLeaderboardPage({
                 spotlight={spotlight}
                 recentSidebar={recentSidebar}
                 spotlightBadgeLabel="SALES"
-                adSlot={ideaxchangeAds?.leaderboardSidebarVertical}
+                adSlot={ideaxchangeAds?.homeSidebarVertical}
               />
             </aside>
           </div>

@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { RecruitingHubPage } from "@/app/components/ideaxchange/recruiting/RecruitingHubPage";
+import {
+  filterIdeaxchangeAdsSettingsByAudience,
+  getIdeaxchangeAdAudienceFromPersona,
+} from "@/app/components/ideaxchange/shared/ideaxchange-ads";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { IDEAXCHANGE_RECRUITING_HUB_PATH } from "@/lib/ideaxchange-constants";
 import {
@@ -19,6 +23,7 @@ export const metadata: Metadata = privatePageMetadata(
 
 export default async function RecruitingHubIndexPage() {
   const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_RECRUITING_HUB_PATH);
+  const adAudience = getIdeaxchangeAdAudienceFromPersona(auth.persona);
 
   const [{ posts }, allCampaigns, recruitBundle, ideaxchangeAds] = await Promise.all([
     getRecruitingHubBundle(auth.persona),
@@ -27,13 +32,18 @@ export default async function RecruitingHubIndexPage() {
     getIdeaxchangeAdsSettings(),
   ]);
 
+  const visibleIdeaxchangeAds = filterIdeaxchangeAdsSettingsByAudience(
+    ideaxchangeAds,
+    adAudience,
+  );
+
   return (
     <RecruitingHubPage
       posts={posts}
       allCampaigns={allCampaigns}
       recruitPosts={recruitBundle.posts}
       recruitListPageInfo={recruitBundle.pageInfo}
-      ideaxchangeAds={ideaxchangeAds}
+      ideaxchangeAds={visibleIdeaxchangeAds}
     />
   );
 }

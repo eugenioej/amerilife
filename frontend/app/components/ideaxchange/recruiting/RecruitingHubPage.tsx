@@ -132,7 +132,7 @@ export function RecruitingHubPage({
           </div>
 
           <IdeaxchangeHorizontalAdSlot
-            slot={ideaxchangeAds?.recruitingPrimaryHorizontal}
+            slot={ideaxchangeAds?.homePrimaryHorizontal}
             className="mt-10"
           />
         </section>
@@ -157,7 +157,7 @@ export function RecruitingHubPage({
           </div>
 
           <IdeaxchangeHorizontalAdSlot
-            slot={ideaxchangeAds?.recruitingSecondaryHorizontal}
+            slot={ideaxchangeAds?.homeSecondaryHorizontal}
             className="mt-10"
           />
 
@@ -178,7 +178,7 @@ export function RecruitingHubPage({
                 spotlight={spotlight}
                 recentSidebar={recentSidebar}
                 spotlightBadgeLabel="RECRUIT"
-                adSlot={ideaxchangeAds?.recruitingSidebarVertical}
+                adSlot={ideaxchangeAds?.homeSidebarVertical}
               />
             </aside>
           </div>

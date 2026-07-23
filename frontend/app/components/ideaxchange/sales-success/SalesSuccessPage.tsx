@@ -33,7 +33,7 @@ export function SalesSuccessPage({ posts, pageInfo, ideaxchangeAds }: Props) {
         </h2>
 
         <IdeaxchangeHorizontalAdSlot
-          slot={ideaxchangeAds?.salesSuccessPrimaryHorizontal}
+          slot={ideaxchangeAds?.homePrimaryHorizontal}
           className="mt-8"
         />
 
@@ -51,7 +51,7 @@ export function SalesSuccessPage({ posts, pageInfo, ideaxchangeAds }: Props) {
           </div>
 
           <aside className="lg:col-span-4">
-            <IdeaxchangeSidebarAdSlot slot={ideaxchangeAds?.salesSuccessSidebarVertical} />
+            <IdeaxchangeSidebarAdSlot slot={ideaxchangeAds?.homeSidebarVertical} />
           </aside>
         </div>
       </div>

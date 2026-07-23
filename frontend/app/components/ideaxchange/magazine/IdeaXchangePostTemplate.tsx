@@ -250,7 +250,7 @@ export function IdeaXchangePostTemplate({
             </div>
 
             <IdeaxchangeHorizontalAdSlot
-              slot={ideaxchangeAds?.articleInArticle}
+              slot={ideaxchangeAds?.homeSecondaryHorizontal}
               className="mt-12"
             />
 
@@ -278,7 +278,7 @@ export function IdeaXchangePostTemplate({
           <aside className="lg:col-span-4">
             <RelatedArticlesSidebar posts={sidebarList} />
             <div className="mt-10">
-              <IdeaxchangeSidebarAdSlot slot={ideaxchangeAds?.articleSidebarVertical} />
+              <IdeaxchangeSidebarAdSlot slot={ideaxchangeAds?.homeSidebarVertical} />
             </div>
           </aside>
         </div>
