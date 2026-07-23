@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import { SalesSuccessPage } from "@/app/components/ideaxchange/sales-success/SalesSuccessPage";
 import {
-  filterIdeaxchangeAdsSettingsByAudience,
   getIdeaxchangeAdAudienceFromPersona,
+  getVisibleIdeaxchangeAdsSettings,
 } from "@/app/components/ideaxchange/shared/ideaxchange-ads";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { IDEAXCHANGE_SALES_SUCCESS_PATH } from "@/lib/ideaxchange-constants";
+import {
+  getEffectiveIdeaxchangePersona,
+  getIdeaxchangeDevViewMode,
+} from "@/lib/ideaxchange-dev";
 import {
   getIdeaxchangeAdsSettings,
   getIdeaxchangeInitiativeMagazineBundle,
@@ -19,16 +23,24 @@ export const metadata: Metadata = privatePageMetadata(
 
 export default async function SalesSuccessIndexPage() {
   const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_SALES_SUCCESS_PATH);
-  const adAudience = getIdeaxchangeAdAudienceFromPersona(auth.persona);
+  const devView = await getIdeaxchangeDevViewMode();
+
+  const effectivePersona = getEffectiveIdeaxchangePersona(
+    auth.persona,
+    devView,
+  );
+
+  const adAudience = getIdeaxchangeAdAudienceFromPersona(effectivePersona);
 
   const [initiativeBundle, ideaxchangeAds] = await Promise.all([
-    getIdeaxchangeInitiativeMagazineBundle(auth.persona),
+    getIdeaxchangeInitiativeMagazineBundle(effectivePersona),
     getIdeaxchangeAdsSettings(),
   ]);
 
-  const visibleIdeaxchangeAds = filterIdeaxchangeAdsSettingsByAudience(
+  const visibleIdeaxchangeAds = getVisibleIdeaxchangeAdsSettings(
     ideaxchangeAds,
     adAudience,
+    devView,
   );
 
   return (

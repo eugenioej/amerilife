@@ -2,12 +2,16 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { SalesLeaderboardPage } from "@/app/components/ideaxchange/leaderboard/SalesLeaderboardPage";
 import {
-  filterIdeaxchangeAdsSettingsByAudience,
   getIdeaxchangeAdAudienceFromPersona,
+  getVisibleIdeaxchangeAdsSettings,
 } from "@/app/components/ideaxchange/shared/ideaxchange-ads";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { IDEAXCHANGE_LEADERBOARD_PATH } from "@/lib/ideaxchange-constants";
-import { canAccessSalesLeaderboard, getIdeaxchangeDevViewMode } from "@/lib/ideaxchange-dev";
+import {
+  canAccessSalesLeaderboard,
+  getEffectiveIdeaxchangePersona,
+  getIdeaxchangeDevViewMode,
+} from "@/lib/ideaxchange-dev";
 import {
   getLeaderboardHeroStories,
   getLeaderboardTables,
@@ -26,23 +30,31 @@ export const metadata: Metadata = privatePageMetadata(
 
 export default async function LeaderboardIndexPage() {
   const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_LEADERBOARD_PATH);
-  const adAudience = getIdeaxchangeAdAudienceFromPersona(auth.persona);
   const devView = await getIdeaxchangeDevViewMode();
 
   if (!canAccessSalesLeaderboard(auth.persona, devView)) {
     redirect(getIdeaxchangeHomeForPersona(auth.persona));
   }
 
-  const [tableData, heroStories, salesBundle, ideaxchangeAds] = await Promise.all([
-    getLeaderboardTables(auth.persona),
-    Promise.resolve(getLeaderboardHeroStories()),
-    getIdeaxchangeSalesMagazineBundle(auth.persona),
-    getIdeaxchangeAdsSettings(),
-  ]);
+  const effectivePersona = getEffectiveIdeaxchangePersona(
+    auth.persona,
+    devView,
+  );
 
-  const visibleIdeaxchangeAds = filterIdeaxchangeAdsSettingsByAudience(
+  const adAudience = getIdeaxchangeAdAudienceFromPersona(effectivePersona);
+
+  const [tableData, heroStories, salesBundle, ideaxchangeAds] =
+    await Promise.all([
+      getLeaderboardTables(effectivePersona),
+      Promise.resolve(getLeaderboardHeroStories()),
+      getIdeaxchangeSalesMagazineBundle(effectivePersona),
+      getIdeaxchangeAdsSettings(),
+    ]);
+
+  const visibleIdeaxchangeAds = getVisibleIdeaxchangeAdsSettings(
     ideaxchangeAds,
     adAudience,
+    devView,
   );
 
   return (

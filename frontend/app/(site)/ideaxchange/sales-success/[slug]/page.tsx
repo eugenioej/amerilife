@@ -1,11 +1,15 @@
 import { notFound } from "next/navigation";
 import { SalesSuccessPostTemplate } from "@/app/components/ideaxchange/sales-success/SalesSuccessPostTemplate";
 import {
-  filterIdeaxchangeAdsSettingsByAudience,
   getIdeaxchangeAdAudienceFromPersona,
+  getVisibleIdeaxchangeAdsSettings,
 } from "@/app/components/ideaxchange/shared/ideaxchange-ads";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { IDEAXCHANGE_SALES_SUCCESS_PATH } from "@/lib/ideaxchange-constants";
+import {
+  getEffectiveIdeaxchangePersona,
+  getIdeaxchangeDevViewMode,
+} from "@/lib/ideaxchange-dev";
 import {
   getIdeaxchangeAdsSettings,
   getIdeaxchangeInitiativeArticleBySlug,
@@ -41,26 +45,41 @@ export default async function SalesSuccessArticlePage({
   params: PageParams;
 }) {
   const { slug } = await params;
-  const auth = await requireIdeaxchangeAuth(`${IDEAXCHANGE_SALES_SUCCESS_PATH}${slug}/`);
-  const adAudience = getIdeaxchangeAdAudienceFromPersona(auth.persona);
+
+  const auth = await requireIdeaxchangeAuth(
+    `${IDEAXCHANGE_SALES_SUCCESS_PATH}${slug}/`,
+  );
+
+  const devView = await getIdeaxchangeDevViewMode();
+
+  const effectivePersona = getEffectiveIdeaxchangePersona(
+    auth.persona,
+    devView,
+  );
+
+  const adAudience = getIdeaxchangeAdAudienceFromPersona(effectivePersona);
 
   const [post, ideaxchangeAds] = await Promise.all([
-    getIdeaxchangeInitiativeArticleBySlug(slug, auth.persona),
+    getIdeaxchangeInitiativeArticleBySlug(slug, effectivePersona),
     getIdeaxchangeAdsSettings(),
   ]);
 
   if (!post) notFound();
 
-  const visibleIdeaxchangeAds = filterIdeaxchangeAdsSettingsByAudience(
+  const visibleIdeaxchangeAds = getVisibleIdeaxchangeAdsSettings(
     ideaxchangeAds,
     adAudience,
+    devView,
   );
 
   const isMockPost = post.id.startsWith("mock-");
+
   const relatedPosts = isMockPost
-    ? getMockInitiativeMagazineBundle().posts.filter((p) => p.slug && p.slug !== slug)
+    ? getMockInitiativeMagazineBundle().posts.filter(
+        (p) => p.slug && p.slug !== slug,
+      )
     : (
-        await getIdeaxchangeInitiativeMagazineBundle(auth.persona)
+        await getIdeaxchangeInitiativeMagazineBundle(effectivePersona)
       ).posts.filter((p) => p.slug && p.slug !== slug);
 
   const site = getSiteUrl().replace(/\/$/, "");

@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import { RecruitingHubPage } from "@/app/components/ideaxchange/recruiting/RecruitingHubPage";
 import {
-  filterIdeaxchangeAdsSettingsByAudience,
   getIdeaxchangeAdAudienceFromPersona,
+  getVisibleIdeaxchangeAdsSettings,
 } from "@/app/components/ideaxchange/shared/ideaxchange-ads";
+import {
+  getEffectiveIdeaxchangePersona,
+  getIdeaxchangeDevViewMode,
+} from "@/lib/ideaxchange-dev";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { IDEAXCHANGE_RECRUITING_HUB_PATH } from "@/lib/ideaxchange-constants";
 import {
@@ -23,18 +27,27 @@ export const metadata: Metadata = privatePageMetadata(
 
 export default async function RecruitingHubIndexPage() {
   const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_RECRUITING_HUB_PATH);
-  const adAudience = getIdeaxchangeAdAudienceFromPersona(auth.persona);
+  const devView = await getIdeaxchangeDevViewMode();
 
-  const [{ posts }, allCampaigns, recruitBundle, ideaxchangeAds] = await Promise.all([
-    getRecruitingHubBundle(auth.persona),
-    getCaseStudiesList(auth.persona),
-    getIdeaxchangeRecruitMagazineBundle(auth.persona),
-    getIdeaxchangeAdsSettings(),
-  ]);
+  const effectivePersona = getEffectiveIdeaxchangePersona(
+    auth.persona,
+    devView,
+  );
 
-  const visibleIdeaxchangeAds = filterIdeaxchangeAdsSettingsByAudience(
+  const adAudience = getIdeaxchangeAdAudienceFromPersona(effectivePersona);
+
+  const [{ posts }, allCampaigns, recruitBundle, ideaxchangeAds] =
+    await Promise.all([
+      getRecruitingHubBundle(effectivePersona),
+      getCaseStudiesList(effectivePersona),
+      getIdeaxchangeRecruitMagazineBundle(effectivePersona),
+      getIdeaxchangeAdsSettings(),
+    ]);
+
+  const visibleIdeaxchangeAds = getVisibleIdeaxchangeAdsSettings(
     ideaxchangeAds,
     adAudience,
+    devView,
   );
 
   return (

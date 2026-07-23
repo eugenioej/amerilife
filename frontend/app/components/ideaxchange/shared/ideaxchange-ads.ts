@@ -4,6 +4,7 @@ import type {
   IdeaxchangeAdsSettings,
   InsightsAdSlotSetting,
 } from "@/lib/queries";
+import type { IdeaxchangeDevViewMode } from "@/lib/ideaxchange-dev";
 
 export type IdeaxchangeAdAudience = "brokerage" | "career";
 export type IdeaxchangeAdVisibility = IdeaxchangeAdAudience | "both";
@@ -105,6 +106,43 @@ export function filterIdeaxchangeAdsSettingsByAudience(
       audience,
     ),
   };
+}
+
+/**
+ * Applies ideaXchange dev preview behavior to all ad settings.
+ *
+ * - devView "all" shows every creative.
+ * - devView "career" shows career + both.
+ * - devView "brokerage" shows brokerage + both.
+ * - devView "off" uses the effective logged-in persona audience.
+ */
+export function getVisibleIdeaxchangeAdsSettings(
+  settings: IdeaxchangeAdsSettings | null | undefined,
+  audience: IdeaxchangeAdAudience,
+  devView: IdeaxchangeDevViewMode,
+): IdeaxchangeAdsSettings | null {
+  if (devView === "all") {
+    return settings ?? null;
+  }
+
+  return filterIdeaxchangeAdsSettingsByAudience(settings, audience);
+}
+
+/**
+ * Applies ideaXchange dev preview behavior to one ad slot.
+ *
+ * Use this for places that pass a single slot instead of the full ad settings object.
+ */
+export function getVisibleIdeaxchangeAdSlot(
+  slot: IdeaxchangeAdSlot | null | undefined,
+  audience: IdeaxchangeAdAudience,
+  devView: IdeaxchangeDevViewMode,
+): IdeaxchangeAdSlot | null {
+  if (devView === "all") {
+    return slot ?? null;
+  }
+
+  return filterIdeaxchangeAdSlotByAudience(slot, audience);
 }
 
 /** Pick one creative at random for this render. */

@@ -3,9 +3,9 @@ import { notFound } from "next/navigation";
 import { IdeaXchangeHomeArchivePage } from "@/app/components/ideaxchange/magazine/IdeaXchangeHomeArchivePage";
 import { IdeaXchangeMagazinePage } from "@/app/components/ideaxchange/magazine/IdeaXchangeMagazinePage";
 import {
-  filterIdeaxchangeAdSlotByAudience,
-  filterIdeaxchangeAdsSettingsByAudience,
   getIdeaxchangeAdAudienceFromPersona,
+  getVisibleIdeaxchangeAdSlot,
+  getVisibleIdeaxchangeAdsSettings,
 } from "@/app/components/ideaxchange/shared/ideaxchange-ads";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import {
@@ -13,6 +13,10 @@ import {
   IDEAXCHANGE_HOME_FEED_PATH,
   IDEAXCHANGE_LEADERBOARD_PATH,
 } from "@/lib/ideaxchange-constants";
+import {
+  getEffectiveIdeaxchangePersona,
+  getIdeaxchangeDevViewMode,
+} from "@/lib/ideaxchange-dev";
 import {
   getIdeaxchangeAdsSettings,
   getIdeaxchangeHomeArchivePageData,
@@ -39,6 +43,7 @@ export async function generateMetadata({
   searchParams: SearchParams;
 }): Promise<Metadata> {
   const page = parseHomeArchivePage(await searchParams);
+
   if (page == null) {
     return privatePageMetadata(
       "ideaXchange Home",
@@ -47,6 +52,7 @@ export async function generateMetadata({
   }
 
   const titlePage = page > 1 ? ` (Page ${page})` : "";
+
   return privatePageMetadata(
     `All Articles${titlePage} | ideaXchange`,
     `Browse every ideaXchange article by page${page > 1 ? ` (page ${page})` : ""}.`,
@@ -59,42 +65,54 @@ export default async function IdeaxchangeHomePage({
   searchParams: SearchParams;
 }) {
   const archivePage = parseHomeArchivePage(await searchParams);
+
   const auth = await requireIdeaxchangeAuth(IDEAXCHANGE_HOME_FEED_PATH);
-  const adAudience = getIdeaxchangeAdAudienceFromPersona(auth.persona);
+  const devView = await getIdeaxchangeDevViewMode();
+
+  const effectivePersona = getEffectiveIdeaxchangePersona(
+    auth.persona,
+    devView,
+  );
+
+  const adAudience = getIdeaxchangeAdAudienceFromPersona(effectivePersona);
 
   if (archivePage != null) {
     const [data, ideaxchangeAds] = await Promise.all([
-      getIdeaxchangeHomeArchivePageData(archivePage, auth.persona),
+      getIdeaxchangeHomeArchivePageData(archivePage, effectivePersona),
       getIdeaxchangeAdsSettings(),
     ]);
 
     if (!data) notFound();
+
+    const visibleAdSlot = getVisibleIdeaxchangeAdSlot(
+      ideaxchangeAds?.homePrimaryHorizontal,
+      adAudience,
+      devView,
+    );
 
     return (
       <IdeaXchangeHomeArchivePage
         posts={data.posts}
         currentPage={data.currentPage}
         totalPages={data.totalPages}
-        adSlot={filterIdeaxchangeAdSlotByAudience(
-          ideaxchangeAds?.homePrimaryHorizontal,
-          adAudience,
-        )}
+        adSlot={visibleAdSlot}
       />
     );
   }
 
   const [bundle, ideaxchangeAds] = await Promise.all([
-    getIdeaxchangeMagazineBundle(auth.persona),
+    getIdeaxchangeMagazineBundle(effectivePersona),
     getIdeaxchangeAdsSettings(),
   ]);
 
-  const visibleIdeaxchangeAds = filterIdeaxchangeAdsSettingsByAudience(
+  const visibleIdeaxchangeAds = getVisibleIdeaxchangeAdsSettings(
     ideaxchangeAds,
     adAudience,
+    devView,
   );
 
   const leaderboardCta =
-    auth.persona === "career"
+    effectivePersona === "career"
       ? {
           href: IDEAXCHANGE_CAREER_LEADERBOARD_PATH,
           heading: "View current career leaderboards",

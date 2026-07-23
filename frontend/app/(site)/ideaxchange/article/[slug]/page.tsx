@@ -1,11 +1,15 @@
 import { notFound } from "next/navigation";
 import { IdeaXchangePostTemplate } from "@/app/components/ideaxchange/magazine/IdeaXchangePostTemplate";
 import {
-  filterIdeaxchangeAdsSettingsByAudience,
   getIdeaxchangeAdAudienceFromPersona,
+  getVisibleIdeaxchangeAdsSettings,
 } from "@/app/components/ideaxchange/shared/ideaxchange-ads";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { IDEAXCHANGE_ARTICLE_PATH } from "@/lib/ideaxchange-constants";
+import {
+  getEffectiveIdeaxchangePersona,
+  getIdeaxchangeDevViewMode,
+} from "@/lib/ideaxchange-dev";
 import {
   getIdeaxchangeAdsSettings,
   getIdeaxchangeArticleBySlug,
@@ -40,20 +44,29 @@ export default async function IdeaxchangeArticlePage({
 }) {
   const { slug } = await params;
   const articlePath = `${IDEAXCHANGE_ARTICLE_PATH}${slug}/`;
+
   const auth = await requireIdeaxchangeAuth(articlePath);
-  const adAudience = getIdeaxchangeAdAudienceFromPersona(auth.persona);
+  const devView = await getIdeaxchangeDevViewMode();
+
+  const effectivePersona = getEffectiveIdeaxchangePersona(
+    auth.persona,
+    devView,
+  );
+
+  const adAudience = getIdeaxchangeAdAudienceFromPersona(effectivePersona);
 
   const [post, allPosts, ideaxchangeAds] = await Promise.all([
-    getIdeaxchangeArticleBySlug(slug, auth.persona),
-    getIdeaxchangeList(auth.persona),
+    getIdeaxchangeArticleBySlug(slug, effectivePersona),
+    getIdeaxchangeList(effectivePersona),
     getIdeaxchangeAdsSettings(),
   ]);
 
   if (!post) notFound();
 
-  const visibleIdeaxchangeAds = filterIdeaxchangeAdsSettingsByAudience(
+  const visibleIdeaxchangeAds = getVisibleIdeaxchangeAdsSettings(
     ideaxchangeAds,
     adAudience,
+    devView,
   );
 
   const site = getSiteUrl().replace(/\/$/, "");
