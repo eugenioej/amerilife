@@ -22,7 +22,7 @@ export function RequestSupportThankYouContent({
   message,
 }: Props) {
   return (
-    <section className="bg-white py-16 sm:py-24">
+    <section className="bg-white py-16 sm:py-42">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)]">
         {breadcrumb?.length ? (
           <SiteBreadcrumb items={breadcrumb} className="mb-8" />
@@ -37,24 +37,12 @@ export function RequestSupportThankYouContent({
           </h2>
         ) : null}
 
-        <div className="grid gap-8 md:grid-cols-[minmax(0,min(100%,380px))_1fr] md:items-center">
-          <div className="relative aspect-[4/3] w-full overflow-hidden md:aspect-auto md:min-h-[240px]">
-            <Image
-              src={image.src}
-              alt={image.alt}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 380px"
-              priority={image.priority}
-            />
-          </div>
-          <div>
-            <h2 className="mb-4 text-2xl font-semibold text-[#003768]">
-              {messageTitle}
-            </h2>
-            <div className="text-base leading-relaxed text-[var(--color-fg)]">
-              {message}
-            </div>
+        <div>
+          <h2 className="mb-4 text-2xl font-semibold text-[#003768]">
+            {messageTitle}
+          </h2>
+          <div className="text-base leading-relaxed text-[var(--color-fg)]">
+            {message}
           </div>
         </div>
       </div>
