@@ -8,6 +8,7 @@ import { AdBannerHorizontal, AdSidebarVertical, hasInsightsAdSlotImage } from ".
 import { InsightPostChrome } from "./InsightPostChrome";
 import { InsightSharePanel } from "./InsightSharePanel";
 import { InsightTopicBadge } from "./InsightTopicBadge";
+import type { PostsListItem } from "@/lib/queries";
 import {
   formatBylineDate,
   formatInsightExcerptPlain,
@@ -25,6 +26,7 @@ type Props = {
   post: InsightDetail;
   /** Other insights for sidebar + bottom grid (same list; template slices). */
   relatedPosts: InsightListItem[];
+  inTheNewsPosts: PostsListItem[];
   shareUrl: string;
   insightsAds?: InsightsAdsSettings | null;
 };
@@ -88,7 +90,7 @@ function RelatedArticlesSidebar({ posts }: { posts: InsightListItem[] }) {
   );
 }
 
-function InTheNewsSidebar({ posts }: { posts: InsightListItem[] }) {
+function InTheNewsSidebar({ posts }: { posts: PostsListItem[] }) {
   if (posts.length === 0) return null;
   return (
     <div className="w-full mt-10">
@@ -102,7 +104,7 @@ function InTheNewsSidebar({ posts }: { posts: InsightListItem[] }) {
         {posts.map((item) => {
           const img =
             item.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
-          const href = insightHref(item.slug);
+          const href = item.uri || "#";
           return (
             <li key={item.id} className="flex gap-3 py-4 first:pt-0">
               <Link
@@ -214,6 +216,7 @@ function CareersCtaBanner() {
 export function InsightPostTemplate({
   post,
   relatedPosts,
+  inTheNewsPosts,
   shareUrl,
   insightsAds,
 }: Props) {
@@ -341,7 +344,7 @@ export function InsightPostTemplate({
 
           <aside className="lg:col-span-4">
             <RelatedArticlesSidebar posts={sidebarList} />
-            <InTheNewsSidebar posts={sidebarList} />
+            <InTheNewsSidebar posts={inTheNewsPosts} />
             {hasInsightsAdSlotImage(insightsAds?.sidebarVertical) ? (
               <div className="mt-10 w-full lg:sticky lg:top-[calc(var(--header-height)+1rem)] lg:self-start">
                 <AdSidebarVertical slot={insightsAds?.sidebarVertical} />

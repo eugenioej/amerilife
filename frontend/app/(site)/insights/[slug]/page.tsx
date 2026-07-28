@@ -3,6 +3,7 @@ import { InsightPostTemplate } from "@/app/components/insights/InsightPostTempla
 import { JsonLd } from "@/app/components/seo/JsonLd";
 import { formatInsightExcerptPlain } from "@/lib/insight-excerpt";
 import { getInsightBySlug, getInsightsAdsSettings, getInsightsList } from "@/lib/insights-data";
+import { getFaqNewsroomPosts } from "@/lib/faq-newsroom-posts";
 import {
   getSiteUrl,
   insightArticleJsonLd,
@@ -29,11 +30,12 @@ export async function generateMetadata({ params }: { params: PageParams }) {
 
 export default async function InsightSinglePage({ params }: { params: PageParams }) {
   const { slug } = await params;
-  const [post, allPosts, insightsAds] = await Promise.all([
-    getInsightBySlug(slug),
-    getInsightsList(),
-    getInsightsAdsSettings(),
-  ]);
+  const [post, allPosts, newsroomPosts, insightsAds] = await Promise.all([
+  getInsightBySlug(slug),
+  getInsightsList(),
+  getFaqNewsroomPosts(),
+  getInsightsAdsSettings(),
+]);
 
   if (!post) notFound();
 
@@ -43,6 +45,7 @@ export default async function InsightSinglePage({ params }: { params: PageParams
     post.insightTopics?.nodes?.[0]?.name?.trim() || "Insights";
 
   const relatedPosts = allPosts.filter((p) => p.slug && p.slug !== slug);
+  const latestNewsroomPosts = newsroomPosts.slice(0, 5);
 
   return (
     <>
@@ -50,6 +53,7 @@ export default async function InsightSinglePage({ params }: { params: PageParams
         key={`insight-post-${slug}`}
         post={post}
         relatedPosts={relatedPosts}
+        inTheNewsPosts={latestNewsroomPosts}
         shareUrl={articleUrl}
         insightsAds={insightsAds}
       />
