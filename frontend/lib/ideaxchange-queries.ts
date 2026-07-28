@@ -15,6 +15,9 @@ export type IdeaxchangeListItem = {
   ideaxchangeTopics?: {
     nodes?: Array<{ name?: string | null; slug?: string | null }>;
   } | null;
+  ideaxchangeTags?: {
+    nodes?: Array<{ name?: string | null; slug?: string | null }>;
+  } | null;
   featuredImage?: {
     node?: { sourceUrl?: string | null; altText?: string | null };
   } | null;
@@ -58,6 +61,12 @@ export const GET_IDEAXCHANGE_ARTICLES = `
             slug
           }
         }
+        ideaxchangeTags {
+          nodes {
+            name
+            slug
+          }
+        }
         featuredImage {
           node {
             sourceUrl
@@ -92,6 +101,12 @@ export const GET_IDEAXCHANGE_ARTICLES_MINIMAL = `
           visibility
         }
         ideaxchangeTopics {
+          nodes {
+            name
+            slug
+          }
+        }
+        ideaxchangeTags {
           nodes {
             name
             slug

@@ -52,6 +52,26 @@ import {
   type IdeaxchangeAdsSettingsResult,
 } from "@/lib/queries";
 
+function isInitiativeIdeaxchangeArticle(post: IdeaxchangeListItem): boolean {
+  return (
+    post.ideaxchangeTags?.nodes?.some((tag) => {
+      const slug = tag.slug?.trim().toLowerCase();
+      const name = tag.name?.trim().toLowerCase();
+
+      return (
+        slug === IDEAXCHANGE_INITIATIVE_TAG_SLUG ||
+        name === IDEAXCHANGE_INITIATIVE_TAG_SLUG
+      );
+    }) ?? false
+  );
+}
+
+function excludeInitiativeIdeaxchangeArticles(
+  posts: IdeaxchangeListItem[],
+): IdeaxchangeListItem[] {
+  return posts.filter((post) => !isInitiativeIdeaxchangeArticle(post));
+}
+
 function mockListItemToDetail(post: IdeaxchangeListItem): IdeaxchangeDetail {
   const body = formatInsightExcerptPlain(post.excerpt) || post.title || "";
   return {
@@ -181,7 +201,11 @@ export async function getIdeaxchangeMagazineBundle(
     IDEAXCHANGE_MAGAZINE_FIRST,
     null,
   );
-  return { posts: filterArticles(nodes, persona), pageInfo };
+
+  const personaFilteredPosts = filterArticles(nodes, persona);
+  const visiblePosts = excludeInitiativeIdeaxchangeArticles(personaFilteredPosts);
+
+  return { posts: visiblePosts, pageInfo };
 }
 
 const IDEAXCHANGE_ARTICLE_CURSOR_BATCH = 80;
@@ -258,8 +282,11 @@ export const getIdeaxchangeHomeArchivePageData = cache(
       const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
       if (safePage > totalPages) return null;
 
+      const personaFilteredPosts = filterArticles(nodes, persona);
+      const visiblePosts = excludeInitiativeIdeaxchangeArticles(personaFilteredPosts);
+          
       return {
-        posts: filterArticles(nodes, persona),
+        posts: visiblePosts,
         totalCount,
         currentPage: safePage,
         pageSize,
