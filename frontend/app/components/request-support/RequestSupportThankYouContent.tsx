@@ -29,18 +29,10 @@ export function RequestSupportThankYouContent({
         ) : null}
 
         <h1 className="mb-6 text-3xl font-bold text-[var(--color-fg)] sm:mb-10 sm:text-4xl">
-          {title}
+          {messageTitle}
         </h1>
-        {subtitle ? (
-          <h2 className="mb-6 text-3xl font-semibold text-[var(--color-fg)] sm:text-4xl">
-            {subtitle}
-          </h2>
-        ) : null}
 
         <div>
-          <h2 className="mb-4 text-2xl font-semibold text-[#003768]">
-            {messageTitle}
-          </h2>
           <div className="text-base leading-relaxed text-[var(--color-fg)]">
             {message}
           </div>
