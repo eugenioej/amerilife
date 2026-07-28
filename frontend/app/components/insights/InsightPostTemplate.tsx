@@ -88,6 +88,59 @@ function RelatedArticlesSidebar({ posts }: { posts: InsightListItem[] }) {
   );
 }
 
+function InTheNewsSidebar({ posts }: { posts: InsightListItem[] }) {
+  if (posts.length === 0) return null;
+  return (
+    <div className="w-full mt-10">
+      <div className="mb-4 flex items-center gap-3">
+        <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-brand-primary)]">
+          AmeriLife In The News
+        </h2>
+        <div className="h-px flex-1 bg-[var(--color-border)]" aria-hidden />
+      </div>
+      <ul className="divide-y divide-[var(--color-border)]">
+        {posts.map((item) => {
+          const img =
+            item.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
+          const href = insightHref(item.slug);
+          return (
+            <li key={item.id} className="flex gap-3 py-4 first:pt-0">
+              <Link
+                href={href}
+                variant="button"
+                className="relative h-16 w-20 shrink-0 overflow-hidden bg-[var(--color-border)]/30"
+              >
+                <Image
+                  src={rewriteUploadsUrl(img)}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="160px"
+                  quality={INSIGHT_IMG_QUALITY}
+                />
+              </Link>
+              <div className="min-w-0">
+                <Link
+                  href={href}
+                  variant="button"
+                  className="text-left text-sm font-bold leading-snug text-[var(--color-fg)] hover:text-[var(--color-brand-primary)]"
+                >
+                  {item.title}
+                </Link>
+                {item.date && (
+                  <p className="mt-1 text-xs text-[var(--color-muted)]">
+                    {formatMonthYear(item.date)}
+                  </p>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 function RelatedPostsGrid({ posts }: { posts: InsightListItem[] }) {
   if (posts.length === 0) return null;
   return (
@@ -288,6 +341,7 @@ export function InsightPostTemplate({
 
           <aside className="lg:col-span-4">
             <RelatedArticlesSidebar posts={sidebarList} />
+            <InTheNewsSidebar posts={sidebarList} />
             {hasInsightsAdSlotImage(insightsAds?.sidebarVertical) ? (
               <div className="mt-10 w-full lg:sticky lg:top-[calc(var(--header-height)+1rem)] lg:self-start">
                 <AdSidebarVertical slot={insightsAds?.sidebarVertical} />
