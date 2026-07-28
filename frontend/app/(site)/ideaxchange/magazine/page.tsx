@@ -1,18 +1,9 @@
-import type { Metadata } from "next";
-import { IdeaXchangeMagazinePage } from "@/app/components/ideaxchange/magazine/IdeaXchangeMagazinePage";
+import { redirect } from "next/navigation";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
-import { getIdeaxchangeMagazineBundle } from "@/lib/ideaxchange-data";
-import { privatePageMetadata } from "@/lib/seo";
+import { IDEAXCHANGE_HOME_FEED_PATH } from "@/lib/ideaxchange-constants";
 
-export const metadata: Metadata = privatePageMetadata(
-  "ideaXchange | AmeriLife",
-  "Internal ideaXchange magazine for AmeriLife employees and affiliates.",
-);
-
-export default async function IdeaxchangeMagazineIndexPage() {
+/** Legacy /ideaxchange/magazine/ — redirects to the unified home feed. */
+export default async function IdeaxchangeMagazineIndexRedirect() {
   await requireIdeaxchangeAuth("/ideaxchange/magazine/");
-
-  const { posts, pageInfo } = await getIdeaxchangeMagazineBundle();
-
-  return <IdeaXchangeMagazinePage posts={posts} listPageInfo={pageInfo} />;
+  redirect(IDEAXCHANGE_HOME_FEED_PATH);
 }

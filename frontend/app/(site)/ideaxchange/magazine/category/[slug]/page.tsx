@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { IdeaXchangeCategoryPage } from "@/app/components/ideaxchange/magazine/IdeaXchangeCategoryPage";
-import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import {
+  filterIdeaxchangeAdSlotByAudience,
+  getIdeaxchangeAdAudienceFromPersona,
+} from "@/app/components/ideaxchange/shared/ideaxchange-ads";
+import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
+import { IDEAXCHANGE_CATEGORY_PATH } from "@/lib/ideaxchange-constants";
+import {
+  getIdeaxchangeAdsSettings,
   getIdeaxchangeCategoryPageData,
   getIdeaxchangeTopicSlugs,
 } from "@/lib/ideaxchange-data";
@@ -38,13 +44,11 @@ export async function generateMetadata({
 
   const name = data.topicName?.trim() || data.topicSlug;
   const titlePage = data.currentPage > 1 ? ` (Page ${data.currentPage})` : "";
-  const description = `Browse ${name} articles on AmeriLife ideaXchange${data.currentPage > 1 ? ` (page ${data.currentPage})` : ""}.`;
-  const path =
-    data.currentPage > 1
-      ? `/ideaxchange/magazine/category/${data.topicSlug}/?page=${data.currentPage}`
-      : `/ideaxchange/magazine/category/${data.topicSlug}/`;
+  const description = `Browse ${name} articles and resources on AmeriLife ideaXchange${
+    data.currentPage > 1 ? ` (page ${data.currentPage})` : ""
+  }.`;
 
-  return privatePageMetadata(`${name} | ideaXchange${titlePage}`, description);
+  return privatePageMetadata(`${name} Articles${titlePage} | ideaXchange`, description);
 }
 
 export default async function IdeaxchangeCategoryArchivePage({
@@ -56,13 +60,14 @@ export default async function IdeaxchangeCategoryArchivePage({
 }) {
   const { slug } = await params;
   const page = parseCategoryPage(await searchParams);
-  await requireIdeaxchangeAuth(
-    page > 1
-      ? `/ideaxchange/magazine/category/${slug}/?page=${page}`
-      : `/ideaxchange/magazine/category/${slug}/`,
-  );
+  const auth = await requireIdeaxchangeAuth(`${IDEAXCHANGE_CATEGORY_PATH}${slug}/`);
+  const adAudience = getIdeaxchangeAdAudienceFromPersona(auth.persona);
 
-  const data = await getIdeaxchangeCategoryPageData(slug, page);
+  const [data, ideaxchangeAds] = await Promise.all([
+    getIdeaxchangeCategoryPageData(slug, page, auth.persona),
+    getIdeaxchangeAdsSettings(),
+  ]);
+
   if (!data) notFound();
 
   const topicName = data.topicName?.trim() || data.topicSlug;
@@ -74,6 +79,10 @@ export default async function IdeaxchangeCategoryArchivePage({
       posts={data.posts}
       currentPage={data.currentPage}
       totalPages={data.totalPages}
+      adSlot={filterIdeaxchangeAdSlotByAudience(
+        ideaxchangeAds?.homePrimaryHorizontal,
+        adAudience,
+      )}
     />
   );
 }

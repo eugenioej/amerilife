@@ -1,0 +1,117 @@
+{
+  "updated": "2026-07-01T12:00:00.000Z",
+  "tables": {
+    "kickoff": [
+      {
+        "agentName": "Maria Santos",
+        "office": "Tampa Central",
+        "agentPercentOfGoal": "142%",
+        "net": "$48,250",
+        "rank": "1"
+      },
+      {
+        "agentName": "James Chen",
+        "office": "Orlando North",
+        "agentPercentOfGoal": "128%",
+        "net": "$41,900",
+        "rank": "2"
+      },
+      {
+        "agentName": "Patricia Williams",
+        "office": "Jacksonville",
+        "agentPercentOfGoal": "115%",
+        "net": "$36,400",
+        "rank": "3"
+      },
+      {
+        "agentName": "Robert Johnson",
+        "office": "St. Petersburg",
+        "agentPercentOfGoal": "108%",
+        "net": "$32,100",
+        "rank": "4"
+      },
+      {
+        "agentName": "Angela Davis",
+        "office": "Fort Myers",
+        "agentPercentOfGoal": "101%",
+        "net": "$29,750",
+        "rank": "5"
+      }
+    ],
+    "faststart": [
+      {
+        "agentName": "David Martinez",
+        "office": "Miami South",
+        "totalEligibleFyc": "$22,400",
+        "totalBonusEarned": "$4,480",
+        "net": "$18,200",
+        "rank": "1"
+      },
+      {
+        "agentName": "Lisa Thompson",
+        "office": "Clearwater",
+        "totalEligibleFyc": "$19,800",
+        "totalBonusEarned": "$3,960",
+        "net": "$16,500",
+        "rank": "2"
+      },
+      {
+        "agentName": "Michael Brown",
+        "office": "Sarasota",
+        "totalEligibleFyc": "$17,250",
+        "totalBonusEarned": "$3,450",
+        "net": "$14,900",
+        "rank": "3"
+      }
+    ],
+    "bestinclass": [
+      {
+        "agentName": "Jennifer Lee",
+        "office": "Tampa Central",
+        "agentPercentOfGoal": "156%",
+        "net": "$52,800",
+        "rank": "1"
+      },
+      {
+        "agentName": "William Garcia",
+        "office": "Orlando North",
+        "agentPercentOfGoal": "134%",
+        "net": "$45,600",
+        "rank": "2"
+      },
+      {
+        "agentName": "Susan Miller",
+        "office": "Lakeland",
+        "agentPercentOfGoal": "121%",
+        "net": "$38,200",
+        "rank": "3"
+      }
+    ],
+    "topproducer": [
+      {
+        "agentName": "Thomas Wilson",
+        "office": "Tampa Central",
+        "losCategory": "Experienced",
+        "agentFyc": "$62,400",
+        "net": "$58,100",
+        "rank": "1"
+      },
+      {
+        "agentName": "Karen Anderson",
+        "office": "Orlando North",
+        "losCategory": "Experienced",
+        "agentFyc": "$55,200",
+        "net": "$51,800",
+        "rank": "2"
+      },
+      {
+        "agentName": "Christopher Taylor",
+        "office": "Jacksonville",
+        "losCategory": "Rookie",
+        "agentFyc": "$28,900",
+        "net": "$26,400",
+        "rank": "3"
+      }
+    ]
+  }
+}

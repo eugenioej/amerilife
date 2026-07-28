@@ -1,0 +1,74 @@
+{
+  "carriers": [
+    {
+      "slug": "united-american",
+      "title": "United American",
+      "brand_color": "#244260",
+      "website_url": "https://www.unitedamerican.com/",
+      "excerpt": "United American Insurance Company has served Medicare supplement and life insurance markets with broker-focused products and support.",
+      "content": "<p>United American Insurance Company delivers Medicare supplement and life insurance solutions designed for independent agents and brokers.</p>",
+      "hero": true,
+      "highlights": [
+        { "icon": "megaphone", "label": "Brand Recognition" },
+        { "icon": "shield", "label": "Market Stability" },
+        { "icon": "dollar", "label": "Competitive Rates" },
+        { "icon": "cog", "label": "Technology Forward" },
+        { "icon": "users", "label": "Broker-Focused" }
+      ]
+    },
+    {
+      "slug": "aetna",
+      "title": "Aetna",
+      "brand_color": "#7B2D8E",
+      "website_url": "https://www.aetna.com/",
+      "excerpt": "Aetna brings national brand recognition and a broad portfolio of health and Medicare products.",
+      "content": "<p>Aetna is a leading health benefits organization with a strong Medicare Advantage and supplemental product lineup.</p>",
+      "hero": true
+    },
+    {
+      "slug": "mutual-of-omaha",
+      "title": "Mutual of Omaha",
+      "brand_color": "#0066B3",
+      "website_url": "https://www.mutualofomaha.com/",
+      "excerpt": "Mutual of Omaha offers life, Medicare supplement, and ancillary products backed by financial strength.",
+      "content": "<p>Mutual of Omaha has been a trusted name in insurance for generations.</p>",
+      "hero": true
+    },
+    {
+      "slug": "united-healthcare",
+      "title": "United Healthcare",
+      "brand_color": "#002677",
+      "website_url": "https://www.uhc.com/",
+      "excerpt": "UnitedHealthcare provides Medicare Advantage and supplemental health products with national scale.",
+      "content": "<p>UnitedHealthcare partners with AmeriLife affiliates to deliver Medicare solutions.</p>",
+      "featured": true
+    },
+    {
+      "slug": "aflac",
+      "title": "Aflac",
+      "brand_color": "#00A9E0",
+      "website_url": "https://www.aflac.com/",
+      "excerpt": "Aflac supplemental insurance products help agents round out client portfolios.",
+      "content": "<p>Aflac's supplemental insurance products are among the most recognized in the industry.</p>",
+      "featured": true
+    },
+    {
+      "slug": "humana",
+      "title": "Humana",
+      "brand_color": "#78BE20",
+      "website_url": "https://www.humana.com/",
+      "excerpt": "Humana Medicare Advantage and prescription drug plans are a cornerstone offering.",
+      "content": "<p>Humana remains a leader in Medicare Advantage with strong star ratings.</p>",
+      "featured": true
+    },
+    {
+      "slug": "nassau",
+      "title": "Nassau",
+      "brand_color": "#1A3A5C",
+      "website_url": "https://www.nassaulife.com/",
+      "excerpt": "Nassau Life and Annuity provides fixed annuity and life products for retirement-focused producers.",
+      "content": "<p>Nassau offers competitive fixed annuity and life products.</p>",
+      "featured": true
+    }
+  ]
+}

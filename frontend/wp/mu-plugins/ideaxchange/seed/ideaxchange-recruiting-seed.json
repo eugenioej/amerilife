@@ -1,0 +1,129 @@
+{
+  "companies": [
+    {
+      "slug": "orca",
+      "title": "ORCA",
+      "website_url": "https://orca.life",
+      "learn_more_url": "https://orca.life",
+      "excerpt": "ORCA Life was created out of respect for family, their loved ones and the responsibilities we are all given with the gift of life.",
+      "description": "<p>ORCA Life was created out of respect. Respect for family, their loved ones and the responsibilities we are all given with the gift of life. ORCA partners with AmeriLife affiliates to deliver meaningful protection solutions nationwide.</p>"
+    },
+    {
+      "slug": "msb",
+      "title": "MSB — Maximum Senior Benefits",
+      "website_url": "https://www.maximumseniorbenefits.com/",
+      "learn_more_url": "https://www.maximumseniorbenefits.com/",
+      "excerpt": "Maximum Senior Benefits is an AmeriLife company focused on senior market recruiting and distribution.",
+      "description": "<p>Maximum Senior Benefits (MSB) is an AmeriLife company serving the senior market with innovative recruiting campaigns and agent development programs.</p>"
+    },
+    {
+      "slug": "eric-brennan",
+      "title": "Eric Brennan",
+      "website_url": "https://amerilife.com/",
+      "learn_more_url": "https://amerilife.com/join-our-team/",
+      "excerpt": "Leadership welcome message for ideaXchange Recruiting Hub.",
+      "description": "<p>Welcome from Eric Brennan — executive perspective on recruiting excellence across the AmeriLife distribution network.</p>"
+    }
+  ],
+  "case_studies": [
+    {
+      "slug": "welcome-from-eric-brennan",
+      "title": "Welcome from Eric Brennan",
+      "company_slug": "eric-brennan",
+      "excerpt": "A welcome message to the AmeriLife recruiting community.",
+      "content": "<p>Welcome to the Recruiting Hub. Here you will find proven campaigns, playbooks, and success stories from across our affiliate network.</p><h2>THE OPPORTUNITY IN TODAY'S ENVIRONMENT</h2><p>Recruiting top talent requires consistency, speed, and the right tools. Use the campaigns below to accelerate your pipeline.</p>",
+      "date": "2025-12-01 10:00:00",
+      "featured": true,
+      "spotlight": false,
+      "marketing_cta_url": "/connect/",
+      "target_audience": "AmeriLife affiliate recruiting leaders",
+      "campaign_spend": "—",
+      "campaign_results": "—"
+    },
+    {
+      "slug": "orca-indeed-speed-dating",
+      "title": "ORCA's Indeed Speed Dating Campaign",
+      "company_slug": "orca",
+      "excerpt": "How ORCA used Indeed speed-dating events to fill agent seats faster.",
+      "content": "<p>ORCA launched a speed-dating style recruiting event on Indeed that shortened time-to-hire and improved candidate quality.</p><h2>THE OPPORTUNITY IN TODAY'S ENVIRONMENT</h2><p>Speed and clarity win in a competitive recruiting market. ORCA's playbook shows how structured events create momentum.</p><h2>1. LEAD WITH THE NEED</h2><p>Start every conversation with the candidate's goals, not the product catalog.</p>",
+      "date": "2025-12-15 10:00:00",
+      "featured": true,
+      "spotlight": true,
+      "marketing_cta_url": "/connect/",
+      "target_audience": "Active job seekers on Indeed",
+      "campaign_spend": "$3,500",
+      "campaign_results": "Data",
+      "campaign_overview": "Speed-dating style Indeed events that shortened time-to-hire."
+    },
+    {
+      "slug": "msb-college-handshake",
+      "title": "MSB's College Handshake Campaign",
+      "company_slug": "msb",
+      "excerpt": "MSB partnered with campus career platforms to reach early-career recruits.",
+      "content": "<p>Maximum Senior Benefits activated Handshake and campus events to build a pipeline of career-minded agents.</p>",
+      "date": "2025-11-20 10:00:00",
+      "featured": true,
+      "spotlight": false,
+      "marketing_cta_url": "/connect/",
+      "target_audience": "College seniors and recent graduates",
+      "campaign_spend": "$2,800",
+      "campaign_results": "Data 1"
+    },
+    {
+      "slug": "axonic-campaign",
+      "title": "Axonic Campaign",
+      "company_slug": "orca",
+      "excerpt": "Digital-first outreach templates for annuity recruiting.",
+      "content": "<p>Axonic campaign assets and messaging frameworks for digital recruiting funnels.</p>",
+      "date": "2025-10-10 10:00:00",
+      "featured": true,
+      "spotlight": false,
+      "marketing_cta_url": "/connect/",
+      "target_audience": "Annuity-interested career changers",
+      "campaign_spend": "$2,000",
+      "campaign_results": "Data 4"
+    },
+    {
+      "slug": "recruitment-to-calendly",
+      "title": "Recruitment To Calendly",
+      "company_slug": "msb",
+      "excerpt": "Convert inbound interest into booked interviews with Calendly automation.",
+      "content": "<p>A step-by-step flow from ad click to scheduled interview using Calendly and email nurture sequences.</p>",
+      "date": "2025-09-05 10:00:00",
+      "featured": false,
+      "spotlight": false,
+      "marketing_cta_url": "/connect/",
+      "target_audience": "Inbound digital leads",
+      "campaign_spend": "$950",
+      "campaign_results": "Data 5"
+    },
+    {
+      "slug": "devoted-campaign",
+      "title": "Devoted Campaign",
+      "company_slug": "orca",
+      "excerpt": "Carrier-aligned recruiting messaging for Medicare Advantage teams.",
+      "content": "<p>Devoted campaign creative and talk tracks for building trust with experienced health agents.</p>",
+      "date": "2025-08-18 10:00:00",
+      "featured": false,
+      "spotlight": false,
+      "marketing_cta_url": "/connect/",
+      "target_audience": "Medicare Advantage experienced agents",
+      "campaign_spend": "$1,800",
+      "campaign_results": "Data 6"
+    },
+    {
+      "slug": "med-sup-campaign",
+      "title": "Med Sup Campaign",
+      "company_slug": "msb",
+      "excerpt": "Medicare Supplement recruiting scripts and team onboarding checklist.",
+      "content": "<p>Med Sup campaign resources for team leaders scaling senior-market recruiting.</p>",
+      "date": "2025-07-22 10:00:00",
+      "featured": false,
+      "spotlight": false,
+      "marketing_cta_url": "/connect/",
+      "target_audience": "Licensed and pre-licensed health agents",
+      "campaign_spend": "$2,200",
+      "campaign_results": "Data 2"
+    }
+  ]
+}

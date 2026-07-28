@@ -1,5 +1,7 @@
 "use client";
 
+import { Link } from "@/app/components/ui/Link";
+import { IdeaXchangeLogoutButton } from "@/app/components/ideaxchange/IdeaXchangeLogoutButton";
 import { useContactPopup } from "./ContactPopupProvider";
 
 const SOCIAL_LINKS = [
@@ -53,7 +55,31 @@ function SocialIcon({ icon }: { icon: string }) {
   }
 }
 
-export function TopBar() {
+function TopBarSocialLinks() {
+  return (
+    <div className="flex items-center gap-4">
+      {SOCIAL_LINKS.map(({ href, label, icon }) => (
+        <a
+          key={icon}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-white hover:opacity-80 transition-opacity"
+          aria-label={label}
+        >
+          <SocialIcon icon={icon} />
+        </a>
+      ))}
+    </div>
+  );
+}
+
+type TopBarProps = {
+  microsoftAuthEnabled?: boolean;
+  inIdeaxchange?: boolean;
+};
+
+export function TopBar({ microsoftAuthEnabled = false, inIdeaxchange = false }: TopBarProps) {
   const { openContactPopup } = useContactPopup();
 
   return (
@@ -61,29 +87,36 @@ export function TopBar() {
       className="topbar flex min-h-[var(--topbar-height)] items-center justify-between px-[var(--container-padding-x)] py-2"
       style={{ background: "var(--color-topbar)" }}
     >
-      <div className="mx-auto flex w-full max-w-[var(--container-max)] items-center justify-end gap-6">
-        <div className="flex items-center gap-4">
-          {SOCIAL_LINKS.map(({ href, label, icon }) => (
-            <a
-              key={icon}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white hover:opacity-80 transition-opacity"
-              aria-label={label}
+      <div
+        className={`mx-auto flex w-full max-w-[var(--container-max)] items-center gap-6 ${
+          inIdeaxchange ? "justify-between" : "justify-end"
+        }`}
+      >
+        {inIdeaxchange ? (
+          <div className="flex items-center gap-4 sm:gap-6">
+            <Link
+              href="/"
+              className="text-sm font-medium text-white transition-opacity hover:opacity-90"
             >
-              <SocialIcon icon={icon} />
-            </a>
-          ))}
-        </div>
-        <span className="text-white/60">|</span>
-        <button
-          type="button"
-          onClick={openContactPopup}
-          className="text-sm font-medium text-white transition-colors hover:text-white/90"
-        >
-          Contact Us
-        </button>
+              Back to AmeriLife.com
+            </Link>
+            <span className="hidden h-4 w-px bg-white/40 sm:block" aria-hidden />
+            <IdeaXchangeLogoutButton microsoftAuthEnabled={microsoftAuthEnabled} />
+          </div>
+        ) : null}
+        <TopBarSocialLinks />
+        {!inIdeaxchange ? (
+          <>
+            <span className="text-white/60">|</span>
+            <button
+              type="button"
+              onClick={openContactPopup}
+              className="text-sm font-medium text-white transition-colors hover:text-white/90"
+            >
+              Contact Us
+            </button>
+          </>
+        ) : null}
       </div>
     </div>
   );

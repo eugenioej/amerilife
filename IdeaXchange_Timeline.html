@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IdeaXchange Project Timeline</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #1a1d24;
+    --accent: #5b8def;
+    --accent2: #f2b33d;
+    --done: #3ecf8e;
+    --late: #e55b5b;
+    --text: #e7e9ee;
+    --muted: #8b93a3;
+    --border: #2a2e38;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 40px 24px 80px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 26px; margin-bottom: 4px; }
+  .subtitle { color: var(--muted); margin-bottom: 32px; font-size: 14px; }
+  .progress-bar-outer {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    height: 14px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--done));
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  .progress-label { font-size: 13px; color: var(--muted); margin-bottom: 36px; }
+
+  .timeline {
+    position: relative;
+    margin-left: 14px;
+    border-left: 3px solid var(--border);
+    padding-left: 32px;
+  }
+  .milestone {
+    position: relative;
+    margin-bottom: 40px;
+  }
+  .milestone:last-child { margin-bottom: 0; }
+  .dot {
+    position: absolute;
+    left: -41px;
+    top: 4px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 3px solid var(--accent);
+  }
+  .milestone.complete .dot { background: var(--done); border-color: var(--done); }
+  .milestone.risk .dot { border-color: var(--late); }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .card-title { font-size: 17px; font-weight: 600; }
+  .date-badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(91,141,239,0.15);
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .date-badge.risk { background: rgba(229,91,91,0.15); color: var(--late); }
+  .date-badge.tbd { background: rgba(139,147,163,0.15); color: var(--muted); }
+
+  ul.tasks { list-style: none; margin: 10px 0 0; padding: 0; }
+  ul.tasks li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 14.5px;
+    line-height: 1.4;
+  }
+  ul.tasks li input {
+    margin-top: 3px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--done);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  ul.tasks li.done label { text-decoration: line-through; color: var(--muted); }
+  ul.tasks li label { cursor: pointer; }
+  .sub { color: var(--muted); font-size: 13px; margin-top: 8px; padding-left: 26px; }
+  .sub ul { margin: 4px 0 0; padding-left: 18px; }
+
+  .flag {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: var(--late);
+    background: rgba(229,91,91,0.1);
+    border: 1px solid rgba(229,91,91,0.3);
+    padding: 4px 10px;
+    border-radius: 8px;
+  }
+  .reset {
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>IdeaXchange — SSO, Gating & Leaderboards</h1>
+  <div class="subtitle">Tracking progress against Brooke's July timeline · click checkboxes to mark items done</div>
+
+  <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+  <div class="progress-label" id="progressLabel">0 of 0 tasks complete</div>
+
+  <div class="timeline" id="timeline">
+
+    <div class="milestone risk" data-id="m1">
+      <div class="dot"></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">1. SSO</div>
+          <div class="date-badge risk">Early this week (~Jul 8)</div>
+        </div>
+        <ul class="tasks">
+          <li><input type="checkbox" data-task="1-1"><label for="">Email Brian (IT) requesting Microsoft Entra config variables, CC Brooke — <em>done Jul 5</em></label></li>
+          <li><input type="checkbox" data-task="1-2"><label>Share architecture diagram/PDF: Microsoft login auth, no WP user provisioning, gating via MS attributes + front-end logic</label></li>
+          <li><input type="checkbox" data-task="1-3"><label>Configure SSO between Microsoft and IdeaXchange</label></li>
+          <li><input type="checkbox" data-task="1-4"><label>Validate users only reach front-end gated content, not WP back end</label></li>
+          <li><input type="checkbox" data-task="1-5"><label>Confirm group/attribute mapping + session behavior (disabled accounts, password changes)</label></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="milestone risk" data-id="m2">
+      <div class="dot"></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">2. Content Visibility Model</div>
+          <div class="date-badge risk">Mid this week (~Jul 9)</div>
+        </div>
+        <ul class="tasks">
+          <li><input type="checkbox" data-task="2-1"><label>Add "visibility" field/column for Recruiting Hub, Sales Success, Incentives, case studies + other gated templates (values: Brokerage / Career / Brokerage+Career)</label></li>
+          <li><input type="checkbox" data-task="2-2"><label>Wire front-end logic to use visibility value + Microsoft attributes/groups</label></li>
+          <li><input type="checkbox" data-task="2-3"><label>Coordinate with Chris's team to backfill visibility values on existing content for gating tests</label></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="milestone risk" data-id="m3">
+      <div class="dot"></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">3. Templates & Navigation</div>
+          <div class="date-badge risk">Due Jul 9</div>
+        </div>
+        <ul class="tasks">
+          <li><input type="checkbox" data-task="3-1"><label>Recruiting Hub template (rename from "Magazine")</label></li>
+          <li><input type="checkbox" data-task="3-2"><label>Sales Success template</label></li>
+          <li><input type="checkbox" data-task="3-3"><label>Incentives template</label></li>
+          <li><input type="checkbox" data-task="3-4"><label>Leaderboards template</label></li>
+          <li><input type="checkbox" data-task="3-5"><label>Each template wired to visibility field + SSO/gating logic</label></li>
+          <li><input type="checkbox" data-task="3-6"><label>Header nav: "Magazine" → "Recruiting Hub"</label></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="milestone" data-id="m4">
+      <div class="dot"></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">4. Leaderboards & Data Feeds</div>
+          <div class="date-badge">Jul 16</div>
+        </div>
+        <ul class="tasks">
+          <li><input type="checkbox" data-task="4-1"><label>Brokerage leaderboard: automated daily SFTP ingestion</label></li>
+          <li><input type="checkbox" data-task="4-2"><label>Map file names → products (filenames include product + refresh date)</label></li>
+          <li><input type="checkbox" data-task="4-3"><label>Skip-load logic for unchanged/old files</label></li>
+          <li><input type="checkbox" data-task="4-4"><label>UI: "Data last updated on MM/DD/YYYY"</label></li>
+          <li><input type="checkbox" data-task="4-5"><label>Review Piper API docs</label></li>
+          <li><input type="checkbox" data-task="4-6"><label>Build career leaderboard page sourced from Piper (brokerage stays on SFTP feed)</label></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="milestone" data-id="m5">
+      <div class="dot"></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">5. Content Upload Experience</div>
+          <div class="date-badge tbd">No date set (Chris request)</div>
+        </div>
+        <ul class="tasks">
+          <li><input type="checkbox" data-task="5-1"><label>Allow more than 3 file uploads per entry (multi-file or "add another file")</label></li>
+          <li><input type="checkbox" data-task="5-2"><label>Flexible/configurable labels (e.g. Product portfolio, Rate sheets, Agent resources) instead of 3 fixed slots</label></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="reset" id="resetBtn">Reset all progress</div>
+</div>
+
+<script>
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  const STORAGE_KEY = 'ideaxchange_timeline_progress';
+
+  function loadState() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+    catch(e) { return {}; }
+  }
+  function saveState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+  function updateProgress() {
+    const total = checkboxes.length;
+    const done = document.querySelectorAll('input[type="checkbox"]:checked').length;
+    document.getElementById('progressBar').style.width = (total ? (done/total*100) : 0) + '%';
+    document.getElementById('progressLabel').textContent = done + ' of ' + total + ' tasks complete';
+
+    document.querySelectorAll('.milestone').forEach(m => {
+      const boxes = m.querySelectorAll('input[type="checkbox"]');
+      const checked = m.querySelectorAll('input[type="checkbox"]:checked');
+      if (boxes.length && checked.length === boxes.length) {
+        m.classList.add('complete');
+      } else {
+        m.classList.remove('complete');
+      }
+    });
+  }
+
+  const state = loadState();
+  checkboxes.forEach(cb => {
+    const id = cb.dataset.task;
+    if (state[id]) cb.checked = true;
+    cb.closest('li').classList.toggle('done', cb.checked);
+    cb.addEventListener('change', () => {
+      const s = loadState();
+      s[id] = cb.checked;
+      saveState(s);
+      cb.closest('li').classList.toggle('done', cb.checked);
+      updateProgress();
+    });
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    checkboxes.forEach(cb => { cb.checked = false; cb.closest('li').classList.remove('done'); });
+    updateProgress();
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>

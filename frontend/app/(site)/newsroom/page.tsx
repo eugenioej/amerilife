@@ -108,7 +108,7 @@ export default async function NewsroomPage() {
                 {featured.title}
               </h2>
               <Link
-                href={`/blog/${featured.categories?.nodes?.[0]?.slug ?? "announcements"}/${featured.slug ?? ""}/`}
+                href={`/newsroom/${featured.categories?.nodes?.[0]?.slug ?? "announcements"}/${featured.slug ?? ""}/`}
                 variant="button"
                 className="inline-flex w-full max-w-xs items-center justify-center rounded-[var(--radius-full)] border-2 border-white bg-white/10 px-6 py-3 text-xs font-bold uppercase tracking-wide text-white backdrop-blur-sm transition-colors hover:bg-white/20 sm:w-auto sm:px-8 sm:text-sm"
               >
@@ -125,7 +125,7 @@ export default async function NewsroomPage() {
         <h2 className="mb-6 text-xl font-bold text-[var(--color-fg)] sm:mb-8 sm:text-2xl">
           Announcements
         </h2>
-        <AnnouncementsCarousel posts={announcements} seeAllHref="/blog/announcements/" />
+        <AnnouncementsCarousel posts={announcements} seeAllHref="/newsroom/announcements/" />
       </section>
 
       {/* Digital Press Kit - 4 columns like live site */}

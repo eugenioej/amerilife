@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AmeriLife ideaXchange — Content Team Guide</title>
+  <style>
+    @page {
+      size: letter;
+      margin: 0.75in 0.85in;
+    }
+
+    :root {
+      --brand-primary: #244260;
+      --brand-dark: #1a2f44;
+      --accent: #c8102e;
+      --muted: #5c6b7a;
+      --border: #d8dee6;
+      --bg-soft: #f4f7fa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.55;
+      color: #1f2933;
+    }
+
+    h1, h2, h3 { color: var(--brand-primary); line-height: 1.25; }
+    h1 { font-size: 26pt; margin: 0 0 8px; }
+    h2 {
+      font-size: 15pt;
+      margin: 28px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--brand-primary);
+      page-break-after: avoid;
+    }
+    h3 {
+      font-size: 12pt;
+      margin: 18px 0 8px;
+      page-break-after: avoid;
+    }
+
+    p { margin: 0 0 10px; }
+    ul, ol { margin: 0 0 12px 18px; padding: 0; }
+    li { margin-bottom: 5px; }
+
+    .cover {
+      min-height: 9.2in;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0.5in 0 0.2in;
+      page-break-after: always;
+    }
+
+    .cover .brand {
+      font-size: 11pt;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .cover .subtitle {
+      font-size: 13pt;
+      color: var(--muted);
+      max-width: 5.5in;
+      margin-bottom: 28px;
+    }
+
+    .cover .meta {
+      margin-top: auto;
+      font-size: 9.5pt;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+
+    .toc { page-break-after: always; }
+    .toc ol { list-style: decimal; }
+    .toc li { margin-bottom: 8px; }
+
+    .callout {
+      background: var(--bg-soft);
+      border-left: 4px solid var(--brand-primary);
+      padding: 12px 14px;
+      margin: 14px 0;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .callout strong { color: var(--brand-dark); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--brand-primary);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) td { background: #fafbfc; }
+
+    code, .tag {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 9pt;
+      background: #eef2f6;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    .diagram {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 18px;
+      page-break-inside: avoid;
+    }
+
+    .diagram .box {
+      flex: 1 1 140px;
+      min-width: 130px;
+      background: #fff;
+      border: 1.5px solid var(--brand-primary);
+      border-radius: 8px;
+      padding: 10px 12px;
+      text-align: center;
+      font-size: 9.5pt;
+      font-weight: 600;
+      color: var(--brand-dark);
+    }
+
+    .diagram .arrow {
+      align-self: center;
+      color: var(--muted);
+      font-size: 18pt;
+      font-weight: 300;
+    }
+
+    .flow-vertical {
+      display: grid;
+      gap: 8px;
+      max-width: 5.5in;
+      margin: 12px 0 18px;
+      page-break-inside: avoid;
+    }
+
+    .flow-step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: var(--bg-soft);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .flow-num {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--brand-primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9pt;
+      font-weight: 700;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 12px 0;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      page-break-inside: avoid;
+    }
+
+    .card h3 { margin-top: 0; font-size: 11pt; }
+
+    .page-break { page-break-before: always; }
+
+    .footer-note {
+      font-size: 8.5pt;
+      color: var(--muted);
+      margin-top: 24px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .checklist li { list-style: none; margin-left: -18px; }
+    .checklist li::before { content: "☐ "; color: var(--brand-primary); font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <section class="cover">
+    <div class="brand">AmeriLife</div>
+    <h1>ideaXchange<br>Content Team Guide</h1>
+    <p class="subtitle">
+      How to create, organize, and publish gated ideaXchange content in WordPress.
+      Internal use only — for editors and content managers.
+    </p>
+    <p class="meta">
+      WordPress admin: <strong>headlessameril.wpenginepowered.com/wp-admin</strong><br>
+      Published experience: <strong>amerilife.com/ideaxchange</strong> (login required)<br>
+      Document version: June 2026
+    </p>
+  </section>
+
+  <section class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li>What is ideaXchange?</li>
+      <li>WordPress modules at a glance</li>
+      <li>Site sections &amp; who can see them</li>
+      <li>Audience visibility (per item)</li>
+      <li>Articles — fields, tags &amp; placement</li>
+      <li>Case Studies &amp; Companies (Recruiting Hub)</li>
+      <li>Carriers (Career Spotlight)</li>
+      <li>Sales Leaderboard tables</li>
+      <li>Publishing checklist</li>
+      <li>Quick reference</li>
+    </ol>
+  </section>
+
+  <h2>1. What is ideaXchange?</h2>
+  <p>
+    <strong>ideaXchange</strong> is AmeriLife’s private member area on amerilife.com. Content is authored in
+    <strong>WordPress</strong> and displayed on the gated site after users sign in with their AmeriLife
+    Microsoft account.
+  </p>
+  <p>
+    As a content editor, you work entirely in <strong>WordPress Admin</strong>. You do not need to touch code
+    or the public website theme. When you publish or update a post in WordPress, the live ideaXchange
+    experience updates automatically.
+  </p>
+
+  <div class="callout">
+    <strong>Important:</strong> ideaXchange content is separate from the public <em>Insights</em> magazine
+    (<code>/insights/</code>). Use the <strong>ideaXchange</strong> menus described in this guide — not the
+    public Insights post type.
+  </div>
+
+  <h2>2. WordPress modules at a glance</h2>
+  <p>In the left sidebar of WordPress Admin, you will see these ideaXchange menus:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>WordPress menu</th>
+        <th>What you create</th>
+        <th>Where it appears on ideaXchange</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>ideaXchange Articles</strong></td>
+        <td>News stories, updates, thought leadership</td>
+        <td>Home feed, pillar sidebars, and article pages — depending on <strong>Tags</strong></td>
+      </tr>
+      <tr>
+        <td><strong>ideaXchange Case Studies</strong></td>
+        <td>Recruiting campaigns with downloadable assets</td>
+        <td><strong>Recruiting Hub</strong> — campaigns table, hero, and detail pages</td>
+      </tr>
+      <tr>
+        <td><strong>ideaXchange Companies</strong></td>
+        <td>Affiliate / agency company profiles</td>
+        <td><strong>Recruiting Hub</strong> — company profile pages; linked from case studies</td>
+      </tr>
+      <tr>
+        <td><strong>ideaXchange Carriers</strong></td>
+        <td>Carrier partner profiles, highlights, downloads</td>
+        <td><strong>Career Spotlight</strong> — carrier grid and profile pages</td>
+      </tr>
+      <tr>
+        <td><strong>ideaXchange Leaderboard</strong></td>
+        <td>Seven fixed sales ranking tables (file upload)</td>
+        <td><strong>Sales Leaderboard</strong> — brokerage audience only</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="diagram">
+    <div class="box">WordPress<br><small>Author content</small></div>
+    <div class="arrow">→</div>
+    <div class="box">Publish / Update</div>
+    <div class="arrow">→</div>
+    <div class="box">ideaXchange<br><small>amerilife.com</small></div>
+  </div>
+
+  <h2>3. Site sections &amp; who can see them</h2>
+  <p>
+    ideaXchange is organized into <strong>pillars</strong> (main sections). Which pillars a member can open
+    depends on their <strong>login group</strong> (Brokerage or Career). This is controlled by IT / Entra —
+    <em>not</em> by a field in WordPress.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ideaXchange section</th>
+        <th>Brokerage users</th>
+        <th>Career users</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Home</strong> (main feed)</td>
+        <td>✓</td>
+        <td>✓</td>
+      </tr>
+      <tr>
+        <td><strong>Recruiting Hub</strong></td>
+        <td>✓</td>
+        <td>✓</td>
+      </tr>
+      <tr>
+        <td><strong>Sales Leaderboard</strong></td>
+        <td>✓</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>Career Leaderboard</strong></td>
+        <td>—</td>
+        <td>✓</td>
+      </tr>
+      <tr>
+        <td><strong>Career Spotlight</strong> (carriers)</td>
+        <td>✓</td>
+        <td>✓</td>
+      </tr>
+      <tr>
+        <td><strong>Sales Success</strong> (incentives &amp; stories)</td>
+        <td>✓</td>
+        <td>✓</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Two layers of “visibility”:</strong><br>
+    ① <strong>Section access</strong> — which pillars appear in the nav (Brokerage vs Career login).<br>
+    ② <strong>Item visibility</strong> — set on each post in WordPress (see Section 4). Both must align for
+    a user to see a specific piece of content.
+  </div>
+
+  <h2>4. Audience visibility (per item)</h2>
+  <p>
+    Almost every ideaXchange content type has an <strong>Audience visibility</strong> box in the WordPress
+    editor (right sidebar). Use it to control which logged-in groups can see <em>that specific item</em>.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Setting in WordPress</th>
+        <th>Who can see this item</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Brokerage</strong></td>
+        <td>Brokerage (sales / distribution) users only</td>
+      </tr>
+      <tr>
+        <td><strong>Career</strong></td>
+        <td>Career (recruiting) users only</td>
+      </tr>
+      <tr>
+        <td><strong>Brokerage+Career</strong></td>
+        <td>Everyone with ideaXchange access <em>(default)</em></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Applies to: <strong>Articles</strong>, <strong>Case Studies</strong>, <strong>Companies</strong>,
+    <strong>Carriers</strong>, and <strong>Leaderboard tables</strong>.</p>
+
+  <h3>How to set visibility</h3>
+  <div class="flow-vertical">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div>Open the post in WordPress (Edit Article, Edit Case Study, etc.).</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div>Find the <strong>Audience visibility</strong> panel on the right.</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div>Choose <strong>Brokerage</strong>, <strong>Career</strong>, or <strong>Brokerage+Career</strong>.</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div>Click <strong>Update</strong> or <strong>Publish</strong>.</div>
+    </div>
+  </div>
+
+  <p>
+    The post list table also shows a <strong>Visibility</strong> column so you can audit content at a glance.
+  </p>
+
+  <div class="diagram">
+    <div class="box">Editor sets<br>Visibility</div>
+    <div class="arrow">→</div>
+    <div class="box">User signs in<br>(Brokerage or Career)</div>
+    <div class="arrow">→</div>
+    <div class="box">Matching items<br>are shown</div>
+  </div>
+
+  <h2 class="page-break">5. Articles — fields, tags &amp; placement</h2>
+  <p>
+    <strong>ideaXchange Articles</strong> are the primary story format. They power the Home feed and appear
+    in multiple pillars based on how you tag them.
+  </p>
+
+  <h3>Standard WordPress fields</h3>
+  <ul>
+    <li><strong>Title</strong> — headline on cards and article page</li>
+    <li><strong>Content</strong> — full article body</li>
+    <li><strong>Excerpt</strong> — short summary on listing cards (recommended)</li>
+    <li><strong>Featured image</strong> — thumbnail on feeds and hero layouts</li>
+    <li><strong>Slug</strong> — URL-friendly name (auto-generated from title; edit if needed)</li>
+  </ul>
+
+  <h3>Topics (category-style)</h3>
+  <p>Assign one <strong>ideaXchange Topic</strong> for the content theme. Default topics:</p>
+  <ul>
+    <li><span class="tag">Health</span></li>
+    <li><span class="tag">Wealth</span></li>
+    <li><span class="tag">Leadership</span></li>
+    <li><span class="tag">Life</span></li>
+  </ul>
+  <p>Topics appear as badges on article cards and in breadcrumbs.</p>
+
+  <h3>Tags — controls which pillar section uses the article</h3>
+  <p>Assign the correct <strong>ideaXchange Tag</strong> so the article surfaces in the right area:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tag to assign</th>
+        <th>Where the article appears</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tag">Sales</span></td>
+        <td><strong>Sales Leaderboard</strong> — newsroom / sidebar articles (brokerage users)</td>
+      </tr>
+      <tr>
+        <td><span class="tag">Recruit</span></td>
+        <td><strong>Recruiting Hub</strong> — articles column and related recruiting content</td>
+      </tr>
+      <tr>
+        <td><span class="tag">Initiative</span></td>
+        <td><strong>Sales Success</strong> — incentives, contests, and success stories</td>
+      </tr>
+      <tr>
+        <td><span class="tag">Featured</span></td>
+        <td>Marks the article for <strong>Featured</strong> rows on feeds (see below)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Rule of thumb:</strong> If an article should live in Recruiting Hub, add the
+    <span class="tag">Recruit</span> tag. For Sales Success content, add <span class="tag">Initiative</span>.
+    For Sales Leaderboard sidebars, add <span class="tag">Sales</span>. Articles with no pillar tag still
+    appear on the <strong>Home</strong> feed for users who pass visibility rules.
+  </div>
+
+  <h3>Featured &amp; Spotlight placement</h3>
+  <p>Control prominence on listing pages:</p>
+  <ul>
+    <li>
+      <strong>Featured</strong> — check <em>Featured</em> in Custom Fields <strong>or</strong> assign the
+      <span class="tag">Featured</span> tag. Puts the article in the “Featured articles” row on Home and
+      similar grids.
+    </li>
+    <li>
+      <strong>Spotlight</strong> — enable the <em>Spotlight</em> custom field (<code>is_spotlight</code>).
+      Highlights the article in the sidebar “Spotlight” slot on feed-style pages.
+    </li>
+  </ul>
+  <p>
+    <em>Tip:</em> In the block editor, open <strong>Preferences → Panels</strong> and enable
+    <strong>Custom fields</strong> if you do not see Spotlight / Featured checkboxes.
+  </p>
+
+  <h3>Article workflow (step by step)</h3>
+  <div class="flow-vertical">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div><strong>ideaXchange Articles → Add New</strong></div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div>Enter title, excerpt, body, and featured image.</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div>Pick a <strong>Topic</strong> and the correct <strong>Tag</strong> (Sales / Recruit / Initiative).</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div>Set <strong>Audience visibility</strong> (Brokerage, Career, or both).</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">5</div>
+      <div>Optionally mark <strong>Featured</strong> or <strong>Spotlight</strong>.</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">6</div>
+      <div><strong>Publish.</strong> Article appears on Home and tagged pillar sections.</div>
+    </div>
+  </div>
+
+  <h2 class="page-break">6. Case Studies &amp; Companies (Recruiting Hub)</h2>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>Companies</h3>
+      <p>Create the affiliate profile <strong>before</strong> linking case studies.</p>
+      <ul>
+        <li>Title &amp; description</li>
+        <li>Featured image (logo)</li>
+        <li><strong>Website URL</strong> and optional Learn more URL</li>
+        <li><strong>Audience visibility</strong></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Case Studies</h3>
+      <p>Each case study is a recruiting campaign on the Recruiting Hub.</p>
+      <ul>
+        <li>Title, excerpt, body, image</li>
+        <li><strong>Company</strong> dropdown (byline &amp; link)</li>
+        <li>Campaign table fields</li>
+        <li>Download files for “Run this campaign”</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Case study — key meta boxes</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Field</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Company</strong></td>
+        <td>Links to the company profile; shown as author on the case study and in the campaigns table</td>
+      </tr>
+      <tr>
+        <td><strong>Spotlight sidebar</strong></td>
+        <td>Feature this campaign in the Recruiting Hub sidebar</td>
+      </tr>
+      <tr>
+        <td><strong>Featured on Recruiting Hub</strong></td>
+        <td>Surfaces in the hero / featured area on Recruiting Hub</td>
+      </tr>
+      <tr>
+        <td><strong>Get started button URL</strong></td>
+        <td>CTA in “Run this campaign” sidebar (defaults to /connect/ if empty)</td>
+      </tr>
+      <tr>
+        <td><strong>Target audience / Spend / Results</strong></td>
+        <td>Columns in the Recruiting Hub <strong>Campaigns table</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Overview tooltip</strong></td>
+        <td>Optional info icon text in the campaigns table</td>
+      </tr>
+      <tr>
+        <td><strong>Run this campaign — downloads</strong></td>
+        <td>Call Scripts, Interview Questions, Email Templates, etc. (use <em>Choose file</em> / Media Library)</td>
+      </tr>
+      <tr>
+        <td><strong>Audience visibility</strong></td>
+        <td>Which login group sees this campaign</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Recruiting Hub content flow</h3>
+  <div class="diagram">
+    <div class="box">Create<br>Company</div>
+    <div class="arrow">→</div>
+    <div class="box">Create<br>Case Study</div>
+    <div class="arrow">→</div>
+    <div class="box">Link Company<br>+ uploads</div>
+    <div class="arrow">→</div>
+    <div class="box">Recruiting Hub<br>live</div>
+  </div>
+
+  <h2>7. Carriers (Career Spotlight)</h2>
+  <p>
+    <strong>ideaXchange Carriers</strong> power the <strong>Career Spotlight</strong> section (carrier partner
+    profiles). Visible to both Brokerage and Career users.
+  </p>
+
+  <h3>Carrier profile fields</h3>
+  <ul>
+    <li><strong>Title</strong>, excerpt, body, featured image (logo)</li>
+    <li><strong>Brand color</strong> — hex code for accent styling (e.g. <code>#244260</code>)</li>
+    <li><strong>Website URL</strong></li>
+    <li><strong>Hero tile</strong> — large tile in the top row of the carrier grid</li>
+    <li><strong>Featured in additional grid</strong> — secondary featured placement</li>
+    <li><strong>Highlights</strong> — repeater with icon + short label (e.g. competitive rates, technology)</li>
+    <li><strong>Carrier resources</strong> — downloadable PDFs (Product Portfolio, Rate Sheets, Agent Resources, etc.)</li>
+    <li><strong>Audience visibility</strong></li>
+  </ul>
+
+  <p>Use <strong>Choose file</strong> in the Media Library for each resource — do not paste attachment IDs manually.</p>
+
+  <h2>8. Sales Leaderboard tables</h2>
+  <p>
+    The <strong>ideaXchange Leaderboard</strong> menu contains exactly <strong>seven pre-defined tables</strong>.
+    You cannot add or delete tables — only update their data.
+  </p>
+
+  <h3>How to update rankings</h3>
+  <div class="flow-vertical">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div>Go to <strong>ideaXchange Leaderboard → Leaderboard tables (7)</strong>.</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div>Click the table you need to update (e.g. Health YTD, Wealth YTD).</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div>Under <strong>Upload table data</strong>, choose an <strong>.xlsx</strong> file (recommended), .csv, or .json.</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div>Set the <strong>Report date</strong>.</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">5</div>
+      <div>Click <strong>Update</strong>. The upload replaces all rows for that table.</div>
+    </div>
+  </div>
+
+  <p><strong>Required columns:</strong> affiliate, ytd, lytd, vs_lytd, vs_lqtd, vs_lmtd, trend</p>
+  <p>Excel (.xlsx) is preferred because it preserves ▲ / ▼ trend symbols better than CSV.</p>
+
+  <h2 class="page-break">9. Publishing checklist</h2>
+  <p>Before publishing any ideaXchange item, confirm:</p>
+  <ul class="checklist">
+    <li>Correct content type (Article, Case Study, Company, Carrier, or Leaderboard table)</li>
+    <li>Title, excerpt, and featured image are complete</li>
+    <li>For articles: correct <strong>Topic</strong> and <strong>Tag</strong> (Sales / Recruit / Initiative)</li>
+    <li><strong>Audience visibility</strong> matches the intended audience (Brokerage / Career / both)</li>
+    <li>Case studies: <strong>Company</strong> linked and campaign downloads attached</li>
+    <li>Carriers: highlights and resource files uploaded</li>
+    <li>Leaderboard: data file uploaded and report date set</li>
+    <li>Status is <strong>Published</strong> (not Draft)</li>
+  </ul>
+
+  <h2>10. Quick reference</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>I want to…</th>
+        <th>WordPress menu</th>
+        <th>Key settings</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Publish a story on the Home feed</td>
+        <td>ideaXchange Articles</td>
+        <td>Topic + Visibility; optional Featured / Spotlight</td>
+      </tr>
+      <tr>
+        <td>Show an article on Recruiting Hub</td>
+        <td>ideaXchange Articles</td>
+        <td>Tag: <span class="tag">Recruit</span></td>
+      </tr>
+      <tr>
+        <td>Show an article on Sales Success</td>
+        <td>ideaXchange Articles</td>
+        <td>Tag: <span class="tag">Initiative</span></td>
+      </tr>
+      <tr>
+        <td>Show an article on Sales Leaderboard</td>
+        <td>ideaXchange Articles</td>
+        <td>Tag: <span class="tag">Sales</span></td>
+      </tr>
+      <tr>
+        <td>Add a recruiting campaign</td>
+        <td>Case Studies (+ Companies)</td>
+        <td>Company link, table fields, downloads, Visibility</td>
+      </tr>
+      <tr>
+        <td>Add a carrier partner page</td>
+        <td>ideaXchange Carriers</td>
+        <td>Brand color, highlights, resources, Visibility</td>
+      </tr>
+      <tr>
+        <td>Update sales rankings</td>
+        <td>ideaXchange Leaderboard</td>
+        <td>Upload .xlsx to the correct table</td>
+      </tr>
+      <tr>
+        <td>Hide content from Career users</td>
+        <td>Any ideaXchange type</td>
+        <td>Audience visibility → <strong>Brokerage</strong></td>
+      </tr>
+      <tr>
+        <td>Hide content from Brokerage users</td>
+        <td>Any ideaXchange type</td>
+        <td>Audience visibility → <strong>Career</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Need help?</strong> Contact the AmeriLife digital / web team for WordPress access issues,
+    missing menus, or questions about which tag or visibility setting to use.
+  </div>
+
+  <p class="footer-note">
+    © AmeriLife — Internal document. ideaXchange content is published via WordPress at
+    headlessameril.wpenginepowered.com and displayed on amerilife.com/ideaxchange after member login.
+  </p>
+
+</body>
+</html>

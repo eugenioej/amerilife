@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import type { GfFieldNode, GfFormData } from "@/lib/gf-types";
 import { nameInputsForDisplay } from "@/lib/gf-name-field";
 import { submitGravityForm } from "@/lib/gf-client";
@@ -9,9 +9,8 @@ import { GfRecaptchaField } from "./GfRecaptchaField";
 
 function RepeaterField({
   onChange,
-  inputClass
+  inputClass,
 }: {
-  fieldId: number;
   onChange: (value: string) => void;
   inputClass: string;
 }) {
@@ -38,7 +37,6 @@ function RepeaterField({
     <div className="space-y-3">
       {values.map((value, index) => (
         <div key={index} className="relative">
-
           <input
             type="text"
             value={value}
@@ -46,28 +44,25 @@ function RepeaterField({
             className={`${inputClass} pr-16`}
           />
 
-          {/* ADD BUTTON */}
           {index === values.length - 1 && (
             <button
               type="button"
               onClick={add}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 hover:text-[var(--color-brand-primary)]"
+              className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 hover:text-[var(--color-brand-primary)]"
             >
               +
             </button>
           )}
 
-          {/* REMOVE BUTTON */}
           {values.length > 1 && (
             <button
               type="button"
               onClick={() => remove(index)}
-              className="absolute right-10 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 hover:text-red-500"
+              className="absolute right-10 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 hover:text-red-500"
             >
               −
             </button>
           )}
-
         </div>
       ))}
     </div>
@@ -230,6 +225,7 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
   const submitImageUrl = submitBtn?.imageUrl?.trim() ?? "";
 
   const [stringValues, setStringValues] = useState<Record<number, string>>({});
+  const [frontendUrl, setFrontendUrl] = useState("");
   const [nameParts, setNameParts] = useState<Record<string, string>>({});
   const [checkboxChecked, setCheckboxChecked] = useState<Record<string, boolean>>({});
   const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null);
@@ -238,6 +234,26 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
   const [clientError, setClientError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [successHtml, setSuccessHtml] = useState<string | null>(null);
+
+  useEffect(() => {
+    setFrontendUrl(window.location.href);
+  }, []);
+
+  useEffect(() => {
+    if (!frontendUrl) return;
+
+    const TARGET_FORM_ID = 31;   
+    const TARGET_FIELD_ID = 17;  
+
+    if (form.databaseId !== TARGET_FORM_ID) return;
+
+    setStringValues((prev) => ({
+      ...prev,
+      [TARGET_FIELD_ID]: frontendUrl,
+    }));
+
+  }, [frontendUrl, form.databaseId]);
+
 
   const inputCn = onDarkPanel ? inputClassOnDark : inputClass;
   const labelBlock =
@@ -317,6 +333,7 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
     }
     return null;
   }, [checkboxChecked, nameParts, nodes, recaptchaWidgetId, siteKey, stringValues]);
+  
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -579,7 +596,6 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
 
       {isRepeater ? (
         <RepeaterField
-          fieldId={fid}
           inputClass={inputCn}
           onChange={(value) => setStr(fid, value)}
         />

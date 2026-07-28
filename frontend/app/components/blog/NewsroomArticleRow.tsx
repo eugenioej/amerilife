@@ -16,7 +16,7 @@ function formatDate(dateStr: string): string {
 export function NewsroomArticleRow({ post }: Props) {
   const category = post.categories?.nodes?.[0];
   const categorySlug = category?.slug ?? "announcements";
-  const href = `/blog/${categorySlug}/${post.slug}/`;
+  const href = `/newsroom/${categorySlug}/${post.slug}/`;
 
   return (
     <article className="border-b border-[var(--color-border)] py-6 last:border-b-0">

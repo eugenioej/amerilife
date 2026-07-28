@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
     root: turbopackRoot,
   },
   images: {
+    qualities: [75, 82, 90, 92],
     remotePatterns: [
       {
         protocol: "https",
@@ -72,6 +73,7 @@ const nextConfig: NextConfig = {
       { source: "/about/news", destination: "/newsroom", permanent: true },
       { source: "/about/news/", destination: "/newsroom", permanent: true },
       { source: "/our-leaders/:slug", destination: "/about-us/our-leaders/:slug", permanent: true },
+      { source: "/amerilife-of-rock-hill-llc", destination: "/rockhill", permanent: true },
       ...wp,
     ];
   },
@@ -92,7 +94,10 @@ const nextConfig: NextConfig = {
         "https://www.google.com",
         "https://www.gstatic.com",
         "https://recaptcha.net",
+        "https://js.hsforms.net/forms/embed/23344415.js",
+        "blob:",
       ].join(" "),
+      "worker-src 'self' blob:",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
@@ -104,8 +109,16 @@ const nextConfig: NextConfig = {
         "https://stats.g.doubleclick.net",
         "https://region1.google-analytics.com",
         "https://script.crazyegg.com",
+        "https://tracking.crazyegg.com",
+        "https://assets-tracking.crazyegg.com",
+        "https://pagestates-tracking.crazyegg.com",
         "https://headlessameril.wpenginepowered.com",
         "https://amerilife.com",
+        "https://login.microsoftonline.com",
+        "https://graph.microsoft.com",
+        "https://www.google.com",
+        "https://www.gstatic.com",
+        "https://recaptcha.net",
       ].join(" "),
       [
         "frame-src 'self'",
@@ -116,11 +129,13 @@ const nextConfig: NextConfig = {
         "https://www.google.com",
         "https://maps.google.com",
         "https://recaptcha.net",
+        "https://script.crazyegg.com",
+        "https://js.hsforms.net/",
       ].join(" "),
       "media-src 'self' https:",
       "object-src 'none'",
       "base-uri 'self'",
-      "form-action 'self' https://headlessameril.wpenginepowered.com",
+      "form-action 'self' https://headlessameril.wpenginepowered.com https://login.microsoftonline.com",
       "upgrade-insecure-requests",
     ].join("; ");
 

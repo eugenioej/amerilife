@@ -42,7 +42,7 @@ export function BlogListingToolbar({ categories }: Props) {
     a.name.localeCompare(b.name),
   );
 
-  const isAll = pathname === "/blog" || pathname === "/blog/";
+  const isAll = pathname === "/newsroom" || pathname === "/newsroom/";
   const match = pathname.match(/^\/blog\/([^/]+)\/?$/);
   const activeSlug = match?.[1] ?? null;
 
@@ -70,7 +70,7 @@ export function BlogListingToolbar({ categories }: Props) {
           onChange={(e) => {
             const v = e.target.value;
             const path =
-              v === "all" ? BLOG_ALL_POSTS_HREF : `/blog/${v}`;
+              v === "all" ? BLOG_ALL_POSTS_HREF : `/newsroom/${v}`;
             router.push(buildListingHref(path, q));
           }}
           className="w-full cursor-pointer appearance-none rounded-lg border border-[var(--color-border)] bg-white py-2.5 pl-3 pr-10 text-sm font-medium text-[var(--color-fg)] shadow-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/25"

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { Link } from "../ui/Link";
 import { ChevronDownIcon, ChevronRightIcon } from "../ui/ChevronDownIcon";
 import { MobileNav } from "./MobileNav";
@@ -12,14 +12,20 @@ import type { NavItem } from "@/lib/wp-menus";
 import { isContactNavItem } from "@/lib/nav-contact";
 import {
   IDEAXCHANGE_LOGO_SRC,
-  IDEAXCHANGE_VERTICAL_NAV,
-  isIdeaxchangePath,
 } from "@/lib/ideaxchange-nav";
-import { IDEAXCHANGE_MAGAZINE_PATH } from "@/lib/ideaxchange-constants";
+import {
+  type IdeaxchangePersona,
+  getIdeaxchangeHomeForPersona,
+  getIdeaxchangeNavForPersona,
+} from "@/lib/ideaxchange-persona";
+import type { IdeaxchangeDevViewMode } from "@/lib/ideaxchange-dev";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
 
 type SiteHeaderProps = {
   primaryMenu: NavItem[];
+  ideaxchangePersona?: IdeaxchangePersona | null;
+  ideaxchangeDevView?: IdeaxchangeDevViewMode;
+  inIdeaxchange?: boolean;
 };
 
 function HamburgerIcon({ open }: { open: boolean }) {
@@ -36,19 +42,35 @@ function HamburgerIcon({ open }: { open: boolean }) {
   );
 }
 
-export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
+export function SiteHeader({
+  primaryMenu,
+  ideaxchangePersona = null,
+  ideaxchangeDevView = "off",
+  inIdeaxchange = false,
+}: SiteHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
   const { openContactPopup } = useContactPopup();
-  const pathname = usePathname() ?? "";
-  const inIdeaxchange = isIdeaxchangePath(pathname);
 
-  const navItems = inIdeaxchange ? IDEAXCHANGE_VERTICAL_NAV : primaryMenu;
+  const isActiveNavHref = (href: string) => {
+    const normalizedPath = pathname.replace(/\/+$/, "") || "/";
+    const normalizedHref = href.replace(/\/+$/, "") || "/";
+    return (
+      normalizedPath === normalizedHref || normalizedPath.startsWith(`${normalizedHref}/`)
+    );
+  };
+
+  const navItems = inIdeaxchange
+    ? getIdeaxchangeNavForPersona(ideaxchangePersona ?? "brokerage", ideaxchangeDevView)
+    : primaryMenu;
   const logoUrl = rewriteUploadsUrl(
     inIdeaxchange
       ? IDEAXCHANGE_LOGO_SRC
       : "https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/01/amerilife.svg",
   );
-  const logoHref = inIdeaxchange ? IDEAXCHANGE_MAGAZINE_PATH : "/";
+  const logoHref = inIdeaxchange
+    ? getIdeaxchangeHomeForPersona(ideaxchangePersona ?? "brokerage")
+    : "/";
   const logoAlt = inIdeaxchange ? "AmeriLife ideaXchange" : "AmeriLife";
   const logoAriaLabel = inIdeaxchange ? "ideaXchange Home" : "AmeriLife Home";
 
@@ -75,9 +97,21 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
           {/* Desktop nav */}
           <nav
             className="hidden items-center gap-8 lg:flex"
-            aria-label={inIdeaxchange ? "Content verticals" : "Main navigation"}
+            aria-label={inIdeaxchange ? "ideaXchange pillars" : "Main navigation"}
           >
             {navItems.map((item) => {
+              if (inIdeaxchange && item.disabled) {
+                return (
+                  <span
+                    key={item.label}
+                    className="cursor-not-allowed px-2 py-1 text-base font-semibold text-[var(--color-muted)] opacity-60"
+                    aria-disabled="true"
+                  >
+                    {item.label}
+                  </span>
+                );
+              }
+
               if (!inIdeaxchange && isContactNavItem(item)) {
                 return (
                   <div key={item.href + item.label} className="relative">
@@ -93,12 +127,18 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
               }
 
               const hasChildren = !inIdeaxchange && item.children && item.children.length > 0;
+              const isActive = inIdeaxchange && isActiveNavHref(item.href);
               return (
                 <div key={item.href + item.label} className="relative group">
                   <Link
                     href={item.href}
                     variant="button"
-                    className="inline-flex items-center gap-1 px-2 py-1 text-base font-semibold text-[var(--color-brand-dark)] transition-colors hover:text-[var(--color-brand-primary)]"
+                    aria-current={isActive ? "page" : undefined}
+                    className={`inline-flex items-center gap-1 px-2 py-1 text-base font-semibold transition-colors ${
+                      isActive
+                        ? "text-[var(--color-brand-primary)]"
+                        : "text-[var(--color-brand-dark)] hover:text-[var(--color-brand-primary)]"
+                    }`}
                   >
                     {item.label}
                     {hasChildren ? (
@@ -159,7 +199,14 @@ export function SiteHeader({ primaryMenu }: SiteHeaderProps) {
           </nav>
 
           <div className="flex items-center gap-4">
-            {!inIdeaxchange ? <HeaderSearch /> : null}
+            {inIdeaxchange ? (
+              <HeaderSearch
+                resultsPath="/ideaxchange/search"
+                placeholder="Search ideaXchange..."
+              />
+            ) : (
+              <HeaderSearch />
+            )}
             <button
               type="button"
               onClick={() => setMobileOpen((o) => !o)}

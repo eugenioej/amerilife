@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IdeaXchange SSO — JIT Overview</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    @page { size: A4; margin: 18mm 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+      color: #1a2b3c;
+      line-height: 1.5;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px;
+      font-size: 11pt;
+    }
+    h1 {
+      font-size: 22pt;
+      color: #244260;
+      margin: 0 0 6px;
+      border-bottom: 3px solid #2d6a9f;
+      padding-bottom: 10px;
+    }
+    .subtitle {
+      color: #5a6b7d;
+      font-size: 11pt;
+      margin: 0 0 24px;
+    }
+    h2 {
+      font-size: 14pt;
+      color: #244260;
+      margin: 28px 0 12px;
+      page-break-after: avoid;
+    }
+    p { margin: 0 0 10px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 20px;
+      font-size: 10pt;
+    }
+    th, td {
+      border: 1px solid #d0d8e0;
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #eef4f9; color: #244260; }
+    .diagram {
+      background: #fafbfc;
+      border: 1px solid #e2e8ee;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 12px 0 20px;
+      page-break-inside: avoid;
+    }
+    .diagram .mermaid { display: flex; justify-content: center; }
+    .callout {
+      background: #eef6ee;
+      border-left: 4px solid #3d8b5f;
+      padding: 12px 14px;
+      margin: 16px 0;
+      font-size: 10.5pt;
+    }
+    .footer {
+      margin-top: 32px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8ee;
+      font-size: 9pt;
+      color: #7a8a9a;
+    }
+    .page-break { page-break-before: always; }
+  </style>
+</head>
+<body>
+  <h1>IdeaXchange SSO — JIT Overview</h1>
+  <p class="subtitle">AmeriLife · amerilife.com · Technical reference for the IT team</p>
+
+  <p>
+    IdeaXchange uses a <strong>headless architecture</strong>: the public site at
+    <strong>amerilife.com</strong> (Next.js), content in <strong>WordPress</strong>, and login via
+    <strong>Microsoft Entra ID</strong>. With <strong>Just-in-Time (JIT)</strong> provisioning,
+    members sign in with Microsoft and access is created on first login — no SCIM sync into
+    WordPress and no auth plugins.
+  </p>
+
+  <h2>1. Architecture overview</h2>
+  <div class="diagram">
+    <pre class="mermaid">
+flowchart TB
+    subgraph Users [Users]
+        Member[IdeaXchange member]
+        Editor[Content team]
+    end
+
+    subgraph Entra [Microsoft Entra ID]
+        MS[Work Microsoft accounts + groups]
+    end
+
+    subgraph Frontend [amerilife.com - Next.js]
+        Site[IdeaXchange app]
+        Auth[Sign in with Microsoft + JIT]
+        Gate[Access rules from Entra groups]
+        Site --> Auth
+        Auth --> Gate
+    end
+
+    subgraph WPE [WordPress CMS]
+        WP[Headless CMS]
+        Content[Articles / Leaderboard / Carrier / Recruiting]
+        WP --> Content
+    end
+
+    Member -->|visits| Site
+    Member -->|logs in| MS
+    MS -->|OAuth callback| Auth
+    Gate -->|personalized UI| Site
+    Site -->|GraphQL read| WP
+    Editor -->|writes content| WP
+    </pre>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>System</th><th>What it does</th><th>IT configures</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Entra ID</strong></td>
+        <td>Identity — who can sign in and which groups they belong to</td>
+        <td>App registration, redirect URI, user/group assignments</td>
+      </tr>
+      <tr>
+        <td><strong>Next.js frontend</strong></td>
+        <td>IdeaXchange member experience at amerilife.com</td>
+        <td>Environment variables (see section 4)</td>
+      </tr>
+      <tr>
+        <td><strong>WordPress</strong></td>
+        <td>Content library — articles, leaderboard, carrier, recruiting</td>
+        <td>Editorial content; members do not log in here</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>2. JIT login flow</h2>
+  <div class="diagram">
+    <pre class="mermaid">
+sequenceDiagram
+    participant U as User
+    participant S as amerilife.com
+    participant E as Microsoft Entra
+    participant W as WordPress CMS
+
+    U->>S: Open /ideaxchange/
+    U->>S: Sign in with Microsoft
+    S->>E: OAuth login
+    E->>S: User identity + groups
+    Note over S: JIT - access created on first login
+    S->>W: Fetch content via GraphQL
+    W->>S: Content data
+    S->>U: Personalized IdeaXchange experience
+    </pre>
+  </div>
+
+  <div class="callout">
+    <strong>Summary:</strong> Entra runs login. The frontend enforces access. WordPress holds content.
+    Members never log into WordPress. Access is managed via Entra groups.
+  </div>
+
+  <div class="page-break"></div>
+
+  <h2>3. Entra configuration checklist</h2>
+  <table>
+    <thead>
+      <tr><th>Item</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Redirect URI (production)</td>
+        <td><code>https://amerilife.com/api/auth/callback/microsoft-entra-id</code></td>
+      </tr>
+      <tr>
+        <td>Redirect URI (local dev)</td>
+        <td><code>http://localhost:3000/api/auth/callback/microsoft-entra-id</code></td>
+      </tr>
+      <tr>
+        <td>Issuer</td>
+        <td><code>https://login.microsoftonline.com/{tenant-id}/v2.0</code></td>
+      </tr>
+      <tr>
+        <td>App roles (examples)</td>
+        <td>IDEAXCHANGE_SALES · IDEAXCHANGE_RECRUIT · IDEAXCHANGE_CARRIER · IDEAXCHANGE_LEADERSHIP · IDEAXCHANGE_ADMIN</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>4. Environment variables</h2>
+  <table>
+    <thead>
+      <tr><th>Variable</th><th>Example / purpose</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>AUTH_SECRET</td><td>Random secret for session signing</td></tr>
+      <tr><td>AUTH_URL</td><td>https://amerilife.com</td></tr>
+      <tr><td>NEXT_PUBLIC_SITE_URL</td><td>https://amerilife.com</td></tr>
+      <tr><td>AUTH_MICROSOFT_ENTRA_ID_ID</td><td>Entra Client ID</td></tr>
+      <tr><td>AUTH_MICROSOFT_ENTRA_ID_SECRET</td><td>Entra Client Secret</td></tr>
+      <tr><td>AUTH_MICROSOFT_ENTRA_ID_ISSUER</td><td>Tenant issuer URL</td></tr>
+      <tr><td>AUTH_MICROSOFT_ENTRA_ID_TENANT_ID</td><td>Restrict sign-in to AmeriLife tenant</td></tr>
+    </tbody>
+  </table>
+
+  <p class="footer">
+    AmeriLife IdeaXchange · JIT SSO overview · Internal technical use
+  </p>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+  </script>
+</body>
+</html>

@@ -27,30 +27,59 @@ function getGraphQLEndpoint(): string {
   );
 }
 
+
 export async function fetchGraphQL<T>(
   query: string,
   variables?: Record<string, unknown>,
   signal?: AbortSignal,
-): Promise<T> {
+  isMutation = false // ✅ ADD THIS
+): Promise<T>
+ {
   const graphqlEndpoint = getGraphQLEndpoint();
-  const res = await fetch(graphqlEndpoint, {
+
+  // ✅ Build GET URL (cacheable)
+  let res: Response;
+
+if (isMutation) {
+  // ✅ POST for mutations (fixes your form)
+  res = await fetch(graphqlEndpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "User-Agent": "Next.js GraphQL Client",
     },
     body: JSON.stringify({
       query,
       variables,
     }),
-    cache: "no-store",
     ...(signal ? { signal } : {}),
   });
+} else {
+  // ✅ GET for queries (keeps your caching benefits)
+  const params = new URLSearchParams({ query });
 
-  if (!res.ok) {
-    throw new Error(`GraphQL request failed: ${res.statusText}`);
+  if (variables && Object.keys(variables).length > 0) {
+    params.append("variables", JSON.stringify(variables));
   }
 
-  const json: { data?: T | null; errors?: { message?: string }[] } = await res.json();
+  const url = `${graphqlEndpoint}?${params.toString()}`;
+
+  res = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent": "Next.js GraphQL Client",
+    },
+    next: { revalidate: 120 }, // keep your cache
+    ...(signal ? { signal } : {}),
+  });
+}
+  if (!res.ok) {
+    throw new Error(`GraphQL request failed: ${res.status} ${res.statusText}`);
+  }
+
+  const json: { data?: T | null; errors?: { message?: string }[] } =
+    await res.json();
 
   const errorMsgs =
     json.errors?.map((e) => e.message).filter((m): m is string => Boolean(m)) ?? [];
@@ -59,14 +88,37 @@ export async function fetchGraphQL<T>(
 
   if (!hasData) {
     throw new Error(
-      errorMsgs.length ? `GraphQL failed: ${errorMsgs.join("; ")}` : "GraphQL returned no data",
+      errorMsgs.length
+        ? `GraphQL failed: ${errorMsgs.join("; ")}`
+        : "GraphQL returned no data",
     );
   }
 
-  // WPGraphQL may attach warnings or field-level errors while still returning usable data.
   if (errorMsgs.length && process.env.NODE_ENV === "development") {
     console.warn("[GraphQL errors alongside data]", errorMsgs);
   }
 
   return json.data as T;
+}
+
+const DEFAULT_GRAPHQL_TIMEOUT_MS = 8_000;
+
+/** Abort slow WP GraphQL calls so ideaXchange pages can fall back to mock data quickly. */
+export async function fetchGraphQLWithTimeout<T>(
+  query: string,
+  variables?: Record<string, unknown>,
+  timeoutMs = DEFAULT_GRAPHQL_TIMEOUT_MS,
+): Promise<T> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetchGraphQL<T>(query, variables, controller.signal);
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new Error(`GraphQL request timed out after ${timeoutMs}ms`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
 }

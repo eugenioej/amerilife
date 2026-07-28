@@ -2,10 +2,13 @@ import { Suspense } from "react";
 import { Link } from "@/app/components/ui/Link";
 import { IdeaXchangeLoginForm } from "./IdeaXchangeLoginForm";
 import { IdeaXchangeWordmark } from "./IdeaXchangeLogo";
+import { isMicrosoftIdeaxchangeAuthEnabled } from "@/lib/ideaxchange-auth-config";
 
 const JOIN_OUR_TEAM_PATH = "/join-our-team/";
 
 export function IdeaXchangeLoginView() {
+  const microsoftAuthEnabled = isMicrosoftIdeaxchangeAuthEnabled();
+
   return (
     <section className="bg-white">
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-12 sm:py-16 lg:py-20">
@@ -15,9 +18,9 @@ export function IdeaXchangeLoginView() {
               Welcome to <IdeaXchangeWordmark />.
             </h1>
             <p className="mt-6 text-base leading-relaxed text-[var(--color-muted)] sm:text-lg">
-              ideaXchange is AmeriLife&apos;s internal online magazine, created to keep our employees and
-              affiliates informed and inspired. Check back often for the latest company news, product
-              updates, and more.
+              ideaXchange is AmeriLife&apos;s internal hub for Brokerage and Career teams — recruiting
+              campaigns, sales leaderboards, carrier resources, and more. Check back often for the latest
+              company news, product updates, and success stories.
             </p>
 
             <div className="mt-10">
@@ -43,7 +46,7 @@ export function IdeaXchangeLoginView() {
 
           <div className="flex w-full shrink-0 justify-center lg:w-[380px] lg:justify-end">
             <Suspense fallback={<div className="h-[420px] w-full max-w-[380px] animate-pulse rounded-lg bg-[var(--color-border)]/40" />}>
-              <IdeaXchangeLoginForm />
+              <IdeaXchangeLoginForm microsoftAuthEnabled={microsoftAuthEnabled} />
             </Suspense>
           </div>
         </div>

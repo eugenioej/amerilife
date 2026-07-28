@@ -3,13 +3,17 @@ import { Clock } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import type { IdeaxchangeDetail, IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
+import type { IdeaxchangeAdsSettings } from "@/lib/queries";
 import { rewriteUploadsInHtml, rewriteUploadsUrl } from "@/lib/wp-media";
 import { InsightPostChrome } from "@/app/components/insights/InsightPostChrome";
 import { InsightSharePanel } from "@/app/components/insights/InsightSharePanel";
+import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeHorizontalAdSlot";
+import { IdeaxchangeSidebarAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeSidebarAdSlot";
 import { IdeaXchangeTopicBadge } from "./IdeaXchangeTopicBadge";
+import { ideaxchangeFeaturedImageSrc } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
+import { IDEAXCHANGE_HOME_FEED_PATH } from "@/lib/ideaxchange-constants";
 import {
   formatBylineDate,
-  formatInsightExcerptPlain,
   formatMonthYear,
   ideaxchangeCategoryHref,
   ideaxchangeHref,
@@ -17,14 +21,12 @@ import {
   topicLabel,
 } from "./ideaxchange-utils";
 
-const PLACEHOLDER_IMG =
-  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AML-Wealth-II-Announcement-040532023-HERO-1024x358-1.png";
-
 type Props = {
   post: IdeaxchangeDetail;
   /** Other insights for sidebar + bottom grid (same list; template slices). */
   relatedPosts: IdeaxchangeListItem[];
   shareUrl: string;
+  ideaxchangeAds?: IdeaxchangeAdsSettings | null;
 };
 
 function estimateReadMinutes(html: string): number {
@@ -46,7 +48,7 @@ function RelatedArticlesSidebar({ posts }: { posts: IdeaxchangeListItem[] }) {
       <ul className="divide-y divide-[var(--color-border)]">
         {posts.map((item) => {
           const img =
-            item.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
+            ideaxchangeFeaturedImageSrc(item.featuredImage?.node?.sourceUrl);
           const href = ideaxchangeHref(item.slug);
           return (
             <li key={item.id} className="flex gap-3 py-4 first:pt-0">
@@ -96,7 +98,7 @@ function RelatedPostsGrid({ posts }: { posts: IdeaxchangeListItem[] }) {
       <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
         {posts.map((item) => {
           const img =
-            item.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
+            ideaxchangeFeaturedImageSrc(item.featuredImage?.node?.sourceUrl);
           const href = ideaxchangeHref(item.slug);
           return (
             <article key={item.id} className="group flex flex-col">
@@ -160,15 +162,12 @@ export function IdeaXchangePostTemplate({
   post,
   relatedPosts,
   shareUrl,
+  ideaxchangeAds,
 }: Props) {
   const html = post.content ? rewriteUploadsInHtml(post.content) : "";
-  const rawImg =
-    post.featuredImage?.node?.sourceUrl?.trim() ||
-    "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1600&q=80";
-  const img = rewriteUploadsUrl(rawImg);
-  const excerptPlain = formatInsightExcerptPlain(post.excerpt);
+  const img = rewriteUploadsUrl(ideaxchangeFeaturedImageSrc(post.featuredImage?.node?.sourceUrl));
   const topic = post.ideaxchangeTopics?.nodes?.[0];
-  const topicName = topic?.name?.trim() || "Insights";
+  const topicName = topic?.name?.trim() || "Articles";
   const topicSlug = topic?.slug?.trim();
   const readMin = estimateReadMinutes(html);
 
@@ -184,7 +183,7 @@ export function IdeaXchangePostTemplate({
         className="mb-6"
         items={[
           { label: "Home", href: "/" },
-          { label: "ideaXchange", href: "/ideaxchange/magazine/" },
+          { label: "ideaXchange", href: IDEAXCHANGE_HOME_FEED_PATH },
           {
             label: topicName,
             href: topicSlug ? ideaxchangeCategoryHref(topicSlug) : undefined,
@@ -205,12 +204,6 @@ export function IdeaXchangePostTemplate({
       <h1 className="max-w-4xl font-sans text-3xl font-bold leading-tight tracking-tight text-[var(--color-brand-dark)] sm:text-4xl md:text-[2.5rem] md:leading-[1.15]">
         {post.title}
       </h1>
-
-      {excerptPlain ? (
-        <div className="mt-4 max-w-3xl text-lg leading-relaxed text-[var(--color-muted)] whitespace-pre-line">
-          {excerptPlain}
-        </div>
-      ) : null}
 
       <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-[var(--color-border)] pb-8 text-sm text-[var(--color-muted)]">
         {post.date ? (
@@ -256,6 +249,10 @@ export function IdeaXchangePostTemplate({
               )}
             </div>
 
+            <IdeaxchangeHorizontalAdSlot
+              slot={ideaxchangeAds?.homeSecondaryHorizontal}
+              className="mt-12"
+            />
 
             <div className="mt-10 flex flex-nowrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-8">
               {topicSlug ? (
@@ -280,6 +277,9 @@ export function IdeaXchangePostTemplate({
 
           <aside className="lg:col-span-4">
             <RelatedArticlesSidebar posts={sidebarList} />
+            <div className="mt-10">
+              <IdeaxchangeSidebarAdSlot slot={ideaxchangeAds?.homeSidebarVertical} />
+            </div>
           </aside>
         </div>
 

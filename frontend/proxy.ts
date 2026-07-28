@@ -1,12 +1,24 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import {
+  getIdeaxchangeHomeFromRequest,
+  isIdeaxchangeRequestAuthenticated,
+} from "@/lib/ideaxchange-auth-proxy";
+import {
   IDEAXCHANGE_LOGIN_PATH,
-  IDEAXCHANGE_SESSION_COOKIE,
-  IDEAXCHANGE_SESSION_VALUE,
+  isIdeaxchangeLoginPath,
+  isIdeaxchangeProtectedPath,
+  isIdeaxchangeReturnPath,
 } from "@/lib/ideaxchange-constants";
-
-const IDEAXCHANGE_MAGAZINE_PREFIX = "/ideaxchange/magazine";
+import { getToken } from "next-auth/jwt";
+import { isMicrosoftIdeaxchangeAuthEnabled } from "@/lib/ideaxchange-auth-config";
+import { getIdeaxchangeJwtParams } from "@/lib/ideaxchange-auth-token";
+import { getIdeaxchangeDevViewFromRequest } from "@/lib/ideaxchange-dev";
+import {
+  canAccessIdeaxchangePath,
+  getIdeaxchangeHomeForPersona,
+  type IdeaxchangePersona,
+} from "@/lib/ideaxchange-persona";
 
 // ---------------------------------------------------------------------------
 // Blocked user-agent substrings — vulnerability scanners & automated tools
@@ -43,7 +55,15 @@ const BLOCKED_PATHS: string[] = [
 // Blocked file extensions — server-side script probes
 const BLOCKED_EXTENSIONS: string[] = [".php", ".asp", ".aspx", ".jsp", ".cgi", ".cfm"];
 
-export function proxy(request: NextRequest) {
+function nextWithPathname(request: NextRequest) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  return NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+}
+
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const ua = (request.headers.get("user-agent") ?? "").toLowerCase();
   const pathLower = pathname.toLowerCase();
@@ -69,18 +89,42 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  // 4. Gated ideaXchange magazine — require session cookie
-  if (pathname.startsWith(IDEAXCHANGE_MAGAZINE_PREFIX)) {
-    const session = request.cookies.get(IDEAXCHANGE_SESSION_COOKIE)?.value;
-    if (session !== IDEAXCHANGE_SESSION_VALUE) {
-      const loginUrl = request.nextUrl.clone();
-      loginUrl.pathname = IDEAXCHANGE_LOGIN_PATH;
-      loginUrl.searchParams.set("next", pathname);
-      return NextResponse.redirect(loginUrl);
+  const ideaxchangeAuthed = await isIdeaxchangeRequestAuthenticated(request);
+
+  // 4. Gated ideaXchange — require session (all routes under /ideaxchange/ except login)
+  if (isIdeaxchangeProtectedPath(pathname) && !ideaxchangeAuthed) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = IDEAXCHANGE_LOGIN_PATH;
+    const returnPath = `${pathname}${request.nextUrl.search}`;
+    loginUrl.searchParams.set("next", returnPath);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // 4b. Persona-based route guard (Microsoft JIT only)
+  if (
+    ideaxchangeAuthed &&
+    isIdeaxchangeProtectedPath(pathname) &&
+    isMicrosoftIdeaxchangeAuthEnabled()
+  ) {
+    const token = await getToken(getIdeaxchangeJwtParams(request));
+    const persona = (token?.persona ?? "brokerage") as IdeaxchangePersona;
+    const devView = getIdeaxchangeDevViewFromRequest(request);
+    if (!canAccessIdeaxchangePath(pathname, persona, devView)) {
+      const home = getIdeaxchangeHomeForPersona(persona);
+      return NextResponse.redirect(new URL(home, request.url));
     }
   }
 
-  return NextResponse.next();
+  // 5. Already signed in — skip the login page
+  if (isIdeaxchangeLoginPath(pathname) && ideaxchangeAuthed) {
+    const nextParam = request.nextUrl.searchParams.get("next");
+    const defaultHome = await getIdeaxchangeHomeFromRequest(request);
+    const destination =
+      nextParam && isIdeaxchangeReturnPath(nextParam) ? nextParam : defaultHome;
+    return NextResponse.redirect(new URL(destination, request.url));
+  }
+
+  return nextWithPathname(request);
 }
 
 export const config = {

@@ -23,7 +23,16 @@ function SearchIcon({ className }: { className?: string }) {
   );
 }
 
-export function HeaderSearch() {
+type Props = {
+  /** Results page path (no query). Defaults to main-site `/search`. */
+  resultsPath?: string;
+  placeholder?: string;
+};
+
+export function HeaderSearch({
+  resultsPath = "/search",
+  placeholder = "Search...",
+}: Props) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -50,7 +59,8 @@ export function HeaderSearch() {
     e.preventDefault();
     const q = query.trim();
     if (q) {
-      router.push(`/search?q=${encodeURIComponent(q)}`);
+      const base = resultsPath.replace(/\/+$/, "") || "/search";
+      router.push(`${base}?q=${encodeURIComponent(q)}`);
       setOpen(false);
       setQuery("");
     }
@@ -75,11 +85,7 @@ export function HeaderSearch() {
           className="fixed inset-0 z-[var(--z-drawer)]"
           onClick={() => setOpen(false)}
         >
-          <div
-            className="absolute inset-0 bg-black/50"
-            aria-hidden="true"
-            
-          />
+          <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
           <div className="absolute inset-0 flex items-start justify-center pt-[15vh] px-4">
             <div
               className="w-full max-w-xl rounded-lg bg-white p-4 shadow-xl"
@@ -93,7 +99,7 @@ export function HeaderSearch() {
                     type="search"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search..."
+                    placeholder={placeholder}
                     className="w-full rounded-md border border-[var(--color-border)] py-3 pl-10 pr-4 text-[var(--color-fg)] placeholder:text-[var(--color-muted)] focus:border-[var(--color-brand-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)]/20"
                     autoComplete="off"
                   />
@@ -105,7 +111,6 @@ export function HeaderSearch() {
                   Search
                 </button>
               </form>
-              
             </div>
           </div>
         </div>

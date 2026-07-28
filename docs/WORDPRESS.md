@@ -226,6 +226,56 @@ See [FORMS.md](FORMS.md) for complete Gravity Forms documentation.
 
 These files must be deployed to the headless WordPress instance. Place them in `wp-content/mu-plugins/` on WP Engine.
 
+### ideaXchange (`amerilife-ideaxchange.php` + `ideaxchange/` folder)
+
+WordPress **does not** auto-load PHP files inside subfolders. You must deploy:
+
+1. `wp-content/mu-plugins/amerilife-ideaxchange.php` — loader
+2. `wp-content/mu-plugins/ideaxchange/*.php` — CPT plugins
+3. `wp-content/mu-plugins/ideaxchange/seed/*.json` — demo seed data
+
+Deploy from repo:
+
+```bash
+node frontend/scripts/deploy-mu-plugins.mjs
+```
+
+**Do not** upload the same PHP files to `wp-content/plugins/` — WordPress will load them twice and GraphQL will fatal with `Cannot redeclare function`. If you see that error after an SFTP upload, remove stale copies:
+
+```bash
+node frontend/scripts/cleanup-ideaxchange-plugin-duplicates.mjs
+```
+
+**WP Admin menus** (after loader is active):
+
+| Menu | CPT | Frontend route |
+|------|-----|----------------|
+| ideaXchange Magazine | `ideaxchange_article` | `/ideaxchange/magazine/` |
+| ideaXchange Companies | `ideaxchange_company` | `/ideaxchange/recruiting-hub/company/{slug}/` |
+| ideaXchange Case Studies | `ideaxchange_case` | `/ideaxchange/recruiting-hub/{slug}/` |
+| ideaXchange Carriers | `ideaxchange_carrier` | `/ideaxchange/carrier-spotlight/{slug}/` |
+| ideaXchange Leaderboard | `ideaxchange_lb_table` (7 fixed tables) | `/ideaxchange/leaderboard/` |
+
+**WP Admin editor UX**
+
+- **Carriers** — Highlights use an icon + label repeater (no JSON). Carrier resources and case study downloads use Media Library pickers (“Choose file”), not attachment IDs.
+- **Case studies** — Link a **Company** from the dropdown (shows slug). **Run this campaign** sidebar files: Call Scripts, Interview Questions, Email Templates. **Campaigns table** fields power the Recruiting Hub table.
+- **Leaderboard** — Exactly **7 items** in wp-admin (one per table). Open a table → upload `.xlsx` (recommended), `.csv`, or `.json` → Save. Excel preserves ▲▼ trend symbols better than CSV. Columns: `affiliate`, `ytd`, `lytd`, `vs_lytd`, `vs_lqtd`, `vs_lmtd`, `trend`. Seed: `node scripts/seed-ideaxchange-leaderboard.mjs --force`
+
+CPTs are **empty until seeded** or you add posts manually. Seed via REST (Application Password on a user with `edit_posts`, e.g. Editor or Administrator):
+
+```bash
+cd frontend
+node scripts/seed-ideaxchange-recruiting.mjs
+node scripts/seed-ideaxchange-carrier.mjs
+node scripts/seed-ideaxchange-leaderboard.mjs
+node scripts/seed-ideaxchange-magazine.mjs
+```
+
+Reads `NEXT_PUBLIC_WORDPRESS_URL` + `WORDPRESS_APP_PASSWORD` / `HEADLESS_WP_APP_*` from repo root or `frontend/.env.local` (no separate `WP_URL` vars needed). The `mediauploader` account is upload-only and cannot run seeds — use an admin/editor Application Password in `WORDPRESS_USER` / `WORDPRESS_APP_PASSWORD`.
+
+Use `--force` to re-import. Requires **WPGraphQL** on WordPress for the Next.js frontend to read data.
+
 ### `amerilife-content-importer.php`
 
 - Registers Yoast SEO meta keys as writable via the REST API (`_yoast_wpseo_title`, `_yoast_wpseo_metadesc`, `_yoast_wpseo_canonical`, etc.) — required for the migration scripts to set SEO metadata.

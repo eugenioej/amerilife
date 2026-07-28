@@ -110,8 +110,15 @@ export function AgentDetailTemplate({ agent, location }: Props) {
 
             {/* Bio */}
             {agent.bio && (
-              <p className="text-sm italic leading-relaxed text-white/90 sm:text-base">
-                {agent.bio}
+              <p className="">
+                {agent.email?.trim() ? (
+                      <a
+                        className="w-fit text-sm italic leading-relaxed text-white/90 sm:text-base underline  underline-offset-[5px]"
+                        href={`mailto:${agent.email.trim()}`}
+                      >
+                        {agent.email.trim()}
+                      </a>
+                    ) : null}
               </p>
             )}
           </div>
@@ -178,8 +185,7 @@ export function AgentDetailTemplate({ agent, location }: Props) {
                   More Details
                 </p>
                 <p className="text-base leading-relaxed text-[var(--color-fg)]">
-                  {agent.bio ??
-                    "This agent is committed to helping you find the right coverage. Reach out today to discuss your Medicare, health, life, and retirement needs."}
+                  This Licensed Insurance Agent is committed to helping you find the right coverage. Reach out today to discuss your Medicare, health, life, and retirement needs.
                 </p>
               </div>
 

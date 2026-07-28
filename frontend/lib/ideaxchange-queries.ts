@@ -1,5 +1,5 @@
 import type { YoastSeoData } from "@/lib/queries";
-/** ideaXchange CPT — magazine index cards and hero. */
+/** ideaXchange Articles CPT — gated at /ideaxchange/article/ (separate from public Insights). */
 export type IdeaxchangeListItem = {
   id: string;
   slug?: string | null;
@@ -10,8 +10,12 @@ export type IdeaxchangeListItem = {
     isSpotlight?: boolean | null;
     /** Magazine “Featured articles” slot — from WP is_featured meta and/or Featured insight_tag (see mu-plugin). */
     isFeatured?: boolean | null;
+    visibility?: string | null;
   } | null;
   ideaxchangeTopics?: {
+    nodes?: Array<{ name?: string | null; slug?: string | null }>;
+  } | null;
+  ideaxchangeTags?: {
     nodes?: Array<{ name?: string | null; slug?: string | null }>;
   } | null;
   featuredImage?: {
@@ -49,8 +53,15 @@ export const GET_IDEAXCHANGE_ARTICLES = `
         ideaxchangeFields {
           isSpotlight
           isFeatured
+          visibility
         }
         ideaxchangeTopics {
+          nodes {
+            name
+            slug
+          }
+        }
+        ideaxchangeTags {
           nodes {
             name
             slug
@@ -87,8 +98,15 @@ export const GET_IDEAXCHANGE_ARTICLES_MINIMAL = `
         excerpt
         ideaxchangeFields {
           isSpotlight
+          visibility
         }
         ideaxchangeTopics {
+          nodes {
+            name
+            slug
+          }
+        }
+        ideaxchangeTags {
           nodes {
             name
             slug
@@ -126,6 +144,7 @@ export const GET_IDEAXCHANGE_BY_SLUG = `
       ideaxchangeFields {
         isSpotlight
         isFeatured
+        visibility
       }
       ideaxchangeTopics {
         nodes {
@@ -322,6 +341,178 @@ export const GET_IDEAXCHANGE_TOPIC_SLUGS = `
       nodes {
         slug
         name
+      }
+    }
+  }
+`;
+
+/** Magazine posts tagged Sales — leaderboard & carrier spotlight sidebars. */
+export const IDEAXCHANGE_SALES_TAG_SLUG = "sales";
+
+/** Magazine posts tagged Recruit — recruiting hub blog section. */
+export const IDEAXCHANGE_RECRUIT_TAG_SLUG = "recruit";
+
+/** Magazine posts tagged Initiative — Sales Success vertical. */
+export const IDEAXCHANGE_INITIATIVE_TAG_SLUG = "initiative";
+
+export type IdeaxchangeTagBySlugResult = {
+  ideaxchangeTag?: {
+    id: string;
+    name?: string | null;
+    slug?: string | null;
+    ideaxchangeArticles?: {
+      nodes: IdeaxchangeListItem[];
+      pageInfo: {
+        hasNextPage: boolean;
+        endCursor: string | null;
+      };
+    } | null;
+  } | null;
+};
+
+const IDEAXCHANGE_TAG_ARTICLE_FIELDS = `
+  id
+  slug
+  title
+  date
+  excerpt
+  ideaxchangeFields {
+    isSpotlight
+    isFeatured
+    visibility
+  }
+  ideaxchangeTopics {
+    nodes {
+      name
+      slug
+    }
+  }
+  featuredImage {
+    node {
+      sourceUrl
+      altText
+    }
+  }
+`;
+
+export const GET_IDEAXCHANGE_TAG_BY_SLUG = `
+  query GetIdeaxchangeTagBySlug($slug: ID!, $first: Int!, $after: String) {
+    ideaxchangeTag(id: $slug, idType: SLUG) {
+      id
+      name
+      slug
+      ideaxchangeArticles(
+        first: $first
+        after: $after
+        where: { orderby: { field: DATE, order: DESC } }
+      ) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          ${IDEAXCHANGE_TAG_ARTICLE_FIELDS}
+        }
+      }
+    }
+  }
+`;
+
+export const GET_IDEAXCHANGE_TAG_BY_SLUG_MINIMAL = `
+  query GetIdeaxchangeTagBySlugMinimal($slug: ID!, $first: Int!, $after: String) {
+    ideaxchangeTag(id: $slug, idType: SLUG) {
+      id
+      name
+      slug
+      ideaxchangeArticles(
+        first: $first
+        after: $after
+        where: { orderby: { field: DATE, order: DESC } }
+      ) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          id
+          slug
+          title
+          date
+          excerpt
+          ideaxchangeFields {
+            isSpotlight
+          }
+          ideaxchangeTopics {
+            nodes {
+              name
+              slug
+            }
+          }
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+/** Paginated articles for server-side search (includes body + topics). */
+export type IdeaxchangeArticleSearchNode = {
+  id: string;
+  slug?: string | null;
+  title?: string | null;
+  date?: string | null;
+  excerpt?: string | null;
+  content?: string | null;
+  ideaxchangeFields?: {
+    visibility?: string | null;
+  } | null;
+  ideaxchangeTopics?: {
+    nodes?: Array<{ name?: string | null; slug?: string | null }>;
+  } | null;
+};
+
+export type IdeaxchangeArticlesSearchBatchResult = {
+  ideaxchangeArticles?: {
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+    nodes: IdeaxchangeArticleSearchNode[];
+  } | null;
+};
+
+export const GET_IDEAXCHANGE_ARTICLES_SEARCH_BATCH = `
+  query GetIdeaxchangeArticlesSearchBatch($first: Int!, $after: String) {
+    ideaxchangeArticles(
+      first: $first
+      after: $after
+      where: { orderby: { field: DATE, order: DESC } }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        id
+        slug
+        title
+        date
+        excerpt
+        content
+        ideaxchangeFields {
+          visibility
+        }
+        ideaxchangeTopics {
+          nodes {
+            name
+            slug
+          }
+        }
       }
     }
   }
