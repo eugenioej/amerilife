@@ -52,24 +52,29 @@ import {
   type IdeaxchangeAdsSettingsResult,
 } from "@/lib/queries";
 
-function isInitiativeIdeaxchangeArticle(post: IdeaxchangeListItem): boolean {
+const RESERVED_IDEAXCHANGE_TAG_SLUGS = new Set([
+  IDEAXCHANGE_INITIATIVE_TAG_SLUG,
+  IDEAXCHANGE_SALES_TAG_SLUG,
+]);
+
+function isReservedIdeaxchangeArticle(post: IdeaxchangeListItem): boolean {
   return (
     post.ideaxchangeTags?.nodes?.some((tag) => {
       const slug = tag.slug?.trim().toLowerCase();
       const name = tag.name?.trim().toLowerCase();
 
       return (
-        slug === IDEAXCHANGE_INITIATIVE_TAG_SLUG ||
-        name === IDEAXCHANGE_INITIATIVE_TAG_SLUG
+        (slug ? RESERVED_IDEAXCHANGE_TAG_SLUGS.has(slug) : false) ||
+        (name ? RESERVED_IDEAXCHANGE_TAG_SLUGS.has(name) : false)
       );
     }) ?? false
   );
 }
 
-function excludeInitiativeIdeaxchangeArticles(
+function excludeReservedIdeaxchangeArticles(
   posts: IdeaxchangeListItem[],
 ): IdeaxchangeListItem[] {
-  return posts.filter((post) => !isInitiativeIdeaxchangeArticle(post));
+  return posts.filter((post) => !isReservedIdeaxchangeArticle(post));
 }
 
 function mockListItemToDetail(post: IdeaxchangeListItem): IdeaxchangeDetail {
@@ -172,7 +177,9 @@ export async function getIdeaxchangeList(
   persona: IdeaxchangePersona = "brokerage",
 ): Promise<IdeaxchangeListItem[]> {
   const { nodes } = await fetchIdeaxchangeArticlesConnection(100);
-  return filterArticles(nodes, persona);
+  const personaFilteredPosts = filterArticles(nodes, persona);
+
+  return excludeReservedIdeaxchangeArticles(personaFilteredPosts);
 }
 
 function filterArticles(
@@ -203,45 +210,38 @@ export async function getIdeaxchangeMagazineBundle(
   );
 
   const personaFilteredPosts = filterArticles(nodes, persona);
-  const visiblePosts = excludeInitiativeIdeaxchangeArticles(personaFilteredPosts);
+  const visiblePosts = excludeReservedIdeaxchangeArticles(personaFilteredPosts);
 
   return { posts: visiblePosts, pageInfo };
 }
 
 const IDEAXCHANGE_ARTICLE_CURSOR_BATCH = 80;
 
-async function cursorAfterSkippingIdeaxchangeArticles(
-  skip: number,
-): Promise<{ after: string | null; ok: boolean }> {
-  if (skip <= 0) return { after: null, ok: true };
-  let cursor: string | null = null;
-  let remaining = skip;
-  while (remaining > 0) {
-    const batch = Math.min(remaining, IDEAXCHANGE_ARTICLE_CURSOR_BATCH);
-    const { nodes, pageInfo } = await fetchIdeaxchangeArticlesConnection(batch, cursor);
-    if (nodes.length === 0) return { after: null, ok: false };
-    remaining -= nodes.length;
-    cursor = pageInfo.endCursor ?? null;
-    if (!pageInfo.hasNextPage && remaining > 0) return { after: null, ok: false };
-  }
-  return { after: cursor, ok: true };
-}
+const getVisibleGeneralIdeaxchangeArticles = cache(
+  async function getVisibleGeneralIdeaxchangeArticles(
+    persona: IdeaxchangePersona,
+  ): Promise<IdeaxchangeListItem[]> {
+    const allPosts: IdeaxchangeListItem[] = [];
+    let cursor: string | null = null;
 
-/** Published ideaXchange article count (unfiltered by persona) — drives home archive totalPages. */
-const countIdeaxchangeArticles = cache(async function countIdeaxchangeArticles(): Promise<number> {
-  let total = 0;
-  let cursor: string | null = null;
-  for (;;) {
-    const { nodes, pageInfo } = await fetchIdeaxchangeArticlesConnection(
-      IDEAXCHANGE_ARTICLE_CURSOR_BATCH,
-      cursor,
-    );
-    total += nodes.length;
-    if (!pageInfo.hasNextPage || !pageInfo.endCursor) break;
-    cursor = pageInfo.endCursor;
-  }
-  return total;
-});
+    for (;;) {
+      const { nodes, pageInfo } = await fetchIdeaxchangeArticlesConnection(
+        IDEAXCHANGE_ARTICLE_CURSOR_BATCH,
+        cursor,
+      );
+
+      allPosts.push(...nodes);
+
+      if (!pageInfo.hasNextPage || !pageInfo.endCursor) break;
+
+      cursor = pageInfo.endCursor;
+    }
+
+    const personaFilteredPosts = filterArticles(allPosts, persona);
+
+    return excludeReservedIdeaxchangeArticles(personaFilteredPosts);
+  },
+);
 
 export type IdeaxchangeHomeArchivePageData = {
   posts: IdeaxchangeListItem[];
@@ -263,36 +263,31 @@ export const getIdeaxchangeHomeArchivePageData = cache(
       Number.isFinite(page) && page >= 1
         ? Math.min(Math.floor(page), 1_000_000)
         : 1;
+
     const pageSize = IDEAXCHANGE_HOME_PAGE_FIRST;
 
     try {
-      const skipOffset = (safePage - 1) * pageSize;
-      const { after: afterSkip, ok: skipOk } = await cursorAfterSkippingIdeaxchangeArticles(
-        skipOffset,
-      );
-      if (!skipOk && skipOffset > 0) return null;
+      const visiblePosts = await getVisibleGeneralIdeaxchangeArticles(persona);
 
-      const [{ nodes, pageInfo }, totalCount] = await Promise.all([
-        fetchIdeaxchangeArticlesConnection(pageSize, afterSkip),
-        countIdeaxchangeArticles(),
-      ]);
+      if (visiblePosts.length === 0) return null;
 
-      if (nodes.length === 0 && totalCount === 0) return null;
-
+      const totalCount = visiblePosts.length;
       const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
       if (safePage > totalPages) return null;
 
-      const personaFilteredPosts = filterArticles(nodes, persona);
-      const visiblePosts = excludeInitiativeIdeaxchangeArticles(personaFilteredPosts);
-          
+      const start = (safePage - 1) * pageSize;
+      const end = start + pageSize;
+      const pagePosts = visiblePosts.slice(start, end);
+
       return {
-        posts: visiblePosts,
+        posts: pagePosts,
         totalCount,
         currentPage: safePage,
         pageSize,
         totalPages,
-        hasNextPage: pageInfo.hasNextPage,
-        endCursor: pageInfo.endCursor,
+        hasNextPage: safePage < totalPages,
+        endCursor: null,
       };
     } catch (err) {
       console.error("[ideaxchange] getIdeaxchangeHomeArchivePageData failed:", err);
@@ -310,7 +305,10 @@ export async function fetchIdeaxchangeAfterCursor(
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
 }> {
   const result = await fetchIdeaxchangeArticlesConnection(first, after);
-  return { nodes: filterArticles(result.nodes, persona), pageInfo: result.pageInfo };
+  const personaFilteredPosts = filterArticles(result.nodes, persona);
+  const visiblePosts = excludeReservedIdeaxchangeArticles(personaFilteredPosts);
+  
+  return { nodes: visiblePosts, pageInfo: result.pageInfo };
 }
 
 export async function getIdeaxchangeArticleBySlug(
@@ -502,10 +500,13 @@ export const getIdeaxchangeCategoryPageData = cache(async function getIdeaxchang
     if (posts.length === 0 && totalCount === 0) return null;
 
     const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+    const personaFilteredPosts = filterArticles(posts, persona);
+    const visiblePosts = excludeReservedIdeaxchangeArticles(personaFilteredPosts);
+      
     return {
       topicName: topic.name?.trim() ?? null,
       topicSlug: topic.slug.trim(),
-      posts: filterArticles(posts, persona),
+      posts: visiblePosts,
       totalCount,
       currentPage: safePage,
       pageSize,
@@ -513,33 +514,36 @@ export const getIdeaxchangeCategoryPageData = cache(async function getIdeaxchang
       hasNextPage: conn?.pageInfo?.hasNextPage ?? false,
       endCursor: conn?.pageInfo?.endCursor ?? null,
     };
-  } catch (err) {
-    console.error("[ideaxchange] getIdeaxchangeCategoryPageData failed:", err);
-    return null;
-  }
-});
+      } catch (err) {
+        console.error("[ideaxchange] getIdeaxchangeCategoryPageData failed:", err);
+        return null;
+      }
+    });
+    
+    export async function fetchIdeaxchangeCategoryAfterCursor(
+      topicSlug: string,
+      after: string,
+      first = IDEAXCHANGE_LOAD_MORE_FIRST,
+      persona: IdeaxchangePersona = "brokerage",
+    ): Promise<{
+      nodes: IdeaxchangeListItem[];
+      pageInfo: { hasNextPage: boolean; endCursor: string | null };
+    }> {
+      try {
+        const data = await fetchIdeaxchangeTopicBySlugResult(topicSlug, first, after);
+        const conn = data?.ideaxchangeTopic?.ideaxchangeArticles;
+        const personaFilteredPosts = filterArticles(conn?.nodes ?? [], persona);
+        const visiblePosts = excludeReservedIdeaxchangeArticles(personaFilteredPosts);
 
-export async function fetchIdeaxchangeCategoryAfterCursor(
-  topicSlug: string,
-  after: string,
-  first = IDEAXCHANGE_LOAD_MORE_FIRST,
-  persona: IdeaxchangePersona = "brokerage",
-): Promise<{
-  nodes: IdeaxchangeListItem[];
-  pageInfo: { hasNextPage: boolean; endCursor: string | null };
-}> {
-  try {
-    const data = await fetchIdeaxchangeTopicBySlugResult(topicSlug, first, after);
-    const conn = data?.ideaxchangeTopic?.ideaxchangeArticles;
-    return {
-      nodes: filterArticles(conn?.nodes ?? [], persona),
-      pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
-    };
-  } catch (err) {
-    console.error("[ideaxchange] fetchIdeaxchangeCategoryAfterCursor failed:", err);
-    return { nodes: [], pageInfo: EMPTY_PAGE_INFO };
-  }
-}
+        return {
+          nodes: visiblePosts,
+          pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
+        };
+      } catch (err) {
+        console.error("[ideaxchange] fetchIdeaxchangeCategoryAfterCursor failed:", err);
+        return { nodes: [], pageInfo: EMPTY_PAGE_INFO };
+      }
+    }
 
 /** ideaXchange-tagged Sales articles — leaderboard & carrier spotlight sidebars. */
 export async function getIdeaxchangeSalesMagazineBundle(
