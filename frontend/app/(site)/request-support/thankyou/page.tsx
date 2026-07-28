@@ -36,7 +36,7 @@ export default function ThankYouPage() {
             <p>
               Please feel free to check out the{" "}
               <Link
-                href="/about/news/"
+                href="/newsroom"
                 variant="button"
                 className="font-medium text-[#003768] underline transition-colors hover:text-[var(--color-breadcrumb-link-hover)]"
               >
