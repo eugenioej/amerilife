@@ -7,11 +7,11 @@ export default function SupportSection() {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[30%_70%] lg:gap-18">
           <div className="flex flex-col">
             <p className="mb-2 pl-1 text-sm font-semibold uppercase tracking-[0.28em] text-[#3fa590]/80">
-              Marketing Support
+              AmeriLife Marketing
             </p>
 
             <h1 className="text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
-              Request Support
+              Marketing Request Form
             </h1>
 
             <p className="mt-7 max-w-xl text-base leading-8 text-[#244260] md:text-lg">
