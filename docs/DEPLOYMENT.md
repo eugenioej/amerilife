@@ -19,6 +19,7 @@ Brokerage product CSVs are dropped on `sftp.amerilife.com:/outbound` (usually we
 # Local (credentials in frontend/.env.local)
 pnpm -C frontend sync:leaderboard-sftp:list   # inventory remote files
 pnpm -C frontend sync:leaderboard-sftp        # download new/changed CSVs
+pnpm -C frontend import:leaderboard           # push latest/tables.json → WP CPT
 ```
 
 Artifacts land in `frontend/.cache/leaderboard-sftp/` (gitignored): `archive/YYYY-MM-DD/`, `latest/tables.json`, `manifest.json`, `sync-log.jsonl`.
@@ -29,8 +30,10 @@ Artifacts land in `frontend/.cache/leaderboard-sftp/` (gitignored): `archive/YYY
 | `LEADERBOARD_SFTP_PORT` | `22` | |
 | `LEADERBOARD_SFTP_USER` / `LEADERBOARD_SFTP_PASSWORD` | *(from AmeriLife TAB / Marketing)* | Repo secrets for GitHub Action |
 | `LEADERBOARD_SFTP_REMOTE_DIR` | `/outbound` | |
+| `WORDPRESS_URL` | `https://headlessameril.wpenginepowered.com` | Headless WP origin |
+| `WORDPRESS_USER` / `WORDPRESS_APP_PASSWORD` | *(Editor/Admin Application Password)* | Import needs `edit_posts` — not `mediauploader` |
 
-Scheduled job: `.github/workflows/sync-leaderboard-sftp.yml` (daily 15:30 UTC + manual `workflow_dispatch`). Set `LEADERBOARD_SFTP_USER` and `LEADERBOARD_SFTP_PASSWORD` as GitHub Actions secrets. Auto-import into the WordPress CPT is a follow-up; today the job archives + parses into `latest/tables.json`.
+Scheduled job: `.github/workflows/sync-leaderboard-sftp.yml` (daily 15:30 UTC + manual `workflow_dispatch`). Pulls CSVs → writes `latest/tables.json` → `POST /wp-json/amerilife/v1/import-ideaxchange-leaderboard` (updates rows + `report_date` on each `ideaxchange_lb_table` post). Deploy the leaderboard MU plugin first (`node scripts/deploy-mu-plugins.mjs`) so the import route exists.
 
 Optional (only if you use the image sync script manually):
 

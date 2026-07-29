@@ -11,6 +11,7 @@
     "check:piper": "node scripts/check-piper.mjs",
     "sync:leaderboard-sftp": "node scripts/sync-leaderboard-sftp.mjs",
     "sync:leaderboard-sftp:list": "node scripts/sync-leaderboard-sftp.mjs --list",
+    "import:leaderboard": "node scripts/import-ideaxchange-leaderboard.mjs",
     "seed:insights:wp": "node scripts/seed-insights-wp.mjs",
     "prepare:articles": "node scripts/prepare-new-articles.mjs",
     "prepare:articles:dry": "node scripts/prepare-new-articles.mjs --dry-run",

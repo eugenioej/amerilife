@@ -768,6 +768,106 @@ function amerilife_ideaxchange_leaderboard_seed_demo($force = false) {
   ];
 }
 
+/**
+ * Import SFTP-parsed tables.json payload into the 7 fixed leaderboard CPT posts.
+ *
+ * Expected body:
+ * {
+ *   "report_date": "2026-07-20",
+ *   "tables": [
+ *     { "slug": "life", "rows": [...], "report_date": "2026-07-20" }
+ *   ]
+ * }
+ *
+ * @param array<string, mixed> $payload
+ * @return array<string, mixed>|WP_Error
+ */
+function amerilife_ideaxchange_leaderboard_import_tables($payload) {
+  if (!is_array($payload)) {
+    return new WP_Error('leaderboard_import_invalid', 'Body must be a JSON object', ['status' => 400]);
+  }
+
+  $tables = $payload['tables'] ?? null;
+  if (!is_array($tables) || $tables === []) {
+    return new WP_Error('leaderboard_import_invalid', 'Body must include a non-empty "tables" array', ['status' => 400]);
+  }
+
+  $global_report_date = isset($payload['report_date'])
+    ? sanitize_text_field((string) $payload['report_date'])
+    : '';
+
+  amerilife_ideaxchange_leaderboard_ensure_table_posts();
+  $catalog = amerilife_ideaxchange_leaderboard_table_catalog();
+
+  $updated = [];
+  $skipped = [];
+  $errors = [];
+
+  foreach ($tables as $table) {
+    if (!is_array($table)) {
+      continue;
+    }
+    $slug = sanitize_title((string) ($table['slug'] ?? ''));
+    if ($slug === '' || !isset($catalog[$slug])) {
+      $skipped[] = ['slug' => $slug !== '' ? $slug : '(missing)', 'reason' => 'unknown_slug'];
+      continue;
+    }
+    if (!isset($table['rows']) || !is_array($table['rows'])) {
+      $errors[] = ['slug' => $slug, 'reason' => 'missing_rows'];
+      continue;
+    }
+
+    $rows = amerilife_ideaxchange_leaderboard_normalize_rows($table['rows']);
+    if ($rows === []) {
+      $errors[] = ['slug' => $slug, 'reason' => 'empty_rows_after_normalize'];
+      continue;
+    }
+
+    $post = get_page_by_path($slug, OBJECT, AMERILIFE_IX_LEADERBOARD_PT);
+    if (!$post) {
+      $errors[] = ['slug' => $slug, 'reason' => 'post_missing'];
+      continue;
+    }
+
+    $report_date = isset($table['report_date'])
+      ? sanitize_text_field((string) $table['report_date'])
+      : $global_report_date;
+
+    amerilife_ideaxchange_leaderboard_save_rows((int) $post->ID, $rows);
+    if ($report_date !== '') {
+      update_post_meta($post->ID, 'report_date', $report_date);
+    }
+    update_post_meta($post->ID, 'section_label', (string) $catalog[$slug]['section']);
+
+    $updated[] = [
+      'slug' => $slug,
+      'rows' => count($rows),
+      'report_date' => $report_date !== '' ? $report_date : null,
+    ];
+  }
+
+  if ($global_report_date !== '') {
+    update_option('amerilife_ideaxchange_leaderboard_report_date', $global_report_date);
+  }
+
+  if ($updated === [] && $errors !== []) {
+    return new WP_Error(
+      'leaderboard_import_failed',
+      'No tables were imported',
+      ['status' => 400, 'errors' => $errors, 'skipped' => $skipped]
+    );
+  }
+
+  return [
+    'ok' => true,
+    'report_date' => $global_report_date !== '' ? $global_report_date : null,
+    'tables_updated' => count($updated),
+    'updated' => $updated,
+    'skipped' => $skipped,
+    'errors' => $errors,
+  ];
+}
+
 add_action('rest_api_init', function () {
   register_rest_route('amerilife/v1', '/seed-ideaxchange-leaderboard', [
     'methods' => 'POST',
@@ -777,6 +877,23 @@ add_action('rest_api_init', function () {
     'callback' => static function ($req) {
       $force = (bool) $req->get_param('force');
       return rest_ensure_response(amerilife_ideaxchange_leaderboard_seed_demo($force));
+    },
+  ]);
+
+  register_rest_route('amerilife/v1', '/import-ideaxchange-leaderboard', [
+    'methods' => 'POST',
+    'permission_callback' => static function () {
+      return current_user_can('edit_posts');
+    },
+    'callback' => static function ($req) {
+      $payload = $req->get_json_params();
+      if (!is_array($payload) || $payload === []) {
+        $payload = $req->get_body_params();
+      }
+      if (!is_array($payload)) {
+        $payload = [];
+      }
+      return rest_ensure_response(amerilife_ideaxchange_leaderboard_import_tables($payload));
     },
   ]);
 });

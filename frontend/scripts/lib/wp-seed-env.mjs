@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readFileSync, existsSync, unlinkSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, unlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { promisify } from "node:util";
 import { dirname, join } from "node:path";
@@ -171,10 +171,14 @@ async function fetchRestNonce(wpUrl, cookie) {
   return "";
 }
 
-async function postWithCurl(endpoint, user, pass, headers = {}) {
+async function postWithCurl(endpoint, user, pass, headers = {}, body = null) {
   const outFile = join(tmpdir(), `wp-seed-${Date.now()}.json`);
+  const bodyFile = body != null ? join(tmpdir(), `wp-seed-body-${Date.now()}.json`) : null;
   const curlHeaders = Object.entries(headers).flatMap(([k, v]) => ["-H", `${k}: ${v}`]);
   try {
+    if (bodyFile != null) {
+      writeFileSync(bodyFile, typeof body === "string" ? body : JSON.stringify(body));
+    }
     const { stdout } = await execFileAsync("curl", [
       "-s",
       "-o",
@@ -187,24 +191,33 @@ async function postWithCurl(endpoint, user, pass, headers = {}) {
       ...curlHeaders,
       "-H",
       "Content-Type: application/json",
+      ...(bodyFile != null ? ["--data-binary", `@${bodyFile}`] : []),
       endpoint,
     ]);
     const status = Number(stdout.trim()) || 0;
     const json = JSON.parse(readFileSync(outFile, "utf8"));
     return { ok: status >= 200 && status < 300, status, json };
   } finally {
-    try {
-      unlinkSync(outFile);
-    } catch {
-      /* ignore */
+    for (const f of [outFile, bodyFile]) {
+      if (!f) continue;
+      try {
+        unlinkSync(f);
+      } catch {
+        /* ignore */
+      }
     }
   }
 }
 
-/** POST to a WP seed route; tries Application Password, curl, then wp-login session. */
-export async function postWpSeed(path, { force = false } = {}) {
+/**
+ * POST JSON to a WP REST route; tries Application Password, curl, then wp-login session.
+ * @param {string} path e.g. "/wp-json/amerilife/v1/import-ideaxchange-leaderboard"
+ * @param {{ force?: boolean, body?: unknown }} [opts]
+ */
+export async function postWpJson(path, { force = false, body = undefined } = {}) {
   const { wpUrl, user, appPass, loginPassword } = getWpSeedCredentials();
   const endpoint = `${wpUrl}${path}${force ? (path.includes("?") ? "&" : "?") + "force=1" : ""}`;
+  const bodyStr = body === undefined ? undefined : JSON.stringify(body);
 
   const attempts = [];
 
@@ -216,12 +229,13 @@ export async function postWpSeed(path, { force = false } = {}) {
         Authorization: `Basic ${auth}`,
         "Content-Type": "application/json",
       },
+      ...(bodyStr !== undefined ? { body: bodyStr } : {}),
     });
     const json = await res.json().catch(() => ({}));
     if (res.ok) return { ok: true, status: res.status, json };
     attempts.push(`Application Password (HTTP ${res.status}: ${json?.code || "error"})`);
 
-    const curlResult = await postWithCurl(endpoint, user, appPass);
+    const curlResult = await postWithCurl(endpoint, user, appPass, {}, bodyStr ?? null);
     if (curlResult.ok) return curlResult;
     attempts.push(`curl + Application Password (HTTP ${curlResult.status}: ${curlResult.json?.code || "error"})`);
   }
@@ -233,7 +247,11 @@ export async function postWpSeed(path, { force = false } = {}) {
       const headers = { Cookie: cookie, "Content-Type": "application/json" };
       if (nonce) headers["X-WP-Nonce"] = nonce;
 
-      const res = await fetch(endpoint, { method: "POST", headers });
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers,
+        ...(bodyStr !== undefined ? { body: bodyStr } : {}),
+      });
       const json = await res.json().catch(() => ({}));
       if (res.ok) return { ok: true, status: res.status, json };
       attempts.push(`wp-login session (HTTP ${res.status}: ${json?.code || "error"})`);
@@ -248,10 +266,15 @@ export async function postWpSeed(path, { force = false } = {}) {
     json: {
       code: "auth_failed",
       message:
-        "WordPress did not accept the credentials in .env.local. Regenerate an Application Password for mediauploader (Users → Profile → Application Passwords) and set WORDPRESS_APP_PASSWORD in frontend/.env.local.",
+        "WordPress did not accept the credentials in .env.local. Regenerate an Application Password for a user with edit_posts (Users → Profile → Application Passwords) and set WORDPRESS_APP_PASSWORD in frontend/.env.local.",
       attempts,
     },
   };
+}
+
+/** POST to a WP seed route; tries Application Password, curl, then wp-login session. */
+export async function postWpSeed(path, { force = false } = {}) {
+  return postWpJson(path, { force });
 }
 
 export function formatSeedAuthHelp(user) {

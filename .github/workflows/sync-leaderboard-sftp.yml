@@ -1,9 +1,15 @@
-# Daily pull of brokerage Sales Leaderboard CSVs from AmeriLife outbound SFTP.
+# Daily pull of brokerage Sales Leaderboard CSVs from AmeriLife outbound SFTP,
+# then import latest/tables.json into the headless WordPress leaderboard CPT.
 # Updates are usually weekly; the job is idempotent and exits cleanly when nothing changed.
 #
 # Required repo secrets:
 #   LEADERBOARD_SFTP_USER
 #   LEADERBOARD_SFTP_PASSWORD
+#
+# Required for WP import (Editor/Admin Application Password — not mediauploader):
+#   WORDPRESS_URL (or NEXT_PUBLIC_WORDPRESS_URL)
+#   WORDPRESS_USER (or HEADLESS_WP_APP_USER)
+#   WORDPRESS_APP_PASSWORD (or HEADLESS_WP_APP_PASSWORD)
 #
 # Optional secrets / vars:
 #   LEADERBOARD_SFTP_HOST (default sftp.amerilife.com)
@@ -58,8 +64,24 @@ jobs:
           LEADERBOARD_SFTP_REMOTE_DIR: ${{ secrets.LEADERBOARD_SFTP_REMOTE_DIR }}
         run: pnpm sync:leaderboard-sftp
 
+      - name: Import tables into WordPress
+        env:
+          WORDPRESS_URL: ${{ secrets.WORDPRESS_URL }}
+          NEXT_PUBLIC_WORDPRESS_URL: ${{ secrets.NEXT_PUBLIC_WORDPRESS_URL }}
+          NEXT_PUBLIC_GRAPHQL_ENDPOINT: ${{ secrets.NEXT_PUBLIC_GRAPHQL_ENDPOINT }}
+          WORDPRESS_USER: ${{ secrets.WORDPRESS_USER }}
+          WORDPRESS_APP_PASSWORD: ${{ secrets.WORDPRESS_APP_PASSWORD }}
+          HEADLESS_WP_APP_USER: ${{ secrets.HEADLESS_WP_APP_USER }}
+          HEADLESS_WP_APP_PASSWORD: ${{ secrets.HEADLESS_WP_APP_PASSWORD }}
+        run: |
+          if [ -z "${WORDPRESS_APP_PASSWORD}${HEADLESS_WP_APP_PASSWORD}" ]; then
+            echo "::warning::WP Application Password secret missing — skipping import (SFTP archive still uploaded). Set WORDPRESS_APP_PASSWORD (Editor/Admin) to enable."
+            exit 0
+          fi
+          pnpm import:leaderboard -- --require-creds
+
       - name: Upload archive artifact
-        if: success()
+        if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
           name: leaderboard-sftp-${{ github.run_id }}
