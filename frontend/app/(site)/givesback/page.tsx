@@ -14,7 +14,7 @@ export const metadata: Metadata = staticPageMetadata(
 
 const DONATE_URL = "https://buy.stripe.com/eVa2bi8vObFP9u83cc";
 const HONOR_FLIGHT_LINK =
-  "https://amerilife.com/blog/announcements/amerilife-gives-back-foundation-names-honor-flight-network-as-inaugural-partner/";
+  "https://amerilife.com/newsroom/announcements/amerilife-gives-back-foundation-names-honor-flight-network-as-inaugural-partner/";
 
 /** Vimeo hero embed (replaces broken Wistia if `NEXT_PUBLIC_GIVESBACK_VIDEO_IFRAME_SRC` still points there). */
 const GIVES_BACK_VIMEO_EMBED_SRC =

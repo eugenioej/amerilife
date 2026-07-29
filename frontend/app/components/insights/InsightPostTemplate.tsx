@@ -105,6 +105,8 @@ function InTheNewsSidebar({ posts }: { posts: PostsListItem[] }) {
           const img =
             item.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
           const href = item.uri || "#";
+          const categorySlug = item.categories?.nodes?.[0]?.slug;
+          console.log('item', item)
           return (
             <li key={item.id} className="flex gap-3 py-4 first:pt-0">
               <Link
@@ -123,7 +125,7 @@ function InTheNewsSidebar({ posts }: { posts: PostsListItem[] }) {
               </Link>
               <div className="min-w-0">
                 <Link
-                  href={href}
+                  href={`/newsroom/${categorySlug}/${href}`}
                   variant="button"
                   className="text-left text-sm font-bold leading-snug text-[var(--color-fg)] hover:text-[var(--color-brand-primary)]"
                 >

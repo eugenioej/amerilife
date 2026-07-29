@@ -13,4 +13,4 @@ export const LEGACY_CATEGORY_SLUGS = new Set([
  * Canonical URL for the "all posts" listing. Do not use `/blog` — `next.config`
  * redirects `/blog` and `/blog/` to `/newsroom`.
  */
-export const BLOG_ALL_POSTS_HREF = "/blog/announcements";
+export const BLOG_ALL_POSTS_HREF = "/newsroom/announcements";

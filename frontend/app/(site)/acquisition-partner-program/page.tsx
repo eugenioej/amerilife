@@ -81,7 +81,7 @@ export default async function AcquisitionPartnerProgramPage() {
             </h2>
             <AnnouncementsCarousel
               posts={announcements}
-              seeAllHref="/blog/mergers-and-acquisitions/"
+              seeAllHref="/newsroom/mergers-and-acquisitions/"
             />
           </div>
         </FadeInOnView>

@@ -11,7 +11,7 @@ function postHref(post: PostsListItem): string | null {
   if (!slug) return null;
   const category = post.categories?.nodes?.[0];
   const categorySlug = category?.slug ?? "announcements";
-  return `/blog/${categorySlug}/${slug}/`;
+  return `/newsroom/${categorySlug}/${slug}/`;
 }
 
 export function FaqNewsroomSection({ posts }: Props) {

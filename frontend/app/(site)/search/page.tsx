@@ -142,7 +142,7 @@ function PostCard({ node }: { node: PostSearchNode }) {
   const truncated = excerpt.length > 200 ? excerpt.slice(0, 200) + "…" : excerpt;
   const categorySlug = node.categories?.nodes?.[0]?.slug ?? "announcements";
   const slug = node.slug ?? "";
-  const href = slug ? `/blog/${categorySlug}/${slug}/` : "#";
+  const href = slug ? `/newsroom/${categorySlug}/${slug}/` : "#";
 
   return (
     <article className="group rounded-lg border border-[var(--color-border)] bg-white p-5 transition-shadow hover:shadow-md">

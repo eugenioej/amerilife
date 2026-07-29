@@ -11,7 +11,6 @@ import {
 import { BlogListingToolbar } from "@/app/components/blog/BlogListingToolbar";
 import { BlogPostCard } from "@/app/components/blog/BlogPostCard";
 import { BlogPagination } from "@/app/components/blog/BlogPagination";
-import { Link } from "@/app/components/ui/Link";
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { LEGACY_CATEGORY_SLUGS } from "@/lib/blog-legacy-category-slugs";
 import { staticPageMetadata } from "@/lib/seo";

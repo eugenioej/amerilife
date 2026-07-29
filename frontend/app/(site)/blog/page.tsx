@@ -16,7 +16,7 @@ import { staticPageMetadata } from "@/lib/seo";
 export const metadata: Metadata = staticPageMetadata(
   "Newsroom & Blog | AmeriLife",
   "Stay up to date with the latest news, announcements, and insights from AmeriLife — America's leading health and wealth distribution company.",
-  "/blog/"
+  "/newsroom/"
 );
 
 const PAGE_SIZE = 12;

@@ -37,7 +37,7 @@ export function BlogPostCard({ post, hideCategoryPill = false }: Props) {
       <div className="flex flex-1 flex-col p-5">
         {category && !hideCategoryPill && (
           <Link
-            href={`/blog/${categorySlug}/`}
+            href={`/newsroom/${categorySlug}/`}
             variant="button"
             className="mb-3 inline-block self-start rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white"
             style={{ backgroundColor: getCategoryPillColor(categorySlug) }}

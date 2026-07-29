@@ -193,7 +193,7 @@ export default function SmaAmerilifeVideoPage() {
           {/* CTAs */}
           <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap">
             <Link
-              href="https://amerilife.com/blog/press-release/amerilife-and-senior-market-advisors-join-forces-to-redefine-and-innovate-insurance-distribution/"
+              href="https://amerilife.com/newsroom/press-release/amerilife-and-senior-market-advisors-join-forces-to-redefine-and-innovate-insurance-distribution/"
               target="_blank"
               rel="noopener noreferrer"
               variant="button"
