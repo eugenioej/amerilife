@@ -47,8 +47,10 @@ export function CaseStudyTemplate({ post, relatedPosts }: Props) {
         items={[
           { label: "Home", href: "/" },
           { label: "ideaXchange", href: IDEAXCHANGE_HOME_PATH },
-          { label: "Case Studies", href: IDEAXCHANGE_RECRUITING_HUB_PATH },
-          { label: "Recruiting", href: IDEAXCHANGE_RECRUITING_HUB_PATH },
+          { label: "Recruiting Hub", href: IDEAXCHANGE_RECRUITING_HUB_PATH },
+          ...(companySlug
+            ? [{ label: companyName, href: companyHref(companySlug) }]
+            : []),
           {
             label: post.title ?? "Case study",
             className: "truncate text-[var(--color-muted)] sm:max-w-[28rem]",
@@ -58,10 +60,6 @@ export function CaseStudyTemplate({ post, relatedPosts }: Props) {
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
         <div className="lg:col-span-8">
-          <span className="mb-4 inline-block bg-[var(--color-brand-primary)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-            Recruiting
-          </span>
-
           <h1 className="max-w-4xl font-sans text-3xl font-bold leading-tight tracking-tight text-[var(--color-brand-dark)] sm:text-4xl">
             {post.title}
           </h1>

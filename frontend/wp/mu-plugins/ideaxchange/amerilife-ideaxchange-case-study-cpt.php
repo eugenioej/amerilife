@@ -92,7 +92,7 @@ add_action('init', function () {
     'auth_callback' => $meta_auth,
   ]);
 
-  foreach (['is_spotlight', 'is_featured'] as $key) {
+  foreach (['is_spotlight', 'is_featured', 'is_hero'] as $key) {
     register_post_meta(AMERILIFE_IX_CASE_STUDY_PT, $key, [
       'type' => 'boolean',
       'single' => true,
@@ -188,8 +188,10 @@ add_action('add_meta_boxes', function () {
 
       $spot = (bool) filter_var(get_post_meta($post->ID, 'is_spotlight', true), FILTER_VALIDATE_BOOLEAN);
       $feat = (bool) filter_var(get_post_meta($post->ID, 'is_featured', true), FILTER_VALIDATE_BOOLEAN);
+      $hero = (bool) filter_var(get_post_meta($post->ID, 'is_hero', true), FILTER_VALIDATE_BOOLEAN);
       echo '<p style="margin-top:16px"><label><input type="checkbox" name="is_spotlight" value="1"' . checked($spot, true, false) . ' /> Spotlight sidebar</label></p>';
       echo '<p><label><input type="checkbox" name="is_featured" value="1"' . checked($feat, true, false) . ' /> Featured on Recruiting Hub</label></p>';
+      echo '<p><label><input type="checkbox" name="is_hero" value="1"' . checked($hero, true, false) . ' /> Hero tile (top row)</label></p>';
 
       $cta = get_post_meta($post->ID, 'marketing_cta_url', true);
       echo '<p style="margin-top:16px"><label for="marketing_cta_url"><strong>Get started button URL</strong></label></p>';
@@ -251,6 +253,7 @@ add_action('save_post_' . AMERILIFE_IX_CASE_STUDY_PT, function ($post_id) {
 
   update_post_meta($post_id, 'is_spotlight', !empty($_POST['is_spotlight']) ? '1' : '0');
   update_post_meta($post_id, 'is_featured', !empty($_POST['is_featured']) ? '1' : '0');
+  update_post_meta($post_id, 'is_hero', !empty($_POST['is_hero']) ? '1' : '0');
 
   $cta = isset($_POST['marketing_cta_url']) ? esc_url_raw(wp_unslash($_POST['marketing_cta_url'])) : '';
   update_post_meta($post_id, 'marketing_cta_url', $cta);
@@ -287,6 +290,7 @@ add_action('graphql_register_types', function () {
     'fields' => [
       'isSpotlight' => ['type' => 'Boolean'],
       'isFeatured' => ['type' => 'Boolean'],
+      'isHeroFeatured' => ['type' => 'Boolean'],
       'marketingCtaUrl' => ['type' => 'String'],
       'targetAudience' => ['type' => 'String'],
       'campaignSpend' => ['type' => 'String'],
@@ -311,6 +315,7 @@ add_action('graphql_register_types', function () {
         return [
           'isSpotlight' => false,
           'isFeatured' => false,
+          'isHeroFeatured' => false,
           'marketingCtaUrl' => null,
           'targetAudience' => null,
           'campaignSpend' => null,
@@ -323,6 +328,7 @@ add_action('graphql_register_types', function () {
 
       $spot = (bool) filter_var(get_post_meta($id, 'is_spotlight', true), FILTER_VALIDATE_BOOLEAN);
       $feat = (bool) filter_var(get_post_meta($id, 'is_featured', true), FILTER_VALIDATE_BOOLEAN);
+      $hero = (bool) filter_var(get_post_meta($id, 'is_hero', true), FILTER_VALIDATE_BOOLEAN);
       if (!$feat && taxonomy_exists('ideaxchange_case_study_tag')) {
         $feat = has_term('featured', 'ideaxchange_case_study_tag', $id);
       }
@@ -341,6 +347,7 @@ add_action('graphql_register_types', function () {
       return [
         'isSpotlight' => $spot,
         'isFeatured' => $feat,
+        'isHeroFeatured' => $hero,
         'marketingCtaUrl' => $cta !== '' ? (string) $cta : null,
         'targetAudience' => $target_audience !== '' ? (string) $target_audience : null,
         'campaignSpend' => $campaign_spend !== '' ? (string) $campaign_spend : null,

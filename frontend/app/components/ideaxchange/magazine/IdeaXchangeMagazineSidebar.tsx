@@ -19,7 +19,10 @@ import {
 type Props = {
   spotlight: IdeaxchangeListItem | null;
   recentSidebar: IdeaxchangeListItem[];
+  /** Fallback when spotlight has no topic. */
   spotlightBadgeLabel?: string;
+  /** Href for `spotlightBadgeLabel` when there is no topic. */
+  spotlightBadgeHref?: string;
   recentHeading?: string;
   adSlot?: IdeaxchangeAdSlot | null;
 };
@@ -28,6 +31,7 @@ export function IdeaXchangeMagazineSidebar({
   spotlight,
   recentSidebar,
   spotlightBadgeLabel,
+  spotlightBadgeHref,
   recentHeading = "Recent articles",
   adSlot,
 }: Props) {
@@ -58,6 +62,7 @@ export function IdeaXchangeMagazineSidebar({
                 <IdeaXchangeTopicBadge
                   post={spotlight}
                   label={spotlightBadgeLabel}
+                  fallbackHref={spotlightBadgeHref}
                   className="pointer-events-auto absolute bottom-3 left-3 z-[1] bg-[var(--color-brand-primary)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white"
                 />
               </div>

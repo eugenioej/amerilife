@@ -91,6 +91,7 @@ export function SalesLeaderboardPage({
                 initialEndCursor={salesListPageInfo?.endCursor ?? null}
                 tagSlug={IDEAXCHANGE_SALES_TAG_SLUG}
                 badgeLabel="SALES"
+                badgeHref={IDEAXCHANGE_LEADERBOARD_PATH}
               />
             </div>
 
@@ -99,6 +100,7 @@ export function SalesLeaderboardPage({
                 spotlight={spotlight}
                 recentSidebar={recentSidebar}
                 spotlightBadgeLabel="SALES"
+                spotlightBadgeHref={IDEAXCHANGE_LEADERBOARD_PATH}
                 adSlot={ideaxchangeAds?.homeSidebarVertical}
               />
             </aside>

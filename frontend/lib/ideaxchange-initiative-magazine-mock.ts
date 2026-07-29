@@ -19,7 +19,8 @@ function initiativePost(
     date,
     excerpt: `<p>${excerpt}</p>`,
     content: `<p>${content}</p>`,
-    ideaxchangeTopics: { nodes: [{ name: "Health", slug: "health" }] },
+    ideaxchangeTopics: { nodes: [{ name: "Company News", slug: "company-news" }] },
+    ideaxchangeTags: { nodes: [{ name: "Initiative", slug: "initiative" }] },
     ideaxchangeFields: {
       isSpotlight: opts.spotlight ?? false,
       isFeatured: opts.featured ?? false,

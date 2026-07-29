@@ -15,7 +15,6 @@ import {
   formatBylineDate,
   ideaxchangeHref,
   INSIGHT_IMG_QUALITY,
-  topicLabel,
 } from "./ideaxchange-utils";
 
 type Props = {
@@ -29,8 +28,13 @@ type Props = {
   topicSlug?: string;
   /** When set, “Load more” requests the next page of magazine posts with this tag (e.g. sales). */
   tagSlug?: string;
-  /** Override topic badge label (e.g. SALES on leaderboard blog section). */
+  /**
+   * Fallback badge when the post has no topic (e.g. RECRUIT / SALES on pillar pages).
+   * Real topics always win and link to the category archive.
+   */
   badgeLabel?: string;
+  /** Href for `badgeLabel` when there is no topic (e.g. pillar hub path). */
+  badgeHref?: string;
   /** Base path for article singles (e.g. /ideaxchange/sales-success/). Defaults to magazine. */
   articleBasePath?: string;
   /** When false, hides infinite “Load more” (e.g. category archives use numbered pages). Default true. */
@@ -63,6 +67,7 @@ export function IdeaXchangeNewsroomColumn({
   topicSlug,
   tagSlug,
   badgeLabel,
+  badgeHref,
   articleBasePath,
   enableLoadMore = true,
   paginationHref,
@@ -161,7 +166,6 @@ export function IdeaXchangeNewsroomColumn({
       {posts.map((post, index) => {
         const img = ideaxchangeFeaturedImageSrc(post.featuredImage?.node?.sourceUrl);
         const href = articleHrefForBase(post.slug, articleBasePath);
-        const badge = badgeLabel ?? topicLabel(post);
         return (
           <article
             key={post.id}
@@ -187,6 +191,7 @@ export function IdeaXchangeNewsroomColumn({
                 post={post}
                 className="pointer-events-auto absolute bottom-2 left-2 z-[1] bg-[var(--color-brand-primary)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white"
                 label={badgeLabel}
+                fallbackHref={badgeHref}
               />
             </div>
             <div className="min-w-0 flex-1">

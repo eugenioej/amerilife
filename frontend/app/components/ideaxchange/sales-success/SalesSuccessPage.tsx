@@ -46,6 +46,7 @@ export function SalesSuccessPage({ posts, pageInfo, ideaxchangeAds }: Props) {
               initialEndCursor={pageInfo?.endCursor ?? null}
               tagSlug={IDEAXCHANGE_INITIATIVE_TAG_SLUG}
               badgeLabel={SALES_SUCCESS_BADGE_LABEL}
+              badgeHref={IDEAXCHANGE_SALES_SUCCESS_PATH}
               articleBasePath={IDEAXCHANGE_SALES_SUCCESS_PATH}
             />
           </div>

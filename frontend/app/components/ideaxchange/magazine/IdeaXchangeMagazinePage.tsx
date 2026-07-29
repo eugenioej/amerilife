@@ -6,12 +6,10 @@ import { IdeaXchangeLeaderboardCtaBanner } from "@/app/components/ideaxchange/sh
 import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeHorizontalAdSlot";
 import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import {
-  ideaxchangeCategoryHref,
   ideaxchangeHref,
   INSIGHTS_NEWSROOM_INITIAL,
   isIdeaxchangeFeatured,
-  topicLabel,
-  topicSlug,
+  resolveIdeaxchangeBadge,
 } from "./ideaxchange-utils";
 import { IdeaXchangeMagazineSidebar } from "./IdeaXchangeMagazineSidebar";
 import { IdeaXchangeNewsroomColumn } from "./IdeaXchangeNewsroomColumn";
@@ -99,15 +97,15 @@ function partitionPosts(posts: IdeaxchangeListItem[]) {
 }
 
 function toCardItem(post: IdeaxchangeListItem): IdeaxchangeCardItem {
-  const slug = topicSlug(post);
+  const badge = resolveIdeaxchangeBadge(post);
   return {
     id: post.id,
     slug: post.slug,
     title: post.title,
     date: post.date,
     excerpt: post.excerpt,
-    badgeLabel: topicLabel(post),
-    badgeHref: slug ? ideaxchangeCategoryHref(slug) : null,
+    badgeLabel: badge.label,
+    badgeHref: badge.href,
     href: ideaxchangeHref(post.slug),
     featuredImage: post.featuredImage,
     isFeatured: isIdeaxchangeFeatured(post),

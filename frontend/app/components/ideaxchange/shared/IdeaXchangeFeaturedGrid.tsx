@@ -20,7 +20,7 @@ const badgeClass =
 export function IdeaXchangeFeaturedGrid({
   items,
   heading = "Featured campaigns",
-  defaultBadge = "RECRUITING",
+  defaultBadge,
 }: Props) {
   if (items.length === 0) return null;
 
@@ -32,7 +32,7 @@ export function IdeaXchangeFeaturedGrid({
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
         {items.map((item) => {
           const img = ideaxchangeFeaturedImageSrc(item.featuredImage?.node?.sourceUrl);
-          const badge = item.badgeLabel?.trim() || defaultBadge;
+          const badge = item.badgeLabel?.trim() || defaultBadge?.trim() || "";
           const badgeHref = item.badgeHref?.trim();
 
           return (
@@ -51,13 +51,15 @@ export function IdeaXchangeFeaturedGrid({
                   quality={IDEAXCHANGE_IMG_QUALITY}
                 />
               </Link>
-              {badgeHref ? (
-                <Link href={badgeHref} variant="button" className={badgeClass}>
-                  {badge}
-                </Link>
-              ) : (
-                <span className={badgeClass}>{badge}</span>
-              )}
+              {badge ? (
+                badgeHref ? (
+                  <Link href={badgeHref} variant="button" className={badgeClass}>
+                    {badge}
+                  </Link>
+                ) : (
+                  <span className={badgeClass}>{badge}</span>
+                )
+              ) : null}
               <Link href={item.href} variant="button" className="text-left hover:no-underline">
                 <h3 className="text-base font-bold leading-snug text-[var(--color-fg)] transition-colors group-hover:text-[var(--color-brand-primary)]">
                   {item.title}
