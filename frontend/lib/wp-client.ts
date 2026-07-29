@@ -1,5 +1,11 @@
 // lib/wp-client.ts
 
+/** Default Next.js Data Cache TTL for GraphQL GET queries (10 minutes). */
+export const GRAPHQL_REVALIDATE_SECONDS = 600;
+
+/** Longer TTL for layout-global data (menus, header form schema). */
+export const LAYOUT_REVALIDATE_SECONDS = 3600;
+
 /** WordPress origin for building `/graphql` (server scripts often set `WORDPRESS_URL` only). */
 function getWpBaseUrl(): string | undefined {
   const pub = process.env.NEXT_PUBLIC_WORDPRESS_URL?.trim();
@@ -27,53 +33,50 @@ function getGraphQLEndpoint(): string {
   );
 }
 
-
 export async function fetchGraphQL<T>(
   query: string,
   variables?: Record<string, unknown>,
   signal?: AbortSignal,
-  isMutation = false // ✅ ADD THIS
-): Promise<T>
- {
+  isMutation = false,
+  revalidate: number | false = GRAPHQL_REVALIDATE_SECONDS,
+): Promise<T> {
   const graphqlEndpoint = getGraphQLEndpoint();
 
-  // ✅ Build GET URL (cacheable)
   let res: Response;
 
-if (isMutation) {
-  // ✅ POST for mutations (fixes your form)
-  res = await fetch(graphqlEndpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "User-Agent": "Next.js GraphQL Client",
-    },
-    body: JSON.stringify({
-      query,
-      variables,
-    }),
-    ...(signal ? { signal } : {}),
-  });
-} else {
-  // ✅ GET for queries (keeps your caching benefits)
-  const params = new URLSearchParams({ query });
+  if (isMutation) {
+    res = await fetch(graphqlEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": "Next.js GraphQL Client",
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      }),
+      ...(signal ? { signal } : {}),
+    });
+  } else {
+    const params = new URLSearchParams({ query });
 
-  if (variables && Object.keys(variables).length > 0) {
-    params.append("variables", JSON.stringify(variables));
+    if (variables && Object.keys(variables).length > 0) {
+      params.append("variables", JSON.stringify(variables));
+    }
+
+    const url = `${graphqlEndpoint}?${params.toString()}`;
+
+    res = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": "Next.js GraphQL Client",
+      },
+      // Stale-while-revalidate: serve cached data and refresh in the background.
+      next: { revalidate },
+      ...(signal ? { signal } : {}),
+    });
   }
-
-  const url = `${graphqlEndpoint}?${params.toString()}`;
-
-  res = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "User-Agent": "Next.js GraphQL Client",
-    },
-    next: { revalidate: 120 }, // keep your cache
-    ...(signal ? { signal } : {}),
-  });
-}
   if (!res.ok) {
     throw new Error(`GraphQL request failed: ${res.status} ${res.statusText}`);
   }

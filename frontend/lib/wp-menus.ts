@@ -6,7 +6,9 @@
 // 2. Assign the menu to a theme location (e.g. "Primary" or "Header")
 // 3. Menus must be assigned to a location to be visible in GraphQL
 
-import { fetchGraphQL } from "./wp-client";
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+import { fetchGraphQL, LAYOUT_REVALIDATE_SECONDS } from "./wp-client";
 import { isContactNavItem } from "./nav-contact";
 import { GET_MENUS, GET_MENU_BY_SLUG, GET_MENU_ITEMS_PRIMARY, GET_MENU_ITEMS_HEADER } from "./queries";
 
@@ -150,12 +152,18 @@ type MenuNode = {
   menuItems?: { nodes: { id: string; label: string; url: string; path?: string; parentId?: string | null }[] };
 };
 
-export async function getPrimaryMenu(): Promise<NavItem[]> {
+async function loadPrimaryMenu(): Promise<NavItem[]> {
   // 1. Try menu items by theme location (most reliable when menu is assigned to header)
   type MenuItemsRes = { menuItems?: { nodes: { id: string; label: string; url: string; path?: string; parentId?: string | null }[] } };
   for (const query of [GET_MENU_ITEMS_PRIMARY, GET_MENU_ITEMS_HEADER]) {
     try {
-      const data = await fetchGraphQL<MenuItemsRes>(query);
+      const data = await fetchGraphQL<MenuItemsRes>(
+        query,
+        undefined,
+        undefined,
+        false,
+        LAYOUT_REVALIDATE_SECONDS,
+      );
       const nodes = data?.menuItems?.nodes;
       if (nodes?.length) {
         return ensureInsightsInPrimaryMenu(normalizeMenuItems(nodes));
@@ -167,7 +175,13 @@ export async function getPrimaryMenu(): Promise<NavItem[]> {
 
   // 2. Try menus list and find primary/header by slug or name
   try {
-    const data = await fetchGraphQL<{ menus?: { nodes: MenuNode[] } }>(GET_MENUS);
+    const data = await fetchGraphQL<{ menus?: { nodes: MenuNode[] } }>(
+      GET_MENUS,
+      undefined,
+      undefined,
+      false,
+      LAYOUT_REVALIDATE_SECONDS,
+    );
     const menus = data?.menus?.nodes ?? [];
     const primary =
       menus.find(
@@ -184,7 +198,10 @@ export async function getPrimaryMenu(): Promise<NavItem[]> {
     for (const slug of ["primary", "header", "main"]) {
       const menuBySlug = await fetchGraphQL<{ menu?: MenuNode | null }>(
         GET_MENU_BY_SLUG,
-        { slug }
+        { slug },
+        undefined,
+        false,
+        LAYOUT_REVALIDATE_SECONDS,
       );
       if (menuBySlug?.menu?.menuItems?.nodes?.length) {
         return ensureInsightsInPrimaryMenu(buildHierarchy(menuBySlug.menu.menuItems.nodes));
@@ -196,9 +213,23 @@ export async function getPrimaryMenu(): Promise<NavItem[]> {
   return ensureInsightsInPrimaryMenu(STATIC_PRIMARY_NAV);
 }
 
-export async function getFooterMenu(): Promise<NavItem[]> {
+const getPrimaryMenuCached = unstable_cache(loadPrimaryMenu, ["layout-primary-menu"], {
+  revalidate: LAYOUT_REVALIDATE_SECONDS,
+  tags: ["layout-menu"],
+});
+
+/** Request-deduped + cross-request cached primary nav (1 hour). */
+export const getPrimaryMenu = cache(async (): Promise<NavItem[]> => getPrimaryMenuCached());
+
+async function loadFooterMenu(): Promise<NavItem[]> {
   try {
-    const data = await fetchGraphQL<{ menus?: { nodes: MenuNode[] } }>(GET_MENUS);
+    const data = await fetchGraphQL<{ menus?: { nodes: MenuNode[] } }>(
+      GET_MENUS,
+      undefined,
+      undefined,
+      false,
+      LAYOUT_REVALIDATE_SECONDS,
+    );
 
     const menus = data?.menus?.nodes ?? [];
     const footer =
@@ -215,3 +246,10 @@ export async function getFooterMenu(): Promise<NavItem[]> {
   }
   return ensureInsightsInFooterMenu(STATIC_FOOTER_LINKS);
 }
+
+const getFooterMenuCached = unstable_cache(loadFooterMenu, ["layout-footer-menu"], {
+  revalidate: LAYOUT_REVALIDATE_SECONDS,
+  tags: ["layout-menu"],
+});
+
+export const getFooterMenu = cache(async (): Promise<NavItem[]> => getFooterMenuCached());
