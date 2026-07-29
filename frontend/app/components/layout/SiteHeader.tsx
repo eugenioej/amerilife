@@ -51,6 +51,16 @@ export function SiteHeader({
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const { openContactPopup } = useContactPopup();
+  
+  if (inIdeaxchange) {
+    console.log("[ideaXchange Header]", {
+      pathname,
+      persona: ideaxchangePersona,
+      devView: ideaxchangeDevView,
+    });
+  }
+
+  
 
   const isActiveNavHref = (href: string) => {
     const normalizedPath = pathname.replace(/\/+$/, "") || "/";
