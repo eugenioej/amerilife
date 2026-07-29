@@ -39,7 +39,7 @@ export function ThankYouPageContent({
 
         <div
           className="mb-8 h-1 w-24"
-          style={{ backgroundColor: "rgb(148, 200, 61)" }}
+          style={{ backgroundColor: "#40A590" }}
         />
 
         <div className="grid gap-8 md:grid-cols-[minmax(0,min(100%,380px))_1fr] md:items-center">
