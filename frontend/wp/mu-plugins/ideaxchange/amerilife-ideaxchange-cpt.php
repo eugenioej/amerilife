@@ -100,6 +100,192 @@ add_action('init', function () {
   ]);
 }, 9);
 
+  register_post_meta('ideaxchange_article', 'hero_landscape_image_id', [
+    'type' => 'integer',
+    'single' => true,
+    'show_in_rest' => true,
+    'default' => 0,
+    'auth_callback' => function () {
+      return current_user_can('edit_posts');
+    },
+  ]);
+
+add_action('add_meta_boxes', function () {
+  add_meta_box(
+    'ideaxchange_hero_landscape_image',
+    'Hero Landscape Image',
+    'amerilife_ideaxchange_render_hero_landscape_meta_box',
+    'ideaxchange_article',
+    'side',
+    'default'
+  );
+});
+
+function amerilife_ideaxchange_render_hero_landscape_meta_box($post) {
+  wp_nonce_field(
+    'ideaxchange_hero_landscape_image',
+    'ideaxchange_hero_landscape_image_nonce'
+  );
+
+  $image_id = (int) get_post_meta($post->ID, 'hero_landscape_image_id', true);
+
+  $image_url = $image_id
+    ? wp_get_attachment_image_url($image_id, 'medium')
+    : '';
+  ?>
+
+    <div id="ideaxchange-hero-landscape-preview" style="margin-bottom:10px;">
+    <?php if ($image_url) : ?>
+       <img
+        src="<?php echo esc_attr($image_url); ?>"
+        alt=""
+        style="width:100%;height:auto;display:block;"
+      />
+    <?php endif; ?>
+  </div>
+
+  <input
+    type="hidden"
+    id="hero_landscape_image_id"
+    name="hero_landscape_image_id"
+    value="<?php echo esc_attr($image_id); ?>"
+  />
+
+  <p>
+    <button
+      type="button"
+      class="button"
+      id="ideaxchange-hero-landscape-select"
+    >
+      Select Image
+    </button>
+
+    <button
+      type="button"
+      class="button"
+      id="ideaxchange-hero-landscape-remove"
+      <?php echo $image_id ? '' : 'style="display:none;"'; ?>
+    >
+      Remove
+    </button>
+  </p>
+
+  <p style="color:#666;font-size:12px;margin-bottom:0;">
+    Optional landscape image used for the article hero background.
+  </p>
+
+  <?php
+}
+
+add_action('save_post_ideaxchange_article', function ($post_id) {
+  if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+    return;
+  }
+
+  if (wp_is_post_revision($post_id)) {
+    return;
+  }
+
+  if (!current_user_can('edit_post', $post_id)) {
+    return;
+  }
+
+  if (
+    !isset($_POST['ideaxchange_hero_landscape_image_nonce']) ||
+    !wp_verify_nonce(
+      sanitize_text_field(wp_unslash($_POST['ideaxchange_hero_landscape_image_nonce'])),
+      'ideaxchange_hero_landscape_image'
+    )
+  ) {
+    return;
+  }
+
+  $image_id = isset($_POST['hero_landscape_image_id'])
+    ? absint($_POST['hero_landscape_image_id'])
+    : 0;
+
+  if ($image_id > 0) {
+    update_post_meta($post_id, 'hero_landscape_image_id', $image_id);
+  } else {
+    delete_post_meta($post_id, 'hero_landscape_image_id');
+  }
+});
+
+add_action('admin_enqueue_scripts', function ($hook) {
+  if (!in_array($hook, ['post.php', 'post-new.php'], true)) {
+    return;
+  }
+
+  $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+
+  if (!$screen || $screen->post_type !== 'ideaxchange_article') {
+    return;
+  }
+
+  wp_enqueue_media();
+  wp_enqueue_script('jquery');
+
+  wp_add_inline_script('jquery', <<<'JS'
+jQuery(function($) {
+  var frame;
+
+  $(document).on('click', '#ideaxchange-hero-landscape-select', function(e) {
+    e.preventDefault();
+
+    if (typeof wp === 'undefined' || typeof wp.media === 'undefined') {
+      console.error('WordPress media uploader is not available.');
+      return;
+    }
+
+    if (frame) {
+      frame.open();
+      return;
+    }
+
+    frame = wp.media({
+      title: 'Select Hero Landscape Image',
+      button: {
+        text: 'Use this image'
+      },
+      multiple: false
+    });
+
+    frame.on('select', function() {
+      var attachment = frame.state().get('selection').first().toJSON();
+
+      var imageUrl = attachment.url;
+
+      if (
+        attachment.sizes &&
+        attachment.sizes.medium &&
+        attachment.sizes.medium.url
+      ) {
+        imageUrl = attachment.sizes.medium.url;
+      }
+
+      $('#hero_landscape_image_id').val(attachment.id);
+
+      $('#ideaxchange-hero-landscape-preview').html(
+        '' + imageUrl + ''
+      );
+
+      $('#ideaxchange-hero-landscape-remove').show();
+    });
+
+    frame.open();
+  });
+
+  $(document).on('click', '#ideaxchange-hero-landscape-remove', function(e) {
+    e.preventDefault();
+
+    $('#hero_landscape_image_id').val('');
+    $('#ideaxchange-hero-landscape-preview').empty();
+    $(this).hide();
+  });
+});
+JS);
+});
+
 add_action('init', function () {
   foreach (amerilife_ideaxchange_default_topics() as $slug => $name) {
     if (term_exists($slug, 'ideaxchange_topic')) {
@@ -171,6 +357,64 @@ add_action('graphql_register_types', function () {
       ];
     },
   ]);
+
+  register_graphql_object_type('IdeaxchangeHeroLandscapeImage', [
+  'description' => 'Optional landscape image used for the ideaXchange article hero background.',
+  'fields' => [
+    'sourceUrl' => [
+      'type' => 'String',
+      'description' => 'The hero landscape image URL.',
+    ],
+    'altText' => [
+      'type' => 'String',
+      'description' => 'The hero landscape image alt text.',
+    ],
+  ],
+]);
+
+register_graphql_field('IdeaxchangeArticle', 'heroLandscapeImage', [
+  'type' => 'IdeaxchangeHeroLandscapeImage',
+  'description' => 'Optional landscape image used for the ideaXchange article hero background.',
+  'resolve' => function ($post) {
+    $post_id = 0;
+
+    if (is_object($post)) {
+      if (isset($post->ID)) {
+        $post_id = (int) $post->ID;
+      } elseif (isset($post->databaseId)) {
+        $post_id = (int) $post->databaseId;
+      }
+    }
+
+    if (!$post_id) {
+      return null;
+    }
+
+    $attachment_id = (int) get_post_meta(
+      $post_id,
+      'hero_landscape_image_id',
+      true
+    );
+
+    if (!$attachment_id) {
+      return null;
+    }
+
+    $source_url = wp_get_attachment_image_url($attachment_id, 'full');
+
+    if (!$source_url) {
+      return null;
+    }
+
+    $alt_text = get_post_meta($attachment_id, '_wp_attachment_image_alt', true);
+
+    return [
+      'sourceUrl' => esc_url_raw($source_url),
+      'altText' => is_string($alt_text) ? $alt_text : '',
+    ];
+  },
+]);
+
 });
 
 /**
