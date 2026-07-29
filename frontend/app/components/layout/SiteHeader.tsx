@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect  } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { Link } from "../ui/Link";
@@ -52,6 +52,7 @@ export function SiteHeader({
   const pathname = usePathname();
   const { openContactPopup } = useContactPopup();
   
+useEffect(() => {
   if (inIdeaxchange) {
     console.log("[ideaXchange Header]", {
       pathname,
@@ -59,8 +60,7 @@ export function SiteHeader({
       devView: ideaxchangeDevView,
     });
   }
-
-  
+}, [inIdeaxchange, pathname, ideaxchangePersona, ideaxchangeDevView]); 
 
   const isActiveNavHref = (href: string) => {
     const normalizedPath = pathname.replace(/\/+$/, "") || "/";
