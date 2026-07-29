@@ -17,7 +17,8 @@ function salesPost(
     title,
     date,
     excerpt: `<p>${excerpt}</p>`,
-    ideaxchangeTopics: { nodes: [{ name: "Sales", slug: "sales" }] },
+    ideaxchangeTopics: { nodes: [{ name: "Company News", slug: "company-news" }] },
+    ideaxchangeTags: { nodes: [{ name: "Sales", slug: "sales" }] },
     ideaxchangeFields: {
       isSpotlight: opts.spotlight ?? false,
       isFeatured: opts.featured ?? false,

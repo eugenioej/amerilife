@@ -16,7 +16,6 @@ import { IDEAXCHANGE_RECRUITING_HUB_PATH } from "@/lib/ideaxchange-constants";
 import { IDEAXCHANGE_RECRUIT_TAG_SLUG } from "@/lib/ideaxchange-data";
 import {
   caseStudyHref,
-  companyLabel,
   isCaseStudyFeatured,
   isCaseStudyHeroFeatured,
   toCampaignTableRow,
@@ -85,7 +84,6 @@ function toCardItem(post: CaseStudyListItem): IdeaxchangeCardItem {
     title: post.title,
     date: post.date,
     excerpt: post.excerpt,
-    badgeLabel: companyLabel(post),
     href: caseStudyHref(post.slug),
     featuredImage: post.featuredImage,
     isFeatured: isCaseStudyFeatured(post),
@@ -108,13 +106,12 @@ export function RecruitingHubPage({
   return (
     <div className="bg-white pb-16 md:pb-20">
       <IdeaXchangePillarBanner title="Recruiting Hub" />
-      <IdeaXchangeHeroGrid items={hero.map(toCardItem)} defaultBadge="RECRUITING" />
+      <IdeaXchangeHeroGrid items={hero.map(toCardItem)} />
 
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 md:py-14">
         <IdeaXchangeFeaturedGrid
           items={featured.map(toCardItem)}
           heading="Featured campaigns"
-          defaultBadge="RECRUITING"
         />
 
         <section className="mt-16 md:mt-20">
@@ -170,6 +167,7 @@ export function RecruitingHubPage({
                 initialEndCursor={recruitListPageInfo?.endCursor ?? null}
                 tagSlug={IDEAXCHANGE_RECRUIT_TAG_SLUG}
                 badgeLabel="RECRUIT"
+                badgeHref={IDEAXCHANGE_RECRUITING_HUB_PATH}
               />
             </div>
 
@@ -178,6 +176,7 @@ export function RecruitingHubPage({
                 spotlight={spotlight}
                 recentSidebar={recentSidebar}
                 spotlightBadgeLabel="RECRUIT"
+                spotlightBadgeHref={IDEAXCHANGE_RECRUITING_HUB_PATH}
                 adSlot={ideaxchangeAds?.homeSidebarVertical}
               />
             </aside>

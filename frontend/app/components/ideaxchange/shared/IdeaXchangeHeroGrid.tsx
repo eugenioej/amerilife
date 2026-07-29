@@ -16,14 +16,14 @@ type Props = {
 const badgeClass =
   "relative z-[2] mb-2 inline-block w-fit max-w-full self-start bg-[var(--color-brand-primary)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white";
 
-export function IdeaXchangeHeroGrid({ items, defaultBadge = "RECRUITING" }: Props) {
+export function IdeaXchangeHeroGrid({ items, defaultBadge }: Props) {
   if (items.length === 0) return null;
 
   return (
     <section className="grid min-h-[52vh] w-full grid-cols-1 md:grid-cols-3 md:min-h-[56vh]">
       {items.map((item, hi) => {
         const img = ideaxchangeFeaturedImageSrc(item.featuredImage?.node?.sourceUrl);
-        const badge = item.badgeLabel?.trim() || defaultBadge;
+        const badge = item.badgeLabel?.trim() || defaultBadge?.trim() || "";
         const badgeHref = item.badgeHref?.trim();
         return (
           <article
@@ -51,13 +51,15 @@ export function IdeaXchangeHeroGrid({ items, defaultBadge = "RECRUITING" }: Prop
               />
             </Link>
             <div className="relative z-[1] flex flex-col p-5 pb-6 text-left md:p-6">
-              {badgeHref ? (
-                <Link href={badgeHref} variant="button" className={badgeClass}>
-                  {badge}
-                </Link>
-              ) : (
-                <span className={badgeClass}>{badge}</span>
-              )}
+              {badge ? (
+                badgeHref ? (
+                  <Link href={badgeHref} variant="button" className={badgeClass}>
+                    {badge}
+                  </Link>
+                ) : (
+                  <span className={badgeClass}>{badge}</span>
+                )
+              ) : null}
               <Link href={item.href} variant="button" className="text-left hover:no-underline">
                 <p className="mb-2 text-lg font-bold leading-snug text-white drop-shadow-sm md:text-xl">
                   {item.title}

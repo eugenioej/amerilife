@@ -15,10 +15,9 @@ import { IDEAXCHANGE_HOME_FEED_PATH } from "@/lib/ideaxchange-constants";
 import {
   formatBylineDate,
   formatMonthYear,
-  ideaxchangeCategoryHref,
   ideaxchangeHref,
   INSIGHT_IMG_QUALITY,
-  topicLabel,
+  resolveIdeaxchangeBadge,
 } from "./ideaxchange-utils";
 
 type Props = {
@@ -166,9 +165,11 @@ export function IdeaXchangePostTemplate({
 }: Props) {
   const html = post.content ? rewriteUploadsInHtml(post.content) : "";
   const img = rewriteUploadsUrl(ideaxchangeFeaturedImageSrc(post.featuredImage?.node?.sourceUrl));
-  const topic = post.ideaxchangeTopics?.nodes?.[0];
-  const topicName = topic?.name?.trim() || "Articles";
-  const topicSlug = topic?.slug?.trim();
+  const badge = resolveIdeaxchangeBadge(post);
+  const crumbLabel =
+    post.ideaxchangeTopics?.nodes?.[0]?.name?.trim() ||
+    post.ideaxchangeTags?.nodes?.find((t) => t.slug?.trim())?.name?.trim() ||
+    "Articles";
   const readMin = estimateReadMinutes(html);
 
   const proseClasses =
@@ -185,8 +186,8 @@ export function IdeaXchangePostTemplate({
           { label: "Home", href: "/" },
           { label: "ideaXchange", href: IDEAXCHANGE_HOME_FEED_PATH },
           {
-            label: topicName,
-            href: topicSlug ? ideaxchangeCategoryHref(topicSlug) : undefined,
+            label: crumbLabel,
+            href: badge.href ?? undefined,
             className: "max-w-[12rem] truncate",
           },
           {
@@ -255,17 +256,17 @@ export function IdeaXchangePostTemplate({
             />
 
             <div className="mt-10 flex flex-nowrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-8">
-              {topicSlug ? (
+              {badge.href ? (
                 <Link
-                  href={ideaxchangeCategoryHref(topicSlug)}
+                  href={badge.href}
                   variant="button"
                   className="inline-flex min-w-0 max-w-[calc(100%-3rem)] shrink items-center truncate rounded-sm border border-[var(--color-border)] bg-[#f4f6f8] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-muted)] transition-colors hover:border-[var(--color-brand-primary)] hover:text-[var(--color-brand-primary)]"
                 >
-                  {topicLabel(post)}
+                  {badge.label}
                 </Link>
               ) : (
                 <span className="inline-flex min-w-0 max-w-[calc(100%-3rem)] shrink items-center truncate rounded-sm border border-[var(--color-border)] bg-[#f4f6f8] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-muted)]">
-                  {topicLabel(post)}
+                  {badge.label}
                 </span>
               )}
               <div className="shrink-0">

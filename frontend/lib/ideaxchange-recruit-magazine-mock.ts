@@ -17,7 +17,8 @@ function recruitPost(
     title,
     date,
     excerpt: `<p>${excerpt}</p>`,
-    ideaxchangeTopics: { nodes: [{ name: "Recruit", slug: "recruit" }] },
+    ideaxchangeTopics: { nodes: [{ name: "Company News", slug: "company-news" }] },
+    ideaxchangeTags: { nodes: [{ name: "Recruit", slug: "recruit" }] },
     ideaxchangeFields: {
       isSpotlight: opts.spotlight ?? false,
       isFeatured: opts.featured ?? false,

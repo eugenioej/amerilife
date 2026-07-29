@@ -3,7 +3,15 @@ import {
   IDEAXCHANGE_ARTICLE_PATH,
   IDEAXCHANGE_CATEGORY_PATH,
   IDEAXCHANGE_HOME_FEED_PATH,
+  IDEAXCHANGE_LEADERBOARD_PATH,
+  IDEAXCHANGE_RECRUITING_HUB_PATH,
+  IDEAXCHANGE_SALES_SUCCESS_PATH,
 } from "@/lib/ideaxchange-constants";
+import {
+  IDEAXCHANGE_INITIATIVE_TAG_SLUG,
+  IDEAXCHANGE_RECRUIT_TAG_SLUG,
+  IDEAXCHANGE_SALES_TAG_SLUG,
+} from "@/lib/ideaxchange-queries";
 
 export { formatInsightExcerptPlain } from "@/lib/insight-excerpt";
 
@@ -28,9 +36,70 @@ export function formatBylineDate(iso: string | null | undefined): string {
   });
 }
 
-export function topicLabel(post: Pick<IdeaxchangeListItem, "ideaxchangeTopics">): string {
-  const name = post.ideaxchangeTopics?.nodes?.[0]?.name?.trim();
-  return name ? name.toUpperCase() : "IDEAXCHANGE";
+/** Pillar routing tags → hub pages (tags are not category archives). */
+const PILLAR_TAG_HREF: Record<string, string> = {
+  [IDEAXCHANGE_RECRUIT_TAG_SLUG]: IDEAXCHANGE_RECRUITING_HUB_PATH,
+  [IDEAXCHANGE_SALES_TAG_SLUG]: IDEAXCHANGE_LEADERBOARD_PATH,
+  [IDEAXCHANGE_INITIATIVE_TAG_SLUG]: IDEAXCHANGE_SALES_SUCCESS_PATH,
+};
+
+type BadgePost = Pick<IdeaxchangeListItem, "ideaxchangeTopics" | "ideaxchangeTags">;
+
+export type IdeaxchangeBadge = {
+  label: string;
+  href: string | null;
+};
+
+/**
+ * Badge for cards/newsroom:
+ * 1) Topic → `/magazine/category/{slug}/`
+ * 2) Optional pillar fallback label/href (Recruiting Hub, Leaderboard, …)
+ * 3) Pillar tag on the post → hub path
+ * 4) IDEAXCHANGE
+ */
+export function resolveIdeaxchangeBadge(
+  post: BadgePost,
+  fallback?: { label?: string; href?: string | null },
+): IdeaxchangeBadge {
+  const topic = post.ideaxchangeTopics?.nodes?.[0];
+  const topicName = topic?.name?.trim();
+  const topicSlugValue = topic?.slug?.trim();
+  if (topicName) {
+    return {
+      label: topicName.toUpperCase(),
+      href: topicSlugValue ? ideaxchangeCategoryHref(topicSlugValue) : null,
+    };
+  }
+
+  const fallbackLabel = fallback?.label?.trim();
+  if (fallbackLabel) {
+    return {
+      label: fallbackLabel.toUpperCase(),
+      href: fallback?.href?.trim() || null,
+    };
+  }
+
+  for (const tag of post.ideaxchangeTags?.nodes ?? []) {
+    const slug = tag.slug?.trim().toLowerCase();
+    if (!slug || !(slug in PILLAR_TAG_HREF)) continue;
+    const name = tag.name?.trim() || slug;
+    return {
+      label: name.toUpperCase(),
+      href: PILLAR_TAG_HREF[slug] ?? null,
+    };
+  }
+
+  return { label: "IDEAXCHANGE", href: null };
+}
+
+export function topicLabel(
+  post: BadgePost,
+  fallbackLabel?: string,
+): string {
+  return resolveIdeaxchangeBadge(
+    post,
+    fallbackLabel ? { label: fallbackLabel } : undefined,
+  ).label;
 }
 
 /**
