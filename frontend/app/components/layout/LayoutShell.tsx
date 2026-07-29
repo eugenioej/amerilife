@@ -28,16 +28,13 @@ export async function LayoutShell({
   microsoftAuthEnabled?: boolean;
   inIdeaxchange?: boolean;
 }) {
-  const primaryMenu = await getPrimaryMenu();
   const footerLogoUrl = rewriteUploadsUrl(FOOTER_LOGO_SRC);
   const certificationBadgeUrl = rewriteUploadsUrl(FOOTER_CERTIFICATION_BADGE_SRC);
 
-  let contactPopupForm = null;
-  try {
-    contactPopupForm = await fetchGravityForm(HEADER_CONTACT_POPUP_FORM_ID);
-  } catch {
-    contactPopupForm = null;
-  }
+  const [primaryMenu, contactPopupForm] = await Promise.all([
+    getPrimaryMenu(),
+    fetchGravityForm(HEADER_CONTACT_POPUP_FORM_ID).catch(() => null),
+  ]);
 
   return (
     <ContactPopupProvider contactPopupForm={contactPopupForm}>

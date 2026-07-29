@@ -38,22 +38,89 @@ const BLOCKED_UA: string[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Blocked path substrings — common exploit probes
+// Blocked path substrings — common exploit / CMS / config probes
+// Rejected here so they never reach [...slug] → WordPress content lookups.
 // ---------------------------------------------------------------------------
-const BLOCKED_PATHS: string[] = [
+const BLOCKED_PATH_FRAGMENTS: string[] = [
   "/../",
   "/wp-admin",
-  "/wp-login.php",
-  "/xmlrpc.php",
+  "/wp-login",
+  "/wp-includes/",
+  "/wp-content/plugins/",
+  "/wp-content/themes/",
+  "/wp-content/uploads/wc-logs",
+  "/wp-json/wp/v2/users",
+  "/xmlrpc",
+  "/wlwmanifest.xml",
+  "/wp-config",
+  "/phpmyadmin",
+  "/vendor/phpunit",
+  "/cgi-bin",
   "/.env",
-  "/.git/",
+  "/.git",
+  "/.svn",
+  "/.htaccess",
+  "/.ds_store",
+  "/.aws/",
   "/shell",
   "/eval(",
   "/base64_",
+  "/autoload_classmap",
+  "/actuator",
+  "/server-status",
+  "/_ignition",
+  "/telescope",
+  "/debug/default",
+  "/docker-compose",
 ];
 
-// Blocked file extensions — server-side script probes
-const BLOCKED_EXTENSIONS: string[] = [".php", ".asp", ".aspx", ".jsp", ".cgi", ".cfm"];
+/** Exact paths that are never real AmeriLife pages (scanner favorites). */
+const BLOCKED_EXACT_PATHS = new Set([
+  "/admin",
+  "/administrator",
+  "/login",
+  "/wp",
+  "/wordpress",
+  "/backup",
+  "/mysql",
+  "/db",
+  "/pma",
+  "/phpmyadmin",
+  "/web.config",
+  "/composer.json",
+  "/composer.lock",
+  "/package.json",
+  "/.env",
+  "/.env.local",
+  "/.env.production",
+  "/config.json",
+  "/credentials.json",
+]);
+
+// Blocked file extensions — server-side script / dump / backup probes
+const BLOCKED_EXTENSIONS: string[] = [
+  ".php",
+  ".asp",
+  ".aspx",
+  ".jsp",
+  ".cgi",
+  ".cfm",
+  ".sql",
+  ".bak",
+  ".old",
+  ".ini",
+  ".log",
+  ".swp",
+  ".dist",
+  ".orig",
+];
+
+function normalizePath(pathname: string): string {
+  if (pathname.length > 1 && pathname.endsWith("/")) {
+    return pathname.slice(0, -1);
+  }
+  return pathname;
+}
 
 function nextWithPathname(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
@@ -63,10 +130,26 @@ function nextWithPathname(request: NextRequest) {
   });
 }
 
+function isBlockedProbePath(pathname: string): boolean {
+  const pathLower = pathname.toLowerCase();
+  const exact = normalizePath(pathLower);
+
+  if (BLOCKED_EXACT_PATHS.has(exact)) return true;
+
+  for (const fragment of BLOCKED_PATH_FRAGMENTS) {
+    if (pathLower.includes(fragment)) return true;
+  }
+
+  for (const ext of BLOCKED_EXTENSIONS) {
+    if (pathLower.endsWith(ext) || pathLower.endsWith(`${ext}/`)) return true;
+  }
+
+  return false;
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const ua = (request.headers.get("user-agent") ?? "").toLowerCase();
-  const pathLower = pathname.toLowerCase();
 
   // 1. Block known vulnerability scanners by user-agent
   for (const token of BLOCKED_UA) {
@@ -75,23 +158,14 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 2. Block suspicious path patterns
-  for (const fragment of BLOCKED_PATHS) {
-    if (pathLower.includes(fragment)) {
-      return new NextResponse("Not Found", { status: 404 });
-    }
-  }
-
-  // 3. Block server-side script extension probes
-  for (const ext of BLOCKED_EXTENSIONS) {
-    if (pathLower.endsWith(ext)) {
-      return new NextResponse("Not Found", { status: 404 });
-    }
+  // 2. Block exploit / CMS / dump probes before they hit WordPress
+  if (isBlockedProbePath(pathname)) {
+    return new NextResponse("Not Found", { status: 404 });
   }
 
   const ideaxchangeAuthed = await isIdeaxchangeRequestAuthenticated(request);
 
-  // 4. Gated ideaXchange — require session (all routes under /ideaxchange/ except login)
+  // 3. Gated ideaXchange — require session (all routes under /ideaxchange/ except login)
   if (isIdeaxchangeProtectedPath(pathname) && !ideaxchangeAuthed) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = IDEAXCHANGE_LOGIN_PATH;
@@ -100,7 +174,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // 4b. Persona-based route guard (Microsoft JIT only)
+  // 3b. Persona-based route guard (Microsoft JIT only)
   if (
     ideaxchangeAuthed &&
     isIdeaxchangeProtectedPath(pathname) &&
@@ -115,7 +189,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 5. Already signed in — skip the login page
+  // 4. Already signed in — skip the login page
   if (isIdeaxchangeLoginPath(pathname) && ideaxchangeAuthed) {
     const nextParam = request.nextUrl.searchParams.get("next");
     const defaultHome = await getIdeaxchangeHomeFromRequest(request);

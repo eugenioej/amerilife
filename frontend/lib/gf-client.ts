@@ -1,4 +1,6 @@
-import { fetchGraphQL } from "@/lib/wp-client";
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+import { fetchGraphQL, LAYOUT_REVALIDATE_SECONDS } from "@/lib/wp-client";
 import { GET_GF_FORM, SUBMIT_GF_FORM } from "@/lib/gf-queries";
 import type { LocationData } from "@/lib/locations-data";
 import type { GfFormData } from "@/lib/gf-types";
@@ -36,13 +38,33 @@ export function resolveConnectFormId(location: LocationData): number {
   return DEFAULT_CONNECT_GF_FORM_ID;
 }
 
-export async function fetchGravityForm(databaseId: number): Promise<GfFormData | null> {
-  if (!Number.isFinite(databaseId) || databaseId < 1) return null;
-  const data = await fetchGraphQL<{ gfForm: GfFormData | null }>(GET_GF_FORM, {
-    id: String(databaseId),
-  });
+async function loadGravityForm(databaseId: number): Promise<GfFormData | null> {
+  const data = await fetchGraphQL<{ gfForm: GfFormData | null }>(
+    GET_GF_FORM,
+    { id: String(databaseId) },
+    undefined,
+    false,
+    LAYOUT_REVALIDATE_SECONDS,
+  );
   return data?.gfForm ?? null;
 }
+
+const fetchGravityFormCached = unstable_cache(
+  async (databaseId: number) => loadGravityForm(databaseId),
+  ["gf-form-schema"],
+  {
+    revalidate: LAYOUT_REVALIDATE_SECONDS,
+    tags: ["gf-form"],
+  },
+);
+
+/** Form schema is layout-stable; cache 1h to avoid stampede on every page view. */
+export const fetchGravityForm = cache(async function fetchGravityForm(
+  databaseId: number,
+): Promise<GfFormData | null> {
+  if (!Number.isFinite(databaseId) || databaseId < 1) return null;
+  return fetchGravityFormCached(databaseId);
+});
 
 export type SubmitGfFormPayload = {
   confirmation: {
