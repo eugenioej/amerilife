@@ -66,12 +66,6 @@ export function CaseStudyTemplate({ post, relatedPosts }: Props) {
             {post.title}
           </h1>
 
-          {excerptPlain ? (
-            <div className="mt-4 max-w-3xl text-lg leading-relaxed text-[var(--color-muted)] whitespace-pre-line">
-              {excerptPlain}
-            </div>
-          ) : null}
-
           <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-[var(--color-border)] pb-8 text-sm text-[var(--color-muted)]">
             <span>
               By:{" "}

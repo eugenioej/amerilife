@@ -32,6 +32,7 @@ function CampaignAssetDownload({ asset }: { asset: IdeaxchangeCampaignAsset }) {
         <a
           href={href}
           download
+          target="_blank"
           className="block text-sm font-bold text-[var(--color-fg)] hover:text-[var(--color-brand-primary)]"
         >
           {asset.label}
