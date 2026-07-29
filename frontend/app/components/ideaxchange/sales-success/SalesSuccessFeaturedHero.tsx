@@ -15,7 +15,10 @@ type Props = {
 };
 
 export function SalesSuccessFeaturedHero({ post }: Props) {
-  const img = ideaxchangeFeaturedImageSrc(post.featuredImage?.node?.sourceUrl);
+  const img = ideaxchangeFeaturedImageSrc(
+    post.heroLandscapeImage?.sourceUrl || post.featuredImage?.node?.sourceUrl
+  );
+
   const href = salesSuccessHref(post.slug);
   const excerpt = formatInsightExcerptPlain(post.excerpt);
 

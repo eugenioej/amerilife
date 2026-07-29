@@ -21,6 +21,10 @@ export type IdeaxchangeListItem = {
   featuredImage?: {
     node?: { sourceUrl?: string | null; altText?: string | null };
   } | null;
+  heroLandscapeImage?: {
+  sourceUrl?: string | null;
+  altText?: string | null;
+} | null;
 };
 
 export type IdeaxchangeConnectionResult = {
@@ -73,6 +77,10 @@ export const GET_IDEAXCHANGE_ARTICLES = `
             altText
           }
         }
+        heroLandscapeImage {
+          sourceUrl
+          altText
+        }  
       }
     }
   }
@@ -118,6 +126,10 @@ export const GET_IDEAXCHANGE_ARTICLES_MINIMAL = `
             altText
           }
         }
+        heroLandscapeImage {
+          sourceUrl
+          altText
+        }  
       }
     }
   }
@@ -158,6 +170,10 @@ export const GET_IDEAXCHANGE_BY_SLUG = `
           altText
         }
       }
+      heroLandscapeImage {
+        sourceUrl
+        altText
+      }  
       seo {
         title
         metaDesc
@@ -203,6 +219,10 @@ export const GET_IDEAXCHANGE_BY_SLUG_MINIMAL = `
           altText
         }
       }
+      heroLandscapeImage {
+        sourceUrl
+        altText
+      }  
       seo {
         title
         metaDesc
@@ -280,6 +300,10 @@ export const GET_IDEAXCHANGE_TOPIC_BY_SLUG = `
               altText
             }
           }
+          heroLandscapeImage {
+            sourceUrl
+            altText
+          }  
         }
       }
     }
@@ -323,6 +347,10 @@ export const GET_IDEAXCHANGE_TOPIC_BY_SLUG_MINIMAL = `
               altText
             }
           }
+          heroLandscapeImage {
+            sourceUrl
+            altText
+          }  
         }
       }
     }
@@ -393,6 +421,10 @@ const IDEAXCHANGE_TAG_ARTICLE_FIELDS = `
       altText
     }
   }
+  heroLandscapeImage {
+    sourceUrl
+    altText
+  }  
 `;
 
 export const GET_IDEAXCHANGE_TAG_BY_SLUG = `
