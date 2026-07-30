@@ -22,7 +22,7 @@ export const IDEAXCHANGE_APP_ROLES = {
   /** @deprecated use IDEAXCHANGE_CAREER */
   RECRUIT: "IDEAXCHANGE_RECRUIT",
 } as const;
-
+console.log("[IX DEBUG] Role Constants", IDEAXCHANGE_APP_ROLES);
 function entraGroupIdForPersona(persona: IdeaxchangePersona): string | undefined {
   const brokerage =
     process.env.IDEAXCHANGE_ENTRA_GROUP_BROKERAGE_ID?.trim() ||
@@ -90,6 +90,20 @@ export function resolveIdeaxchangePersona(
 ): IdeaxchangePersona {
   const roleSet = new Set((roles ?? []).map((r) => r.toUpperCase()));
   const membershipSet = new Set(mergeEntraMembershipIds(roles, groupIds));
+
+  console.log("[IX DEBUG] Membership Resolution", {
+  membershipSet: [...membershipSet],
+  careerGroupId: entraGroupIdForPersona("career"),
+  brokerageGroupId: entraGroupIdForPersona("brokerage"),
+  careerMatch: hasMembership(
+    membershipSet,
+    entraGroupIdForPersona("career")
+  ),
+  brokerageMatch: hasMembership(
+    membershipSet,
+    entraGroupIdForPersona("brokerage")
+  ),
+});
 
   for (const role of roleSet) {
     if (isCareerRole(role)) return "career";
