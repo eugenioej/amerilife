@@ -22,17 +22,14 @@ export const IDEAXCHANGE_APP_ROLES = {
   /** @deprecated use IDEAXCHANGE_CAREER */
   RECRUIT: "IDEAXCHANGE_RECRUIT",
 } as const;
-function entraGroupIdForPersona(persona: IdeaxchangePersona): string | undefined {console.log("[IX DEBUG] Entra Group Env Vars", {
-  IDEAXCHANGE_ENTRA_GROUP_CAREER_ID:
-    process.env.IDEAXCHANGE_ENTRA_GROUP_CAREER_ID,
-  IDEAXCHANGE_ENTRA_GROUP_RECRUIT_ID:
-    process.env.IDEAXCHANGE_ENTRA_GROUP_RECRUIT_ID,
-  IDEAXCHANGE_ENTRA_GROUP_BROKERAGE_ID:
-    process.env.IDEAXCHANGE_ENTRA_GROUP_BROKERAGE_ID,
-  IDEAXCHANGE_ENTRA_GROUP_SALES_ID:
-    process.env.IDEAXCHANGE_ENTRA_GROUP_SALES_ID,
-});
 
+/** Entra group IDs currently emitted in the roles claim. */
+export const IDEAXCHANGE_ENTRA_GROUP_IDS = {
+  BROKERAGE: "8c92f39c-71fb-447b-8dfa-18c0671039f0",
+  CAREER: "c6ebca04-4b62-47c2-a3c8-ec21ffc04330",
+} as const;
+
+function entraGroupIdForPersona(persona: IdeaxchangePersona): string | undefined {
   const brokerage =
     process.env.IDEAXCHANGE_ENTRA_GROUP_BROKERAGE_ID?.trim() ||
     process.env.IDEAXCHANGE_ENTRA_GROUP_SALES_ID?.trim();
@@ -74,22 +71,48 @@ export function mergeEntraMembershipIds(
 
 function isCareerRole(role: string): boolean {
   const upper = role.toUpperCase();
-  return (
+  const careerGuid = IDEAXCHANGE_ENTRA_GROUP_IDS.CAREER.toUpperCase();
+
+  const matches =
     upper === IDEAXCHANGE_APP_ROLES.CAREER ||
     upper === IDEAXCHANGE_APP_ROLES.RECRUIT ||
+    upper === careerGuid ||
     upper.includes("CAREER") ||
-    upper.includes("RECRUIT")
-  );
+    upper.includes("RECRUIT");
+
+  console.log("[IX DEBUG] isCareerRole", {
+    originalRole: role,
+    normalizedRole: upper,
+    expectedCareerRole: IDEAXCHANGE_APP_ROLES.CAREER,
+    expectedRecruitRole: IDEAXCHANGE_APP_ROLES.RECRUIT,
+    expectedCareerGuid: careerGuid,
+    matches,
+  });
+
+  return matches;
 }
 
 function isBrokerageRole(role: string): boolean {
   const upper = role.toUpperCase();
-  return (
+  const brokerageGuid = IDEAXCHANGE_ENTRA_GROUP_IDS.BROKERAGE.toUpperCase();
+
+  const matches =
     upper === IDEAXCHANGE_APP_ROLES.BROKERAGE ||
     upper === IDEAXCHANGE_APP_ROLES.SALES ||
+    upper === brokerageGuid ||
     upper.includes("BROKERAGE") ||
-    upper.includes("SALES")
-  );
+    upper.includes("SALES");
+
+  console.log("[IX DEBUG] isBrokerageRole", {
+    originalRole: role,
+    normalizedRole: upper,
+    expectedBrokerageRole: IDEAXCHANGE_APP_ROLES.BROKERAGE,
+    expectedSalesRole: IDEAXCHANGE_APP_ROLES.SALES,
+    expectedBrokerageGuid: brokerageGuid,
+    matches,
+  });
+
+  return matches;
 }
 
 /** Map Entra app roles and/or security group object IDs to Brokerage or Career. */
