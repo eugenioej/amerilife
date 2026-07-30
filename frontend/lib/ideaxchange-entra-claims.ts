@@ -40,8 +40,7 @@ function mergeClaimRecords(
     account?.id_token && typeof account.id_token === "string"
       ? decodeJwtPayload(account.id_token)
       : {};
-
-  console.log("[Entra Raw ID Token Payload]", fromIdToken);
+   console.log("[IX DEBUG] decoded id_token", fromIdToken);
 
   return { ...fromIdToken, ...fromProfile };
 }
@@ -75,6 +74,14 @@ export function extractEntraAuthClaims(
   account?: Account | null,
 ): EntraAuthClaims {
   const record = mergeClaimRecords(profile, account);
+
+  console.log("[IX DEBUG] merged claim record", {
+    claimKeys: Object.keys(record).sort(),
+    roles: record.roles,
+    groups: record.groups,
+    oid: record.oid,
+    tid: record.tid,
+  });
   const roles = readStringArray(record.roles);
   const groups = readStringArray(record.groups);
 
