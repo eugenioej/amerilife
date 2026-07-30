@@ -25,7 +25,7 @@ export function SalesSuccessPage({ posts, pageInfo, ideaxchangeAds }: Props) {
   return (
     <div className="bg-white pb-16 md:pb-20">
       <IdeaXchangePillarBanner title="Sales Success" />
-      {featured ? <SalesSuccessFeaturedHero post={featured} /> : null}
+      {featured.length ? <SalesSuccessFeaturedHero posts={featured} /> : null}
 
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 md:py-14">
         <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)]">

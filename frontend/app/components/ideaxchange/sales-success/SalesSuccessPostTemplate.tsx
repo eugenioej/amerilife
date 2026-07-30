@@ -12,7 +12,6 @@ import { IdeaxchangeSidebarAdSlot } from "@/app/components/ideaxchange/shared/Id
 import { ideaxchangeFeaturedImageSrc } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import {
   formatBylineDate,
-  formatInsightExcerptPlain,
   formatMonthYear,
   INSIGHT_IMG_QUALITY,
 } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
@@ -92,7 +91,6 @@ export function SalesSuccessPostTemplate({
 }: Props) {
   const html = post.content ? rewriteUploadsInHtml(post.content) : "";
   const img = rewriteUploadsUrl(ideaxchangeFeaturedImageSrc(post.featuredImage?.node?.sourceUrl));
-  const excerptPlain = formatInsightExcerptPlain(post.excerpt);
   const readMin = estimateReadMinutes(html);
   const sidebarList = relatedPosts.slice(0, 5);
 
