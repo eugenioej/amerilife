@@ -73,14 +73,6 @@ export function extractEntraAuthClaims(
   account?: Account | null,
 ): EntraAuthClaims {
   const record = mergeClaimRecords(profile, account);
-
-  console.log("[IX DEBUG] merged claim record", {
-    claimKeys: Object.keys(record).sort(),
-    roles: record.roles,
-    groups: record.groups,
-    oid: record.oid,
-    tid: record.tid,
-  });
   const roles = readStringArray(record.roles);
   const groups = readStringArray(record.groups);
 
