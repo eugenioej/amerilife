@@ -41,6 +41,8 @@ function mergeClaimRecords(
       ? decodeJwtPayload(account.id_token)
       : {};
 
+  console.info("[Entra Raw ID Token Payload]", fromIdToken);
+
   return { ...fromIdToken, ...fromProfile };
 }
 
