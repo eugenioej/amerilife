@@ -86,15 +86,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.groups = claims.groups;
         token.persona = persona;
 
-        console.info("[ideaxchange-auth] JIT session", {
-          id: token.oid,
-          persona,
-          roles: claims.roles,
-          groups: claims.groups,
-          groupCount: claims.groups.length,
-          claimKeys: claims.claimKeys,
-          personaClaimValue: claims.personaClaimValue,
-        });
       }
 
       return token;

@@ -40,7 +40,6 @@ function mergeClaimRecords(
     account?.id_token && typeof account.id_token === "string"
       ? decodeJwtPayload(account.id_token)
       : {};
-   console.log("[IX DEBUG] decoded id_token", fromIdToken);
 
   return { ...fromIdToken, ...fromProfile };
 }
