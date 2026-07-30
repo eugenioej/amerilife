@@ -23,12 +23,6 @@ export const IDEAXCHANGE_APP_ROLES = {
   RECRUIT: "IDEAXCHANGE_RECRUIT",
 } as const;
 
-/** Entra group IDs currently emitted in the roles claim. */
-export const IDEAXCHANGE_ENTRA_GROUP_IDS = {
-  BROKERAGE: "8c92f39c-71fb-447b-8dfa-18c0671039f0",
-  CAREER: "c6ebca04-4b62-47c2-a3c8-ec21ffc04330",
-} as const;
-
 function entraGroupIdForPersona(persona: IdeaxchangePersona): string | undefined {
   const brokerage =
     process.env.IDEAXCHANGE_ENTRA_GROUP_BROKERAGE_ID?.trim() ||
@@ -71,48 +65,24 @@ export function mergeEntraMembershipIds(
 
 function isCareerRole(role: string): boolean {
   const upper = role.toUpperCase();
-  const careerGuid = IDEAXCHANGE_ENTRA_GROUP_IDS.CAREER.toUpperCase();
 
-  const matches =
+  return (
     upper === IDEAXCHANGE_APP_ROLES.CAREER ||
     upper === IDEAXCHANGE_APP_ROLES.RECRUIT ||
-    upper === careerGuid ||
     upper.includes("CAREER") ||
-    upper.includes("RECRUIT");
-
-  console.log("[IX DEBUG] isCareerRole", {
-    originalRole: role,
-    normalizedRole: upper,
-    expectedCareerRole: IDEAXCHANGE_APP_ROLES.CAREER,
-    expectedRecruitRole: IDEAXCHANGE_APP_ROLES.RECRUIT,
-    expectedCareerGuid: careerGuid,
-    matches,
-  });
-
-  return matches;
+    upper.includes("RECRUIT")
+  );
 }
 
 function isBrokerageRole(role: string): boolean {
   const upper = role.toUpperCase();
-  const brokerageGuid = IDEAXCHANGE_ENTRA_GROUP_IDS.BROKERAGE.toUpperCase();
 
-  const matches =
+  return (
     upper === IDEAXCHANGE_APP_ROLES.BROKERAGE ||
     upper === IDEAXCHANGE_APP_ROLES.SALES ||
-    upper === brokerageGuid ||
     upper.includes("BROKERAGE") ||
-    upper.includes("SALES");
-
-  console.log("[IX DEBUG] isBrokerageRole", {
-    originalRole: role,
-    normalizedRole: upper,
-    expectedBrokerageRole: IDEAXCHANGE_APP_ROLES.BROKERAGE,
-    expectedSalesRole: IDEAXCHANGE_APP_ROLES.SALES,
-    expectedBrokerageGuid: brokerageGuid,
-    matches,
-  });
-
-  return matches;
+    upper.includes("SALES")
+  );
 }
 
 /** Map Entra app roles and/or security group object IDs to Brokerage or Career. */
@@ -123,15 +93,34 @@ export function resolveIdeaxchangePersona(
   const roleSet = new Set((roles ?? []).map((r) => r.toUpperCase()));
   const membershipSet = new Set(mergeEntraMembershipIds(roles, groupIds));
 
+  const careerGroupId = entraGroupIdForPersona("career");
+  const brokerageGroupId = entraGroupIdForPersona("brokerage");
+
+  console.log("[IX DEBUG] Membership Resolution", {
+    roles,
+    groupIds,
+    membershipSet: [...membershipSet],
+    careerGroupId,
+    brokerageGroupId,
+    careerMatch: hasMembership(membershipSet, careerGroupId),
+    brokerageMatch: hasMembership(membershipSet, brokerageGroupId),
+  });
+
   for (const role of roleSet) {
     if (isCareerRole(role)) return "career";
   }
-  if (hasMembership(membershipSet, entraGroupIdForPersona("career"))) return "career";
+
+  if (hasMembership(membershipSet, careerGroupId)) {
+    return "career";
+  }
 
   for (const role of roleSet) {
     if (isBrokerageRole(role)) return "brokerage";
   }
-  if (hasMembership(membershipSet, entraGroupIdForPersona("brokerage"))) return "brokerage";
+
+  if (hasMembership(membershipSet, brokerageGroupId)) {
+    return "brokerage";
+  }
 
   return "brokerage";
 }
