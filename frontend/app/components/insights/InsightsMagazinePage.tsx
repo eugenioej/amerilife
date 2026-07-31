@@ -104,7 +104,7 @@ export function InsightsMagazinePage({ posts, listPageInfo, insightsAds }: Props
         {hero.map((post, hi) => {
           const img =
             post.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
-          const href = insightHref(post.slug);
+          const href = insightHref(post.slug, post.insightTopics?.nodes?.[0]?.slug);
           return (
             <Link
               key={post.id}
@@ -155,7 +155,7 @@ export function InsightsMagazinePage({ posts, listPageInfo, insightsAds }: Props
             {featured.map((post) => {
               const img =
                 post.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
-              const href = insightHref(post.slug);
+              const href = insightHref(post.slug, post.insightTopics?.nodes?.[0]?.slug);
               return (
                 <article key={post.id} className="group flex flex-col">
                   <Link
@@ -219,7 +219,7 @@ export function InsightsMagazinePage({ posts, listPageInfo, insightsAds }: Props
               <div className="mb-10">
                 <div className="border border-[var(--color-border)] bg-white p-0">
                   <Link
-                    href={insightHref(spotlight.slug)}
+                    href={insightHref(spotlight.slug, spotlight.insightTopics?.nodes?.[0]?.slug)}
                     variant="button"
                     className="group block"
                   >
@@ -266,7 +266,7 @@ export function InsightsMagazinePage({ posts, listPageInfo, insightsAds }: Props
                 {recentSidebar.map((post) => {
                   const img =
                     post.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
-                  const href = insightHref(post.slug);
+                  const href = insightHref(post.slug, post.insightTopics?.nodes?.[0]?.slug);
                   return (
                     <li key={post.id} className="flex gap-3 py-4 first:pt-0">
                       <Link

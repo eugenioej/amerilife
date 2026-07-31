@@ -24,7 +24,7 @@ import {
 /** First batch size for /insights/ magazine (hero + sidebar slots + main column page-one). */
 export const INSIGHTS_MAGAZINE_FIRST = 36;
 
-/** Page size for /insights/category/[slug]/ (numbered pagination). */
+/** Page size for /insights/[category]/ (numbered pagination). */
 export const INSIGHT_CATEGORY_PAGE_FIRST = 8;
 
 /** Default page size for related-list fetch and load-more chunks. */
@@ -152,6 +152,21 @@ export async function getInsightBySlug(slug: string): Promise<InsightDetail | nu
     }
     return null;
   }
+}
+
+export function getPrimaryInsightTopicSlug(
+  post: Pick<InsightDetail, "insightTopics"> | Pick<InsightListItem, "insightTopics">,
+): string | null {
+  return post.insightTopics?.nodes?.[0]?.slug?.trim() || null;
+}
+
+export function getCanonicalInsightPath(post: InsightDetail): string | null {
+  const slug = post.slug?.trim();
+  const topicSlug = getPrimaryInsightTopicSlug(post);
+
+  if (!slug || !topicSlug) return null;
+
+  return `/insights/${topicSlug}/${slug}/`;
 }
 
 export async function getInsightTopicSlugs(): Promise<string[]> {

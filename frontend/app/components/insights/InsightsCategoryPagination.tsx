@@ -1,8 +1,8 @@
 import { Link } from "@/app/components/ui/Link";
 
 function categoryPagePath(topicSlug: string, page: number): string {
-  if (page <= 1) return `/insights/category/${topicSlug}/`;
-  return `/insights/category/${topicSlug}/?page=${page}`;
+  if (page <= 1) return `/insights/${topicSlug}/`;
+  return `/insights/${topicSlug}/?page=${page}`;
 }
 
 function paginationRange(current: number, total: number): (number | "gap")[] {

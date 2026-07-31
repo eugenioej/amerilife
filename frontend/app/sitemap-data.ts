@@ -112,7 +112,12 @@ async function collectLeaderUrls(base: URL): Promise<string[]> {
 type InsightsQueryResult = {
   insights?: {
     nodes?: {
-      uri?: string;
+      slug?: string | null;
+      insightTopics?: {
+        nodes?: {
+          slug?: string | null;
+        }[];
+      } | null;
     }[];
     pageInfo?: {
       hasNextPage?: boolean;
@@ -136,7 +141,12 @@ async function collectInsightUris(): Promise<string[]> {
       query InsightsSitemap($first: Int!, $after: String) {
         insights(first: $first, after: $after) {
           nodes {
-            uri
+            slug
+            insightTopics {
+              nodes {
+                slug
+              }
+            }
           }
           pageInfo {
             hasNextPage
@@ -154,10 +164,12 @@ async function collectInsightUris(): Promise<string[]> {
     const nodes = data.insights?.nodes ?? [];
 
     for (const n of nodes) {
-      const uri = n.uri?.trim();
+      const slug = n.slug?.trim();
+      const topicSlug = n.insightTopics?.nodes?.[0]?.slug?.trim();
 
-      // ✅ ADD THIS IF YOUR URLS NEED PREFIXING
-      if (uri) out.push(`/insights${uri}`);
+      if (slug && topicSlug) {
+        out.push(`/insights/${topicSlug}/${slug}/`);
+      }
     }
 
     const pageInfo = data.insights?.pageInfo;
@@ -198,9 +210,8 @@ async function collectAgencyAndAgentUrls(base: URL): Promise<string[]> {
 async function collectInsightCategoryUrls(base: URL): Promise<string[]> {
   try {
     const slugs = await getInsightTopicSlugs();
-    return slugs.map((slug) =>
-      toAbsoluteUrl(`/insights/category/${slug}/`, base),
-    );
+
+    return slugs.map((slug) => toAbsoluteUrl(`/insights/${slug}/`, base));
   } catch {
     return [];
   }

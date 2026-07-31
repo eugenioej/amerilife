@@ -125,7 +125,7 @@ export function InsightsNewsroomColumn({
       {posts.map((post, index) => {
         const img =
           post.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
-        const href = insightHref(post.slug);
+        const href = insightHref(post.slug, post.insightTopics?.nodes?.[0]?.slug);
         return (
           <article
             key={post.id}

@@ -51,7 +51,7 @@ function RelatedArticlesSidebar({ posts }: { posts: InsightListItem[] }) {
         {posts.map((item) => {
           const img =
             item.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
-          const href = insightHref(item.slug);
+          const href = insightHref(item.slug, item.insightTopics?.nodes?.[0]?.slug);
           return (
             <li key={item.id} className="flex gap-3 py-4 first:pt-0">
               <Link
@@ -106,7 +106,7 @@ function InTheNewsSidebar({ posts }: { posts: PostsListItem[] }) {
             item.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
           const href = item.uri || "#";
           const categorySlug = item.categories?.nodes?.[0]?.slug;
-          console.log('item', item)
+         
           return (
             <li key={item.id} className="flex gap-3 py-4 first:pt-0">
               <Link
@@ -156,7 +156,7 @@ function RelatedPostsGrid({ posts }: { posts: InsightListItem[] }) {
         {posts.map((item) => {
           const img =
             item.featuredImage?.node?.sourceUrl?.trim() || PLACEHOLDER_IMG;
-          const href = insightHref(item.slug);
+          const href = insightHref(item.slug, item.insightTopics?.nodes?.[0]?.slug);
           return (
             <article key={item.id} className="group flex flex-col">
               <Link

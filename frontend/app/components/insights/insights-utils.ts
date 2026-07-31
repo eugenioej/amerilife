@@ -38,15 +38,33 @@ export function isInsightFeatured(
   return post.insightFields?.isFeatured === true;
 }
 
-export function insightHref(slug: string | null | undefined): string {
+export function insightHref(
+  slug: string | null | undefined,
+  categorySlug?: string | null | undefined,
+): string {
   if (!slug) return "/insights/";
-  return `/insights/${slug}/`;
+
+  const cleanSlug = slug.trim();
+  const cleanCategorySlug = categorySlug?.trim();
+
+  if (!cleanSlug) return "/insights/";
+
+  if (!cleanCategorySlug) {
+    return `/insights/${cleanSlug}/`;
+  }
+
+  return `/insights/${cleanCategorySlug}/${cleanSlug}/`;
 }
 
 /** Insight topic taxonomy archive on the Next.js site (not WP `/insight-topic/`). */
 export function insightCategoryHref(slug: string | null | undefined): string {
   if (!slug) return "/insights/";
-  return `/insights/category/${slug}/`;
+
+  const cleanSlug = slug.trim();
+
+  if (!cleanSlug) return "/insights/";
+
+  return `/insights/${cleanSlug}/`;
 }
 
 /** Next/Image quality (1–100) for magazine — balances sharpness vs. payload. */
