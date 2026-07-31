@@ -8,8 +8,8 @@ import { WP_IMAGE_SOURCES } from "@/lib/wp-image-sources";
 
 export const metadata: Metadata = {
   ...staticPageMetadata(
-    "AmeriLife Request Support Thank You Page",
-    "AmeriLife Request Support Thank You Page",
+    "AmeriLife Marketing Support Thank You Page",
+    "AmeriLife Marketing Support Thank You Page",
     "/thankyou/"
   ),
   robots: { index: false, follow: false },
