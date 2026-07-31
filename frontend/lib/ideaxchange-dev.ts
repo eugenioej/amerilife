@@ -13,7 +13,7 @@ export type IdeaxchangeDevViewMode = "off" | "all" | "brokerage" | "career";
 const VALID_MODES = new Set<IdeaxchangeDevViewMode>(["off", "all", "brokerage", "career"]);
 
 export function isIdeaxchangeDevUnlockEnabled(): boolean {
-  return process.env.IDEAXCHANGE_DEV_UNLOCK === "0";
+  return process.env.IDEAXCHANGE_DEV_UNLOCK === "1";
 }
 
 function parseDevViewMode(value: string | undefined): IdeaxchangeDevViewMode {
