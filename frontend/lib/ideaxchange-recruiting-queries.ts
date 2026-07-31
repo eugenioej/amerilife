@@ -26,6 +26,13 @@ export type CaseStudyListItem = {
   id: string;
   slug?: string | null;
   title?: string | null;
+  ideaxchangeCaseStudyTags?: {
+    nodes?: {
+      id: string;
+      name?: string | null;
+      slug?: string | null;
+    }[];
+  } | null;
   date?: string | null;
   excerpt?: string | null;
   featuredImage?: {
@@ -89,6 +96,13 @@ const CASE_STUDY_LIST_FIELDS = `
   id
   slug
   title
+  ideaxchangeCaseStudyTags {
+    nodes {
+      id
+      name
+      slug
+    }
+  }
   date
   excerpt
   featuredImage {

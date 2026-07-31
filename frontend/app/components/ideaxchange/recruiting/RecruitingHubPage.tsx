@@ -22,6 +22,7 @@ import {
 } from "@/lib/ideaxchange-recruiting-utils";
 import { RecruitingCampaignsTable } from "./RecruitingCampaignsTable";
 import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeHorizontalAdSlot";
+import { RecruitingResourcesSection } from "./RecruitingResourcesSection";
 
 type Props = {
   posts: CaseStudyListItem[];
@@ -99,7 +100,19 @@ export function RecruitingHubPage({
   ideaxchangeAds,
 }: Props) {
   const { hero, featured } = partitionPosts(posts);
-  const campaignRows = dedupeById(allCampaigns).map(toCampaignTableRow);
+  const allUniqueCampaigns = dedupeById(allCampaigns);
+  const resourceCampaigns = allUniqueCampaigns.filter((campaign) =>
+    campaign.ideaxchangeCaseStudyTags?.nodes?.some(
+      (tag) => tag.name === "Resource"
+    )
+  );
+  const tableCampaigns = allUniqueCampaigns.filter(
+    (campaign) =>
+      !campaign.ideaxchangeCaseStudyTags?.nodes?.some(
+        (tag) => tag.name === "Resource"
+      )
+  );
+  const campaignRows = tableCampaigns.map(toCampaignTableRow);
   const { spotlight, recentSidebar, newsroomRest } =
     partitionNewsroomWithSidebar(recruitPosts);
 
@@ -127,6 +140,8 @@ export function RecruitingHubPage({
           <div className="mt-8">
             <RecruitingCampaignsTable rows={campaignRows} />
           </div>
+
+          <RecruitingResourcesSection resources={resourceCampaigns}/>
 
           <IdeaxchangeHorizontalAdSlot
             slot={ideaxchangeAds?.homePrimaryHorizontal}

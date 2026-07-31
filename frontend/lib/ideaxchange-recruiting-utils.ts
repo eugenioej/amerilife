@@ -5,6 +5,31 @@ export const RECRUITING_HUB_FIRST = 36;
 export const RECRUITING_LOAD_MORE_FIRST = 12;
 export const RECRUITING_NEWSROOM_INITIAL = 8;
 
+export function cleanOverviewText(value: string | null | undefined): string {
+  if (!value) return "";
+
+  return value
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&#160;/g, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#034;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&#8216;/g, "'")
+    .replace(/&#8217;/g, "'")
+    .replace(/&#8220;/g, '"')
+    .replace(/&#8221;/g, '"')
+    .replace(/&ndash;/gi, "-")
+    .replace(/&#8211;/g, "-")
+    .replace(/&mdash;/gi, "-")
+    .replace(/&#8212;/g, "-")
+    .replace(/&hellip;/gi, "…")
+    .replace(/&#8230;/g, "…")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export function caseStudyHref(slug: string | null | undefined): string {
   if (!slug) return IDEAXCHANGE_RECRUITING_HUB_PATH;
   return `${IDEAXCHANGE_RECRUITING_HUB_PATH}${slug}/`;
@@ -48,9 +73,8 @@ const DEFAULT_TARGET_AUDIENCE = "Target Audience Placeholder";
 export function toCampaignTableRow(post: CaseStudyListItem): CampaignTableRow {
   const fields = post.ideaxchangeCaseStudyFields;
   const overview =
-    fields?.campaignOverview?.trim() ||
-    post.excerpt?.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() ||
-    "";
+  cleanOverviewText(fields?.campaignOverview) ||
+  cleanOverviewText(post.excerpt);
 
   return {
     id: post.id,
