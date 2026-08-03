@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 
 /** WordPress post type names must be ≤ 20 characters. */
 define('AMERILIFE_IX_CASE_STUDY_PT', 'ideaxchange_case');
+define('AMERILIFE_IX_CASE_STUDY_RESULTS_BLOCK', 'amerilife/case-study-results');
 
 function amerilife_ideaxchange_case_study_post_id($post) {
   if (is_object($post)) {
@@ -34,6 +35,177 @@ function amerilife_ideaxchange_case_study_legacy_asset_map() {
     'interview_questions_attachment_id' => 'Interview Questions',
     'email_templates_attachment_id' => 'Email Templates',
   ];
+}
+
+add_action('init', function () {
+  register_block_type(AMERILIFE_IX_CASE_STUDY_RESULTS_BLOCK, [
+    'api_version' => 2,
+    'title' => 'Case Study Results',
+    'category' => 'widgets',
+    'icon' => 'chart-bar',
+    'description' => 'Content that appears inside the frontend "The Results" box.',
+    'supports' => [
+      'html' => false,
+      'reusable' => false,
+    ],
+  ]);
+}, 11);
+
+add_action('enqueue_block_editor_assets', function () {
+  $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+
+  if (!$screen || $screen->post_type !== AMERILIFE_IX_CASE_STUDY_PT) {
+    return;
+  }
+
+  wp_register_script(
+    'amerilife-ix-case-study-results-block',
+    '',
+    ['wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n'],
+    '1.0.0',
+    true
+  );
+
+  wp_enqueue_script('amerilife-ix-case-study-results-block');
+
+  wp_add_inline_script(
+    'amerilife-ix-case-study-results-block',
+    "
+    (function (blocks, element, blockEditor, components, i18n) {
+      var el = element.createElement;
+      var registerBlockType = blocks.registerBlockType;
+      var InnerBlocks = blockEditor.InnerBlocks;
+      var useBlockProps = blockEditor.useBlockProps;
+      var PanelBody = components.PanelBody;
+      var __ = i18n.__;
+
+      registerBlockType('amerilife/case-study-results', {
+        title: __('Case Study Results', 'amerilife'),
+        description: __('Content that appears inside the frontend The Results box.', 'amerilife'),
+        icon: 'chart-bar',
+        category: 'widgets',
+        supports: {
+          html: false,
+          reusable: false
+        },
+
+        edit: function () {
+          var blockProps = useBlockProps({
+            className: 'amerilife-case-study-results-editor'
+          });
+
+          return el(
+            'div',
+            blockProps,
+            el(
+              'div',
+              {
+                style: {
+                  border: '2px dashed #45a693',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  background: '#f4f4f4'
+                }
+              },
+              el(
+                'p',
+                {
+                  style: {
+                    marginTop: 0,
+                    marginBottom: '12px',
+                    color: '#45a693',
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em'
+                  }
+                },
+                'The Results'
+              ),
+              el(InnerBlocks, {
+                templateLock: false,
+                renderAppender: InnerBlocks.ButtonBlockAppender
+              })
+            )
+          );
+        },
+
+        save: function () {
+          var blockProps = blockEditor.useBlockProps.save();
+
+          return el(
+            'div',
+            blockProps,
+            el(InnerBlocks.Content)
+          );
+        }
+      });
+    })(window.wp.blocks, window.wp.element, window.wp.blockEditor, window.wp.components, window.wp.i18n);
+    "
+  );
+});
+
+/**
+ * Split case study post content into:
+ * - main content without the Case Study Results block
+ * - results content from inside the Case Study Results block
+ *
+ * @param string $content
+ * @return array{content: string, results: string}
+ */
+function amerilife_ideaxchange_case_study_split_results_content($content) {
+  $blocks = parse_blocks((string) $content);
+
+  if (empty($blocks)) {
+    return [
+      'content' => (string) $content,
+      'results' => '',
+    ];
+  }
+
+  $main_blocks = [];
+  $results_blocks = [];
+
+  foreach ($blocks as $block) {
+    if (($block['blockName'] ?? null) === AMERILIFE_IX_CASE_STUDY_RESULTS_BLOCK) {
+      foreach (($block['innerBlocks'] ?? []) as $inner_block) {
+        $results_blocks[] = $inner_block;
+      }
+      continue;
+    }
+
+    $main_blocks[] = $block;
+  }
+
+  $main_content = '';
+  foreach ($main_blocks as $block) {
+    $main_content .= serialize_block($block);
+  }
+
+  $results_content = '';
+  foreach ($results_blocks as $block) {
+    $results_content .= serialize_block($block);
+  }
+
+  return [
+    'content' => $main_content,
+    'results' => $results_content,
+  ];
+}
+
+/**
+ * Render block content to frontend HTML.
+ *
+ * @param string $content
+ * @return string
+ */
+function amerilife_ideaxchange_case_study_render_block_html($content) {
+  $content = trim((string) $content);
+
+  if ($content === '') {
+    return '';
+  }
+
+  return trim((string) apply_filters('the_content', $content));
 }
 
 add_action('init', function () {
@@ -304,6 +476,14 @@ add_action('graphql_register_types', function () {
         'type' => 'IdeaxchangeVisibility',
         'description' => 'Brokerage / Career / Brokerage+Career audience',
       ],
+      'contentWithoutResultsHtml' => [
+        'type' => 'String',
+        'description' => 'Main case study content with the Case Study Results block removed.',
+      ],
+      'resultsContentHtml' => [
+        'type' => 'String',
+        'description' => 'Rendered HTML from the inner blocks of the Case Study Results block.',
+      ],
     ],
   ]);
 
@@ -322,6 +502,8 @@ add_action('graphql_register_types', function () {
           'campaignResults' => null,
           'campaignOverview' => null,
           'campaignAssets' => [],
+          'contentWithoutResultsHtml' => null,
+          'resultsContentHtml' => null,
           'visibility' => 'BROKERAGE_CAREER',
         ];
       }
@@ -338,6 +520,10 @@ add_action('graphql_register_types', function () {
       $campaign_spend = get_post_meta($id, 'campaign_spend', true);
       $campaign_results = get_post_meta($id, 'campaign_results', true);
       $campaign_overview = get_post_meta($id, 'campaign_overview', true);
+      $post_content = get_post_field('post_content', $id);
+      $split_content = amerilife_ideaxchange_case_study_split_results_content((string) $post_content);
+      $content_without_results_html = amerilife_ideaxchange_case_study_render_block_html($split_content['content']);
+      $results_content_html = amerilife_ideaxchange_case_study_render_block_html($split_content['results']);
       $assets = amerilife_ideaxchange_resolve_resources_graphql(
         $id,
         'campaign_assets_json',
@@ -353,6 +539,8 @@ add_action('graphql_register_types', function () {
         'campaignSpend' => $campaign_spend !== '' ? (string) $campaign_spend : null,
         'campaignResults' => $campaign_results !== '' ? (string) $campaign_results : null,
         'campaignOverview' => $campaign_overview !== '' ? (string) $campaign_overview : null,
+        'contentWithoutResultsHtml' => $content_without_results_html !== '' ? $content_without_results_html : null,
+        'resultsContentHtml' => $results_content_html !== '' ? $results_content_html : null,
         'campaignAssets' => $assets,
         'visibility' => amerilife_ideaxchange_visibility_graphql_enum($id),
       ];

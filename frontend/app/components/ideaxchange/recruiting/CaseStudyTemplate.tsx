@@ -28,15 +28,19 @@ function estimateReadMinutes(html: string): number {
 }
 
 export function CaseStudyTemplate({ post, relatedPosts }: Props) {
-  const html = post.content ? rewriteUploadsInHtml(post.content) : "";
-  const excerptPlain = formatInsightExcerptPlain(post.excerpt);
+  const fallbackHtml = post.content ? rewriteUploadsInHtml(post.content) : "";
+  const resultsHtml = rewriteUploadsInHtml(
+    post.ideaxchangeCaseStudyFields?.resultsContentHtml ?? ""
+  );
+  const contentWithoutResultsHtml = rewriteUploadsInHtml(
+    post.ideaxchangeCaseStudyFields?.contentWithoutResultsHtml ?? fallbackHtml
+  );
   const company = post.caseStudyCompany;
   const companyName = company?.title?.trim() || "Recruiting";
   const companySlug = company?.slug?.trim();
-  const readMin = estimateReadMinutes(html);
+  const readMin = estimateReadMinutes(contentWithoutResultsHtml);
   const assets = post.ideaxchangeCaseStudyFields?.campaignAssets ?? [];
   const marketingCtaUrl = post.ideaxchangeCaseStudyFields?.marketingCtaUrl;
-
   const proseClasses =
     "ideaxchange-article-body max-w-none font-sans text-[var(--color-fg)] [&_h1]:font-sans [&_h2]:font-sans [&_h3]:font-sans [&_p]:mb-4 [&_p]:leading-relaxed [&_a]:text-[var(--color-link)] [&_a]:underline [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-base [&_h2]:font-bold [&_h2]:uppercase [&_h2]:tracking-wide [&_h2]:!text-[var(--color-brand-primary)]";
 
@@ -91,11 +95,24 @@ export function CaseStudyTemplate({ post, relatedPosts }: Props) {
             </span>
           </div>
 
-          {html ? (
+          {contentWithoutResultsHtml ? (
             <div
               className={`${proseClasses} mt-10`}
-              dangerouslySetInnerHTML={{ __html: html }}
+              dangerouslySetInnerHTML={{ __html: contentWithoutResultsHtml }}
             />
+          ) : null}
+
+          {resultsHtml ? (
+            <section className="mt-16 rounded-[28px] bg-[#f3f3f1] px-6 py-8 sm:px-8 md:mt-16 md:px-10 md:py-10">
+              <h2 className="mb-6 text-lg font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)] md:mb-8">
+                The Results
+              </h2>
+
+              <div
+                className={`${proseClasses} case-study-results-content max-w-none [&_p:last-child]:mb-0 [&_strong]:font-bold [&_strong]:text-[var(--color-brand-dark)]`}
+                dangerouslySetInnerHTML={{ __html: resultsHtml }}
+              />
+            </section>
           ) : null}
 
           {relatedPosts.length > 0 ? (

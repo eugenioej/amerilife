@@ -47,6 +47,8 @@ export type CaseStudyListItem = {
     campaignSpend?: string | null;
     campaignResults?: string | null;
     campaignOverview?: string | null;
+    contentWithoutResultsHtml?: string | null;
+    resultsContentHtml?: string | null;
     visibility?: string | null;
     campaignAssets?: IdeaxchangeCampaignAsset[] | null;
   } | null;
@@ -230,6 +232,8 @@ export const GET_CASE_STUDY_BY_SLUG = `
         isHeroFeatured
         marketingCtaUrl
         visibility
+        contentWithoutResultsHtml
+        resultsContentHtml
         campaignAssets {
           label
           fileUrl
