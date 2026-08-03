@@ -25,7 +25,7 @@ import {
 export const INSIGHTS_MAGAZINE_FIRST = 36;
 
 /** Page size for /insights/[category]/ (numbered pagination). */
-export const INSIGHT_CATEGORY_PAGE_FIRST = 8;
+export const INSIGHT_CATEGORY_PAGE_FIRST = 12;
 
 /** Default page size for related-list fetch and load-more chunks. */
 export const INSIGHTS_LOAD_MORE_FIRST = 12;
@@ -203,8 +203,15 @@ async function fetchInsightTopicBySlugResult(
   slug: string,
   first: number,
   after: string | null,
+  search?: string | null,
 ): Promise<InsightTopicBySlugResult> {
-  const variables = { slug, first, after };
+  const variables = {
+    slug,
+    first,
+    after,
+    search: search?.trim() || null,
+  };
+
   try {
     return await fetchGraphQL<InsightTopicBySlugResult>(
       GET_INSIGHT_TOPIC_BY_SLUG,
@@ -212,9 +219,14 @@ async function fetchInsightTopicBySlugResult(
     );
   } catch (err) {
     if (!isInsightFieldsSchemaGapError(err)) throw err;
+
     const { GET_INSIGHT_TOPIC_BY_SLUG_MINIMAL: minimalQuery } =
       await import("@/lib/queries");
-    return await fetchGraphQL<InsightTopicBySlugResult>(minimalQuery, variables);
+
+    return await fetchGraphQL<InsightTopicBySlugResult>(
+      minimalQuery,
+      variables,
+    );
   }
 }
 
@@ -222,12 +234,14 @@ async function fetchInsightTopicInsightsSlice(
   slug: string,
   first: number,
   after: string | null,
+  search?: string | null,
 ): Promise<{
   nodes: InsightListItem[];
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
 }> {
-  const data = await fetchInsightTopicBySlugResult(slug, first, after);
+  const data = await fetchInsightTopicBySlugResult(slug, first, after, search);
   const conn = data?.insightTopic?.insights;
+
   return {
     nodes: conn?.nodes ?? [],
     pageInfo: conn?.pageInfo ?? {
@@ -243,35 +257,53 @@ async function fetchInsightTopicInsightsSlice(
 async function cursorAfterSkippingTopicPosts(
   slug: string,
   skip: number,
+  search?: string | null,
 ): Promise<{ after: string | null; ok: boolean }> {
   if (skip <= 0) return { after: null, ok: true };
+
   let after: string | null = null;
   let remaining = skip;
+
   while (remaining > 0) {
     const batch = Math.min(remaining, INSIGHT_TOPIC_CURSOR_BATCH);
-    const { nodes, pageInfo } = await fetchInsightTopicInsightsSlice(slug, batch, after);
+
+    const { nodes, pageInfo } = await fetchInsightTopicInsightsSlice(
+      slug,
+      batch,
+      after,
+      search,
+    );
+
     if (nodes.length === 0) {
       return { after: null, ok: false };
     }
+
     remaining -= nodes.length;
     after = pageInfo.endCursor ?? null;
+
     if (!pageInfo.hasNextPage && remaining > 0) {
       return { after: null, ok: false };
     }
   }
+
   return { after, ok: true };
 }
 
 export const getInsightCategoryPageData = cache(async function getInsightCategoryPageData(
   slug: string,
   page: number,
+  search?: string | null,
 ): Promise<InsightCategoryPageData | null> {
   const trimmed = slug.trim();
   if (!trimmed) return null;
+
+  const normalizedSearch = search?.trim() || null;
+
   const safePage =
     Number.isFinite(page) && page >= 1
       ? Math.min(Math.floor(page), 1_000_000)
       : 1;
+
   const pageSize = INSIGHT_CATEGORY_PAGE_FIRST;
 
   try {
@@ -279,6 +311,7 @@ export const getInsightCategoryPageData = cache(async function getInsightCategor
     const { after: afterSkip, ok: skipOk } = await cursorAfterSkippingTopicPosts(
       trimmed,
       skipOffset,
+      normalizedSearch,
     );
     if (!skipOk && skipOffset > 0) return null;
 
@@ -286,12 +319,15 @@ export const getInsightCategoryPageData = cache(async function getInsightCategor
       trimmed,
       pageSize,
       skipOffset === 0 ? null : afterSkip,
+      normalizedSearch,
     );
+
     const topic = data?.insightTopic;
     if (!topic?.slug?.trim()) return null;
 
     const totalCount = Math.max(0, topic.count ?? 0);
     const totalPages = Math.max(1, Math.ceil(totalCount / pageSize) || 1);
+
     if (safePage > totalPages) return null;
 
     const conn = topic.insights;

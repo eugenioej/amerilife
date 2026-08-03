@@ -167,6 +167,7 @@ export function InsightsNewsroomColumn({
                   {formatBylineDate(post.date)}
                 </p>
               ) : null}
+              
               <div className="mt-3 text-sm leading-relaxed text-[var(--color-muted)] whitespace-pre-line">
                 {formatInsightExcerptPlain(post.excerpt) ||
                   "Read the full article for more."}

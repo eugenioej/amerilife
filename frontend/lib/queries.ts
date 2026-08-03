@@ -1555,7 +1555,7 @@ export type InsightTopicBySlugResult = {
 };
 
 export const GET_INSIGHT_TOPIC_BY_SLUG = `
-  query GetInsightTopicBySlug($slug: ID!, $first: Int!, $after: String) {
+  query GetInsightTopicBySlug($slug: ID!, $first: Int!, $after: String, $search: String) {
     insightTopic(id: $slug, idType: SLUG) {
       id
       name
@@ -1564,7 +1564,7 @@ export const GET_INSIGHT_TOPIC_BY_SLUG = `
       insights(
         first: $first
         after: $after
-        where: { orderby: { field: DATE, order: DESC } }
+        where: { orderby: { field: DATE, order: DESC }, search: $search }
       ) {
         pageInfo {
           hasNextPage
@@ -1599,8 +1599,8 @@ export const GET_INSIGHT_TOPIC_BY_SLUG = `
 `;
 
 export const GET_INSIGHT_TOPIC_BY_SLUG_MINIMAL = `
-  query GetInsightTopicBySlugMinimal($slug: ID!, $first: Int!, $after: String) {
-    insightTopic(id: $slug, idType: SLUG) {
+  query GetInsightTopicBySlugMinimal($slug: ID!, $first: Int!, $after: String, $search: String) 
+    {
       id
       name
       slug
@@ -1608,7 +1608,7 @@ export const GET_INSIGHT_TOPIC_BY_SLUG_MINIMAL = `
       insights(
         first: $first
         after: $after
-        where: { orderby: { field: DATE, order: DESC } }
+        where: { orderby: { field: DATE, order: DESC }, search: $search }
       ) {
         pageInfo {
           hasNextPage

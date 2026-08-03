@@ -11,7 +11,10 @@ import {
 import { staticPageMetadata } from "@/lib/seo";
 
 type PageParams = Promise<{ category: string }>;
-type SearchParams = Promise<{ page?: string | string[] }>;
+type SearchParams = Promise<{
+  page?: string | string[];
+  q?: string | string[];
+}>;
 
 function parseCategoryPage(sp: { page?: string | string[] }): number {
   const raw = sp.page;
@@ -19,6 +22,12 @@ function parseCategoryPage(sp: { page?: string | string[] }): number {
   const n = s ? parseInt(s, 10) : 1;
   if (!Number.isFinite(n) || n < 1) return 1;
   return Math.floor(n);
+}
+
+function parseSearchQuery(sp: { q?: string | string[] }): string {
+  const raw = sp.q;
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  return value?.trim() ?? "";
 }
 
 export async function generateStaticParams() {
@@ -66,11 +75,15 @@ export default async function InsightCategoryArchivePage({
   searchParams: SearchParams;
 }) {
   const { category } = await params;
-  const page = parseCategoryPage(await searchParams);
+  const sp = await searchParams;
+  const page = parseCategoryPage(sp);
+  const q = parseSearchQuery(sp);
+  const search = q.length > 0 ? q : null;
 
-  const [data, insightsAds] = await Promise.all([
-    getInsightCategoryPageData(category, page),
+  const [data, insightsAds, topicSlugs] = await Promise.all([
+    getInsightCategoryPageData(category, page, search),
     getInsightsAdsSettings(),
+    getInsightTopicSlugs(),
   ]);
 
   if (!data) {
@@ -84,6 +97,14 @@ export default async function InsightCategoryArchivePage({
     notFound();
   }
 
+  const categories = topicSlugs.map((slug) => ({
+    name: slug
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" "),
+    slug,
+  }));
+
   const topicName = data.topicName?.trim() || data.topicSlug;
 
   return (
@@ -92,6 +113,7 @@ export default async function InsightCategoryArchivePage({
       topicName={topicName}
       posts={data.posts}
       currentPage={data.currentPage}
+      categories={categories}
       totalPages={data.totalPages}
       insightsAds={insightsAds}
     />

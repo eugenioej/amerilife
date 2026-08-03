@@ -1,9 +1,13 @@
+// app/components/insights/InsightsCategoryPage.tsx
+
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import type { InsightListItem, InsightsAdsSettings } from "@/lib/queries";
-import { AdBannerHorizontal, hasInsightsAdSlotImage } from "./InsightsAds";
-import { InsightsCategoryArticlesSection } from "./InsightsCategoryArticlesSection";
+import { InsightsCategoryCardGrid } from "./InsightsCategoryCardGrid";
 import { InsightsCategoryPagination } from "./InsightsCategoryPagination";
-import { InsightsNewsroomColumn } from "./InsightsNewsroomColumn";
+import {
+  InsightsListingToolbar,
+  type InsightCategoryOption,
+} from "./InsightsListingToolbar";
 
 type Props = {
   topicSlug: string;
@@ -11,6 +15,7 @@ type Props = {
   posts: InsightListItem[];
   currentPage: number;
   totalPages: number;
+  categories: InsightCategoryOption[];
   insightsAds?: InsightsAdsSettings | null;
 };
 
@@ -20,47 +25,44 @@ export function InsightsCategoryPage({
   posts,
   currentPage,
   totalPages,
-  insightsAds,
+  categories,
 }: Props) {
   return (
-    <div className="bg-white pb-16 md:pb-20">
-      <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] pt-8 md:pt-10">
-        <SiteBreadcrumb
-          className="mb-6"
-          items={[
-            { label: "Home", href: "/" },
-            { label: "Insights", href: "/insights/" },
-            { label: topicName, className: "max-w-[min(100%,20rem)] truncate" },
-          ]}
-        />
-        <h1 className="font-sans text-3xl font-bold tracking-tight text-[var(--color-brand-dark)] md:text-4xl">
+    <section className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-12">
+      <SiteBreadcrumb
+        className="mb-6"
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Insights", href: "/insights/" },
+          { label: topicName },
+        ]}
+      />
+
+      <header className="mb-6">
+        <h1 className="text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
           {topicName}
         </h1>
-        <p className="mt-3 max-w-2xl text-lg text-[var(--color-muted)]">
-          Articles and resources in the {topicName} category.
+
+        <p className="mt-3 max-w-2xl text-[var(--color-muted)]">
+          Browse all {topicName.toLowerCase()} updates from AmeriLife.
         </p>
+      </header>
 
-        {hasInsightsAdSlotImage(insightsAds?.primaryHorizontal) ? (
-          <div className="mt-10">
-            <AdBannerHorizontal slot={insightsAds?.primaryHorizontal} />
-          </div>
-        ) : null}
+      <InsightsListingToolbar categories={categories} />
 
-        <InsightsCategoryArticlesSection>
-          <InsightsNewsroomColumn
-            initialPosts={posts}
-            deferredBatchPosts={[]}
-            initialEndCursor={null}
-            initialHasNextPage={false}
-            enableLoadMore={false}
-          />
-          <InsightsCategoryPagination
-            topicSlug={topicSlug}
-            currentPage={currentPage}
-            totalPages={totalPages}
-          />
-        </InsightsCategoryArticlesSection>
-      </div>
-    </div>
+      {posts.length === 0 ? (
+        <p className="text-[var(--color-muted)]">
+          No posts found in this category.
+        </p>
+      ) : (
+        <InsightsCategoryCardGrid posts={posts} />
+      )}
+
+      <InsightsCategoryPagination
+        topicSlug={topicSlug}
+        currentPage={currentPage}
+        totalPages={totalPages}
+      />
+    </section>
   );
 }
