@@ -1,8 +1,7 @@
 import { IdeaXchangeNewsroomColumn } from "@/app/components/ideaxchange/magazine/IdeaXchangeNewsroomColumn";
-import { INSIGHTS_NEWSROOM_INITIAL } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
-import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/IdeaXchangePillarBanner";
+import { INSIGHTS_NEWSROOM_INITIAL } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/IdeaXchangePillarBanner";
 import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeHorizontalAdSlot";
-import { IdeaxchangeSidebarAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeSidebarAdSlot";
+import { IdeaXchangeMagazineSidebar } from "../magazine/IdeaXchangeMagazineSidebar";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
 import type { IdeaxchangeAdsSettings } from "@/lib/queries";
 import { IDEAXCHANGE_SALES_SUCCESS_PATH } from "@/lib/ideaxchange-constants";
@@ -12,6 +11,7 @@ import { partitionSalesSuccessPosts, SALES_SUCCESS_BADGE_LABEL } from "./sales-s
 
 type Props = {
   posts: IdeaxchangeListItem[];
+  sidebarPosts: IdeaxchangeListItem[];
   pageInfo?: {
     hasNextPage: boolean;
     endCursor: string | null;
@@ -19,8 +19,14 @@ type Props = {
   ideaxchangeAds?: IdeaxchangeAdsSettings | null;
 };
 
-export function SalesSuccessPage({ posts, pageInfo, ideaxchangeAds }: Props) {
+export function SalesSuccessPage({
+  posts,
+  sidebarPosts,
+  pageInfo,
+  ideaxchangeAds,
+}: Props) {
   const { featured, rest } = partitionSalesSuccessPosts(posts);
+  const recentSidebar = sidebarPosts.slice(0, 5);
 
   return (
     <div className="bg-white pb-16 md:pb-20">
@@ -29,7 +35,7 @@ export function SalesSuccessPage({ posts, pageInfo, ideaxchangeAds }: Props) {
 
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 md:py-14">
         <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)]">
-          Newsroom
+          Incentives
         </h2>
 
         <IdeaxchangeHorizontalAdSlot
@@ -52,7 +58,12 @@ export function SalesSuccessPage({ posts, pageInfo, ideaxchangeAds }: Props) {
           </div>
 
           <aside className="lg:col-span-4">
-            <IdeaxchangeSidebarAdSlot slot={ideaxchangeAds?.homeSidebarVertical} />
+            <IdeaXchangeMagazineSidebar
+              spotlight={null}
+              recentSidebar={recentSidebar}
+              recentHeading="Recent articles"
+              adSlot={ideaxchangeAds?.homeSidebarVertical}
+            />
           </aside>
         </div>
       </div>

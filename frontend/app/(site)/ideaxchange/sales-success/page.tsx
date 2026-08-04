@@ -13,6 +13,7 @@ import {
 import {
   getIdeaxchangeAdsSettings,
   getIdeaxchangeInitiativeMagazineBundle,
+  getIdeaxchangeMagazineBundle,
 } from "@/lib/ideaxchange-data";
 import { privatePageMetadata } from "@/lib/seo";
 
@@ -32,8 +33,9 @@ export default async function SalesSuccessIndexPage() {
 
   const adAudience = getIdeaxchangeAdAudienceFromPersona(effectivePersona);
 
-  const [initiativeBundle, ideaxchangeAds] = await Promise.all([
+  const [initiativeBundle, magazineBundle, ideaxchangeAds] = await Promise.all([
     getIdeaxchangeInitiativeMagazineBundle(effectivePersona),
+    getIdeaxchangeMagazineBundle(effectivePersona),
     getIdeaxchangeAdsSettings(),
   ]);
 
@@ -46,6 +48,7 @@ export default async function SalesSuccessIndexPage() {
   return (
     <SalesSuccessPage
       posts={initiativeBundle.posts}
+      sidebarPosts={magazineBundle.posts}
       pageInfo={initiativeBundle.pageInfo}
       ideaxchangeAds={visibleIdeaxchangeAds}
     />
