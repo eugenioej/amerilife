@@ -8,7 +8,7 @@ import {
   getEffectiveIdeaxchangePersona,
   getIdeaxchangeDevViewMode,
 } from "@/lib/ideaxchange-dev";
-import { getIdeaxchangeRecruitMagazineBundle } from "@/lib/ideaxchange-data";
+import { getIdeaxchangeCareerSalesMagazineBundle } from "@/lib/ideaxchange-data";
 import { getCareerLeaderboardPageData } from "@/lib/ideaxchange-career-leaderboard-data";
 import { getIdeaxchangeHomeForPersona } from "@/lib/ideaxchange-persona";
 import { privatePageMetadata } from "@/lib/seo";
@@ -27,19 +27,19 @@ export default async function CareerLeaderboardIndexPage() {
   }
 
   const effectivePersona = getEffectiveIdeaxchangePersona(
-  auth.persona,
-  devView,
-);
+    auth.persona,
+    devView,
+  );
 
-const [data, recruitBundle] = await Promise.all([
-  getCareerLeaderboardPageData(),
-  getIdeaxchangeRecruitMagazineBundle(effectivePersona),
-]);
+  const [data, careerSalesBundle] = await Promise.all([
+    getCareerLeaderboardPageData(),
+    getIdeaxchangeCareerSalesMagazineBundle(effectivePersona),
+  ]);
 
-return (
-  <CareerLeaderboardPage
-    data={data}
-    recruitingPosts={recruitBundle.posts}
-  />
-);
+  return (
+    <CareerLeaderboardPage
+      data={data}
+      careerSalesPosts={careerSalesBundle.posts}
+    />
+  );
 }

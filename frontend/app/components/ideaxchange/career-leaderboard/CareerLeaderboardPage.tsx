@@ -1,9 +1,11 @@
 import { Link } from "@/app/components/ui/Link";
 import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/IdeaXchangePillarBanner";
-import { IdeaXchangeFeaturedGrid } from "@/app/components/ideaxchange/shared/IdeaXchangeFeaturedGrid";
-import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
+import { IdeaXchangeHeroGrid } from "@/app/components/ideaxchange/shared/IdeaXchangeHeroGrid";import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
-import { IDEAXCHANGE_RECRUITING_HUB_PATH } from "@/lib/ideaxchange-constants";
+import {
+  IDEAXCHANGE_LEADERBOARD_PATH,
+  IDEAXCHANGE_RECRUITING_HUB_PATH,
+} from "@/lib/ideaxchange-constants";
 import {
   getCareerLeaderboardTablesBySlug,
   type CareerLeaderboardPageData,
@@ -13,13 +15,13 @@ import { CareerLeaderboardSection } from "./CareerLeaderboardSection";
 
 type Props = {
   data: CareerLeaderboardPageData;
-  recruitingPosts: IdeaxchangeListItem[];
+  careerSalesPosts: IdeaxchangeListItem[];
 };
-export function CareerLeaderboardPage({ data, recruitingPosts }: Props) {
+export function CareerLeaderboardPage({ data, careerSalesPosts }: Props) {
   const tablesBySlug = getCareerLeaderboardTablesBySlug(data.tables);
 
-  const recruitingFeaturedItems: IdeaxchangeCardItem[] = recruitingPosts
-  .slice(0, 4)
+  const careerSalesHeroItems: IdeaxchangeCardItem[] = careerSalesPosts
+  .slice(0, 3)
   .map((post) => {
     const topicSlug = post.ideaxchangeTopics?.nodes?.[0]?.slug?.trim();
 
@@ -32,10 +34,10 @@ export function CareerLeaderboardPage({ data, recruitingPosts }: Props) {
       href:
         post.slug && topicSlug
           ? `/ideaxchange/${topicSlug}/${post.slug}/`
-          : IDEAXCHANGE_RECRUITING_HUB_PATH,
+          : IDEAXCHANGE_LEADERBOARD_PATH,
       featuredImage: post.featuredImage,
-      badgeLabel: "RECRUITING",
-      badgeHref: IDEAXCHANGE_RECRUITING_HUB_PATH,
+      badgeLabel: "SALES",
+      badgeHref: IDEAXCHANGE_LEADERBOARD_PATH,
     };
   });
 
@@ -43,10 +45,9 @@ export function CareerLeaderboardPage({ data, recruitingPosts }: Props) {
     <div className="bg-white pb-16 md:pb-20">
       <IdeaXchangePillarBanner title="Career Leaderboard" />
 
-      <IdeaXchangeFeaturedGrid 
-        items={recruitingFeaturedItems} 
-        heading="Featured campaigns" 
-        defaultBadge="RECRUITING" 
+      <IdeaXchangeHeroGrid
+        items={careerSalesHeroItems}
+        defaultBadge="SALES"
       />
 
       <IdeaXchangePillarBanner

@@ -52,9 +52,13 @@ import {
   type IdeaxchangeAdsSettingsResult,
 } from "@/lib/queries";
 
+export const IDEAXCHANGE_CAREER_SALES_TAG_SLUG = "career-sales";
+export const IDEAXCHANGE_CAREER_SALES_MAGAZINE_FIRST = 12;
+
 const RESERVED_IDEAXCHANGE_TAG_SLUGS = new Set([
   IDEAXCHANGE_INITIATIVE_TAG_SLUG,
   IDEAXCHANGE_SALES_TAG_SLUG,
+  IDEAXCHANGE_CAREER_SALES_TAG_SLUG,
 ]);
 
 function isReservedIdeaxchangeArticle(post: IdeaxchangeListItem): boolean {
@@ -561,16 +565,6 @@ export async function getIdeaxchangeSalesMagazineBundle(
     const conn = data?.ideaxchangeTag?.ideaxchangeArticles;
     const posts = conn?.nodes ?? [];
 
-    console.log("[ideaxchange sales bundle]", {
-  tagSlug: IDEAXCHANGE_SALES_TAG_SLUG,
-  persona,
-  hasTag: Boolean(data?.ideaxchangeTag),
-  tagName: data?.ideaxchangeTag?.name,
-  rawPostCount: posts.length,
-  filteredPostCount: filterArticles(posts, persona).length,
-  titles: posts.map((post) => post.title),
-});
-
     if (posts.length > 0) {
       return {
         posts: filterArticles(posts, persona),
@@ -583,6 +577,36 @@ export async function getIdeaxchangeSalesMagazineBundle(
 
   const mock = getMockSalesMagazineBundle();
   return { posts: filterArticles(mock.posts, persona), pageInfo: mock.pageInfo };
+}
+
+/** ideaXchange-tagged Career Sales articles — career leaderboard hero grid. */
+export async function getIdeaxchangeCareerSalesMagazineBundle(
+  persona: IdeaxchangePersona = "brokerage",
+): Promise<{
+  posts: IdeaxchangeListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  try {
+    const data = await fetchIdeaxchangeTagBySlugResult(
+      IDEAXCHANGE_CAREER_SALES_TAG_SLUG,
+      IDEAXCHANGE_CAREER_SALES_MAGAZINE_FIRST,
+      null,
+    );
+
+    const conn = data?.ideaxchangeTag?.ideaxchangeArticles;
+    const posts = conn?.nodes ?? [];
+
+    if (posts.length > 0) {
+      return {
+        posts: filterArticles(posts, persona),
+        pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
+      };
+    }
+  } catch (err) {
+    console.error("[ideaxchange] getIdeaxchangeCareerSalesMagazineBundle failed:", err);
+  }
+
+  return { posts: [], pageInfo: EMPTY_PAGE_INFO };
 }
 
 export async function fetchIdeaxchangeSalesAfterCursor(
