@@ -20,30 +20,47 @@ export const metadata: Metadata = staticPageMetadata(
 );
 
 const PAGE_SIZE = 12;
+const LISTING_FETCH_LIMIT = 100;
 
-type SearchParams = Promise<{ stack?: string; q?: string }>;
+function parseListingPage(sp: { page?: string | string[] }): number {
+  const raw = sp.page;
+  const s = Array.isArray(raw) ? raw[0] : raw;
+  const n = s ? parseInt(s, 10) : 1;
+
+  if (!Number.isFinite(n) || n < 1) return 1;
+
+  return Math.floor(n);
+}
+
+function parseSearchQuery(sp: { q?: string | string[] }): string {
+  const raw = sp.q;
+  const value = Array.isArray(raw) ? raw[0] : raw;
+
+  return value?.trim() ?? "";
+}
+
+type SearchParams = Promise<{
+  page?: string | string[];
+  q?: string | string[];
+}>;
 
 export default async function BlogIndexPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
-  const { stack = "", q: rawQ } = await searchParams;
-  const q = rawQ?.trim() ?? "";
-  const search = q.length > 0 ? q : null;
-
-  // Derive the `after` cursor: last item in the cursor stack.
-  const cursors = stack ? stack.split(",") : [];
-  const after = cursors[cursors.length - 1] ?? null;
-  const page = cursors.length + 1;
+  const sp = await searchParams;
+const currentPage = parseListingPage(sp);
+const q = parseSearchQuery(sp);
+const search = q.length > 0 ? q : null;
 
   const [data, categoriesData] = await Promise.all([
     fetchGraphQL<PostsListResult>(GET_POSTS, {
-      first: PAGE_SIZE,
-      after,
-      categorySlug: null,
-      search,
-    }),
+  first: LISTING_FETCH_LIMIT,
+  after: null,
+  categorySlug: null,
+  search,
+}),
     fetchGraphQL<BlogCategoriesResult>(GET_BLOG_CATEGORIES, { first: 100 }),
   ]);
 
@@ -58,8 +75,13 @@ export default async function BlogIndexPage({
         count: n.count,
       })) ?? [];
 
-  const posts = data?.posts?.nodes ?? [];
-  const pageInfo = data?.posts?.pageInfo;
+  const allPosts = data?.posts?.nodes ?? [];
+const totalCount = allPosts.length;
+const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE) || 1);
+
+const safeCurrentPage = Math.min(currentPage, totalPages);
+const start = (safeCurrentPage - 1) * PAGE_SIZE;
+const posts = allPosts.slice(start, start + PAGE_SIZE);
 
   return (
     <section className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-12">
@@ -94,13 +116,11 @@ export default async function BlogIndexPage({
       )}
 
       <BlogPagination
-        hasNextPage={pageInfo?.hasNextPage ?? false}
-        endCursor={pageInfo?.endCursor ?? null}
-        stack={stack}
-        basePath={BLOG_ALL_POSTS_HREF}
-        page={page}
-        searchQuery={q || null}
-      />
+  basePath={BLOG_ALL_POSTS_HREF}
+  currentPage={safeCurrentPage}
+  totalPages={totalPages}
+  searchQuery={q || null}
+/>
     </section>
   );
 }
