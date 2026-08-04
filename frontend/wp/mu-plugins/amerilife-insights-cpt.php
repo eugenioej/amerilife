@@ -9,18 +9,6 @@ if (!defined('ABSPATH')) {
   exit;
 }
 
-/**
- * Default topic terms (slug => label).
- */
-function amerilife_insight_default_topics() {
-  return [
-    'health' => 'Health',
-    'wealth' => 'Wealth',
-    'leadership' => 'Leadership',
-    'life' => 'Life',
-  ];
-}
-
 add_action('init', function () {
   register_post_type('insight', [
     'labels' => [
@@ -139,12 +127,6 @@ add_action('init', function () {
 }, 9);
 
 add_action('init', function () {
-  foreach (amerilife_insight_default_topics() as $slug => $name) {
-    if (term_exists($slug, 'insight_topic')) {
-      continue;
-    }
-    wp_insert_term($name, 'insight_topic', ['slug' => $slug]);
-  }
   if (!term_exists('featured', 'insight_tag')) {
     wp_insert_term('Featured', 'insight_tag', ['slug' => 'featured']);
   }
