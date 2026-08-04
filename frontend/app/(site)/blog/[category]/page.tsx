@@ -11,21 +11,40 @@ import {
 import { BlogListingToolbar } from "@/app/components/blog/BlogListingToolbar";
 import { BlogPostCard } from "@/app/components/blog/BlogPostCard";
 import { BlogPagination } from "@/app/components/blog/BlogPagination";
-import { Link } from "@/app/components/ui/Link";
 import { SiteBreadcrumb } from "@/app/components/layout/SiteBreadcrumb";
 import { LEGACY_CATEGORY_SLUGS } from "@/lib/blog-legacy-category-slugs";
 import { staticPageMetadata } from "@/lib/seo";
 
 const PAGE_SIZE = 12;
+const LISTING_FETCH_LIMIT = 100;
 
 type PageParams = Promise<{ category: string }>;
-type SearchParams = Promise<{ stack?: string; q?: string }>;
+type SearchParams = Promise<{
+  page?: string | string[];
+  q?: string | string[];
+}>;
 
 function toTitleCase(slug: string): string {
   return slug
     .split("-")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
+}
+function parseListingPage(sp: { page?: string | string[] }): number {
+  const raw = sp.page;
+  const s = Array.isArray(raw) ? raw[0] : raw;
+  const n = s ? parseInt(s, 10) : 1;
+
+  if (!Number.isFinite(n) || n < 1) return 1;
+
+  return Math.floor(n);
+}
+
+function parseSearchQuery(sp: { q?: string | string[] }): string {
+  const raw = sp.q;
+  const value = Array.isArray(raw) ? raw[0] : raw;
+
+  return value?.trim() ?? "";
 }
 
 export async function generateMetadata({
@@ -48,27 +67,24 @@ export default async function BlogCategoryPage({
   searchParams: SearchParams;
 }) {
   const { category } = await params;
-  const { stack = "", q: rawQ } = await searchParams;
-  const q = rawQ?.trim() ?? "";
-  const search = q.length > 0 ? q : null;
+const sp = await searchParams;
+const currentPage = parseListingPage(sp);
+const q = parseSearchQuery(sp);
+const search = q.length > 0 ? q : null;
 
-  // Legacy URL segments (announcements, blog, partnerships) → show all posts.
-  // Actual WP category slugs (leadership, mergers-and-acquisitions, etc.) → filter.
-  const isLegacy = LEGACY_CATEGORY_SLUGS.has(category);
-  const categoryFilter = isLegacy ? undefined : category;
-
-  const cursors = stack ? stack.split(",") : [];
-  const after = cursors[cursors.length - 1] ?? null;
-  const page = cursors.length + 1;
+// Legacy URL segments (announcements, blog, partnerships) → show all posts.
+// Actual WP category slugs (leadership, mergers-and-acquisitions, etc.) → filter.
+const isLegacy = LEGACY_CATEGORY_SLUGS.has(category);
+const categoryFilter = isLegacy ? undefined : category;
 
   const [categoriesData, data] = await Promise.all([
     fetchGraphQL<BlogCategoriesResult>(GET_BLOG_CATEGORIES, { first: 100 }),
     fetchGraphQL<PostsListResult>(GET_POSTS, {
-      first: PAGE_SIZE,
-      after,
-      categorySlug: categoryFilter ?? null,
-      search,
-    }),
+  first: LISTING_FETCH_LIMIT,
+  after: null,
+  categorySlug: categoryFilter ?? null,
+  search,
+}),
   ]);
 
   const knownSlugs = new Set(
@@ -89,10 +105,15 @@ export default async function BlogCategoryPage({
         count: n.count,
       })) ?? [];
 
-  const posts = data?.posts?.nodes ?? [];
-  const pageInfo = data?.posts?.pageInfo;
+  const allPosts = data?.posts?.nodes ?? [];
+const totalCount = allPosts.length;
+const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE) || 1);
 
-  const label = toTitleCase(category);
+const safeCurrentPage = Math.min(currentPage, totalPages);
+const start = (safeCurrentPage - 1) * PAGE_SIZE;
+const posts = allPosts.slice(start, start + PAGE_SIZE);
+
+const label = toTitleCase(category);
 
   return (
     <section className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-12">
@@ -138,13 +159,11 @@ export default async function BlogCategoryPage({
       )}
 
       <BlogPagination
-        hasNextPage={pageInfo?.hasNextPage ?? false}
-        endCursor={pageInfo?.endCursor ?? null}
-        stack={stack}
-        basePath={`/news/${category}`}
-        page={page}
-        searchQuery={q || null}
-      />
+  basePath={`/news/${category}/`}
+  currentPage={safeCurrentPage}
+  totalPages={totalPages}
+  searchQuery={q || null}
+/>
     </section>
   );
 }
