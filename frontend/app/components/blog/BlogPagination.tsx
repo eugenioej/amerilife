@@ -1,103 +1,126 @@
 import { Link } from "@/app/components/ui/Link";
 
 type Props = {
-  hasNextPage: boolean;
-  endCursor: string | null;
-  /** Cursor stack encoded as a comma-separated string (URL param "stack"). */
-  stack: string;
-  /** Base path for the listing, e.g. "/blog" or "/blog/announcements". */
   basePath: string;
-  page: number;
-  /** Preserved search query (`q`) across pages. */
+  currentPage: number;
+  totalPages: number;
   searchQuery?: string | null;
 };
 
-function buildListingUrl(
+function listingPagePath(
   basePath: string,
-  stack: string,
+  page: number,
   searchQuery?: string | null,
 ): string {
   const params = new URLSearchParams();
+
+  if (page > 1) {
+    params.set("page", String(page));
+  }
+
   const q = searchQuery?.trim();
-  if (q) params.set("q", q);
-  if (stack) params.set("stack", stack);
+  if (q) {
+    params.set("q", q);
+  }
+
   const qs = params.toString();
+
   return qs ? `${basePath}?${qs}` : basePath;
 }
 
-/**
- * Cursor-stack pagination for WPGraphQL cursor-based pagination.
- *
- * URL strategy:
- *   Page 1: /blog
- *   Page 2: /blog?stack=<c1>          (after = c1)
- *   Page 3: /blog?stack=<c1>,<c2>     (after = c2)
- *
- * Going back removes the last cursor from the stack.
- */
+function paginationRange(current: number, total: number): (number | "gap")[] {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+
+  const out: (number | "gap")[] = [];
+  const want = new Set<number>([1, total, current, current - 1, current + 1]);
+
+  const nums = [...want]
+    .filter((n) => n >= 1 && n <= total)
+    .sort((a, b) => a - b);
+
+  let prev = 0;
+
+  for (const n of nums) {
+    if (prev && n - prev > 1) out.push("gap");
+    out.push(n);
+    prev = n;
+  }
+
+  return out;
+}
+
+const btnClass =
+  "inline-flex min-h-10 min-w-10 items-center justify-center rounded-sm border border-[var(--color-border)] px-3 text-sm font-semibold text-[var(--color-fg)] transition-colors hover:border-[var(--color-brand-primary)] hover:text-[var(--color-brand-primary)]";
+
+const navBtnClass =
+  "inline-flex min-h-10 items-center justify-center rounded-sm border border-[var(--color-border)] px-4 text-sm font-semibold text-[var(--color-fg)] transition-colors hover:border-[var(--color-brand-primary)] hover:text-[var(--color-brand-primary)] disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:border-[var(--color-border)] disabled:hover:text-[var(--color-fg)]";
+
 export function BlogPagination({
-  hasNextPage,
-  endCursor,
-  stack,
   basePath,
-  page,
+  currentPage,
+  totalPages,
   searchQuery,
 }: Props) {
-  if (page === 1 && !hasNextPage) return null;
+  if (totalPages <= 1) return null;
 
-  const cursors = stack ? stack.split(",") : [];
-
-  // Previous page URL: remove last cursor from stack
-  const prevCursors = cursors.slice(0, -1);
-  const prevUrl = buildListingUrl(
-    basePath,
-    prevCursors.join(","),
-    searchQuery,
-  );
-
-  // Next page URL: append current endCursor to stack
-  const nextCursors = endCursor ? [...cursors, endCursor] : cursors;
-  const nextUrl = buildListingUrl(
-    basePath,
-    nextCursors.join(","),
-    searchQuery,
-  );
-
-  const btnBase =
-    "inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium transition-colors";
-  const active =
-    "border-[var(--color-primary)] bg-[var(--color-primary)] text-white hover:opacity-90";
-  const inactive =
-    "border-[var(--color-border)] bg-white text-[var(--color-fg)] hover:bg-gray-50";
-  const disabled =
-    "border-[var(--color-border)] bg-white text-[var(--color-muted)] cursor-not-allowed opacity-50 pointer-events-none";
+  const items = paginationRange(currentPage, totalPages);
 
   return (
-    <nav
-      className="mt-12 flex items-center justify-between border-t border-[var(--color-border)] pt-8"
-      aria-label="Pagination"
-    >
-      <span className="text-sm text-[var(--color-muted)]">Page {page}</span>
-
-      <div className="flex gap-3">
-        {page > 1 ? (
-          <Link href={prevUrl} variant="button" className={`${btnBase} ${inactive}`}>
-            ← Previous
-          </Link>
-        ) : (
-          <span className={`${btnBase} ${disabled}`}>← Previous</span>
-        )}
-
-        <span className={`${btnBase} ${active}`}>{page}</span>
-
-        {hasNextPage && endCursor ? (
-          <Link href={nextUrl} variant="button" className={`${btnBase} ${inactive}`}>
-            Next →
-          </Link>
-        ) : (
-          <span className={`${btnBase} ${disabled}`}>Next →</span>
-        )}
-      </div>
-    </nav>
-  );
+      <nav
+        className="mt-10 flex flex-col items-center gap-4 border-t border-[var(--color-border)] pt-10"
+        aria-label="Category pages"
+      >
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {currentPage > 1 ? (
+            <Link href={listingPagePath(basePath, currentPage - 1, searchQuery)} variant="button" className={navBtnClass}>
+              Previous
+            </Link>
+          ) : (
+            <span className={navBtnClass} aria-disabled="true">
+              Previous
+            </span>
+          )}
+  
+          <ul className="flex flex-wrap items-center justify-center gap-1.5">
+            {items.map((item, i) =>
+              item === "gap" ? (
+                <li key={`gap-${i}`} className="px-1 text-sm text-[var(--color-muted)]" aria-hidden>
+                  …
+                </li>
+              ) : (
+                <li key={item}>
+                  {item === currentPage ? (
+                    <span
+                      className={`${btnClass} border-[var(--color-brand-primary)] bg-[var(--color-brand-primary)]/10 text-[var(--color-brand-primary)]`}
+                      aria-current="page"
+                    >
+                      {item}
+                    </span>
+                  ) : (
+                    <Link href={listingPagePath(basePath, item, searchQuery)} variant="button" className={btnClass}>
+                      {item}
+                    </Link>
+                  )}
+                </li>
+              ),
+            )}
+          </ul>
+  
+          {currentPage < totalPages ? (
+            <Link href={listingPagePath(basePath, currentPage + 1, searchQuery)} variant="button" className={navBtnClass}>
+              Next
+            </Link>
+          ) : (
+            <span className={navBtnClass} aria-disabled="true">
+              Next
+            </span>
+          )}
+        </div>
+        <p className="text-sm text-[var(--color-muted)]">
+          Page {currentPage} of {totalPages}
+        </p>
+      </nav>
+    );
 }

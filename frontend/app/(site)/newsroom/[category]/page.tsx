@@ -16,15 +16,36 @@ import { LEGACY_CATEGORY_SLUGS } from "@/lib/blog-legacy-category-slugs";
 import { staticPageMetadata } from "@/lib/seo";
 
 const PAGE_SIZE = 12;
+const LISTING_FETCH_LIMIT = 100;
 
 type PageParams = Promise<{ category: string }>;
-type SearchParams = Promise<{ stack?: string; q?: string }>;
+type SearchParams = Promise<{
+  page?: string | string[];
+  q?: string | string[];
+}>;
 
 function toTitleCase(slug: string): string {
   return slug
     .split("-")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
+}
+
+function parseNewsroomPage(sp: { page?: string | string[] }): number {
+  const raw = sp.page;
+  const s = Array.isArray(raw) ? raw[0] : raw;
+  const n = s ? parseInt(s, 10) : 1;
+
+  if (!Number.isFinite(n) || n < 1) return 1;
+
+  return Math.floor(n);
+}
+
+function parseSearchQuery(sp: { q?: string | string[] }): string {
+  const raw = sp.q;
+  const value = Array.isArray(raw) ? raw[0] : raw;
+
+  return value?.trim() ?? "";
 }
 
 export async function generateMetadata({
@@ -47,8 +68,9 @@ export default async function BlogCategoryPage({
   searchParams: SearchParams;
 }) {
   const { category } = await params;
-  const { stack = "", q: rawQ } = await searchParams;
-  const q = rawQ?.trim() ?? "";
+  const sp = await searchParams;
+  const currentPage = parseNewsroomPage(sp);
+  const q = parseSearchQuery(sp);
   const search = q.length > 0 ? q : null;
 
   // Legacy URL segments (announcements, blog, partnerships) → show all posts.
@@ -56,15 +78,11 @@ export default async function BlogCategoryPage({
   const isLegacy = LEGACY_CATEGORY_SLUGS.has(category);
   const categoryFilter = isLegacy ? undefined : category;
 
-  const cursors = stack ? stack.split(",") : [];
-  const after = cursors[cursors.length - 1] ?? null;
-  const page = cursors.length + 1;
-
   const [categoriesData, data] = await Promise.all([
     fetchGraphQL<BlogCategoriesResult>(GET_BLOG_CATEGORIES, { first: 100 }),
     fetchGraphQL<PostsListResult>(GET_POSTS, {
-      first: PAGE_SIZE,
-      after,
+      first: LISTING_FETCH_LIMIT,
+      after: null,
       categorySlug: categoryFilter ?? null,
       search,
     }),
@@ -88,8 +106,16 @@ export default async function BlogCategoryPage({
         count: n.count,
       })) ?? [];
 
-  const posts = data?.posts?.nodes ?? [];
-  const pageInfo = data?.posts?.pageInfo;
+  const allPosts = data?.posts?.nodes ?? [];
+  const totalCount = allPosts.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE) || 1);
+
+  if (currentPage > totalPages) notFound();
+
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const posts = allPosts.slice(start, start + PAGE_SIZE);
+
+  const basePath = `/newsroom/${category}/`;
 
   const label = toTitleCase(category);
 
@@ -137,12 +163,10 @@ export default async function BlogCategoryPage({
       )}
 
       <BlogPagination
-        hasNextPage={pageInfo?.hasNextPage ?? false}
-        endCursor={pageInfo?.endCursor ?? null}
-        stack={stack}
-        basePath={`/newsroom/${category}`}
-        page={page}
-        searchQuery={q || null}
+        basePath={basePath}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        searchQuery={q}
       />
     </section>
   );
