@@ -1,4 +1,7 @@
-import { Info } from "lucide-react";
+"use client";
+
+import { useMemo, useState } from "react";
+import { ChevronDown, ChevronUp, Info } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
 import type { CampaignTableRow } from "@/lib/ideaxchange-recruiting-utils";
 import { caseStudyHref } from "@/lib/ideaxchange-recruiting-utils";
@@ -7,7 +10,64 @@ type Props = {
   rows: CampaignTableRow[];
 };
 
+type SortKey = keyof Pick<
+  CampaignTableRow,
+  "title" | "targetAudience" | "spend" | "results"
+>;
+
+type SortDirection = "asc" | "desc";
+
+type SortIconProps = {
+  column: SortKey;
+  activeColumn: SortKey;
+  direction: SortDirection;
+};
+
+function SortIcon({
+  column,
+  activeColumn,
+  direction,
+}: SortIconProps) {
+  if (activeColumn !== column) {
+    return <ChevronDown className="ml-1 h-3 w-3 opacity-50" />;
+  }
+
+  return direction === "asc" ? (
+    <ChevronDown className="ml-1 h-3 w-3" />
+  ) : (
+    <ChevronUp className="ml-1 h-3 w-3" />
+  );
+}
+
 export function RecruitingCampaignsTable({ rows }: Props) {
+
+  const [sortKey, setSortKey] = useState<SortKey>("title");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  
+  const sortedRows = useMemo(() => {
+    return [...rows].sort((a, b) => {
+      const aValue = String(a[sortKey] ?? "");
+      const bValue = String(b[sortKey] ?? "");
+    
+      const result = aValue.localeCompare(bValue, undefined, {
+        numeric: true,
+        sensitivity: "base",
+      });
+    
+      return sortDirection === "asc" ? result : -result;
+    });
+  }, [rows, sortKey, sortDirection]);
+
+  function handleSort(nextSortKey: SortKey) {
+    if (nextSortKey === sortKey) {
+      setSortDirection((current) => (current === "asc" ? "desc" : "asc"));
+      return;
+    }
+  
+    setSortKey(nextSortKey);
+    setSortDirection("asc");
+  }
+
   return (
     <div className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-[0_4px_20px_rgba(36,66,96,0.06)]">
       <div className="overflow-x-auto">
@@ -15,21 +75,65 @@ export function RecruitingCampaignsTable({ rows }: Props) {
           <thead>
             <tr className="bg-[var(--color-brand-dark)] text-white">
               <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider sm:px-6">
-                Campaign
+                <button
+                  type="button"
+                  onClick={() => handleSort("title")}
+                  className="inline-flex items-center text-left uppercase tracking-wider"
+                >
+                  Campaign
+                    <SortIcon
+                      column="title"
+                      activeColumn={sortKey}
+                      direction={sortDirection}
+                    />
+                </button>
               </th>
               <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider sm:px-6">
-                Target Audience
+                <button
+                  type="button"
+                  onClick={() => handleSort("targetAudience")}
+                  className="inline-flex items-center text-left uppercase tracking-wider"
+                >
+                  Target Audience{" "}
+                <SortIcon
+                  column="targetAudience"
+                  activeColumn={sortKey}
+                  direction={sortDirection}
+                />
+                </button>
               </th>
               <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider sm:px-6">
-                Spend
+                <button
+                  type="button"
+                  onClick={() => handleSort("spend")}
+                  className="ml-auto inline-flex items-center text-right uppercase tracking-wider"
+                >
+                  Spend{" "}
+                  <SortIcon
+                    column="spend"
+                    activeColumn={sortKey}
+                    direction={sortDirection}
+                  />
+                </button>
               </th>
               <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider sm:px-6">
-                Results
+                <button
+                  type="button"
+                  onClick={() => handleSort("results")}
+                  className="ml-auto inline-flex items-center text-right uppercase tracking-wider"
+                >
+                  Results{" "}
+                <SortIcon
+                  column="results"
+                  activeColumn={sortKey}
+                  direction={sortDirection}
+                />
+                </button>
               </th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, i) => {
+            {sortedRows.map((row, i) => {
               const href = caseStudyHref(row.slug);
               const overview = row.overview.trim();
               return (
