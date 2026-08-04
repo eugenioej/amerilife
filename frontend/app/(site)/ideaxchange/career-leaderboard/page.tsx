@@ -5,8 +5,10 @@ import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { IDEAXCHANGE_CAREER_LEADERBOARD_PATH } from "@/lib/ideaxchange-constants";
 import {
   canAccessCareerLeaderboard,
+  getEffectiveIdeaxchangePersona,
   getIdeaxchangeDevViewMode,
 } from "@/lib/ideaxchange-dev";
+import { getIdeaxchangeRecruitMagazineBundle } from "@/lib/ideaxchange-data";
 import { getCareerLeaderboardPageData } from "@/lib/ideaxchange-career-leaderboard-data";
 import { getIdeaxchangeHomeForPersona } from "@/lib/ideaxchange-persona";
 import { privatePageMetadata } from "@/lib/seo";
@@ -24,7 +26,20 @@ export default async function CareerLeaderboardIndexPage() {
     redirect(getIdeaxchangeHomeForPersona(auth.persona));
   }
 
-  const data = await getCareerLeaderboardPageData();
+  const effectivePersona = getEffectiveIdeaxchangePersona(
+  auth.persona,
+  devView,
+);
 
-  return <CareerLeaderboardPage data={data} />;
+const [data, recruitBundle] = await Promise.all([
+  getCareerLeaderboardPageData(),
+  getIdeaxchangeRecruitMagazineBundle(effectivePersona),
+]);
+
+return (
+  <CareerLeaderboardPage
+    data={data}
+    recruitingPosts={recruitBundle.posts}
+  />
+);
 }

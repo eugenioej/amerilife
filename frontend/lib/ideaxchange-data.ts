@@ -560,6 +560,17 @@ export async function getIdeaxchangeSalesMagazineBundle(
     );
     const conn = data?.ideaxchangeTag?.ideaxchangeArticles;
     const posts = conn?.nodes ?? [];
+
+    console.log("[ideaxchange sales bundle]", {
+  tagSlug: IDEAXCHANGE_SALES_TAG_SLUG,
+  persona,
+  hasTag: Boolean(data?.ideaxchangeTag),
+  tagName: data?.ideaxchangeTag?.name,
+  rawPostCount: posts.length,
+  filteredPostCount: filterArticles(posts, persona).length,
+  titles: posts.map((post) => post.title),
+});
+
     if (posts.length > 0) {
       return {
         posts: filterArticles(posts, persona),

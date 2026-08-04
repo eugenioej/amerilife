@@ -1,5 +1,8 @@
 import { Link } from "@/app/components/ui/Link";
 import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/IdeaXchangePillarBanner";
+import { IdeaXchangeFeaturedGrid } from "@/app/components/ideaxchange/shared/IdeaXchangeFeaturedGrid";
+import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
+import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
 import { IDEAXCHANGE_RECRUITING_HUB_PATH } from "@/lib/ideaxchange-constants";
 import {
   getCareerLeaderboardTablesBySlug,
@@ -10,14 +13,41 @@ import { CareerLeaderboardSection } from "./CareerLeaderboardSection";
 
 type Props = {
   data: CareerLeaderboardPageData;
+  recruitingPosts: IdeaxchangeListItem[];
 };
-
-export function CareerLeaderboardPage({ data }: Props) {
+export function CareerLeaderboardPage({ data, recruitingPosts }: Props) {
   const tablesBySlug = getCareerLeaderboardTablesBySlug(data.tables);
+
+  const recruitingFeaturedItems: IdeaxchangeCardItem[] = recruitingPosts
+  .slice(0, 4)
+  .map((post) => {
+    const topicSlug = post.ideaxchangeTopics?.nodes?.[0]?.slug?.trim();
+
+    return {
+      id: post.id,
+      slug: post.slug,
+      title: post.title,
+      date: post.date,
+      excerpt: post.excerpt,
+      href:
+        post.slug && topicSlug
+          ? `/ideaxchange/${topicSlug}/${post.slug}/`
+          : IDEAXCHANGE_RECRUITING_HUB_PATH,
+      featuredImage: post.featuredImage,
+      badgeLabel: "RECRUITING",
+      badgeHref: IDEAXCHANGE_RECRUITING_HUB_PATH,
+    };
+  });
 
   return (
     <div className="bg-white pb-16 md:pb-20">
       <IdeaXchangePillarBanner title="Career Leaderboard" />
+
+      <IdeaXchangeFeaturedGrid 
+        items={recruitingFeaturedItems} 
+        heading="Featured campaigns" 
+        defaultBadge="RECRUITING" 
+      />
 
       <IdeaXchangePillarBanner
         title="Career Agency Incentive Standings"

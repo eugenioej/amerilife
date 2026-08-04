@@ -41,10 +41,28 @@ export function SalesLeaderboardPage({
   const { spotlight, recentSidebar, newsroomRest } =
     partitionNewsroomWithSidebar(salesPosts);
 
+    const salesHeroItems: IdeaxchangeCardItem[] = salesPosts.slice(0, 3).map((post) => ({
+      id: post.id,
+      slug: post.slug,
+      title: post.title,
+      date: post.date,
+      excerpt: post.excerpt,
+      href:
+        post.slug && post.ideaxchangeTopics?.nodes?.[0]?.slug
+          ? `/ideaxchange/${post.ideaxchangeTopics.nodes[0].slug}/${post.slug}/`
+          : IDEAXCHANGE_LEADERBOARD_PATH,
+      featuredImage: post.featuredImage,
+      badgeLabel: "SALES",
+      badgeHref: IDEAXCHANGE_LEADERBOARD_PATH,
+    }));
+
   return (
     <div className="bg-white pb-16 md:pb-20">
       <IdeaXchangePillarBanner title="Sales Leaderboard" />
-      <IdeaXchangeHeroGrid items={heroStories} defaultBadge="SALES" />
+      <IdeaXchangeHeroGrid
+        items={salesHeroItems.length > 0 ? salesHeroItems : heroStories}
+        defaultBadge="SALES"
+      />
 
       <IdeaXchangePillarBanner
         title="The Health and Wealth Distribution Standings"
