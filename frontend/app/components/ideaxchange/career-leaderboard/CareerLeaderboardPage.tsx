@@ -23,18 +23,15 @@ export function CareerLeaderboardPage({ data, careerSalesPosts }: Props) {
   const careerSalesHeroItems: IdeaxchangeCardItem[] = careerSalesPosts
   .slice(0, 3)
   .map((post) => {
-    const topicSlug = post.ideaxchangeTopics?.nodes?.[0]?.slug?.trim();
-
     return {
       id: post.id,
       slug: post.slug,
       title: post.title,
       date: post.date,
       excerpt: post.excerpt,
-      href:
-        post.slug && topicSlug
-          ? `/ideaxchange/${topicSlug}/${post.slug}/`
-          : IDEAXCHANGE_LEADERBOARD_PATH,
+      href: post.slug
+        ? `/ideaxchange/article/${post.slug}/`
+        : IDEAXCHANGE_LEADERBOARD_PATH,
       featuredImage: post.featuredImage,
       badgeLabel: "SALES",
       badgeHref: IDEAXCHANGE_LEADERBOARD_PATH,
