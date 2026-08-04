@@ -48,8 +48,7 @@ export function BlogListingToolbar({ categories }: Props) {
 
   const isLegacyAllPosts =
     activeSlug != null && LEGACY_CATEGORY_SLUGS.has(activeSlug);
-  const selectValue =
-    isAll || isLegacyAllPosts ? "all" : activeSlug ?? "all";
+  const selectValue = activeSlug ?? "";
   const slugMissingFromList =
     Boolean(activeSlug) &&
     !isAll &&
@@ -69,13 +68,12 @@ export function BlogListingToolbar({ categories }: Props) {
           value={selectValue}
           onChange={(e) => {
             const v = e.target.value;
-            const path = v === "all" ? "/newsroom/" : `/newsroom/${v}/`;
-            router.push(buildListingHref(path, q));
+            router.push(buildListingHref(`/newsroom/${v}/`, q));
           }}
           className="w-full cursor-pointer appearance-none rounded-lg border border-[var(--color-border)] bg-white py-2.5 pl-3 pr-10 text-sm font-medium text-[var(--color-fg)] shadow-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/25"
           aria-label="Filter by category"
         >
-          <option value="all">All Categories</option>
+          <option value="" disabled>Select Category</option>
           {slugMissingFromList && activeSlug ? (
             <option value={activeSlug}>{slugToLabel(activeSlug)}</option>
           ) : null}

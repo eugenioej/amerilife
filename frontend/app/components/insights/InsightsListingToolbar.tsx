@@ -47,7 +47,7 @@ export function InsightsListingToolbar({ categories }: Props) {
   const match = pathname.match(/^\/insights\/([^/]+)\/?$/);
   const activeSlug = match?.[1] ?? null;
 
-  const selectValue = isAll ? "all" : activeSlug ?? "all";
+  const selectValue = activeSlug ?? "";
 
   const slugMissingFromList =
     Boolean(activeSlug) &&
@@ -74,7 +74,9 @@ export function InsightsListingToolbar({ categories }: Props) {
             className="w-full cursor-pointer appearance-none rounded-lg border border-[var(--color-border)] bg-white py-2.5 pl-3 pr-10 text-sm font-medium text-[var(--color-fg)] shadow-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/25"
             aria-label="Filter by category"
           >
-            <option value="all">All Categories</option>
+            <option value="" disabled>
+  Select Category
+</option>
             {slugMissingFromList && activeSlug ? (
               <option value={activeSlug}>{slugToLabel(activeSlug)}</option>
             ) : null}

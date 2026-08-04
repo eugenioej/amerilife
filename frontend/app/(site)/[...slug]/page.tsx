@@ -1,6 +1,11 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { fetchGraphQL } from "@/lib/wp-client";
-import { GET_NODE_BY_URI, type PageWithSeo } from "@/lib/queries";
+import {
+  GET_NODE_BY_URI,
+  GET_POST_BY_SLUG,
+  type PageWithSeo,
+  type PostByUri,
+} from "@/lib/queries";
 import { yoastSeoToMetadata } from "@/lib/seo";
 import { rewriteUploadsInHtml } from "@/lib/wp-media";
 import { getLocationBySlug, getAgentBySlug } from "@/lib/locations-data";
@@ -10,11 +15,43 @@ import {
   fetchAgencyBySlug,
   fetchAgentWithLocation,
 } from "@/lib/agencies";
+import {
+  getCanonicalInsightPath,
+  getInsightBySlug,
+} from "@/lib/insights-data";
 import { fetchGravityForm, resolveConnectFormId } from "@/lib/gf-client";
 import { LocationPageTemplate } from "@/app/components/locations/LocationPageTemplate";
 import { AgentDetailTemplate } from "@/app/components/locations/AgentDetailTemplate";
 
 type PageParams = Promise<{ slug: string[] }>;
+type PostBySlugResult = { post?: PostByUri | null };
+
+async function getNewsroomPostBySlug(
+  slug: string,
+): Promise<PostByUri | null> {
+  const data = await fetchGraphQL<PostBySlugResult>(GET_POST_BY_SLUG, {
+    slug,
+  });
+
+  const post = data?.post;
+
+  if (!post || post.__typename !== "Post") return null;
+
+  return post as PostByUri;
+}
+
+function getPrimaryNewsroomCategorySlug(post: PostByUri) {
+  return post.categories?.nodes?.[0]?.slug || null;
+}
+
+function getCanonicalNewsroomPath(post: PostByUri, slug: string) {
+  const categorySlug = getPrimaryNewsroomCategorySlug(post);
+
+  if (!categorySlug) return null;
+
+  return `/newsroom/${categorySlug}/${slug}`;
+}
+
 
 export async function generateMetadata({ params }: { params: PageParams }) {
   const { slug } = await params;
@@ -62,6 +99,27 @@ export async function generateMetadata({ params }: { params: PageParams }) {
 
 export default async function SlugPage({ params }: { params: PageParams }) {
   const { slug } = await params;
+
+    // Legacy article URLs: /post-slug/
+  if (slug.length === 1) {
+    const legacySlug = slug[0];
+
+    const insight = await getInsightBySlug(legacySlug);
+    const insightPath = insight ? getCanonicalInsightPath(insight) : null;
+
+    if (insightPath) {
+      permanentRedirect(insightPath);
+    }
+
+    const newsroomPost = await getNewsroomPostBySlug(legacySlug);
+    const newsroomPath = newsroomPost
+      ? getCanonicalNewsroomPath(newsroomPost, legacySlug)
+      : null;
+
+    if (newsroomPath) {
+      permanentRedirect(newsroomPath);
+    }
+  }
 
   // Agent detail pages: /location-slug/agent-slug/
   if (slug.length === 2) {
