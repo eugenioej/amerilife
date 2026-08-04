@@ -116,6 +116,7 @@ export default async function InsightCategoryArchivePage({
       categories={categories}
       totalPages={data.totalPages}
       insightsAds={insightsAds}
+      searchQuery={q}
     />
   );
 }

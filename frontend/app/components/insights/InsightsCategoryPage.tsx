@@ -12,6 +12,7 @@ import {
 type Props = {
   topicSlug: string;
   topicName: string;
+  searchQuery?: string;
   posts: InsightListItem[];
   currentPage: number;
   totalPages: number;
@@ -22,6 +23,7 @@ type Props = {
 export function InsightsCategoryPage({
   topicSlug,
   topicName,
+  searchQuery,
   posts,
   currentPage,
   totalPages,
@@ -62,6 +64,7 @@ export function InsightsCategoryPage({
         topicSlug={topicSlug}
         currentPage={currentPage}
         totalPages={totalPages}
+        searchQuery={searchQuery}
       />
     </section>
   );

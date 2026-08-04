@@ -1,8 +1,25 @@
 import { Link } from "@/app/components/ui/Link";
 
-function categoryPagePath(topicSlug: string, page: number): string {
-  if (page <= 1) return `/insights/${topicSlug}/`;
-  return `/insights/${topicSlug}/?page=${page}`;
+function categoryPagePath(
+  topicSlug: string,
+  page: number,
+  searchQuery?: string,
+): string {
+  const params = new URLSearchParams();
+
+  if (page > 1) {
+    params.set("page", String(page));
+  }
+
+  if (searchQuery?.trim()) {
+    params.set("q", searchQuery.trim());
+  }
+
+  const qs = params.toString();
+
+  return qs
+    ? `/insights/${topicSlug}/?${qs}`
+    : `/insights/${topicSlug}/`;
 }
 
 function paginationRange(current: number, total: number): (number | "gap")[] {
@@ -25,6 +42,7 @@ type Props = {
   topicSlug: string;
   currentPage: number;
   totalPages: number;
+  searchQuery?: string;
 };
 
 const btnClass =
@@ -33,7 +51,12 @@ const btnClass =
 const navBtnClass =
   "inline-flex min-h-10 items-center justify-center rounded-sm border border-[var(--color-border)] px-4 text-sm font-semibold text-[var(--color-fg)] transition-colors hover:border-[var(--color-brand-primary)] hover:text-[var(--color-brand-primary)] disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:border-[var(--color-border)] disabled:hover:text-[var(--color-fg)]";
 
-export function InsightsCategoryPagination({ topicSlug, currentPage, totalPages }: Props) {
+export function InsightsCategoryPagination({
+  topicSlug,
+  currentPage,
+  totalPages,
+  searchQuery,
+}: Props) {
   if (totalPages <= 1) return null;
 
   const items = paginationRange(currentPage, totalPages);
@@ -45,7 +68,7 @@ export function InsightsCategoryPagination({ topicSlug, currentPage, totalPages 
     >
       <div className="flex flex-wrap items-center justify-center gap-2">
         {currentPage > 1 ? (
-          <Link href={categoryPagePath(topicSlug, currentPage - 1)} variant="button" className={navBtnClass}>
+          <Link href={categoryPagePath(topicSlug, currentPage - 1, searchQuery)} variant="button" className={navBtnClass}>
             Previous
           </Link>
         ) : (
@@ -70,7 +93,7 @@ export function InsightsCategoryPagination({ topicSlug, currentPage, totalPages 
                     {item}
                   </span>
                 ) : (
-                  <Link href={categoryPagePath(topicSlug, item)} variant="button" className={btnClass}>
+                  <Link href={categoryPagePath(topicSlug, item, searchQuery)} variant="button" className={btnClass}>
                     {item}
                   </Link>
                 )}
@@ -80,7 +103,7 @@ export function InsightsCategoryPagination({ topicSlug, currentPage, totalPages 
         </ul>
 
         {currentPage < totalPages ? (
-          <Link href={categoryPagePath(topicSlug, currentPage + 1)} variant="button" className={navBtnClass}>
+          <Link href={categoryPagePath(topicSlug, currentPage + 1, searchQuery)} variant="button" className={navBtnClass}>
             Next
           </Link>
         ) : (

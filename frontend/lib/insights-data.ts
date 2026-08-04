@@ -307,23 +307,67 @@ export const getInsightCategoryPageData = cache(async function getInsightCategor
   const pageSize = INSIGHT_CATEGORY_PAGE_FIRST;
 
   try {
+    if (normalizedSearch) {
+      const data = await fetchInsightTopicBySlugResult(
+        trimmed,
+        100,
+        null,
+        normalizedSearch,
+      );
+
+      const topic = data?.insightTopic;
+      if (!topic?.slug?.trim()) return null;
+
+      const currentTopicSlug = topic.slug.trim();
+
+      const allMatchingPosts = (topic.insights?.nodes ?? []).filter((post) =>
+        post.insightTopics?.nodes?.some(
+          (postTopic) => postTopic.slug === currentTopicSlug,
+        ),
+      );
+
+      const totalCount = allMatchingPosts.length;
+      const totalPages = Math.max(1, Math.ceil(totalCount / pageSize) || 1);
+
+      if (safePage > totalPages) return null;
+
+      const start = (safePage - 1) * pageSize;
+      const posts = allMatchingPosts.slice(start, start + pageSize);
+
+      return {
+        topicName: topic.name?.trim() ?? null,
+        topicSlug: currentTopicSlug,
+        posts,
+        totalCount,
+        currentPage: safePage,
+        pageSize,
+        totalPages,
+        hasNextPage: safePage < totalPages,
+        endCursor: topic.insights?.pageInfo?.endCursor ?? null,
+      };
+    }
+
     const skipOffset = (safePage - 1) * pageSize;
+
     const { after: afterSkip, ok: skipOk } = await cursorAfterSkippingTopicPosts(
       trimmed,
       skipOffset,
-      normalizedSearch,
+      null,
     );
+
     if (!skipOk && skipOffset > 0) return null;
 
     const data = await fetchInsightTopicBySlugResult(
       trimmed,
       pageSize,
       skipOffset === 0 ? null : afterSkip,
-      normalizedSearch,
+      null,
     );
 
     const topic = data?.insightTopic;
     if (!topic?.slug?.trim()) return null;
+
+    const currentTopicSlug = topic.slug.trim();
 
     const totalCount = Math.max(0, topic.count ?? 0);
     const totalPages = Math.max(1, Math.ceil(totalCount / pageSize) || 1);
@@ -331,7 +375,13 @@ export const getInsightCategoryPageData = cache(async function getInsightCategor
     if (safePage > totalPages) return null;
 
     const conn = topic.insights;
-    const posts = conn?.nodes ?? [];
+
+    const posts = (conn?.nodes ?? []).filter((post) =>
+      post.insightTopics?.nodes?.some(
+        (postTopic) => postTopic.slug === currentTopicSlug,
+      ),
+    );
+
     const pageInfo = conn?.pageInfo ?? {
       hasNextPage: false,
       endCursor: null,
@@ -339,7 +389,7 @@ export const getInsightCategoryPageData = cache(async function getInsightCategor
 
     return {
       topicName: topic.name?.trim() ?? null,
-      topicSlug: topic.slug.trim(),
+      topicSlug: currentTopicSlug,
       posts,
       totalCount,
       currentPage: safePage,
