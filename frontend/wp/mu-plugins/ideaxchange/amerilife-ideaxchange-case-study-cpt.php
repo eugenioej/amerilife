@@ -47,6 +47,7 @@ add_action('init', function () {
     'supports' => [
       'html' => false,
       'reusable' => false,
+      'inserter' => false,
     ],
   ]);
 }, 11);
@@ -59,25 +60,42 @@ add_action('enqueue_block_editor_assets', function () {
   }
 
   wp_register_script(
-    'amerilife-ix-case-study-results-block',
-    '',
-    ['wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n'],
-    '1.0.0',
-    true
-  );
+  'amerilife-ix-case-study-results-block',
+  '',
+  [
+    'wp-blocks',
+    'wp-element',
+    'wp-block-editor',
+    'wp-components',
+    'wp-i18n',
+    'wp-data',
+    'wp-plugins',
+    'wp-edit-post'
+  ],
+  '1.0.0',
+  true
+);
+  
 
   wp_enqueue_script('amerilife-ix-case-study-results-block');
 
   wp_add_inline_script(
     'amerilife-ix-case-study-results-block',
     "
-    (function (blocks, element, blockEditor, components, i18n) {
+    (function (blocks, element, blockEditor, components, i18n, data, plugins, editPost) {
       var el = element.createElement;
       var registerBlockType = blocks.registerBlockType;
       var InnerBlocks = blockEditor.InnerBlocks;
       var useBlockProps = blockEditor.useBlockProps;
       var PanelBody = components.PanelBody;
       var __ = i18n.__;
+      var createBlock = blocks.createBlock;
+      var Button = components.Button;
+      var PanelBody = components.PanelBody;
+      var useSelect = data.useSelect;
+      var useDispatch = data.useDispatch;
+      var registerPlugin = plugins.registerPlugin;
+      var PluginDocumentSettingPanel = editPost.PluginDocumentSettingPanel;
 
       registerBlockType('amerilife/case-study-results', {
         title: __('Case Study Results', 'amerilife'),
@@ -86,7 +104,8 @@ add_action('enqueue_block_editor_assets', function () {
         category: 'widgets',
         supports: {
           html: false,
-          reusable: false
+          reusable: false,
+          inserter: false
         },
 
         edit: function () {
@@ -139,7 +158,60 @@ add_action('enqueue_block_editor_assets', function () {
           );
         }
       });
-    })(window.wp.blocks, window.wp.element, window.wp.blockEditor, window.wp.components, window.wp.i18n);
+
+      function CaseStudyResultsPanel() {
+        var blocksList = useSelect(function (select) {
+          return select('core/block-editor').getBlocks();
+        }, []);
+
+        var hasResultsBlock = blocksList.some(function (block) {
+          return block.name === 'amerilife/case-study-results';
+        });
+
+        var blockEditorDispatch = useDispatch('core/block-editor');
+
+        function addResultsBlock() {
+          var nextBlocks = wp.data.select('core/block-editor').getBlocks();
+          var insertAtIndex = nextBlocks.length;
+
+          var newBlock = createBlock('amerilife/case-study-results');
+
+          blockEditorDispatch.insertBlocks(
+            newBlock,
+            insertAtIndex,
+            undefined,
+            true
+          );
+        }
+
+        return el(
+          PluginDocumentSettingPanel,
+          {
+            name: 'amerilife-case-study-results-panel',
+            title: 'Case Study Results',
+            className: 'amerilife-case-study-results-panel'
+          },
+          hasResultsBlock
+            ? el(
+                'p',
+                null,
+                'A Results section has already been added to this case study.'
+              )
+            : el(
+                Button,
+                {
+                  variant: 'primary',
+                  onClick: addResultsBlock
+                },
+                'Add Results Section'
+              )
+        );
+      }
+
+      registerPlugin('amerilife-case-study-results-panel', {
+        render: CaseStudyResultsPanel
+      });
+    })(window.wp.blocks, window.wp.element, window.wp.blockEditor, window.wp.components, window.wp.i18n, window.wp.data, window.wp.plugins, window.wp.editPost);
     "
   );
 });
