@@ -42,6 +42,8 @@ export type CaseStudyListItem = {
     isSpotlight?: boolean | null;
     isFeatured?: boolean | null;
     isHeroFeatured?: boolean | null;
+    isPopup?: boolean | null;
+    featuredVideoUrl?: string | null;
     marketingCtaUrl?: string | null;
     targetAudience?: string | null;
     campaignSpend?: string | null;
@@ -117,6 +119,8 @@ const CASE_STUDY_LIST_FIELDS = `
     isSpotlight
     isFeatured
     isHeroFeatured
+    isPopup
+    featuredVideoUrl
     targetAudience
     campaignSpend
     campaignResults
@@ -230,6 +234,8 @@ export const GET_CASE_STUDY_BY_SLUG = `
         isSpotlight
         isFeatured
         isHeroFeatured
+        isPopup
+        featuredVideoUrl
         marketingCtaUrl
         visibility
         contentWithoutResultsHtml

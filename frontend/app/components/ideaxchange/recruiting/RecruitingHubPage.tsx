@@ -79,6 +79,12 @@ function partitionPosts(posts: CaseStudyListItem[]) {
 
 
 function toCardItem(post: CaseStudyListItem): IdeaxchangeCardItem {
+  console.log(
+    "CASE STUDY",
+    post.title,
+    post.ideaxchangeCaseStudyFields
+  );
+
   return {
     id: post.id,
     slug: post.slug,
@@ -89,6 +95,9 @@ function toCardItem(post: CaseStudyListItem): IdeaxchangeCardItem {
     featuredImage: post.featuredImage,
     isFeatured: isCaseStudyFeatured(post),
     isSpotlight: post.ideaxchangeCaseStudyFields?.isSpotlight === true,
+    isPopup: post.ideaxchangeCaseStudyFields?.isPopup === true,
+    featuredVideoUrl:
+      post.ideaxchangeCaseStudyFields?.featuredVideoUrl ?? null,
   };
 }
 

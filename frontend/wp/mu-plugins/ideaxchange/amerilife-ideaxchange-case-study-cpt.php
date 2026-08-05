@@ -335,7 +335,7 @@ add_action('init', function () {
     'auth_callback' => $meta_auth,
   ]);
 
-  foreach (['is_spotlight', 'is_featured', 'is_hero'] as $key) {
+  foreach (['is_spotlight', 'is_featured', 'is_hero', 'is_popup'] as $key) {
     register_post_meta(AMERILIFE_IX_CASE_STUDY_PT, $key, [
       'type' => 'boolean',
       'single' => true,
@@ -363,6 +363,13 @@ add_action('init', function () {
   }
 
   register_post_meta(AMERILIFE_IX_CASE_STUDY_PT, 'marketing_cta_url', [
+    'type' => 'string',
+    'single' => true,
+    'show_in_rest' => true,
+    'auth_callback' => $meta_auth,
+  ]);
+
+  register_post_meta(AMERILIFE_IX_CASE_STUDY_PT, 'featured_video_url', [
     'type' => 'string',
     'single' => true,
     'show_in_rest' => true,
@@ -432,9 +439,17 @@ add_action('add_meta_boxes', function () {
       $spot = (bool) filter_var(get_post_meta($post->ID, 'is_spotlight', true), FILTER_VALIDATE_BOOLEAN);
       $feat = (bool) filter_var(get_post_meta($post->ID, 'is_featured', true), FILTER_VALIDATE_BOOLEAN);
       $hero = (bool) filter_var(get_post_meta($post->ID, 'is_hero', true), FILTER_VALIDATE_BOOLEAN);
+      $popup = (bool) filter_var(get_post_meta($post->ID, 'is_popup', true), FILTER_VALIDATE_BOOLEAN);
+
       echo '<p style="margin-top:16px"><label><input type="checkbox" name="is_spotlight" value="1"' . checked($spot, true, false) . ' /> Spotlight sidebar</label></p>';
       echo '<p><label><input type="checkbox" name="is_featured" value="1"' . checked($feat, true, false) . ' /> Featured on Recruiting Hub</label></p>';
       echo '<p><label><input type="checkbox" name="is_hero" value="1"' . checked($hero, true, false) . ' /> Hero tile (top row)</label></p>';
+      echo '<p><label><input type="checkbox" name="is_popup" value="1"' . checked($popup, true, false) . ' /> Open as video popup</label></p>';
+
+      $featured_video_url = get_post_meta($post->ID, 'featured_video_url', true);
+      echo '<p style="margin-top:16px"><label for="featured_video_url"><strong>Featured video URL</strong></label></p>';
+      echo '<input type="url" class="large-text" id="featured_video_url" name="featured_video_url" value="' . esc_attr((string) $featured_video_url) . '" placeholder="https://www.youtube.com/embed/..." />';
+      echo '<p class="description">Used when “Open as video popup” is checked. Recommended: YouTube, Vimeo, or hosted embed URL.</p>';
 
       $cta = get_post_meta($post->ID, 'marketing_cta_url', true);
       echo '<p style="margin-top:16px"><label for="marketing_cta_url"><strong>Get started button URL</strong></label></p>';
@@ -497,9 +512,13 @@ add_action('save_post_' . AMERILIFE_IX_CASE_STUDY_PT, function ($post_id) {
   update_post_meta($post_id, 'is_spotlight', !empty($_POST['is_spotlight']) ? '1' : '0');
   update_post_meta($post_id, 'is_featured', !empty($_POST['is_featured']) ? '1' : '0');
   update_post_meta($post_id, 'is_hero', !empty($_POST['is_hero']) ? '1' : '0');
+  update_post_meta($post_id, 'is_popup', !empty($_POST['is_popup']) ? '1' : '0');
 
   $cta = isset($_POST['marketing_cta_url']) ? esc_url_raw(wp_unslash($_POST['marketing_cta_url'])) : '';
   update_post_meta($post_id, 'marketing_cta_url', $cta);
+
+  $featured_video_url = isset($_POST['featured_video_url']) ? esc_url_raw(wp_unslash($_POST['featured_video_url'])) : '';
+  update_post_meta($post_id, 'featured_video_url', $featured_video_url);
 
   foreach (['target_audience', 'campaign_spend', 'campaign_results', 'campaign_overview'] as $key) {
     $val = isset($_POST[$key]) ? sanitize_text_field(wp_unslash($_POST[$key])) : '';
@@ -534,6 +553,8 @@ add_action('graphql_register_types', function () {
       'isSpotlight' => ['type' => 'Boolean'],
       'isFeatured' => ['type' => 'Boolean'],
       'isHeroFeatured' => ['type' => 'Boolean'],
+      'isPopup' => ['type' => 'Boolean'],
+      'featuredVideoUrl' => ['type' => 'String'],
       'marketingCtaUrl' => ['type' => 'String'],
       'targetAudience' => ['type' => 'String'],
       'campaignSpend' => ['type' => 'String'],
@@ -567,6 +588,8 @@ add_action('graphql_register_types', function () {
           'isSpotlight' => false,
           'isFeatured' => false,
           'isHeroFeatured' => false,
+          'isPopup' => false,
+          'featuredVideoUrl' => null,
           'marketingCtaUrl' => null,
           'targetAudience' => null,
           'campaignSpend' => null,
@@ -582,11 +605,13 @@ add_action('graphql_register_types', function () {
       $spot = (bool) filter_var(get_post_meta($id, 'is_spotlight', true), FILTER_VALIDATE_BOOLEAN);
       $feat = (bool) filter_var(get_post_meta($id, 'is_featured', true), FILTER_VALIDATE_BOOLEAN);
       $hero = (bool) filter_var(get_post_meta($id, 'is_hero', true), FILTER_VALIDATE_BOOLEAN);
+      $popup = (bool) filter_var(get_post_meta($id, 'is_popup', true), FILTER_VALIDATE_BOOLEAN);
       if (!$feat && taxonomy_exists('ideaxchange_case_study_tag')) {
         $feat = has_term('featured', 'ideaxchange_case_study_tag', $id);
       }
 
       $cta = get_post_meta($id, 'marketing_cta_url', true);
+      $featured_video_url = get_post_meta($id, 'featured_video_url', true);
       $target_audience = get_post_meta($id, 'target_audience', true);
       $campaign_spend = get_post_meta($id, 'campaign_spend', true);
       $campaign_results = get_post_meta($id, 'campaign_results', true);
@@ -605,6 +630,8 @@ add_action('graphql_register_types', function () {
         'isSpotlight' => $spot,
         'isFeatured' => $feat,
         'isHeroFeatured' => $hero,
+        'isPopup' => $popup,
+        'featuredVideoUrl' => $featured_video_url !== '' ? (string) $featured_video_url : null,
         'marketingCtaUrl' => $cta !== '' ? (string) $cta : null,
         'targetAudience' => $target_audience !== '' ? (string) $target_audience : null,
         'campaignSpend' => $campaign_spend !== '' ? (string) $campaign_spend : null,
@@ -652,6 +679,12 @@ add_action('graphql_register_types', function () {
 function amerilife_ideaxchange_case_study_apply_seed_meta($sid, $row, $company_map) {
   if (!empty($row['company_slug']) && isset($company_map[(string) $row['company_slug']])) {
     update_post_meta($sid, 'company_id', (string) $company_map[(string) $row['company_slug']]);
+  }
+
+  update_post_meta($sid, 'is_popup', !empty($row['is_popup']) ? '1' : '0');
+
+  if (!empty($row['featured_video_url'])) {
+    update_post_meta($sid, 'featured_video_url', esc_url_raw((string) $row['featured_video_url']));
   }
 
   if (!empty($row['featured'])) {

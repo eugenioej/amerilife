@@ -5,14 +5,16 @@ export type IdeaxchangeCardItem = {
   date?: string | null;
   excerpt?: string | null;
   badgeLabel?: string | null;
-  /** When set, the topic badge links to a category archive. */
   badgeHref?: string | null;
   href: string;
   featuredImage?: {
     node?: { sourceUrl?: string | null; altText?: string | null };
   } | null;
+
   isFeatured?: boolean;
   isSpotlight?: boolean;
+  isPopup?: boolean;
+  featuredVideoUrl?: string | null;
 };
 
 /** Neutral gray placeholder for ideaXchange mock / missing featured images. */
