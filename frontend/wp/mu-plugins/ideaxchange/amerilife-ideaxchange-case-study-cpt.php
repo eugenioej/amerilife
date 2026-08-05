@@ -142,7 +142,6 @@ add_action('enqueue_block_editor_assets', function () {
               ),
               el(InnerBlocks, {
                 templateLock: false,
-                renderAppender: InnerBlocks.ButtonBlockAppender
               })
             )
           );
