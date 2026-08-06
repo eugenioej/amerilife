@@ -23,19 +23,6 @@ type Props = {
   lastUpdated?: string | null;
 };
 
-function percentClass(value: string): string {
-  if (value.startsWith("-")) return "text-[#c45c5c]";
-  const n = parseFloat(value.replace("%", ""));
-  if (!Number.isNaN(n) && n > 0) return "text-[var(--color-brand-primary)]";
-  return "text-[var(--color-fg)]";
-}
-
-function trendClass(symbol: string): string {
-  if (symbol === "▲") return "text-[var(--color-brand-primary)]";
-  if (symbol === "▼") return "text-[#c45c5c]";
-  return "text-[var(--color-muted)]";
-}
-
 type SortableHeaderProps = {
   column: LeaderboardSortColumn;
   label: ReactNode;
@@ -195,22 +182,22 @@ export function LeaderboardTable({ id, title, rows, lastUpdated }: Props) {
                   {row.lytd}
                 </td>
                 <td
-                  className={`px-4 py-3.5 text-right font-semibold sm:px-6 ${percentClass(row.vsLytd)}`}
+                  className={`px-4 py-3.5 text-right sm:px-6 text-[var(--color-muted)]`}
                 >
                   {row.vsLytd}
                 </td>
                 <td
-                  className={`px-4 py-3.5 text-right font-semibold sm:px-6 ${percentClass(row.vsLqtd)}`}
+                  className={`px-4 py-3.5 text-right sm:px-6 text-[var(--color-muted)]`}
                 >
                   {row.vsLqtd}
                 </td>
                 <td
-                  className={`px-4 py-3.5 text-right font-semibold sm:px-6 ${percentClass(row.vsLmtd)}`}
+                  className={`px-4 py-3.5 text-right sm:px-6 text-[var(--color-muted)]`}
                 >
                   {row.vsLmtd}
                 </td>
                 <td
-                  className={`px-4 py-3.5 text-center text-base font-semibold sm:px-6 ${trendClass(row.trend)}`}
+                  className={`px-4 py-3.5 text-center text-base sm:px-6 text-[var(--color-brand-dark)]`}
                   aria-label={`Trend vs LYTD: ${row.trend}`}
                 >
                   {row.trend}
