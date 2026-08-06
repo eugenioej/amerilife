@@ -1,6 +1,7 @@
 export type LeaderboardTrend = "up" | "down" | "flat";
 
 export type LeaderboardSeedRow = {
+  rank?: string | number;
   affiliate: string;
   ytd: number;
   lytd: number;
@@ -47,6 +48,7 @@ export function formatLeaderboardUpdatedDate(iso: string | null | undefined): st
 
 export function mapSeedRowToDisplay(row: LeaderboardSeedRow) {
   return {
+    rank: row.rank != null && String(row.rank).trim() !== "" ? String(row.rank) : undefined,
     affiliate: row.affiliate,
     ytd: formatLeaderboardCount(row.ytd),
     lytd: formatLeaderboardCount(row.lytd),

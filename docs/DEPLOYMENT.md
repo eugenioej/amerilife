@@ -13,6 +13,8 @@ The **build does not upload images**. You upload images to headless WordPress yo
 
 ### Sales Leaderboard SFTP pull (brokerage outbound files)
 
+Full administration guide (Sales SFTP vs Career Piper API, WP uploads, CI, ownership): [ideaxchange-leaderboard-administration.md](./ideaxchange-leaderboard-administration.md).
+
 Brokerage product CSVs are dropped on `sftp.amerilife.com:/outbound` (usually weekly). Run the pull daily so new drops are picked up automatically:
 
 ```bash

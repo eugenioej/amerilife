@@ -2,6 +2,7 @@ import type {
   LeaderboardSectionConfig,
   LeaderboardTableData,
 } from "@/lib/ideaxchange-leaderboard-data";
+import { EoLeaderboardTable } from "./EoLeaderboardTable";
 import { LeaderboardTable } from "./LeaderboardTable";
 
 type Props = {
@@ -21,15 +22,17 @@ export function LeaderboardSection({ section, tableData }: Props) {
       <div className="flex flex-col gap-10 md:gap-12">
         {section.tables.map((table) => {
           const data = tableData[table.slug];
-          return (
-            <LeaderboardTable
-              key={table.slug}
-              id={`leaderboard-table-${table.slug}`}
-              title={table.title}
-              rows={data?.rows ?? []}
-              lastUpdated={data?.lastUpdated}
-            />
-          );
+          const schema = data?.schema ?? table.schema ?? "standard";
+          const shared = {
+            id: `leaderboard-table-${table.slug}`,
+            title: table.title,
+            rows: data?.rows ?? [],
+            lastUpdated: data?.lastUpdated,
+          };
+          if (schema === "eo") {
+            return <EoLeaderboardTable key={table.slug} {...shared} />;
+          }
+          return <LeaderboardTable key={table.slug} {...shared} />;
         })}
       </div>
     </section>

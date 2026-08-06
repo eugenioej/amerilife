@@ -16,7 +16,10 @@ import type { IdeaxchangePersona } from "@/lib/ideaxchange-persona";
 import { isItemVisibleToPersona } from "@/lib/ideaxchange-visibility";
 import leaderboardSeed from "../wp/mu-plugins/ideaxchange/seed/ideaxchange-leaderboard-seed.json";
 
+export type LeaderboardSchema = "standard" | "eo";
+
 export type LeaderboardRow = {
+  rank?: string;
   affiliate: string;
   ytd: string;
   lytd: string;
@@ -29,11 +32,13 @@ export type LeaderboardRow = {
 export type LeaderboardTableData = {
   rows: LeaderboardRow[];
   lastUpdated: string | null;
+  schema: LeaderboardSchema;
 };
 
 export type LeaderboardTableConfig = {
   slug: string;
   title: string;
+  schema?: LeaderboardSchema;
 };
 
 export type LeaderboardSectionConfig = {
@@ -62,27 +67,64 @@ export const LEADERBOARD_TABLE_CONFIG: LeaderboardSectionConfig[] = [
       { slug: "health-specialty", title: "Health Specialty" },
     ],
   },
+  {
+    slug: "eo",
+    title: "E&O",
+    tables: [{ slug: "oe", title: "E&O", schema: "eo" }],
+  },
 ];
 
 export const LEADERBOARD_TABLE_SLUGS = LEADERBOARD_TABLE_CONFIG.flatMap((section) =>
   section.tables.map((table) => table.slug),
 );
 
-const FALLBACK_ROWS: LeaderboardRow[] = (
-  (leaderboardSeed.tables?.[0]?.rows as LeaderboardSeedRow[] | undefined) ?? []
+type SeedTable = {
+  table_slug?: string;
+  schema?: string;
+  rows?: LeaderboardSeedRow[];
+};
+
+const SEED_TABLES = (leaderboardSeed.tables ?? []) as SeedTable[];
+
+const FALLBACK_STANDARD_ROWS: LeaderboardRow[] = (
+  SEED_TABLES.find((t) => t.table_slug === "life")?.rows ??
+  SEED_TABLES[0]?.rows ??
+  []
 ).map(mapSeedRowToDisplay);
+
+const FALLBACK_EO_ROWS: LeaderboardRow[] = (
+  SEED_TABLES.find((t) => t.table_slug === "oe")?.rows ?? []
+).map((row) => {
+  const mapped = mapSeedRowToDisplay(row);
+  return {
+    ...mapped,
+    lytd: "—",
+    vsLytd: "—",
+    vsLqtd: "—",
+    vsLmtd: "—",
+    trend: "—",
+  };
+});
 
 const FALLBACK_REPORT_DATE =
   typeof leaderboardSeed.report_date === "string" ? leaderboardSeed.report_date : null;
 
 const FALLBACK_BY_TABLE: Record<string, LeaderboardTableData> = Object.fromEntries(
-  LEADERBOARD_TABLE_SLUGS.map((slug) => [
-    slug,
-    { rows: FALLBACK_ROWS, lastUpdated: FALLBACK_REPORT_DATE },
-  ]),
+  LEADERBOARD_TABLE_SLUGS.map((slug) => {
+    const isEo = slug === "oe";
+    return [
+      slug,
+      {
+        rows: isEo ? FALLBACK_EO_ROWS : FALLBACK_STANDARD_ROWS,
+        lastUpdated: FALLBACK_REPORT_DATE,
+        schema: isEo ? "eo" : "standard",
+      } satisfies LeaderboardTableData,
+    ];
+  }),
 );
 
 function mapGraphqlRow(row: {
+  rank?: string | null;
   affiliate?: string | null;
   ytdAmount?: string | null;
   lytdAmount?: string | null;
@@ -94,6 +136,7 @@ function mapGraphqlRow(row: {
   const affiliate = row.affiliate?.trim() ?? "";
   if (!affiliate) return null;
   return {
+    rank: row.rank?.trim() || undefined,
     affiliate,
     ytd: row.ytdAmount?.trim() || "—",
     lytd: row.lytdAmount?.trim() || "—",
@@ -111,6 +154,8 @@ function mapTableNode(
   if (!isItemVisibleToPersona(node, persona)) return null;
   const slug = node.slug?.trim();
   if (!slug) return null;
+  const schema: LeaderboardSchema =
+    node.ideaxchangeLbTableFields?.schema === "eo" || slug === "oe" ? "eo" : "standard";
   const rows = (node.ideaxchangeLbTableFields?.rows ?? [])
     .map((row) => mapGraphqlRow(row))
     .filter(Boolean) as LeaderboardRow[];
@@ -120,6 +165,7 @@ function mapTableNode(
     {
       rows: rows.length > 0 ? rows : FALLBACK_BY_TABLE[slug]?.rows ?? [],
       lastUpdated: reportDate ?? FALLBACK_BY_TABLE[slug]?.lastUpdated ?? null,
+      schema,
     },
   ];
 }

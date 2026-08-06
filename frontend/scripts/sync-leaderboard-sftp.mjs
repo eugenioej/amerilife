@@ -59,6 +59,9 @@ const STANDARD_PRODUCTS = new Set([
   "health-specialty",
 ]);
 
+/** E&O / O&E uses Affiliate + New Policies (ranked names), not YTD/%. */
+const EO_PRODUCTS = new Set(["oe"]);
+
 function loadEnv(p) {
   if (!existsSync(p)) return;
   for (const line of readFileSync(p, "utf8").split("\n")) {
@@ -220,6 +223,14 @@ function headerIndices(rawHeader) {
   }
   if (vsLytd === null) vsLytd = find("vs_lytd", "vslytd", "vs_ly", "vs_last_year", "vs_last_ytd");
 
+  const newPolicies = find(
+    "new_policies",
+    "new_policy",
+    "newpolicies",
+    "policies",
+    "policy_count",
+  );
+
   return {
     affiliate,
     ytd: find("ytd", "ytd_amount", "ytd_production"),
@@ -228,7 +239,20 @@ function headerIndices(rawHeader) {
     vs_lqtd: find("vs_lqtd", "vslqtd", "vs_last_quarter", "vs_lq"),
     vs_lmtd: find("vs_lmtd", "vslmtd", "vs_last_month", "vs_lm"),
     trend,
+    new_policies: newPolicies,
   };
+}
+
+function isEoSchema(idx) {
+  return idx.new_policies !== null && idx.ytd === null;
+}
+
+/** "1. Pinnacle Financial Services" → { rank: "1", affiliate: "Pinnacle Financial Services" } */
+function splitRankedAffiliate(raw) {
+  const s = String(raw || "").trim();
+  const m = /^(\d+)\.\s*(.+)$/.exec(s);
+  if (!m) return { rank: "", affiliate: s };
+  return { rank: m[1], affiliate: m[2].trim() };
 }
 
 function mapTrend(raw) {
@@ -246,26 +270,51 @@ function rowsFromCsv(text) {
   if (idx.affiliate === null) {
     return { error: "missing affiliate column", rows: [] };
   }
+
+  const cell = (cells, key) =>
+    idx[key] !== null && idx[key] !== undefined
+      ? String(cells[idx[key]] ?? "").trim()
+      : "";
+
+  // E&O schema: Affiliate + New Policies (names often ranked "1. Name").
+  if (isEoSchema(idx)) {
+    const out = [];
+    for (const cells of rows) {
+      const rawAffiliate = String(cells[idx.affiliate] ?? "").trim();
+      if (!rawAffiliate) continue;
+      const newPolicies = cell(cells, "new_policies");
+      if (!newPolicies) continue;
+      const { rank, affiliate } = splitRankedAffiliate(rawAffiliate);
+      out.push({
+        affiliate,
+        rank,
+        ytd: newPolicies,
+        lytd: "",
+        vs_lytd: "",
+        vs_lqtd: "",
+        vs_lmtd: "",
+        trend: "",
+        schema: "eo",
+      });
+    }
+    return { error: null, rows: out, header, schema: "eo" };
+  }
+
   const out = [];
   for (const cells of rows) {
     const affiliate = String(cells[idx.affiliate] ?? "").trim();
     if (!affiliate) continue;
-    // Skip ranked "1. Name" EO-style rows unless they have YTD columns.
-    const cell = (key) =>
-      idx[key] !== null && idx[key] !== undefined
-        ? String(cells[idx[key]] ?? "").trim()
-        : "";
     out.push({
       affiliate,
-      ytd: cell("ytd"),
-      lytd: cell("lytd"),
-      vs_lytd: cell("vs_lytd"),
-      vs_lqtd: cell("vs_lqtd"),
-      vs_lmtd: cell("vs_lmtd"),
-      trend: mapTrend(cell("trend")),
+      ytd: cell(cells, "ytd"),
+      lytd: cell(cells, "lytd"),
+      vs_lytd: cell(cells, "vs_lytd"),
+      vs_lqtd: cell(cells, "vs_lqtd"),
+      vs_lmtd: cell(cells, "vs_lmtd"),
+      trend: mapTrend(cell(cells, "trend")),
     });
   }
-  return { error: null, rows: out, header };
+  return { error: null, rows: out, header, schema: "standard" };
 }
 
 function loadManifest(path) {
@@ -403,6 +452,7 @@ async function main() {
     }
 
     // Rebuild latest/ + tables.json from newest report date that has standard products.
+    // E&O may ship on a different cadence/date — attach the newest EO file separately.
     const reportDates = [...byReportDate.keys()]
       .filter((d) => d !== "unknown")
       .sort()
@@ -431,12 +481,36 @@ async function main() {
             productKey: f.productKey,
             filename: f.name,
             report_date: rd,
+            schema: parsed.schema || "standard",
             rows: parsed.rows,
           });
         }
       }
       break;
     }
+
+    let latestEo = null;
+    for (const rd of reportDates) {
+      const files = byReportDate.get(rd) || [];
+      const eoFile = files.find((f) => EO_PRODUCTS.has(f.slug));
+      if (!eoFile) continue;
+      const src = eoFile.localPath || join(archiveRoot, rd, eoFile.name);
+      if (!existsSync(src)) continue;
+      const text = readFileSync(src, "utf8");
+      const parsed = eoFile.parsed || rowsFromCsv(text);
+      if (parsed.error || parsed.rows.length === 0) continue;
+      if (!dryRun) copyFileSync(src, join(latestRoot, eoFile.name));
+      latestEo = {
+        slug: eoFile.slug,
+        productKey: eoFile.productKey,
+        filename: eoFile.name,
+        report_date: rd,
+        schema: "eo",
+        rows: parsed.rows,
+      };
+      break;
+    }
+    if (latestEo) latestTables.push(latestEo);
 
     if (!dryRun && latestTables.length) {
       const tablesPath = join(latestRoot, "tables.json");
@@ -446,6 +520,7 @@ async function main() {
           {
             source: "sftp.amerilife.com/outbound",
             report_date: latestReportDate,
+            eo_report_date: latestEo?.report_date ?? null,
             pulled_at: isoNow(),
             tables: latestTables,
           },
@@ -454,7 +529,8 @@ async function main() {
         ),
       );
       console.log(
-        `latest tables.json: report_date=${latestReportDate}, tables=${latestTables.length}`,
+        `latest tables.json: report_date=${latestReportDate}, tables=${latestTables.length}` +
+          (latestEo ? `, eo@${latestEo.report_date} (${latestEo.rows.length} rows)` : ", no eo"),
       );
     }
 
