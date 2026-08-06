@@ -345,7 +345,14 @@ export const GET_PAGES_SITEMAP = `
 /** Paginated published posts for sitemap. */
 export type PostsSitemapResult = {
   posts?: {
-    nodes: Array<{ uri?: string | null }>;
+    nodes: Array<{
+      slug?: string | null;
+      categories?: {
+        nodes?: Array<{
+          slug?: string | null;
+        }>;
+      } | null;
+    }>;
     pageInfo: {
       hasNextPage: boolean;
       endCursor: string | null;
@@ -357,7 +364,12 @@ export const GET_POSTS_SITEMAP = `
   query GetPostsSitemap($first: Int!, $after: String) {
     posts(first: $first, after: $after, where: { status: PUBLISH }) {
       nodes {
-        uri
+        slug
+        categories {
+          nodes {
+            slug
+          }
+        }
       }
       pageInfo {
         hasNextPage

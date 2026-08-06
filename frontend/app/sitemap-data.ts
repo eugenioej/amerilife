@@ -86,9 +86,13 @@ async function collectPostUris(): Promise<string[]> {
     );
     const nodes = data.posts?.nodes ?? [];
     for (const n of nodes) {
-      const uri = n.uri?.trim();
-      if (uri && !isDisallowedPathname(uri)) out.push(uri);
-    }
+  const slug = n.slug?.trim();
+  const categorySlug = n.categories?.nodes?.[0]?.slug?.trim();
+
+  if (slug && categorySlug) {
+    out.push(`/newsroom/${categorySlug}/${slug}/`);
+  }
+}
     hasNext = data.posts?.pageInfo.hasNextPage ?? false;
     after = data.posts?.pageInfo.endCursor ?? null;
     if (!hasNext || !after) break;
