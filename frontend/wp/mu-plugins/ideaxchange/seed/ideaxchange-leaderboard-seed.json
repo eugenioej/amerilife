@@ -42,6 +42,15 @@
         { "affiliate": "AmeriLife Home Protection Services", "ytd": 0, "lytd": 228, "vs_lytd": -100.0, "vs_lqtd": -100.0, "vs_lmtd": -100.0, "trend": "down" },
         { "affiliate": "ORCA Life", "ytd": 0, "lytd": 1, "vs_lytd": -100.0, "vs_lqtd": -100.0, "vs_lmtd": -100.0, "trend": "down" }
       ]
+    },
+    {
+      "table_slug": "oe",
+      "schema": "eo",
+      "rows": [
+        { "rank": "1", "affiliate": "Pinnacle Financial Services", "ytd": 9, "lytd": 0, "vs_lytd": 0, "vs_lqtd": 0, "vs_lmtd": 0, "trend": "flat" },
+        { "rank": "2", "affiliate": "Jack Schroeder and Associates, Inc.", "ytd": 8, "lytd": 0, "vs_lytd": 0, "vs_lqtd": 0, "vs_lmtd": 0, "trend": "flat" },
+        { "rank": "3", "affiliate": "Vertical Vision", "ytd": 6, "lytd": 0, "vs_lytd": 0, "vs_lqtd": 0, "vs_lmtd": 0, "trend": "flat" }
+      ]
     }
   ]
 }

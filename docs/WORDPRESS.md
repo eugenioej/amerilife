@@ -254,13 +254,13 @@ node frontend/scripts/cleanup-ideaxchange-plugin-duplicates.mjs
 | ideaXchange Companies | `ideaxchange_company` | `/ideaxchange/recruiting-hub/company/{slug}/` |
 | ideaXchange Case Studies | `ideaxchange_case` | `/ideaxchange/recruiting-hub/{slug}/` |
 | ideaXchange Carriers | `ideaxchange_carrier` | `/ideaxchange/carrier-spotlight/{slug}/` |
-| ideaXchange Leaderboard | `ideaxchange_lb_table` (7 fixed tables) | `/ideaxchange/leaderboard/` |
+| ideaXchange Leaderboard | `ideaxchange_lb_table` (8 fixed tables) | `/ideaxchange/leaderboard/` |
 
 **WP Admin editor UX**
 
 - **Carriers** — Highlights use an icon + label repeater (no JSON). Carrier resources and case study downloads use Media Library pickers (“Choose file”), not attachment IDs.
 - **Case studies** — Link a **Company** from the dropdown (shows slug). **Run this campaign** sidebar files: Call Scripts, Interview Questions, Email Templates. **Campaigns table** fields power the Recruiting Hub table.
-- **Leaderboard** — Exactly **7 items** in wp-admin (one per table). Open a table → upload `.xlsx` (recommended), `.csv`, or `.json` → Save. Excel preserves ▲▼ trend symbols better than CSV. Columns: `affiliate`, `ytd`, `lytd`, `vs_lytd`, `vs_lqtd`, `vs_lmtd`, `trend`. Seed: `node scripts/seed-ideaxchange-leaderboard.mjs --force`. Live SFTP import: `pnpm sync:leaderboard-sftp && pnpm import:leaderboard` (REST `POST /wp-json/amerilife/v1/import-ideaxchange-leaderboard`).
+- **Leaderboard** — Exactly **8 items** in wp-admin (7 production + E&O). Open a table → upload `.xlsx` (recommended), `.csv`, or `.json` → Save. Excel preserves ▲▼ trend symbols better than CSV. Standard columns: `affiliate`, `ytd`, `lytd`, `vs_lytd`, `vs_lqtd`, `vs_lmtd`, `trend`. E&O columns: `affiliate`, `New Policies` (ranked names like `1. Name` are OK). Seed: `node scripts/seed-ideaxchange-leaderboard.mjs --force`. Live SFTP import: `pnpm sync:leaderboard-sftp && pnpm import:leaderboard` (REST `POST /wp-json/amerilife/v1/import-ideaxchange-leaderboard`). Full ops guide (Sales SFTP vs Career Piper API, runbooks, ownership): [ideaxchange-leaderboard-administration.md](./ideaxchange-leaderboard-administration.md).
 
 CPTs are **empty until seeded** or you add posts manually. Seed via REST (Application Password on a user with `edit_posts`, e.g. Editor or Administrator):
 

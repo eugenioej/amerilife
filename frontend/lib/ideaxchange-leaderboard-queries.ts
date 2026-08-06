@@ -1,4 +1,5 @@
 export type LeaderboardRowGraphql = {
+  rank?: string | null;
   affiliate?: string | null;
   ytdAmount?: string | null;
   lytdAmount?: string | null;
@@ -14,6 +15,7 @@ export type LeaderboardTableGraphql = {
   ideaxchangeLbTableFields?: {
     reportDate?: string | null;
     rowCount?: number | null;
+    schema?: string | null;
     visibility?: string | null;
     rows?: LeaderboardRowGraphql[] | null;
   } | null;
@@ -27,15 +29,17 @@ export type LeaderboardTablesResult = {
 
 export const GET_LEADERBOARD_TABLES = `
   query GetLeaderboardTables {
-    ideaxchangeLbTables(first: 10, where: { orderby: { field: MENU_ORDER, order: ASC }, status: PUBLISH }) {
+    ideaxchangeLbTables(first: 20, where: { orderby: { field: MENU_ORDER, order: ASC }, status: PUBLISH }) {
       nodes {
         slug
         title
         ideaxchangeLbTableFields {
           reportDate
           rowCount
+          schema
           visibility
           rows {
+            rank
             affiliate
             ytdAmount
             lytdAmount

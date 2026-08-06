@@ -1,6 +1,6 @@
 <?php
 /**
- * ideaXchange Leaderboard — exactly 7 table posts; upload CSV/JSON/Excel per table.
+ * ideaXchange Leaderboard — fixed table posts (7 production + E&O); upload CSV/JSON/Excel per table.
  */
 
 if (!defined('ABSPATH')) {
@@ -20,14 +20,21 @@ define('AMERILIFE_IX_LEADERBOARD_PT', 'ideaxchange_lb_table');
  */
 function amerilife_ideaxchange_leaderboard_table_catalog() {
   return [
-    'life' => ['name' => 'Life', 'section' => 'Life Production'],
-    'life-fe' => ['name' => 'Life (FE)', 'section' => 'Life Production'],
-    'life-non-fe' => ['name' => 'Life (Non-FE)', 'section' => 'Life Production'],
-    'annuity-production' => ['name' => 'Annuity Production', 'section' => 'Submitted Production'],
-    'medicare-supplement' => ['name' => 'Medicare Supplement', 'section' => 'Submitted Production'],
-    'medicare-advantage' => ['name' => 'Medicare Advantage', 'section' => 'Submitted Production'],
-    'health-specialty' => ['name' => 'Health Specialty', 'section' => 'Submitted Production'],
+    'life' => ['name' => 'Life', 'section' => 'Life Production', 'schema' => 'standard'],
+    'life-fe' => ['name' => 'Life (FE)', 'section' => 'Life Production', 'schema' => 'standard'],
+    'life-non-fe' => ['name' => 'Life (Non-FE)', 'section' => 'Life Production', 'schema' => 'standard'],
+    'annuity-production' => ['name' => 'Annuity Production', 'section' => 'Submitted Production', 'schema' => 'standard'],
+    'medicare-supplement' => ['name' => 'Medicare Supplement', 'section' => 'Submitted Production', 'schema' => 'standard'],
+    'medicare-advantage' => ['name' => 'Medicare Advantage', 'section' => 'Submitted Production', 'schema' => 'standard'],
+    'health-specialty' => ['name' => 'Health Specialty', 'section' => 'Submitted Production', 'schema' => 'standard'],
+    // E&O / O&E: Affiliate + New Policies (ranked names), not YTD/%.
+    'oe' => ['name' => 'E&O', 'section' => 'E&O', 'schema' => 'eo'],
   ];
+}
+
+function amerilife_ideaxchange_leaderboard_table_schema($slug) {
+  $catalog = amerilife_ideaxchange_leaderboard_table_catalog();
+  return $catalog[$slug]['schema'] ?? 'standard';
 }
 
 function amerilife_ideaxchange_leaderboard_post_id($post) {
@@ -148,10 +155,18 @@ function amerilife_ideaxchange_leaderboard_header_indices($header, $raw_header =
     }
   }
 
+  $ytd_i = $idx(['ytd', 'ytd_amount', 'ytd_production']);
+  $new_policies_i = $idx(['new_policies', 'new_policy', 'newpolicies', 'policies', 'policy_count']);
+  // E&O files use "New Policies" instead of YTD — map into ytd for storage.
+  if ($ytd_i === null && $new_policies_i !== null) {
+    $ytd_i = $new_policies_i;
+  }
+
   return [
     'affiliate' => $affiliate_i,
+    'schema' => ($new_policies_i !== null && $idx(['ytd', 'ytd_amount', 'ytd_production']) === null) ? 'eo' : 'standard',
     'map' => [
-      'ytd' => $idx(['ytd', 'ytd_amount', 'ytd_production']),
+      'ytd' => $ytd_i,
       'lytd' => $idx(['lytd', 'lytd_amount', 'lytd_production']),
       'vs_lytd' => $vs_lytd_i,
       'vs_lqtd' => $idx(['vs_lqtd', 'vslqtd', 'vs_last_quarter', 'vs_lq']),
@@ -159,6 +174,19 @@ function amerilife_ideaxchange_leaderboard_header_indices($header, $raw_header =
       'trend' => $trend_i,
     ],
   ];
+}
+
+/**
+ * "1. Pinnacle Financial Services" → [rank => "1", affiliate => "Pinnacle Financial Services"]
+ *
+ * @return array{rank: string, affiliate: string}
+ */
+function amerilife_ideaxchange_leaderboard_split_ranked_affiliate($raw) {
+  $s = trim((string) $raw);
+  if (preg_match('/^(\d+)\.\s*(.+)$/u', $s, $m)) {
+    return ['rank' => $m[1], 'affiliate' => trim($m[2])];
+  }
+  return ['rank' => '', 'affiliate' => $s];
 }
 
 /**
@@ -187,16 +215,29 @@ function amerilife_ideaxchange_leaderboard_format_percent_value($value, $from_ex
  */
 function amerilife_ideaxchange_leaderboard_rows_from_grid($indices, $grid, $from_excel = false) {
   $rows = [];
+  $schema = $indices['schema'] ?? 'standard';
   foreach ($grid as $cells) {
     if (!is_array($cells)) {
       continue;
     }
     $affiliate_i = $indices['affiliate'];
-    $affiliate = isset($cells[$affiliate_i]) ? trim((string) $cells[$affiliate_i]) : '';
-    if ($affiliate === '') {
+    $raw_affiliate = isset($cells[$affiliate_i]) ? trim((string) $cells[$affiliate_i]) : '';
+    if ($raw_affiliate === '') {
       continue;
     }
+
+    $rank = '';
+    $affiliate = $raw_affiliate;
+    if ($schema === 'eo') {
+      $split = amerilife_ideaxchange_leaderboard_split_ranked_affiliate($raw_affiliate);
+      $rank = $split['rank'];
+      $affiliate = $split['affiliate'];
+    }
+
     $row = ['affiliate' => $affiliate];
+    if ($rank !== '') {
+      $row['rank'] = $rank;
+    }
     foreach ($indices['map'] as $key => $col) {
       $val = ($col !== null && isset($cells[$col])) ? $cells[$col] : '';
       if (in_array($key, ['vs_lytd', 'vs_lqtd', 'vs_lmtd'], true)) {
@@ -204,6 +245,10 @@ function amerilife_ideaxchange_leaderboard_rows_from_grid($indices, $grid, $from
       } else {
         $row[$key] = is_scalar($val) ? trim((string) $val) : '';
       }
+    }
+    // Skip blank E&O trailing rows (affiliate present but no New Policies).
+    if ($schema === 'eo' && ($row['ytd'] ?? '') === '') {
+      continue;
     }
     $rows[] = $row;
   }
@@ -227,6 +272,12 @@ function amerilife_ideaxchange_leaderboard_normalize_rows($rows) {
     if ($affiliate === '') {
       continue;
     }
+    // Accept ranked "1. Name" from EO CSVs even when schema wasn't detected upstream.
+    $rank = sanitize_text_field((string) ($row['rank'] ?? ''));
+    if ($rank === '' && preg_match('/^(\d+)\.\s*(.+)$/u', $affiliate, $m)) {
+      $rank = $m[1];
+      $affiliate = sanitize_text_field(trim($m[2]));
+    }
     $meta = [
       'affiliate' => $affiliate,
       'ytd' => amerilife_ideaxchange_leaderboard_format_count($row['ytd'] ?? ''),
@@ -236,6 +287,9 @@ function amerilife_ideaxchange_leaderboard_normalize_rows($rows) {
       'vs_lmtd' => amerilife_ideaxchange_leaderboard_format_percent_value($row['vs_lmtd'] ?? ''),
       'trend' => amerilife_ideaxchange_leaderboard_normalize_trend($row['trend'] ?? ''),
     ];
+    if ($rank !== '') {
+      $meta['rank'] = $rank;
+    }
     $out[] = $meta;
   }
   return $out;
@@ -437,7 +491,7 @@ add_action('init', function () {
       'singular_name' => 'Leaderboard Table',
       'edit_item' => 'Edit table data',
       'menu_name' => 'ideaXchange Leaderboard',
-      'all_items' => 'Leaderboard tables (7)',
+      'all_items' => 'Leaderboard tables (8)',
     ],
     'public' => true,
     'publicly_queryable' => true,
@@ -553,6 +607,7 @@ add_action('add_meta_boxes', function () {
       $slug = $post->post_name;
       $catalog = amerilife_ideaxchange_leaderboard_table_catalog();
       $section = $catalog[$slug]['section'] ?? '';
+      $schema = $catalog[$slug]['schema'] ?? 'standard';
       $rows = amerilife_ideaxchange_leaderboard_get_rows((int) $post->ID);
       $report_date = get_post_meta($post->ID, 'report_date', true);
 
@@ -564,7 +619,11 @@ add_action('add_meta_boxes', function () {
 
       echo '<p><label for="lb_data_file"><strong>Data file</strong></label></p>';
       echo '<input type="file" name="lb_data_file" id="lb_data_file" accept=".xlsx,.xlsm,.csv,.json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,application/json" />';
-      echo '<p class="description">Upload <strong>.xlsx</strong> (recommended — keeps ▲▼ trend symbols), <strong>.csv</strong>, or <strong>.json</strong>. Columns: affiliate, ytd, lytd, vs_lytd, vs_lqtd, vs_lmtd, trend. Saving replaces all rows for this table.</p>';
+      if ($schema === 'eo') {
+        echo '<p class="description">E&amp;O format: <strong>Affiliate</strong>, <strong>New Policies</strong> (names may be ranked like <code>1. Name</code>). Saving replaces all rows for this table.</p>';
+      } else {
+        echo '<p class="description">Upload <strong>.xlsx</strong> (recommended — keeps ▲▼ trend symbols), <strong>.csv</strong>, or <strong>.json</strong>. Columns: affiliate, ytd, lytd, vs_lytd, vs_lqtd, vs_lmtd, trend. Saving replaces all rows for this table.</p>';
+      }
 
       echo '<p style="margin-top:16px"><label for="report_date"><strong>Report date</strong></label></p>';
       echo '<input type="date" name="report_date" id="report_date" value="' . esc_attr((string) $report_date) . '" class="widefat" />';
@@ -573,13 +632,23 @@ add_action('add_meta_boxes', function () {
 
       if ($rows !== []) {
         echo '<table class="widefat striped" style="margin-top:8px"><thead><tr>';
-        echo '<th>Affiliate</th><th>YTD</th><th>LYTD</th><th>VS LYTD</th><th>Trend</th></tr></thead><tbody>';
-        foreach (array_slice($rows, 0, 5) as $row) {
-          echo '<tr><td>' . esc_html((string) ($row['affiliate'] ?? '')) . '</td>';
-          echo '<td>' . esc_html((string) ($row['ytd'] ?? '')) . '</td>';
-          echo '<td>' . esc_html((string) ($row['lytd'] ?? '')) . '</td>';
-          echo '<td>' . esc_html((string) ($row['vs_lytd'] ?? '')) . '</td>';
-          echo '<td>' . esc_html((string) ($row['trend'] ?? '')) . '</td></tr>';
+        if ($schema === 'eo') {
+          echo '<th>Rank</th><th>Affiliate</th><th>New Policies</th></tr></thead><tbody>';
+          foreach (array_slice($rows, 0, 5) as $i => $row) {
+            $rank = (string) ($row['rank'] ?? (string) ($i + 1));
+            echo '<tr><td>' . esc_html($rank) . '</td>';
+            echo '<td>' . esc_html((string) ($row['affiliate'] ?? '')) . '</td>';
+            echo '<td>' . esc_html((string) ($row['ytd'] ?? '')) . '</td></tr>';
+          }
+        } else {
+          echo '<th>Affiliate</th><th>YTD</th><th>LYTD</th><th>VS LYTD</th><th>Trend</th></tr></thead><tbody>';
+          foreach (array_slice($rows, 0, 5) as $row) {
+            echo '<tr><td>' . esc_html((string) ($row['affiliate'] ?? '')) . '</td>';
+            echo '<td>' . esc_html((string) ($row['ytd'] ?? '')) . '</td>';
+            echo '<td>' . esc_html((string) ($row['lytd'] ?? '')) . '</td>';
+            echo '<td>' . esc_html((string) ($row['vs_lytd'] ?? '')) . '</td>';
+            echo '<td>' . esc_html((string) ($row['trend'] ?? '')) . '</td></tr>';
+          }
         }
         echo '</tbody></table>';
         if (count($rows) > 5) {
@@ -648,6 +717,7 @@ add_action('graphql_register_types', function () {
 
   register_graphql_object_type('IdeaxchangeLeaderboardRow', [
     'fields' => [
+      'rank' => ['type' => 'String'],
       'affiliate' => ['type' => 'String'],
       'ytdAmount' => ['type' => 'String'],
       'lytdAmount' => ['type' => 'String'],
@@ -663,6 +733,7 @@ add_action('graphql_register_types', function () {
       'sectionLabel' => ['type' => 'String'],
       'reportDate' => ['type' => 'String'],
       'rowCount' => ['type' => 'Int'],
+      'schema' => ['type' => 'String'],
       'rows' => ['type' => ['list_of' => 'IdeaxchangeLeaderboardRow']],
       'visibility' => ['type' => 'IdeaxchangeVisibility'],
     ],
@@ -673,11 +744,14 @@ add_action('graphql_register_types', function () {
     'resolve' => function ($post) {
       $id = amerilife_ideaxchange_leaderboard_post_id($post);
       if (!$id) {
-        return ['sectionLabel' => null, 'reportDate' => null, 'rowCount' => 0, 'rows' => [], 'visibility' => 'BROKERAGE_CAREER'];
+        return ['sectionLabel' => null, 'reportDate' => null, 'rowCount' => 0, 'schema' => 'standard', 'rows' => [], 'visibility' => 'BROKERAGE_CAREER'];
       }
+      $slug = (string) get_post_field('post_name', $id);
+      $schema = amerilife_ideaxchange_leaderboard_table_schema($slug);
       $stored = amerilife_ideaxchange_leaderboard_get_rows($id);
       $rows = array_map(static function ($row) {
         return [
+          'rank' => (string) ($row['rank'] ?? ''),
           'affiliate' => (string) ($row['affiliate'] ?? ''),
           'ytdAmount' => (string) ($row['ytd'] ?? ''),
           'lytdAmount' => (string) ($row['lytd'] ?? ''),
@@ -692,6 +766,7 @@ add_action('graphql_register_types', function () {
         'sectionLabel' => amerilife_ideaxchange_leaderboard_meta_string($id, 'section_label'),
         'reportDate' => amerilife_ideaxchange_leaderboard_meta_string($id, 'report_date'),
         'rowCount' => count($rows),
+        'schema' => $schema,
         'rows' => $rows,
         'visibility' => amerilife_ideaxchange_visibility_graphql_enum($id),
       ];
@@ -719,7 +794,22 @@ function amerilife_ideaxchange_leaderboard_load_seed_rows() {
   }
   $rows = amerilife_ideaxchange_leaderboard_normalize_rows($data['tables'][0]['rows']);
   $report_date = isset($data['report_date']) ? sanitize_text_field((string) $data['report_date']) : '';
-  return ['rows' => $rows, 'report_date' => $report_date];
+
+  $by_slug = [];
+  if (!empty($data['tables']) && is_array($data['tables'])) {
+    foreach ($data['tables'] as $table) {
+      if (!is_array($table)) {
+        continue;
+      }
+      $slug = sanitize_title((string) ($table['table_slug'] ?? $table['slug'] ?? ''));
+      if ($slug === '' || empty($table['rows']) || !is_array($table['rows'])) {
+        continue;
+      }
+      $by_slug[$slug] = amerilife_ideaxchange_leaderboard_normalize_rows($table['rows']);
+    }
+  }
+
+  return ['rows' => $rows, 'rows_by_slug' => $by_slug, 'report_date' => $report_date];
 }
 
 /**
@@ -744,7 +834,15 @@ function amerilife_ideaxchange_leaderboard_seed_demo($force = false) {
       continue;
     }
     if ($force || amerilife_ideaxchange_leaderboard_get_rows((int) $post->ID) === []) {
-      amerilife_ideaxchange_leaderboard_save_rows((int) $post->ID, $seed['rows']);
+      $rows = $seed['rows_by_slug'][$slug] ?? null;
+      // Don't paste Life production demo rows into the E&O table.
+      if ($rows === null) {
+        if (($info['schema'] ?? 'standard') === 'eo') {
+          continue;
+        }
+        $rows = $seed['rows'];
+      }
+      amerilife_ideaxchange_leaderboard_save_rows((int) $post->ID, $rows);
       if ($seed['report_date'] !== '') {
         update_post_meta($post->ID, 'report_date', $seed['report_date']);
       }
@@ -769,7 +867,7 @@ function amerilife_ideaxchange_leaderboard_seed_demo($force = false) {
 }
 
 /**
- * Import SFTP-parsed tables.json payload into the 7 fixed leaderboard CPT posts.
+ * Import SFTP-parsed tables.json payload into the fixed leaderboard CPT posts.
  *
  * Expected body:
  * {
