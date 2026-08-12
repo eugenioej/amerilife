@@ -45,7 +45,7 @@ export default function Page({eventOne,eventTwo, eventOnedesc, eventTwodesc}: Ma
       alt=""
       width={40}
       height={40}
-      className="transition group-hover:scale-110"
+      className="transition group-hover:scale-110 w-10 h-10"
     />
   </div>
 
@@ -75,7 +75,7 @@ export default function Page({eventOne,eventTwo, eventOnedesc, eventTwodesc}: Ma
       alt=""
       width={40}
       height={40}
-      className="transition group-hover:scale-110"
+      className="transition group-hover:scale-110 w-10 h-10"
     />
   </div>
 
