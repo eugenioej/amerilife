@@ -52,7 +52,7 @@ export default function MastermindsAgenda({agendaDays}:MastermindsAgendaProps) {
 
 {/* QR SECTION */}
 <div className="mt-12 text-center">
-  <Link href="/masterminds/" className="inline-block group">
+  <Link href="/masterminds/agendas/" className="inline-block group">
 
     {/* QR */}
     
@@ -181,26 +181,16 @@ type BeforeInstallPromptEvent = Event & {
 function AddToHomeScreen() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
-    const [mounted, setMounted] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
-    const [isInstalled, setIsInstalled] = useState(false);
-
-    useEffect(() => {
-    setMounted(true);
-
-    const mobile =
-        /iphone|ipad|ipod|android/i.test(navigator.userAgent);
-
-    const installed =
-        window.matchMedia("(display-mode: standalone)").matches ||
-        localStorage.getItem("pwaInstalled") === "true";
-
-    setIsMobile(mobile);
-    setIsInstalled(installed);
-    }, []);
-
     
-  
+
+  // ✅ FIXED: proper install detection (Android + standalone)
+  const isInstalled =
+    typeof window !== "undefined" &&
+    (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      localStorage.getItem("pwaInstalled") === "true"
+    );
+
   // ✅ existing SW registration
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -208,7 +198,9 @@ function AddToHomeScreen() {
     navigator.serviceWorker.register("/sw.js").catch(console.error);
   }, []);
 
-  
+  const isMobile =
+    typeof window !== "undefined" &&
+    /iphone|ipad|ipod|android/i.test(navigator.userAgent);
 
   // ✅ install prompt listener
   useEffect(() => {
@@ -225,11 +217,6 @@ function AddToHomeScreen() {
       window.removeEventListener("beforeinstallprompt", handler);
     };
   }, [isMobile]);
-  if (!mounted) {
-
-        return null;
-
-    }
 
   // ✅ Hide entirely on desktop
   if (!isMobile) return null;

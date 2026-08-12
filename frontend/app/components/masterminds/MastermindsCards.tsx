@@ -29,7 +29,7 @@ type MastermindsCardsProps = {
 ======================================== */
 export default function Page({eventOne,eventTwo, eventOnedesc, eventTwodesc}: MastermindsCardsProps) {
   return (
-    <div className="mx-auto max-w-[900px] pb-40">
+    <div className="mx-auto max-w-[900px] pb-40 px-5 sm:px-6">
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 

@@ -221,8 +221,12 @@ const agendaDays = [
 export default function Page() {
   return (
     <div className="masterminds-page bg-[#091229]">
-      <MastermindsHeader eventtype="Health Agenda" dateOfEvent="June 15 – 17, 2026 • Grand Hyatt Tampa Bay, FL" note="Please note the agenda is subject to change. Attire is business casual for meetings and resort casual for group dinners. Unless otherwise noted, group meals combine Health and A&RI distributions."/>
-      <MastermindsAgenda agendaDays={agendaDays}/>
+      <MastermindsHeader 
+      eventtype="Health Agenda" 
+      dateOfEvent="June 15 – 17, 2026 • Grand Hyatt Tampa Bay, FL" 
+      note="Please note the agenda is subject to change. Attire is business casual for meetings and resort casual for group dinners. Unless otherwise noted, group meals combine Health and A&RI distributions."/>
+      <MastermindsAgenda 
+      agendaDays={agendaDays}/>
       <MastermindsFooter/>
     </div>
   );

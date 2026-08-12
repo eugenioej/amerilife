@@ -11,7 +11,7 @@ type MastermindsHeaderProps = {
 
 export default function MastermindsHeader({dateOfEvent, note, eventtype}:MastermindsHeaderProps) {
   return (
-    <section className=" relative flex justify-center items-center overflow-hidden bg-[#091229] text-white pt-20 sm:pt-20">
+    <section className=" relative flex justify-center items-center overflow-hidden bg-[#091229] text-white px-5 pt-14 sm:pt-20 sm:px-6">
     
     
          {/* HEADER */}
