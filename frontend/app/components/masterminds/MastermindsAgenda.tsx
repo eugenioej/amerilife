@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import { IMAGES } from "./MastermindsConstants";
@@ -181,28 +182,29 @@ type BeforeInstallPromptEvent = Event & {
 function AddToHomeScreen() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
-    
 
-  // ✅ FIXED: proper install detection (Android + standalone)
-  const isInstalled =
-    typeof window !== "undefined" &&
-    (
-      window.matchMedia("(display-mode: standalone)").matches ||
-      localStorage.getItem("pwaInstalled") === "true"
-    );
+  const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(false);
 
-  // ✅ existing SW registration
   useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
+    setMounted(true);
 
-    navigator.serviceWorker.register("/sw.js").catch(console.error);
+    const mobile =
+      /iphone|ipad|ipod|android/i.test(navigator.userAgent);
+
+    const installed =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      localStorage.getItem("pwaInstalled") === "true";
+
+    setIsMobile(mobile);
+    setIsInstalled(installed);
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(console.error);
+    }
   }, []);
 
-  const isMobile =
-    typeof window !== "undefined" &&
-    /iphone|ipad|ipod|android/i.test(navigator.userAgent);
-
-  // ✅ install prompt listener
   useEffect(() => {
     if (!isMobile) return;
 
@@ -218,10 +220,13 @@ function AddToHomeScreen() {
     };
   }, [isMobile]);
 
-  // ✅ Hide entirely on desktop
+  // Prevent hydration mismatch
+  if (!mounted) return null;
+
+  // Hide on desktop
   if (!isMobile) return null;
 
-  // ✅ ✅ FIX: correct installed state
+  // Already installed
   if (isInstalled) {
     return (
       <div className="mt-10 text-center relative z-20">
@@ -235,11 +240,12 @@ function AddToHomeScreen() {
   const handleInstall = async () => {
     if (deferredPrompt) {
       await deferredPrompt.prompt();
+
       const result = await deferredPrompt.userChoice;
 
-      // ✅ FIX: persist install state
       if (result.outcome === "accepted") {
         localStorage.setItem("pwaInstalled", "true");
+        setIsInstalled(true);
       }
 
       setDeferredPrompt(null);
