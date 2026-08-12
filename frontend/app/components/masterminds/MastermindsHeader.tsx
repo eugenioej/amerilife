@@ -3,13 +3,12 @@ import { IMAGES } from "./MastermindsConstants";
 import Link from "next/link";
 
 type MastermindsHeaderProps = {
-  dateOfEvent: string;
   note: string;
   eventtype: string;
 };
 
 
-export default function MastermindsHeader({dateOfEvent, note, eventtype}:MastermindsHeaderProps) {
+export default function MastermindsHeader({note, eventtype}:MastermindsHeaderProps) {
   return (
     <section className=" relative flex justify-center items-center overflow-hidden bg-[#091229] text-white px-5 pt-14 sm:pt-20 sm:px-6">
     

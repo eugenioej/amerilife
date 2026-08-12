@@ -160,7 +160,6 @@ export default function Page() {
     <div className="masterminds-page bg-[#091229]">
       <MastermindsHeader 
         eventtype="A&RI Agenda" 
-        dateOfEvent="September 15 – 17, 2026 Hilton St. Petersburg Bayfront, FL" 
         note="Please note the agenda is subject to change. Attire is business casual for meetings and resort casual for group dinners. Unless otherwise noted, group meals combine Health and A&RI distributions."/>
       <MastermindsAgenda 
         agendaDays={AgendaDays}/>
