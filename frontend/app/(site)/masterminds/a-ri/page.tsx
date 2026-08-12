@@ -7,8 +7,7 @@ import MastermindsFooter from "@/app/components/masterminds/MastermindsFooter";
 
 /* ========================================
    CONSTANTS
-======================================== */
-const UPLOADS =
+   const UPLOADS =
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/05";
 
 const IMAGES = {
@@ -21,6 +20,8 @@ amerilife:
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AmeriLife-Logo-white-s.webp",
 
 };
+======================================== */
+
 const AgendaDays = [
   {
     title: "Tuesday, September 15, 2026",

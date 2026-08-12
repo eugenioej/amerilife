@@ -3,13 +3,11 @@
 import MastermindsAgendaHeader from "@/app/components/masterminds/MastermindsAgendaHeader";
 import MastermindsCards from "@/app/components/masterminds/MastermindsCards";
 import MastermindsFooter from "@/app/components/masterminds/MastermindsFooter";
-import Image from "next/image";
-import Link from "next/link";
+
 
 /* ========================================
    CONSTANTS
-======================================== */
-const UPLOADS =
+   const UPLOADS =
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/05";
 
 const IMAGES = {
@@ -20,6 +18,8 @@ const IMAGES = {
   amerilife:
     "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AmeriLife-Logo-white-s.webp",
 };
+======================================== */
+
 
 /* ========================================
    PAGE

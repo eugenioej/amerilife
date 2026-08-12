@@ -1,16 +1,12 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import MastermindsHeader from "@/app/components/masterminds/MastermindsHeader";
 import MastermindsAgenda from "@/app/components/masterminds/MastermindsAgenda";
 import MastermindsFooter from "@/app/components/masterminds/MastermindsFooter";
 
 /* ========================================
    CONSTANTS
-======================================== */
-const UPLOADS =
+   const UPLOADS =
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/05";
 
 const IMAGES = {
@@ -23,6 +19,8 @@ amerilife:
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AmeriLife-Logo-white-s.webp",
 
 };
+======================================== */
+
 const agendaDays = [
   {
     title: "Monday, June 15, 2026",
