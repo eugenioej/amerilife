@@ -18,7 +18,7 @@ export default function MastermindsHeader({dateOfEvent, note, eventtype}:Masterm
         <div className="mb-10 sm:mb-14 text-center text-white">
 
           <div className="mx-auto mb-6 w-[220px] sm:w-[300px]">
-            <Link href="/masterminds/agendas/" className="block">
+            <Link href="/masterminds/" className="block">
               <Image
                 src={IMAGES.wordmark}
                 alt="Masterminds"
@@ -34,7 +34,7 @@ export default function MastermindsHeader({dateOfEvent, note, eventtype}:Masterm
           </h1>
 
           <p className="mt-3 inline-block px-4 py-2 text-sm font-semibold tracking-wide text-white rounded-full border border-[#03f080]/40 bg-[#03f080]/20">
-            {dateOfEvent}
+            September 15 – 17, 2026 Hilton St. Petersburg Bayfront, FL
           </p>
 
           <p className="mx-auto mt-3 max-w-[600px] text-xs text-white/60">
