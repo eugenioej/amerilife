@@ -64,12 +64,6 @@ export function CompanyPageTemplate({ company }: Props) {
               </a>
             ) : null}
 
-            {excerpt ? (
-              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[var(--color-muted)] whitespace-pre-line">
-                {excerpt}
-              </p>
-            ) : null}
-
             {html ? (
               <div
                 className="prose prose-sm mt-6 max-w-2xl text-[var(--color-muted)] [&_p]:mb-4"

@@ -50,7 +50,7 @@ export function RunThisCampaignSidebar({ assets, marketingCtaUrl }: Props) {
   const ctaHref = marketingCtaUrl?.trim() || "/connect/";
 
   return (
-    <aside className="space-y-6">
+    <aside className="sticky top-24 space-y-6">
       {visible.length > 0 ? (
         <div className="overflow-hidden rounded-lg border border-[var(--color-border)] shadow-[0_4px_20px_rgba(36,66,96,0.06)]">
           <div className="flex items-center gap-3 bg-[var(--color-brand-dark)] px-5 py-4">

@@ -140,7 +140,7 @@ export function CaseStudyTemplate({ post, relatedPosts }: Props) {
           ) : null}
         </div>
 
-        <div className="lg:col-span-4">
+        <div className="lg:col-span-4 lg:pt-[160px]">
           <RunThisCampaignSidebar assets={assets} marketingCtaUrl={marketingCtaUrl} />
         </div>
       </div>
