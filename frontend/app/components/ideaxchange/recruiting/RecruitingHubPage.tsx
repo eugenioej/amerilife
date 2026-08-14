@@ -4,7 +4,6 @@ import {
   INSIGHTS_NEWSROOM_INITIAL,
   partitionNewsroomWithSidebar,
 } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
-import { IdeaXchangeMagazineSidebar } from "@/app/components/ideaxchange/magazine/IdeaXchangeMagazineSidebar";
 import { IdeaXchangeFeaturedGrid } from "@/app/components/ideaxchange/shared/IdeaXchangeFeaturedGrid";
 import { IdeaXchangeHeroGrid } from "@/app/components/ideaxchange/shared/IdeaXchangeHeroGrid";
 import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/IdeaXchangePillarBanner";
@@ -122,7 +121,7 @@ export function RecruitingHubPage({
       )
   );
   const campaignRows = tableCampaigns.map(toCampaignTableRow);
-  const { spotlight, recentSidebar, newsroomRest } =
+  const { newsroomRest } =
     partitionNewsroomWithSidebar(recruitPosts);
 
   return (
@@ -195,15 +194,6 @@ export function RecruitingHubPage({
               />
             </div>
 
-            <aside className="lg:col-span-4">
-              <IdeaXchangeMagazineSidebar
-                spotlight={spotlight}
-                recentSidebar={recentSidebar}
-                spotlightBadgeLabel="RECRUIT"
-                spotlightBadgeHref={IDEAXCHANGE_RECRUITING_HUB_PATH}
-                adSlot={ideaxchangeAds?.homeSidebarVertical}
-              />
-            </aside>
           </div>
         </section>
       </div>

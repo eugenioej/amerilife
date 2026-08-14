@@ -5,7 +5,7 @@ import type { IdeaxchangeCompanySummary } from "@/lib/ideaxchange-recruiting-que
 import { IDEAXCHANGE_HOME_PATH, IDEAXCHANGE_RECRUITING_HUB_PATH } from "@/lib/ideaxchange-constants";
 import { rewriteUploadsInHtml, rewriteUploadsUrl } from "@/lib/wp-media";
 import { ideaxchangeFeaturedImageSrc } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
-import { formatInsightExcerptPlain, INSIGHT_IMG_QUALITY } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
+import { INSIGHT_IMG_QUALITY } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
 
 type Props = {
   company: IdeaxchangeCompanySummary;
@@ -17,7 +17,6 @@ export function CompanyPageTemplate({ company }: Props) {
   const website = fields?.websiteUrl?.trim();
   const learnMore = fields?.learnMoreUrl?.trim() || website;
   const html = company.content ? rewriteUploadsInHtml(company.content) : "";
-  const excerpt = formatInsightExcerptPlain(company.excerpt);
 
   return (
     <div className="bg-white pb-16 md:pb-20">

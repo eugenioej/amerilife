@@ -2,6 +2,7 @@ import { Download } from "lucide-react";
 import { Link } from "@/app/components/ui/Link";
 import type { IdeaxchangeCampaignAsset } from "@/lib/ideaxchange-recruiting-queries";
 import { rewriteUploadsUrl } from "@/lib/wp-media";
+import Image from "next/image";
 
 type Props = {
   assets: IdeaxchangeCampaignAsset[];
@@ -48,19 +49,25 @@ function CampaignAssetDownload({ asset }: { asset: IdeaxchangeCampaignAsset }) {
 export function RunThisCampaignSidebar({ assets, marketingCtaUrl }: Props) {
   const visible = assets.filter((a) => a.fileUrl?.trim());
   const ctaHref = marketingCtaUrl?.trim() || "/connect/";
+  const runCampaignIcon = rewriteUploadsUrl(
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/08/run-campaign-icon.png"
+);
 
   return (
     <aside className="sticky top-24 space-y-6">
       {visible.length > 0 ? (
         <div className="overflow-hidden rounded-lg border border-[var(--color-border)] shadow-[0_4px_20px_rgba(36,66,96,0.06)]">
-          <div className="flex items-center gap-3 bg-[var(--color-brand-dark)] px-5 py-4">
-            <span
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)] text-lg"
-              aria-hidden
-            >
-              📣
-            </span>
-            <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-white">
+          <div className="flex flex-col items-center bg-[var(--color-brand-dark)] px-6 py-8 text-center">
+            <div className="mb-5 p-5 flex items-center justify-center rounded-full bg-[var(--color-brand-primary)]">
+              <Image 
+                alt="Run This Campaign" 
+                src={runCampaignIcon}
+                height="55"
+                width="55"
+                />
+            </div>
+
+            <h2 className="text-[15px] font-bold uppercase tracking-[0.12em] text-white">
               Run this campaign
             </h2>
           </div>

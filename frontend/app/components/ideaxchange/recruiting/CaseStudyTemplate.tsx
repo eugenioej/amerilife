@@ -12,7 +12,6 @@ import {
 import { rewriteUploadsInHtml } from "@/lib/wp-media";
 import {
   formatBylineDate,
-  formatInsightExcerptPlain,
 } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
 import { RunThisCampaignSidebar } from "./RunThisCampaignSidebar";
 
@@ -115,6 +114,13 @@ export function CaseStudyTemplate({ post, relatedPosts }: Props) {
             </section>
           ) : null}
 
+          <div className="mt-10 lg:hidden">
+            <RunThisCampaignSidebar
+              assets={assets}
+              marketingCtaUrl={marketingCtaUrl}
+            />
+          </div>
+
           {relatedPosts.length > 0 ? (
             <section className="mt-14 border-t border-[var(--color-border)] pt-10">
               <h2 className="mb-6 text-xs font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)]">
@@ -140,7 +146,7 @@ export function CaseStudyTemplate({ post, relatedPosts }: Props) {
           ) : null}
         </div>
 
-        <div className="lg:col-span-4 lg:pt-[160px]">
+        <div className="hidden lg:block lg:col-span-4 lg:pt-[160px]">
           <RunThisCampaignSidebar assets={assets} marketingCtaUrl={marketingCtaUrl} />
         </div>
       </div>

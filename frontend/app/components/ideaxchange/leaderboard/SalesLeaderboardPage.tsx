@@ -113,15 +113,6 @@ export function SalesLeaderboardPage({
               />
             </div>
 
-            <aside className="lg:col-span-4">
-              <IdeaXchangeMagazineSidebar
-                spotlight={spotlight}
-                recentSidebar={recentSidebar}
-                spotlightBadgeLabel="SALES"
-                spotlightBadgeHref={IDEAXCHANGE_LEADERBOARD_PATH}
-                adSlot={ideaxchangeAds?.homeSidebarVertical}
-              />
-            </aside>
           </div>
         </section>
       </div>
