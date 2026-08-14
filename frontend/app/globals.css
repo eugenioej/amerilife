@@ -197,6 +197,11 @@ body {
   min-height: calc(100dvh - var(--layout-chrome-height));
 }
 
+.recruiting-hub-article .wp-block-embed__wrapper iframe {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+  border-radius: 12px;
+}
+
 @media (max-width: 639px) {
   .home-hero-fold {
     min-height: calc(70vh - var(--layout-chrome-height));

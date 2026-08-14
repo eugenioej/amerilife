@@ -97,7 +97,7 @@ export function CaseStudyTemplate({ post, relatedPosts }: Props) {
 
           {contentWithoutResultsHtml ? (
             <div
-              className={`${proseClasses} mt-10`}
+              className={`${proseClasses} mt-10 recruiting-hub-article`}
               dangerouslySetInnerHTML={{ __html: contentWithoutResultsHtml }}
             />
           ) : null}
