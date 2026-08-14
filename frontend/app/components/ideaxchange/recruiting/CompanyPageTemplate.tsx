@@ -33,18 +33,17 @@ export function CompanyPageTemplate({ company }: Props) {
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start lg:gap-14">
           <div className="lg:col-span-5">
-            <div className="flex aspect-square max-w-md items-center justify-center rounded-2xl bg-[var(--color-brand-dark)] p-10 lg:max-w-none">
-              <div className="relative h-full w-full min-h-[200px]">
+              <div className="relative overflow-hidden shadow-lg">
                 <Image
                   src={rewriteUploadsUrl(logo)}
-                  alt=""
-                  fill
-                  className="object-contain"
+                  alt={company.title ?? "Company image"}
+                  width={1200}
+                  height={800}
+                  className="h-auto w-full"
                   sizes="(max-width:1024px) 80vw, 40vw"
                   quality={INSIGHT_IMG_QUALITY}
                 />
               </div>
-            </div>
           </div>
 
           <div className="lg:col-span-7">
