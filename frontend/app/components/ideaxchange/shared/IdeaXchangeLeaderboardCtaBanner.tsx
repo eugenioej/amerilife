@@ -8,7 +8,7 @@ type Props = {
 };
 
 const buttonClassName =
-  "inline-flex min-h-[44px] shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)] px-8 text-xs font-bold uppercase tracking-wide text-white no-underline transition-opacity hover:!text-white hover:!no-underline hover:opacity-95";
+  "h-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)] px-8 text-xs font-bold uppercase leading-none tracking-wide text-white no-underline transition-opacity hover:!text-white hover:!no-underline hover:opacity-95";
 
 export function IdeaXchangeLeaderboardCtaBanner({
   className,
@@ -27,11 +27,14 @@ export function IdeaXchangeLeaderboardCtaBanner({
     >
       <p
         id="ideaxchange-leaderboard-cta-heading"
-        className="max-w-3xl text-center text-lg font-bold uppercase tracking-[0.06em] text-white md:pr-36 md:text-xl lg:text-2xl"
+        className="max-w-5xl text-center text-lg font-bold uppercase tracking-[0.06em] text-white md:pr-36 md:text-xl lg:text-2xl"
       >
         {heading}
       </p>
-      <Link href={href} variant="button" className={`${buttonClassName} md:hidden`}>
+      <Link 
+        href={href} variant="button" 
+        className={`${buttonClassName} flex items-center justify-center md:hidden`}
+      >
         {buttonLabel}
       </Link>
       <Link

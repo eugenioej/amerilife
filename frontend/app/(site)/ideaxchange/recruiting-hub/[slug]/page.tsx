@@ -39,7 +39,7 @@ export default async function CaseStudyPage({ params }: { params: PageParams }) 
   const relatedPosts = allPosts.filter((p) => p.slug && p.slug !== slug);
 
   return (
-    <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-8 md:py-10 case-studies">
+    <div className="mx-auto max-w-[var(--container-max)]  py-8 md:py-10 case-studies">
       <CaseStudyTemplate post={post} relatedPosts={relatedPosts} />
     </div>
   );
