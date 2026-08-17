@@ -203,6 +203,43 @@ body {
   margin-top: 30px;
   margin-bottom: 30px;
 }
+/* IdeaXchange Article Typograghy */
+article.global-article h1,
+article.global-article h2,
+article.global-article h3,
+article.global-article h4 {
+    color: #3FA590 !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0.06em !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Article Title */
+article.global-article h1 {
+    font-size: 2.3rem !important;
+}
+
+/* Major Section Headers */
+article.global-article h2 {
+    font-size: 1.5rem !important; 
+    margin-top: 3rem !important;
+}
+
+/* Subsections */
+article.global-article h3 {
+    font-size: 1.2rem !important; 
+    margin-top: 2rem !important;
+}
+
+/* Minor Headings */
+article.global-article h4 {
+    font-size: 1rem !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
+}
+
 
 @media (max-width: 639px) {
   .home-hero-fold {

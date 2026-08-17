@@ -76,24 +76,7 @@ export function SalesLeaderboardPage({
           <LeaderboardSection key={section.slug} section={section} tableData={tableData} />
         ))}
 
-        <section className="mt-16 border-t border-[var(--color-border)] pt-12 md:mt-20 md:pt-16">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)]">
-                Sales
-              </h2>
-              <p className="mt-2 text-sm text-[var(--color-muted)]">
-                Latest articles for Brokerage teams.
-              </p>
-            </div>
-            <Link
-              href={IDEAXCHANGE_LEADERBOARD_PATH}
-              variant="button"
-              className="inline-flex min-h-[44px] items-center justify-center rounded-sm bg-[var(--color-brand-primary)] px-6 text-sm font-bold uppercase tracking-wide text-white hover:bg-[var(--color-brand-primary-hover)]"
-            >
-              View Leaderboard
-            </Link>
-          </div>
+        <section className="mt-12 md:mt-16">
 
           <IdeaxchangeHorizontalAdSlot
             slot={ideaxchangeAds?.homeSecondaryHorizontal}

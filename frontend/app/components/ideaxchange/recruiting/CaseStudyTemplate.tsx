@@ -41,7 +41,15 @@ export function CaseStudyTemplate({ post, relatedPosts }: Props) {
   const assets = post.ideaxchangeCaseStudyFields?.campaignAssets ?? [];
   const marketingCtaUrl = post.ideaxchangeCaseStudyFields?.marketingCtaUrl;
   const proseClasses =
-    "ideaxchange-article-body max-w-none font-sans text-[var(--color-fg)] [&_h1]:font-sans [&_h2]:font-sans [&_h3]:font-sans [&_p]:mb-4 [&_p]:leading-relaxed [&_a]:text-[var(--color-link)] [&_a]:underline [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-base [&_h2]:font-bold [&_h2]:uppercase [&_h2]:tracking-wide [&_h2]:!text-[var(--color-brand-primary)]";
+  "ideaxchange-article-body max-w-none font-sans text-[var(--color-fg)] " +
+  "[&_p]:mb-4 [&_p]:leading-relaxed " +
+  "[&_a]:text-[var(--color-link)] [&_a:hover]:text-[var(--color-link-hover)] [&_a]:underline " +
+  "[&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-6 " +
+  "[&_ol]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 " +
+  "[&_li]:mb-2 " +
+  "[&_iframe]:my-6 [&_iframe]:aspect-video [&_iframe]:w-full [&_iframe]:max-w-full [&_iframe]:rounded-md " +
+  "[&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:scroll-mt-24 " +
+  "[&_h3]:mt-8 [&_h3]:mb-3";
 
   return (
     <InsightPostChrome>
@@ -73,7 +81,7 @@ export function CaseStudyTemplate({ post, relatedPosts }: Props) {
               {companySlug ? (
                 <Link
                   href={companyHref(companySlug)}
-                  className="font-semibold text-[var(--color-brand-primary)] hover:underline"
+                  className="font-semibold text-[var(--color-brand-primary)] hover:underline hover:text-[var(--color-brand-primary)]!"
                 >
                   {companyName}
                 </Link>

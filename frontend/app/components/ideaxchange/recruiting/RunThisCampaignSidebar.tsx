@@ -23,12 +23,19 @@ function CampaignAssetDownload({ asset }: { asset: IdeaxchangeCampaignAsset }) {
   const href = rewriteUploadsUrl(url);
   return (
     <li className="flex items-center gap-4 border-b border-[var(--color-border)] px-5 py-4 last:border-b-0">
+      <a
+          href={href}
+          download
+          target="_blank"
+          className=""
+        >
       <span
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-dark)] text-white"
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-dark)] hover:bg-[var(--color-brand-primary)] text-white"
         aria-hidden
       >
         <Download className="size-4" />
       </span>
+      </a>
       <div className="min-w-0 flex-1">
         <a
           href={href}
@@ -48,7 +55,7 @@ function CampaignAssetDownload({ asset }: { asset: IdeaxchangeCampaignAsset }) {
 
 export function RunThisCampaignSidebar({ assets, marketingCtaUrl }: Props) {
   const visible = assets.filter((a) => a.fileUrl?.trim());
-  const ctaHref = marketingCtaUrl?.trim() || "/connect/";
+  const ctaHref = marketingCtaUrl?.trim() || "/request-support";
   const runCampaignIcon = rewriteUploadsUrl(
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/08/run-campaign-icon.png"
 );
