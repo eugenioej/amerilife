@@ -1,4 +1,3 @@
-import { Link } from "@/app/components/ui/Link";
 import { IdeaXchangeNewsroomColumn } from "@/app/components/ideaxchange/magazine/IdeaXchangeNewsroomColumn";
 import {
   INSIGHTS_NEWSROOM_INITIAL,
@@ -140,7 +139,7 @@ export function RecruitingHubPage({
           <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)]">
             View all of our campaigns
           </h2>
-          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[var(--color-muted)]">
+          <p className="mt-3 text-sm leading-relaxed text-[var(--color-muted)]">
             Learn more about each of our campaign case studies. Below is a snapshot of our
             available campaign stats. Click the icon for a quick overview. Want to learn more?
             View the full case study along with downloadable resources by clicking on the

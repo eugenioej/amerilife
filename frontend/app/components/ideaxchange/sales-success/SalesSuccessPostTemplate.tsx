@@ -6,7 +6,6 @@ import type { IdeaxchangeDetail, IdeaxchangeListItem } from "@/lib/ideaxchange-q
 import type { IdeaxchangeAdsSettings } from "@/lib/queries";
 import { rewriteUploadsInHtml, rewriteUploadsUrl } from "@/lib/wp-media";
 import { InsightPostChrome } from "@/app/components/insights/InsightPostChrome";
-import { InsightSharePanel } from "@/app/components/insights/InsightSharePanel";
 import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeHorizontalAdSlot";
 import { IdeaxchangeSidebarAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeSidebarAdSlot";
 import { ideaxchangeFeaturedImageSrc } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
@@ -86,7 +85,6 @@ function AdditionalIncentivesSidebar({ posts }: { posts: IdeaxchangeListItem[] }
 export function SalesSuccessPostTemplate({
   post,
   relatedPosts,
-  shareUrl,
   ideaxchangeAds,
 }: Props) {
   const html = post.content ? rewriteUploadsInHtml(post.content) : "";
@@ -148,7 +146,6 @@ export function SalesSuccessPostTemplate({
         <span className="text-[var(--color-border)]" aria-hidden>
           ·
         </span>
-        <InsightSharePanel url={shareUrl} title={post.title ?? "Article"} />
       </div>
 
       <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-10 lg:gap-x-12">
@@ -186,9 +183,6 @@ export function SalesSuccessPostTemplate({
             >
               {SALES_SUCCESS_BADGE_LABEL}
             </Link>
-            <div className="shrink-0">
-              <InsightSharePanel url={shareUrl} title={post.title ?? "Article"} />
-            </div>
           </div>
         </div>
 
