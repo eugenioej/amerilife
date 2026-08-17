@@ -7,8 +7,8 @@ import NationalRecruitingFooter from "@/app/components/national-recruiting/Natio
 
 export const metadata: Metadata = {
   ...staticPageMetadata(
-    "AmeriLife Marketing Support",
-    "AmeriLife Marketing Support",
+    "AmeriLife National Recruiting",
+    "AmeriLife National Recruiting",
     "/thankyou/"
   ),
   robots: { index: false, follow: false },
