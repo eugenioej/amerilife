@@ -11,7 +11,11 @@ export default function SupportSection() {
             </p>
 
             <h1 className="text-3xl font-bold text-[var(--color-fg)] sm:text-4xl">
-              Become part of the National Recruiting Campaign.
+              Become Part 
+              <br/>
+              of the National 
+              <br/>
+              Recruiting Campaign
             </h1>
 
             <p className="mt-7 max-w-xl text-base leading-8 text-[#244260] md:text-lg">
