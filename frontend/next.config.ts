@@ -95,6 +95,7 @@ const nextConfig: NextConfig = {
         "https://www.gstatic.com",
         "https://recaptcha.net",
         "https://js.hsforms.net/forms/embed/23344415.js",
+        "https://js.hsforms.net/forms/embed/50694998.js",
         "blob:",
       ].join(" "),
       "worker-src 'self' blob:",
