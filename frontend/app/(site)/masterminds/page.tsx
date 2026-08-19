@@ -1,7 +1,7 @@
 "use client";
 
 import MastermindsAgendaHeader from "@/app/components/masterminds/MastermindsAgendaHeader";
-import MastermindsCards from "@/app/components/masterminds/MastermindsCards";
+import MastermindsSingleCard from "@/app/components/masterminds/MastermindsSingleCard";
 import MastermindsFooter from "@/app/components/masterminds/MastermindsFooter";
 
 
@@ -29,11 +29,9 @@ export default function Page() {
     <div className="masterminds-page bg-[#091229] min-h-screen">
       <MastermindsAgendaHeader 
       selector="Agenda" note="Please choose your track below to view your personalized Masterminds agenda."/>
-      <MastermindsCards 
+      <MastermindsSingleCard 
       eventOne="A&amp;RI Agenda" 
-      eventOnedesc="View the Accumulation &amp; Retirement Income agenda." 
-      eventTwo="Health Agenda" 
-      eventTwodesc="View the Health track agenda."/>
+      eventOnedesc="View the Accumulation &amp; Retirement Income agenda."/>
       {/* Optional — remove if you don't want footer */}
       <MastermindsFooter/>
     </div>
