@@ -25,6 +25,10 @@ export type IdeaxchangeListItem = {
   sourceUrl?: string | null;
   altText?: string | null;
 } | null;
+heroMobileImage?: {
+  sourceUrl?: string | null;
+  altText?: string | null;
+} | null;
 };
 
 export type IdeaxchangeConnectionResult = {
@@ -81,6 +85,10 @@ export const GET_IDEAXCHANGE_ARTICLES = `
           sourceUrl
           altText
         }  
+        heroMobileImage {
+          sourceUrl
+          altText
+        } 
       }
     }
   }
@@ -129,6 +137,10 @@ export const GET_IDEAXCHANGE_ARTICLES_MINIMAL = `
         heroLandscapeImage {
           sourceUrl
           altText
+        } 
+        heroMonileImage {
+          sourceUrl
+          altText
         }  
       }
     }
@@ -174,6 +186,10 @@ export const GET_IDEAXCHANGE_BY_SLUG = `
         sourceUrl
         altText
       }  
+      heroMobileImage {
+        sourceUrl
+        altText
+      }
       seo {
         title
         metaDesc
@@ -222,7 +238,11 @@ export const GET_IDEAXCHANGE_BY_SLUG_MINIMAL = `
       heroLandscapeImage {
         sourceUrl
         altText
-      }  
+      }
+      heroMobileImage {
+        sourceUrl
+        altText
+      }   
       seo {
         title
         metaDesc
@@ -304,6 +324,10 @@ export const GET_IDEAXCHANGE_TOPIC_BY_SLUG = `
             sourceUrl
             altText
           }  
+          heroMobileImage {
+            sourceUrl
+            altText
+          } 
         }
       }
     }
@@ -351,6 +375,10 @@ export const GET_IDEAXCHANGE_TOPIC_BY_SLUG_MINIMAL = `
             sourceUrl
             altText
           }  
+          heroMobileImage {
+            sourceUrl
+            altText
+          } 
         }
       }
     }
@@ -425,6 +453,10 @@ const IDEAXCHANGE_TAG_ARTICLE_FIELDS = `
     sourceUrl
     altText
   }  
+  heroMobileImage {
+    sourceUrl
+    altText
+  }
 `;
 
 export const GET_IDEAXCHANGE_TAG_BY_SLUG = `

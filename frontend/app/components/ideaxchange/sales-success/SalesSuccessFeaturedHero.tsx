@@ -16,7 +16,8 @@ type Props = {
 export function SalesSuccessFeaturedHero({ posts }: Props) {
   const slides = posts.filter(
     (post) =>
-      post.heroLandscapeImage?.sourceUrl || post.featuredImage?.node?.sourceUrl,
+      post.heroLandscapeImage?.sourceUrl &&
+      post.heroMobileImage?.sourceUrl,
   );
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -39,12 +40,15 @@ export function SalesSuccessFeaturedHero({ posts }: Props) {
 
   return (
     <section className="relative w-full overflow-hidden">
-      <div className="relative min-h-[52vh] w-full overflow-hidden md:min-h-[56vh]">
-  <div className="flex min-h-[52vh] w-full transition-transform duration-500 ease-in-out md:min-h-[56vh]" style={{ transform: `translateX(-${activeIndex * 100}% `}}>
+      <div className="relative min-h-[75vh] w-full overflow-hidden md:min-h-[56vh]">
+  <div className="flex min-h-[75vh] w-full transition-transform duration-500 ease-in-out md:min-h-[56vh]" style={{ transform: `translateX(-${activeIndex * 100}% `}}>
         {slides.map((post) => {
-          const img = ideaxchangeFeaturedImageSrc(
-            post.heroLandscapeImage?.sourceUrl ||
-              post.featuredImage?.node?.sourceUrl,
+          const desktopImg = ideaxchangeFeaturedImageSrc(
+            post.heroLandscapeImage?.sourceUrl,
+          );
+
+          const mobileImg = ideaxchangeFeaturedImageSrc(
+            post.heroMobileImage?.sourceUrl,
           );
 
           const href = salesSuccessHref(post.slug);
@@ -52,25 +56,31 @@ export function SalesSuccessFeaturedHero({ posts }: Props) {
             return (
             <div 
               key={post.id ?? post.slug} 
-              className="relative min-h-[52vh] w-full shrink-0 md:min-h-[56vh]"
+              className="relative min-h-[75vh] w-full shrink-0 md:min-h-[56vh]"
             >
             <Link
               href={href}
               variant="button"
-              className="group relative block min-h-[52vh] w-full overflow-hidden md:min-h-[56vh]"
+              className="group relative block min-h-[75vh] w-full overflow-hidden md:min-h-[56vh]"
             >
               <Image
-                src={rewriteUploadsUrl(img)}
+                src={rewriteUploadsUrl(mobileImg)}
                 alt=""
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.02] md:hidden"
                 sizes="100vw"
                 quality={INSIGHT_IMG_QUALITY}
                 priority
               />
-              <div
-                className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10"
-                aria-hidden
+
+              <Image
+                src={rewriteUploadsUrl(desktopImg)}
+                alt=""
+                fill
+                className="hidden object-cover transition-transform duration-500 group-hover:scale-[1.02] md:block"
+                sizes="100vw"
+                quality={INSIGHT_IMG_QUALITY}
+                priority
               />
             </Link>
             </div>
