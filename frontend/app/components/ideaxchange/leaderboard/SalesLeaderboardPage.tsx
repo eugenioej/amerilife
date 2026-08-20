@@ -1,10 +1,9 @@
-import { Link } from "@/app/components/ui/Link";
 import { IdeaXchangeNewsroomColumn } from "@/app/components/ideaxchange/magazine/IdeaXchangeNewsroomColumn";
 import {
   INSIGHTS_NEWSROOM_INITIAL,
   partitionNewsroomWithSidebar,
+  resolveIdeaxchangeBadge,
 } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
-import { IdeaXchangeMagazineSidebar } from "@/app/components/ideaxchange/magazine/IdeaXchangeMagazineSidebar";
 import { IdeaXchangeHeroGrid } from "@/app/components/ideaxchange/shared/IdeaXchangeHeroGrid";
 import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/IdeaXchangePillarBanner";
 import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
@@ -41,7 +40,12 @@ export function SalesLeaderboardPage({
   const { spotlight, recentSidebar, newsroomRest } =
     partitionNewsroomWithSidebar(salesPosts);
 
-    const salesHeroItems: IdeaxchangeCardItem[] = salesPosts.slice(0, 3).map((post) => ({
+  const salesHeroItems: IdeaxchangeCardItem[] = salesPosts
+  .slice(0, 3)
+  .map((post) => {
+    const badge = resolveIdeaxchangeBadge(post);
+  
+    return {
       id: post.id,
       slug: post.slug,
       title: post.title,
@@ -52,9 +56,10 @@ export function SalesLeaderboardPage({
           ? `/ideaxchange/${post.ideaxchangeTopics.nodes[0].slug}/${post.slug}/`
           : IDEAXCHANGE_LEADERBOARD_PATH,
       featuredImage: post.featuredImage,
-      badgeLabel: "SALES",
-      badgeHref: IDEAXCHANGE_LEADERBOARD_PATH,
-    }));
+      badgeLabel: badge.label,
+      badgeHref: badge.href,
+    };
+  });
 
   return (
     <div className="bg-white pb-16 md:pb-20">

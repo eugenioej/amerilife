@@ -12,6 +12,7 @@ import {
 } from "@/lib/ideaxchange-career-leaderboard-data";
 import { CareerLeaderboardQuickNav } from "./CareerLeaderboardQuickNav";
 import { CareerLeaderboardSection } from "./CareerLeaderboardSection";
+import { resolveIdeaxchangeBadge } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
 
 type Props = {
   data: CareerLeaderboardPageData;
@@ -20,9 +21,11 @@ type Props = {
 export function CareerLeaderboardPage({ data, careerSalesPosts }: Props) {
   const tablesBySlug = getCareerLeaderboardTablesBySlug(data.tables);
 
-  const careerSalesHeroItems: IdeaxchangeCardItem[] = careerSalesPosts
+const careerSalesHeroItems: IdeaxchangeCardItem[] = careerSalesPosts
   .slice(0, 3)
   .map((post) => {
+    const badge = resolveIdeaxchangeBadge(post);
+
     return {
       id: post.id,
       slug: post.slug,
@@ -33,8 +36,8 @@ export function CareerLeaderboardPage({ data, careerSalesPosts }: Props) {
         ? `/ideaxchange/article/${post.slug}/`
         : IDEAXCHANGE_LEADERBOARD_PATH,
       featuredImage: post.featuredImage,
-      badgeLabel: "SALES",
-      badgeHref: IDEAXCHANGE_LEADERBOARD_PATH,
+      badgeLabel: badge.label,
+      badgeHref: badge.href,
     };
   });
 
