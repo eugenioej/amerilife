@@ -4,9 +4,7 @@ export const IDEAXCHANGE_LOGIN_PATH = "/ideaxchange/";
 export const IDEAXCHANGE_HOME_FEED_PATH = "/ideaxchange/home/";
 /** @deprecated Legacy index — redirects to home feed. */
 export const IDEAXCHANGE_MAGAZINE_PATH = "/ideaxchange/magazine/";
-export const IDEAXCHANGE_ARTICLE_PATH = "/ideaxchange/article/";
 /** Topic taxonomy archives — `/ideaxchange/magazine/category/[slug]/`. */
-export const IDEAXCHANGE_CATEGORY_PATH = "/ideaxchange/magazine/category/";
 export const IDEAXCHANGE_RECRUITING_HUB_PATH = "/ideaxchange/recruiting-hub/";
 export const IDEAXCHANGE_CAREER_LEADERBOARD_PATH = "/ideaxchange/career-leaderboard/";
 export const IDEAXCHANGE_LEADERBOARD_PATH = "/ideaxchange/leaderboard/";

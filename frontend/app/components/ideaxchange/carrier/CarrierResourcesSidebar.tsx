@@ -7,7 +7,7 @@ import { IdeaxchangeSidebarAdSlot } from "@/app/components/ideaxchange/shared/Id
 import { ideaxchangeFeaturedImageSrc } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import {
   formatMonthYear,
-  ideaxchangeHref,
+  ideaxchangeArticleHref,
   INSIGHT_IMG_QUALITY,
 } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
 import type { IdeaxchangeAdSlot } from "@/lib/queries";
@@ -60,7 +60,7 @@ function CarrierArticleItem({ article }: { article: IdeaxchangeListItem }) {
   return (
     <li className="flex gap-4 border-b border-[var(--color-border)] py-5 last:border-b-0">
       <Link
-        href={ideaxchangeHref(article.slug)}
+        href={ideaxchangeArticleHref(article)}
         variant="button"
         className="relative h-16 w-24 shrink-0 overflow-hidden bg-[var(--color-border)]/40"
       >
@@ -75,7 +75,7 @@ function CarrierArticleItem({ article }: { article: IdeaxchangeListItem }) {
       </Link>
       <div className="min-w-0 flex-1">
         <Link
-          href={ideaxchangeHref(article.slug)}
+          href={ideaxchangeArticleHref(article)}
           variant="button"
           className="text-left text-sm font-bold leading-snug text-[var(--color-brand-dark)] hover:text-[var(--color-brand-primary)]"
         >

@@ -14,7 +14,7 @@ import { IDEAXCHANGE_HOME_FEED_PATH } from "@/lib/ideaxchange-constants";
 import {
   formatBylineDate,
   formatMonthYear,
-  ideaxchangeHref,
+  ideaxchangeArticleHref,
   INSIGHT_IMG_QUALITY,
   resolveIdeaxchangeBadge,
 } from "./ideaxchange-utils";
@@ -47,7 +47,7 @@ function RelatedArticlesSidebar({ posts }: { posts: IdeaxchangeListItem[] }) {
         {posts.map((item) => {
           const img =
             ideaxchangeFeaturedImageSrc(item.featuredImage?.node?.sourceUrl);
-          const href = ideaxchangeHref(item.slug);
+          const href = ideaxchangeArticleHref(item);
           return (
             <li key={item.id} className="flex gap-3 py-4 first:pt-0">
               <Link
@@ -97,7 +97,7 @@ function RelatedPostsGrid({ posts }: { posts: IdeaxchangeListItem[] }) {
         {posts.map((item) => {
           const img =
             ideaxchangeFeaturedImageSrc(item.featuredImage?.node?.sourceUrl);
-          const href = ideaxchangeHref(item.slug);
+          const href = ideaxchangeArticleHref(item);
           return (
             <article key={item.id} className="group flex flex-col">
               <Link

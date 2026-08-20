@@ -138,7 +138,7 @@ export const GET_IDEAXCHANGE_ARTICLES_MINIMAL = `
           sourceUrl
           altText
         } 
-        heroMonileImage {
+        heroMobileImage {
           sourceUrl
           altText
         }  

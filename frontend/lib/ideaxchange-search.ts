@@ -26,7 +26,6 @@ import { getMockCarrierSpotlightBundle } from "@/lib/ideaxchange-carrier-mock-da
 import type { IdeaxchangePersona } from "@/lib/ideaxchange-persona";
 import { filterItemsByPersonaVisibility } from "@/lib/ideaxchange-visibility";
 import {
-  IDEAXCHANGE_ARTICLE_PATH,
   IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH,
   IDEAXCHANGE_RECRUITING_HUB_PATH,
 } from "@/lib/ideaxchange-constants";
@@ -336,6 +335,18 @@ function toHit(
   };
 }
 
+function articleHref(node: IdeaxchangeArticleSearchNode): string {
+  const articleSlug = node.slug?.trim();
+  const topicSlug =
+    node.ideaxchangeTopics?.nodes?.[0]?.slug?.trim();
+
+  if (!articleSlug || !topicSlug) {
+    return "/ideaxchange/home/";
+  }
+
+  return `/ideaxchange/${topicSlug}/${articleSlug}/`;
+}
+
 export async function searchIdeaxchangeArticlesLocal(
   rawQuery: string,
   persona: IdeaxchangePersona,
@@ -348,7 +359,7 @@ export async function searchIdeaxchangeArticlesLocal(
     const all = await fetchAllArticleSearchNodes();
     const visible = filterItemsByPersonaVisibility(all, persona);
     return scoreAndRank(rawQuery, tokens, visible, articleHaystack, limit).map((node) =>
-      toHit(node, `${IDEAXCHANGE_ARTICLE_PATH}${node.slug}/`),
+      toHit(node, articleHref(node)),
     );
   } catch {
     return [];

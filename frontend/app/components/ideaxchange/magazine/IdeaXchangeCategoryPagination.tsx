@@ -1,4 +1,3 @@
-import { IDEAXCHANGE_CATEGORY_PATH } from "@/lib/ideaxchange-constants";
 import { IdeaXchangePagination } from "./IdeaXchangePagination";
 
 type Props = {
@@ -7,10 +6,14 @@ type Props = {
   totalPages: number;
 };
 
-export function IdeaXchangeCategoryPagination({ topicSlug, currentPage, totalPages }: Props) {
+export function IdeaXchangeCategoryPagination({
+  topicSlug,
+  currentPage,
+  totalPages,
+}: Props) {
   return (
     <IdeaXchangePagination
-      basePath={`${IDEAXCHANGE_CATEGORY_PATH}${topicSlug}/`}
+      basePath={`/ideaxchange/${topicSlug}/`}
       currentPage={currentPage}
       totalPages={totalPages}
       ariaLabel="Category pages"

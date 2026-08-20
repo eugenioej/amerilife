@@ -12,7 +12,7 @@ import {
   formatBylineDate,
   formatInsightExcerptPlain,
   formatMonthYear,
-  ideaxchangeHref,
+  ideaxchangeArticleHref,
   INSIGHT_IMG_QUALITY,
 } from "./ideaxchange-utils";
 
@@ -43,7 +43,7 @@ export function IdeaXchangeMagazineSidebar({
             <div className="group">
               <div className="relative aspect-[16/11] w-full overflow-hidden bg-[var(--color-border)]/30">
                 <Link
-                  href={ideaxchangeHref(spotlight.slug)}
+                  href={ideaxchangeArticleHref(spotlight)}
                   variant="button"
                   className="absolute inset-0 block"
                   aria-label={spotlight.title ?? "Read article"}
@@ -69,7 +69,7 @@ export function IdeaXchangeMagazineSidebar({
               <div className="p-5">
                 <h3 className="text-lg font-bold leading-snug text-[var(--color-fg)]">
                   <Link
-                    href={ideaxchangeHref(spotlight.slug)}
+                    href={ideaxchangeArticleHref(spotlight)}
                     variant="button"
                     className="hover:text-[var(--color-brand-primary)]"
                   >
@@ -99,7 +99,7 @@ export function IdeaXchangeMagazineSidebar({
           <ul className="divide-y divide-[var(--color-border)]">
             {recentSidebar.map((post) => {
               const img = ideaxchangeFeaturedImageSrc(post.featuredImage?.node?.sourceUrl);
-              const href = ideaxchangeHref(post.slug);
+              const href = ideaxchangeArticleHref(post);
               return (
                 <li key={post.id} className="flex gap-3 py-4 first:pt-0">
                   <Link

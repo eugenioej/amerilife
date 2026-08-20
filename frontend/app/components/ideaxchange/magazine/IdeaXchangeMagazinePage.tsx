@@ -6,7 +6,7 @@ import { IdeaXchangeLeaderboardCtaBanner } from "@/app/components/ideaxchange/sh
 import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeHorizontalAdSlot";
 import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import {
-  ideaxchangeHref,
+  ideaxchangeArticleHref,
   INSIGHTS_NEWSROOM_INITIAL,
   isIdeaxchangeFeatured,
   resolveIdeaxchangeBadge,
@@ -106,7 +106,7 @@ function toCardItem(post: IdeaxchangeListItem): IdeaxchangeCardItem {
     excerpt: post.excerpt,
     badgeLabel: badge.label,
     badgeHref: badge.href,
-    href: ideaxchangeHref(post.slug),
+    href: ideaxchangeArticleHref(post),
     featuredImage: post.featuredImage,
     isFeatured: isIdeaxchangeFeatured(post),
     isSpotlight: post.ideaxchangeFields?.isSpotlight === true,

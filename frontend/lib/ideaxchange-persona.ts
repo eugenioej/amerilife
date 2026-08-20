@@ -1,7 +1,5 @@
 import type { NavItem } from "@/lib/wp-menus";
 import {
-  IDEAXCHANGE_ARTICLE_PATH,
-  IDEAXCHANGE_CATEGORY_PATH,
   IDEAXCHANGE_HOME_FEED_PATH,
   IDEAXCHANGE_MAGAZINE_PATH,
   IDEAXCHANGE_SEARCH_PATH,
@@ -34,9 +32,9 @@ function entraGroupIdForPersona(persona: IdeaxchangePersona): string | undefined
   return persona === "brokerage" ? brokerage : career;
 }
 
-function hasRole(roles: Set<string>, role: string): boolean {
-  return roles.has(role.toUpperCase());
-}
+// function hasRole(roles: Set<string>, role: string): boolean {
+//   return roles.has(role.toUpperCase());
+// }
 
 const GUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -125,6 +123,7 @@ export function resolveIdeaxchangePersona(
   return "brokerage";
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getIdeaxchangeHomeForPersona(_persona: IdeaxchangePersona): string {
   return IDEAXCHANGE_HOME_FEED_PATH;
 }
@@ -173,18 +172,19 @@ export function canAccessIdeaxchangePath(
     return true;
   }
 
-  const articleBase = IDEAXCHANGE_ARTICLE_PATH.replace(/\/$/, "");
-  if (normalized.startsWith(`${articleBase}/`) && normalized !== articleBase) {
-    return true;
-  }
-
-  const categoryBase = IDEAXCHANGE_CATEGORY_PATH.replace(/\/$/, "");
-  if (normalized === categoryBase || normalized.startsWith(`${categoryBase}/`)) {
-    return true;
-  }
-
   const searchBase = IDEAXCHANGE_SEARCH_PATH.replace(/\/$/, "");
   if (normalized === searchBase || normalized.startsWith(`${searchBase}/`)) {
+    return true;
+  }
+
+  // Topic archives and topic articles
+  const ideaxchangeRoot = "/ideaxchange";
+  
+  if (
+    normalized.startsWith(`${ideaxchangeRoot}/`) &&
+    !normalized.startsWith(searchBase) &&
+    !normalized.startsWith(homeBase)
+  ) {
     return true;
   }
 

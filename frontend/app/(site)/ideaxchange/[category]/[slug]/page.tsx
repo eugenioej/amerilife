@@ -1,11 +1,10 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { IdeaXchangePostTemplate } from "@/app/components/ideaxchange/magazine/IdeaXchangePostTemplate";
 import {
   getIdeaxchangeAdAudienceFromPersona,
   getVisibleIdeaxchangeAdsSettings,
 } from "@/app/components/ideaxchange/shared/ideaxchange-ads";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
-import { IDEAXCHANGE_ARTICLE_PATH } from "@/lib/ideaxchange-constants";
 import {
   getEffectiveIdeaxchangePersona,
   getIdeaxchangeDevViewMode,
@@ -18,7 +17,10 @@ import {
 import { formatInsightExcerptPlain } from "@/lib/insight-excerpt";
 import { getSiteUrl, privatePageMetadata, yoastSeoToMetadata } from "@/lib/seo";
 
-type PageParams = Promise<{ slug: string }>;
+type PageParams = Promise<{
+  category: string;
+  slug: string;
+}>;
 
 export async function generateMetadata({ params }: { params: PageParams }) {
   const { slug } = await params;
@@ -42,8 +44,8 @@ export default async function IdeaxchangeArticlePage({
 }: {
   params: PageParams;
 }) {
-  const { slug } = await params;
-  const articlePath = `${IDEAXCHANGE_ARTICLE_PATH}${slug}/`;
+  const { category, slug } = await params;
+  const articlePath = `/ideaxchange/${category}/${slug}/`;
 
   const auth = await requireIdeaxchangeAuth(articlePath);
   const devView = await getIdeaxchangeDevViewMode();
@@ -56,12 +58,23 @@ export default async function IdeaxchangeArticlePage({
   const adAudience = getIdeaxchangeAdAudienceFromPersona(effectivePersona);
 
   const [post, allPosts, ideaxchangeAds] = await Promise.all([
-    getIdeaxchangeArticleBySlug(slug, effectivePersona),
-    getIdeaxchangeList(effectivePersona),
-    getIdeaxchangeAdsSettings(),
-  ]);
+      getIdeaxchangeArticleBySlug(slug, effectivePersona),
+      getIdeaxchangeList(effectivePersona),
+      getIdeaxchangeAdsSettings(),
+    ]);
 
-  if (!post) notFound();
+    if (!post) notFound();
+
+  const canonicalCategory = post.ideaxchangeTopics?.nodes?.[0]?.slug?.trim();
+
+  if (
+    canonicalCategory &&
+    canonicalCategory !== category
+  ) {
+    redirect(
+      `/ideaxchange/${canonicalCategory}/${slug}/`
+    );
+  }
 
   const visibleIdeaxchangeAds = getVisibleIdeaxchangeAdsSettings(
     ideaxchangeAds,

@@ -1,7 +1,5 @@
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
 import {
-  IDEAXCHANGE_ARTICLE_PATH,
-  IDEAXCHANGE_CATEGORY_PATH,
   IDEAXCHANGE_HOME_FEED_PATH,
   IDEAXCHANGE_LEADERBOARD_PATH,
   IDEAXCHANGE_RECRUITING_HUB_PATH,
@@ -112,19 +110,30 @@ export function isIdeaxchangeFeatured(
   return post.ideaxchangeFields?.isFeatured === true;
 }
 
-export function ideaxchangeHref(slug: string | null | undefined): string {
-  if (!slug) return IDEAXCHANGE_HOME_FEED_PATH;
-  return `${IDEAXCHANGE_ARTICLE_PATH}${slug}/`;
-}
-
 /** ideaXchange topic taxonomy archive (not public Insights categories). */
-export function ideaxchangeCategoryHref(slug: string | null | undefined): string {
+export function ideaxchangeCategoryHref(
+  slug: string | null | undefined,
+): string {
   if (!slug) return IDEAXCHANGE_HOME_FEED_PATH;
-  return `${IDEAXCHANGE_CATEGORY_PATH}${slug}/`;
+  return `/ideaxchange/${slug}/`;
 }
 
 export function topicSlug(post: Pick<IdeaxchangeListItem, "ideaxchangeTopics">): string | undefined {
   return post.ideaxchangeTopics?.nodes?.[0]?.slug?.trim() || undefined;
+}
+
+export function ideaxchangeArticleHref(
+  post: Pick<IdeaxchangeListItem, "slug" | "ideaxchangeTopics">,
+): string {
+  const slug = post.slug?.trim();
+  const category =
+    post.ideaxchangeTopics?.nodes?.[0]?.slug?.trim();
+
+  if (!slug || !category) {
+    return IDEAXCHANGE_HOME_FEED_PATH;
+  }
+
+  return `/ideaxchange/${category}/${slug}/`;
 }
 
 /** Next/Image quality (1–100) for ideaXchange cards — balances sharpness vs. payload. */

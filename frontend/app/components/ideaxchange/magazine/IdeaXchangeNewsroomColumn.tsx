@@ -13,7 +13,7 @@ import { IdeaXchangeTopicBadge } from "./IdeaXchangeTopicBadge";
 import {
   formatInsightExcerptPlain,
   formatBylineDate,
-  ideaxchangeHref,
+  ideaxchangeArticleHref,
   INSIGHT_IMG_QUALITY,
 } from "./ideaxchange-utils";
 
@@ -47,12 +47,17 @@ type Props = {
 };
 
 function articleHrefForBase(
-  slug: string | null | undefined,
+  post: IdeaxchangeListItem,
   articleBasePath?: string,
 ): string {
-  if (!articleBasePath) return ideaxchangeHref(slug);
+  if (!articleBasePath) {
+    return ideaxchangeArticleHref(post);
+  }
   const base = articleBasePath.replace(/\/+$/, "");
-  if (!slug) return `${base}/`;
+  const slug = post.slug?.trim();
+  if (!slug) {
+    return `${base}/`;
+  }
   return `${base}/${slug}/`;
 }
 
@@ -165,7 +170,7 @@ export function IdeaXchangeNewsroomColumn({
     <div className="flex flex-col">
       {posts.map((post, index) => {
         const img = ideaxchangeFeaturedImageSrc(post.featuredImage?.node?.sourceUrl);
-        const href = articleHrefForBase(post.slug, articleBasePath);
+        const href = articleHrefForBase(post, articleBasePath);
         return (
           <article
             key={post.id}
