@@ -109,12 +109,31 @@ add_action('init', function () {
       return current_user_can('edit_posts');
     },
   ]);
+  
+  register_post_meta('ideaxchange_article', 'hero_mobile_image_id', [
+    'type' => 'integer',
+    'single' => true,
+    'show_in_rest' => true,
+    'default' => 0,
+    'auth_callback' => function () {
+      return current_user_can('edit_posts');
+    },
+  ]);
 
 add_action('add_meta_boxes', function () {
   add_meta_box(
     'ideaxchange_hero_landscape_image',
     'Hero Landscape Image',
     'amerilife_ideaxchange_render_hero_landscape_meta_box',
+    'ideaxchange_article',
+    'side',
+    'default'
+  );
+
+  add_meta_box(
+    'ideaxchange_hero_mobile_image',
+    'Hero Mobile Image',
+    'amerilife_ideaxchange_render_hero_mobile_meta_box',
     'ideaxchange_article',
     'side',
     'default'
@@ -177,6 +196,69 @@ function amerilife_ideaxchange_render_hero_landscape_meta_box($post) {
   <?php
 }
 
+function amerilife_ideaxchange_render_hero_mobile_meta_box($post) {
+  wp_nonce_field(
+    'ideaxchange_hero_mobile_image',
+    'ideaxchange_hero_mobile_image_nonce'
+  );
+
+  $image_id = (int) get_post_meta(
+    $post->ID,
+    'hero_mobile_image_id',
+    true
+  );
+
+  $image_url = $image_id
+    ? wp_get_attachment_image_url($image_id, 'medium')
+    : '';
+  ?>
+
+  <div
+    id="ideaxchange-hero-mobile-preview"
+    style="margin-bottom:10px;"
+  >
+    <?php if ($image_url) : ?>
+       <img
+        src="<?php echo esc_attr($image_url); ?>"
+        alt=""
+        style="width:100%;height:auto;display:block;"
+      />
+    <?php endif; ?>
+  </div>
+
+  <input
+    type="hidden"
+    id="hero_mobile_image_id"
+    name="hero_mobile_image_id"
+    value="<?php echo esc_attr($image_id); ?>"
+  />
+
+  <p>
+    <button
+      type="button"
+      class="button"
+      id="ideaxchange-hero-mobile-select"
+    >
+      Select Image
+    </button>
+
+    <button
+      type="button"
+      class="button"
+      id="ideaxchange-hero-mobile-remove"
+      <?php echo $image_id ? '' : 'style="display:none;"'; ?>
+    >
+      Remove
+    </button>
+  </p>
+
+  <p style="color:#666;font-size:12px;margin-bottom:0;">
+    Optional portrait image used on smaller screens.
+  </p>
+
+  <?php
+}
+
 add_action('save_post_ideaxchange_article', function ($post_id) {
   if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
     return;
@@ -190,24 +272,68 @@ add_action('save_post_ideaxchange_article', function ($post_id) {
     return;
   }
 
+  /*
+   * Landscape image
+   */
   if (
-    !isset($_POST['ideaxchange_hero_landscape_image_nonce']) ||
-    !wp_verify_nonce(
-      sanitize_text_field(wp_unslash($_POST['ideaxchange_hero_landscape_image_nonce'])),
+    isset($_POST['ideaxchange_hero_landscape_image_nonce']) &&
+    wp_verify_nonce(
+      sanitize_text_field(
+        wp_unslash(
+          $_POST['ideaxchange_hero_landscape_image_nonce']
+        )
+      ),
       'ideaxchange_hero_landscape_image'
     )
   ) {
-    return;
+    $landscape_image_id = isset($_POST['hero_landscape_image_id'])
+      ? absint($_POST['hero_landscape_image_id'])
+      : 0;
+
+    if ($landscape_image_id > 0) {
+      update_post_meta(
+        $post_id,
+        'hero_landscape_image_id',
+        $landscape_image_id
+      );
+    } else {
+      delete_post_meta(
+        $post_id,
+        'hero_landscape_image_id'
+      );
+    }
   }
 
-  $image_id = isset($_POST['hero_landscape_image_id'])
-    ? absint($_POST['hero_landscape_image_id'])
-    : 0;
+  /*
+   * Mobile image
+   */
+  if (
+    isset($_POST['ideaxchange_hero_mobile_image_nonce']) &&
+    wp_verify_nonce(
+      sanitize_text_field(
+        wp_unslash(
+          $_POST['ideaxchange_hero_mobile_image_nonce']
+        )
+      ),
+      'ideaxchange_hero_mobile_image'
+    )
+  ) {
+    $mobile_image_id = isset($_POST['hero_mobile_image_id'])
+      ? absint($_POST['hero_mobile_image_id'])
+      : 0;
 
-  if ($image_id > 0) {
-    update_post_meta($post_id, 'hero_landscape_image_id', $image_id);
-  } else {
-    delete_post_meta($post_id, 'hero_landscape_image_id');
+    if ($mobile_image_id > 0) {
+      update_post_meta(
+        $post_id,
+        'hero_mobile_image_id',
+        $mobile_image_id
+      );
+    } else {
+      delete_post_meta(
+        $post_id,
+        'hero_mobile_image_id'
+      );
+    }
   }
 });
 
@@ -216,7 +342,9 @@ add_action('admin_enqueue_scripts', function ($hook) {
     return;
   }
 
-  $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+  $screen = function_exists('get_current_screen')
+    ? get_current_screen()
+    : null;
 
   if (!$screen || $screen->post_type !== 'ideaxchange_article') {
     return;
@@ -227,63 +355,172 @@ add_action('admin_enqueue_scripts', function ($hook) {
 
   wp_add_inline_script('jquery', <<<'JS'
 jQuery(function($) {
-  var frame;
+  var landscapeFrame = null;
+  var mobileFrame = null;
 
-  $(document).on('click', '#ideaxchange-hero-landscape-select', function(e) {
-    e.preventDefault();
-
-    if (typeof wp === 'undefined' || typeof wp.media === 'undefined') {
-      console.error('WordPress media uploader is not available.');
-      return;
+  function getPreviewUrl(attachment) {
+    if (
+      attachment.sizes &&
+      attachment.sizes.medium &&
+      attachment.sizes.medium.url
+    ) {
+      return attachment.sizes.medium.url;
     }
 
-    if (frame) {
-      frame.open();
-      return;
-    }
+    return attachment.url;
+  }
 
-    frame = wp.media({
-      title: 'Select Hero Landscape Image',
-      button: {
-        text: 'Use this image'
-      },
-      multiple: false
-    });
+  function renderPreview(selector, imageUrl) {
+    $(selector).empty().append(
+      $('<img>', {
+        src: imageUrl,
+        alt: ''
+      }).css({
+        width: '100%',
+        height: 'auto',
+        display: 'block'
+      })
+    );
+  }
 
-    frame.on('select', function() {
-      var attachment = frame.state().get('selection').first().toJSON();
-
-      var imageUrl = attachment.url;
+  /*
+   * Landscape image select
+   */
+  $(document).on(
+    'click',
+    '#ideaxchange-hero-landscape-select',
+    function(e) {
+      e.preventDefault();
 
       if (
-        attachment.sizes &&
-        attachment.sizes.medium &&
-        attachment.sizes.medium.url
+        typeof wp === 'undefined' ||
+        typeof wp.media === 'undefined'
       ) {
-        imageUrl = attachment.sizes.medium.url;
+        console.error('WordPress media uploader is unavailable.');
+        return;
       }
 
-      $('#hero_landscape_image_id').val(attachment.id);
+      if (!landscapeFrame) {
+        landscapeFrame = wp.media({
+          title: 'Select Hero Landscape Image',
+          button: {
+            text: 'Use this image'
+          },
+          library: {
+            type: 'image'
+          },
+          multiple: false
+        });
 
-      $('#ideaxchange-hero-landscape-preview').html(
-        '' + imageUrl + ''
-      );
+        landscapeFrame.on('select', function() {
+          var attachment = landscapeFrame
+            .state()
+            .get('selection')
+            .first()
+            .toJSON();
 
-      $('#ideaxchange-hero-landscape-remove').show();
-    });
+          var imageUrl = getPreviewUrl(attachment);
 
-    frame.open();
-  });
+          $('#hero_landscape_image_id').val(attachment.id);
 
-  $(document).on('click', '#ideaxchange-hero-landscape-remove', function(e) {
-    e.preventDefault();
+          renderPreview(
+            '#ideaxchange-hero-landscape-preview',
+            imageUrl
+          );
 
-    $('#hero_landscape_image_id').val('');
-    $('#ideaxchange-hero-landscape-preview').empty();
-    $(this).hide();
-  });
+          $('#ideaxchange-hero-landscape-remove').show();
+        });
+      }
+
+      landscapeFrame.open();
+    }
+  );
+
+  /*
+   * Landscape image remove
+   */
+  $(document).on(
+    'click',
+    '#ideaxchange-hero-landscape-remove',
+    function(e) {
+      e.preventDefault();
+
+      $('#hero_landscape_image_id').val('');
+      $('#ideaxchange-hero-landscape-preview').empty();
+      $(this).hide();
+    }
+  );
+
+  /*
+   * Mobile image select
+   */
+  $(document).on(
+    'click',
+    '#ideaxchange-hero-mobile-select',
+    function(e) {
+      e.preventDefault();
+
+      if (
+        typeof wp === 'undefined' ||
+        typeof wp.media === 'undefined'
+      ) {
+        console.error('WordPress media uploader is unavailable.');
+        return;
+      }
+
+      if (!mobileFrame) {
+        mobileFrame = wp.media({
+          title: 'Select Hero Mobile Image',
+          button: {
+            text: 'Use this image'
+          },
+          library: {
+            type: 'image'
+          },
+          multiple: false
+        });
+
+        mobileFrame.on('select', function() {
+          var attachment = mobileFrame
+            .state()
+            .get('selection')
+            .first()
+            .toJSON();
+
+          var imageUrl = getPreviewUrl(attachment);
+
+          $('#hero_mobile_image_id').val(attachment.id);
+
+          renderPreview(
+            '#ideaxchange-hero-mobile-preview',
+            imageUrl
+          );
+
+          $('#ideaxchange-hero-mobile-remove').show();
+        });
+      }
+
+      mobileFrame.open();
+    }
+  );
+
+  /*
+   * Mobile image remove
+   */
+  $(document).on(
+    'click',
+    '#ideaxchange-hero-mobile-remove',
+    function(e) {
+      e.preventDefault();
+
+      $('#hero_mobile_image_id').val('');
+      $('#ideaxchange-hero-mobile-preview').empty();
+      $(this).hide();
+    }
+  );
 });
-JS);
+JS
+  );
 });
 
 add_action('init', function () {
@@ -325,6 +562,69 @@ add_action('graphql_register_types', function () {
       ],
     ],
   ]);
+  register_graphql_object_type('IdeaxchangeHeroMobileImage', [
+  'description' => 'Optional mobile image used for ideaXchange article displays.',
+  'fields' => [
+    'sourceUrl' => [
+      'type' => 'String',
+      'description' => 'The mobile hero image URL.',
+    ],
+    'altText' => [
+      'type' => 'String',
+      'description' => 'The mobile hero image alt text.',
+    ],
+  ],
+]);
+
+register_graphql_field('IdeaxchangeArticle', 'heroMobileImage', [
+  'type' => 'IdeaxchangeHeroMobileImage',
+  'description' => 'Optional image used for smaller screens.',
+  'resolve' => function ($post) {
+    $post_id = 0;
+
+    if (is_object($post)) {
+      if (isset($post->ID)) {
+        $post_id = (int) $post->ID;
+      } elseif (isset($post->databaseId)) {
+        $post_id = (int) $post->databaseId;
+      }
+    }
+
+    if (!$post_id) {
+      return null;
+    }
+
+    $attachment_id = (int) get_post_meta(
+      $post_id,
+      'hero_mobile_image_id',
+      true
+    );
+
+    if (!$attachment_id) {
+      return null;
+    }
+
+    $source_url = wp_get_attachment_image_url(
+      $attachment_id,
+      'full'
+    );
+
+    if (!$source_url) {
+      return null;
+    }
+
+    $alt_text = get_post_meta(
+      $attachment_id,
+      '_wp_attachment_image_alt',
+      true
+    );
+
+    return [
+      'sourceUrl' => esc_url_raw($source_url),
+      'altText' => is_string($alt_text) ? $alt_text : '',
+    ];
+  },
+]);
 
   register_graphql_field('IdeaxchangeArticle', 'ideaxchangeFields', [
     'type' => 'IdeaxchangeFields',
