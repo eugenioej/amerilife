@@ -186,7 +186,9 @@ export function CareerLeaderboardTable({
                             ? "font-semibold text-[var(--color-fg)]"
                             : column.key === "net" ||
                                 column.key === "agentPercentOfGoal" ||
-                                column.key === "totalBonusEarned"
+                                column.key === "totalBonusEarned" ||
+                                column.key === "bonusEarned" ||
+                                column.key === "totalAnnualized"
                               ? "font-semibold text-[var(--color-brand-dark)]"
                               : "text-[var(--color-muted)]"
                         }`}

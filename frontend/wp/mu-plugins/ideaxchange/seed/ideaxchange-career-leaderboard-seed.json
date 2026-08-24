@@ -112,6 +112,84 @@
         "net": "$26,400",
         "rank": "3"
       }
+    ],
+    "presidentsclub": [
+      {
+        "rank": "1",
+        "agentName": "Carlos Cisneros",
+        "office": "Central Florida (CFL)",
+        "totalAnnualized": "$419,552",
+        "qualificationStatus": "Double Qualified!!",
+        "agentPercentOfGoal": "210%"
+      },
+      {
+        "rank": "2",
+        "agentName": "Maria Santos",
+        "office": "Tampa Central",
+        "totalAnnualized": "$312,400",
+        "qualificationStatus": "Qualified!",
+        "agentPercentOfGoal": "156%"
+      }
+    ],
+    "halloffame": [
+      {
+        "rank": "1",
+        "agentName": "James Dattilo",
+        "office": "North Florida",
+        "agentFyc": "$1,568,589",
+        "agentPercentOfGoal": "105%"
+      },
+      {
+        "rank": "2",
+        "agentName": "Jennifer Lee",
+        "office": "Tampa Central",
+        "agentFyc": "$980,200",
+        "agentPercentOfGoal": "98%"
+      }
+    ],
+    "topgunlife": [
+      {
+        "rank": "1",
+        "agentName": "Carlos Cisneros",
+        "office": "Central Florida (CFL)",
+        "total": "112.64",
+        "placed": "106.14",
+        "bonusPotential": "$5,000",
+        "bonusEarned": "$5,000"
+      }
+    ],
+    "topgunannuity": [
+      {
+        "rank": "1",
+        "agentName": "David Pipes",
+        "office": "Panhandle/TN/GA",
+        "total": "$16,336,222",
+        "placed": "$6,075,482",
+        "bonusPotential": "$50,000",
+        "bonusEarned": "$15,000"
+      }
+    ],
+    "topgunmedsup": [
+      {
+        "rank": "1",
+        "agentName": "Trent Rhoads",
+        "office": "Piedmont",
+        "total": "108.5",
+        "placed": "104",
+        "bonusPotential": "$10,000",
+        "bonusEarned": "$10,000"
+      }
+    ],
+    "topgunspecialty": [
+      {
+        "rank": "1",
+        "agentName": "Carlos Cisneros",
+        "office": "Central Florida (CFL)",
+        "total": "92",
+        "placed": "87",
+        "bonusPotential": "$2,000",
+        "bonusEarned": "$2,000"
+      }
     ]
   }
 }

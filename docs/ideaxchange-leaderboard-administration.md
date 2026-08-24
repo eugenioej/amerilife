@@ -1,9 +1,14 @@
-# ideaXchange Leaderboard Administration
+# ideaXchange Leaderboards — How They Work & How They Update
 
-Operational guide for managing **Sales Leaderboard** and **Career Leaderboard** data, including data sources (SFTP vs API), update processes, and ongoing admin ownership.
+| | |
+|---|---|
+| **Version** | 1.0 |
+| **Author** | Eugenio Elizondo — Klemtek |
+| **Date** | August 6, 2026 |
+| **Audience** | Marketing / TAB operators, WP content admins, engineering |
+| **Related** | [DEPLOYMENT.md](./DEPLOYMENT.md) · [WORDPRESS.md](./WORDPRESS.md) |
 
-**Audience:** Marketing / TAB operators, WP content admins, and engineering maintainers.  
-**Related:** [DEPLOYMENT.md](./DEPLOYMENT.md) (env vars & CI), [WORDPRESS.md](./WORDPRESS.md) (MU plugins & CPT overview).
+Operational guide for **Sales Leaderboard** and **Career Leaderboard**: how data flows, how each source is configured (SFTP vs API), how updates run, and who owns ongoing administration.
 
 ---
 
@@ -41,23 +46,24 @@ flowchart LR
 
 ### 2.1 Fixed tables (do not create or delete)
 
-WordPress automatically ensures exactly **seven** published table posts. Admins cannot add or delete them from the UI.
+WordPress automatically ensures exactly **eight** published table posts (7 production + E&O). Admins cannot add or delete them from the UI.
 
-| Slug | Display name | Section |
-|------|--------------|---------|
-| `life` | Life | Life Production |
-| `life-fe` | Life (FE) | Life Production |
-| `life-non-fe` | Life (Non-FE) | Life Production |
-| `annuity-production` | Annuity Production | Submitted Production |
-| `medicare-supplement` | Medicare Supplement | Submitted Production |
-| `medicare-advantage` | Medicare Advantage | Submitted Production |
-| `health-specialty` | Health Specialty | Submitted Production |
+| Slug | Display name | Section | Schema |
+|------|--------------|---------|--------|
+| `life` | Life | Life Production | Standard (YTD / %) |
+| `life-fe` | Life (FE) | Life Production | Standard |
+| `life-non-fe` | Life (Non-FE) | Life Production | Standard |
+| `annuity-production` | Annuity Production | Submitted Production | Standard |
+| `medicare-supplement` | Medicare Supplement | Submitted Production | Standard |
+| `medicare-advantage` | Medicare Advantage | Submitted Production | Standard |
+| `health-specialty` | Health Specialty | Submitted Production | Standard |
+| `oe` | E&O | E&O | E&O (Rank / Affiliate / New Policies) |
 
 **WP Admin:** **ideaXchange Leaderboard** → open a table → upload data → set **Report date** → **Update**.
 
 ### 2.2 Row schema
 
-Each row is normalized to:
+**Standard production tables** normalize each row to:
 
 | Field | Notes |
 |-------|--------|
@@ -65,6 +71,8 @@ Each row is normalized to:
 | `ytd` / `lytd` | Counts; formatted with thousands separators |
 | `vs_lytd` / `vs_lqtd` / `vs_lmtd` | Percents (Excel decimals like `0.221` → `22.10%`) |
 | `trend` | Normalized to `up` / `down` / `flat` (supports ▲▼⬤, Excel Wingdings `p`/`q`, and text) |
+
+**E&O (`oe`)** uses Affiliate + New Policies (ranked names). New Policies is stored in the `ytd` field for consistency; the frontend renders the E&O columns separately.
 
 **File formats (manual upload):** `.xlsx` / `.xlsm` (recommended — preserves trend symbols), `.csv`, `.json`.
 
@@ -204,9 +212,17 @@ Configured incentive tables:
 | Section | Slug | Piper `incentive` |
 |---------|------|-------------------|
 | Incentive Programs | `kickoff` | `kickoff` |
-| Incentive Programs | `faststart` | `faststart` |
 | Incentive Programs | `bestinclass` | `bestinclass` |
-| Production | `topproducer` | `topproducer` |
+| Incentive Programs | `topproducer` | `topproducer` |
+| Incentive Programs | `presidentsclub` | `presidentsclub` |
+| Incentive Programs | `halloffame` | `halloffame` |
+| Incentive Programs | `topgunlife` | `topgunlife` |
+| Incentive Programs | `topgunannuity` | `topgunannuity` |
+| Incentive Programs | `topgunmedsup` | `topgunmedsup` |
+| Incentive Programs | `topgunspecialty` | `topgunspecialty` |
+| Production | `faststart` | `faststart` |
+
+Grouping is **events vs non-events** (Kickoff / Best in Class / Top Producer / President’s Club / HOF / Top Gun under Incentive; Fast Start under Production). Piper’s embed API does **not** expose separate YTD or Monthly incentive types.
 
 Period defaults to the **current calendar year/month**.
 

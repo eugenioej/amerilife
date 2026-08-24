@@ -12,6 +12,7 @@ export type CareerLeaderboardColumn = {
   key: string;
   label: string;
   align?: "left" | "right" | "center";
+  format?: "currency" | "percent" | "number";
 };
 
 export type CareerLeaderboardTableConfig = {
@@ -43,6 +44,34 @@ export type CareerLeaderboardTableData = {
   source: "piper" | "seed";
 };
 
+const AGENT_COLUMNS: CareerLeaderboardColumn[] = [
+  { key: "rank", label: "Rank", align: "center" },
+  { key: "agentName", label: "Agent" },
+  { key: "office", label: "Market" },
+];
+
+const GOAL_FYC_COLUMNS: CareerLeaderboardColumn[] = [
+  ...AGENT_COLUMNS,
+  { key: "agentPercentOfGoal", label: "% of Goal", align: "right" },
+  { key: "agentFyc", label: "FYC", align: "right" },
+];
+
+function topGunColumns(volumeFormat: "currency" | "number"): CareerLeaderboardColumn[] {
+  return [
+    ...AGENT_COLUMNS,
+    { key: "total", label: "Total", align: "right", format: volumeFormat },
+    { key: "placed", label: "Placed", align: "right", format: volumeFormat },
+    { key: "bonusPotential", label: "Bonus Potential", align: "right", format: "currency" },
+    { key: "bonusEarned", label: "Bonus Earned", align: "right", format: "currency" },
+  ];
+}
+
+/**
+ * Event vs non-event grouping requested by Career Marketing:
+ * Incentive = Kickoff, Best in Class, Top Producer, President's Club, HOF, Top Gun.
+ * Production = Fast Start.
+ * Piper embed does not expose separate YTD / Monthly incentive types.
+ */
 export const CAREER_LEADERBOARD_CONFIG: CareerLeaderboardSectionConfig[] = [
   {
     slug: "incentive-programs",
@@ -52,37 +81,68 @@ export const CAREER_LEADERBOARD_CONFIG: CareerLeaderboardSectionConfig[] = [
         slug: "kickoff",
         title: "Kickoff",
         incentiveType: "kickoff",
-        columns: [
-          { key: "rank", label: "Rank", align: "center" },
-          { key: "agentName", label: "Agent" },
-          { key: "office", label: "Market" },
-          { key: "agentPercentOfGoal", label: "% of Goal", align: "right" },
-          { key: "agentFyc", label: "FYC", align: "right" },
-        ],
-      },
-      {
-        slug: "faststart",
-        title: "FastStart",
-        incentiveType: "faststart",
-        columns: [
-          { key: "rank", label: "Rank", align: "center" },
-          { key: "agentName", label: "Agent" },
-          { key: "office", label: "Market" },
-          { key: "totalEligibleFyc", label: "Eligible FYC", align: "right" },
-          { key: "totalBonusEarned", label: "Bonus Earned", align: "right" },
-        ],
+        columns: GOAL_FYC_COLUMNS,
       },
       {
         slug: "bestinclass",
         title: "Best In Class",
         incentiveType: "bestinclass",
+        columns: GOAL_FYC_COLUMNS,
+      },
+      {
+        slug: "topproducer",
+        title: "Top Producer",
+        incentiveType: "topproducer",
         columns: [
-          { key: "rank", label: "Rank", align: "center" },
-          { key: "agentName", label: "Agent" },
-          { key: "office", label: "Market" },
-          { key: "agentPercentOfGoal", label: "% of Goal", align: "right" },
+          ...AGENT_COLUMNS,
+          { key: "losCategory", label: "LOS Category" },
           { key: "agentFyc", label: "FYC", align: "right" },
         ],
+      },
+      {
+        slug: "presidentsclub",
+        title: "President's Club",
+        incentiveType: "presidentsclub",
+        columns: [
+          ...AGENT_COLUMNS,
+          { key: "totalAnnualized", label: "Annualized", align: "right" },
+          { key: "qualificationStatus", label: "Status" },
+          { key: "agentPercentOfGoal", label: "% of Goal", align: "right" },
+        ],
+      },
+      {
+        slug: "halloffame",
+        title: "Hall of Fame",
+        incentiveType: "halloffame",
+        columns: [
+          ...AGENT_COLUMNS,
+          { key: "agentFyc", label: "Total FYC", align: "right" },
+          { key: "agentPercentOfGoal", label: "% of Goal", align: "right" },
+        ],
+      },
+      {
+        slug: "topgunlife",
+        title: "Top Gun Life",
+        incentiveType: "topgunlife",
+        columns: topGunColumns("number"),
+      },
+      {
+        slug: "topgunannuity",
+        title: "Top Gun Annuity",
+        incentiveType: "topgunannuity",
+        columns: topGunColumns("currency"),
+      },
+      {
+        slug: "topgunmedsup",
+        title: "Top Gun MedSup",
+        incentiveType: "topgunmedsup",
+        columns: topGunColumns("number"),
+      },
+      {
+        slug: "topgunspecialty",
+        title: "Top Gun Specialty",
+        incentiveType: "topgunspecialty",
+        columns: topGunColumns("number"),
       },
     ],
   },
@@ -91,16 +151,13 @@ export const CAREER_LEADERBOARD_CONFIG: CareerLeaderboardSectionConfig[] = [
     title: "Production",
     tables: [
       {
-        // embed-leaderboard does not support fycbylos; topproducer is the closest live feed.
-        slug: "topproducer",
-        title: "Top Producer",
-        incentiveType: "topproducer",
+        slug: "faststart",
+        title: "Fast Start",
+        incentiveType: "faststart",
         columns: [
-          { key: "rank", label: "Rank", align: "center" },
-          { key: "agentName", label: "Agent" },
-          { key: "office", label: "Market" },
-          { key: "losCategory", label: "LOS Category" },
-          { key: "agentFyc", label: "FYC", align: "right" },
+          ...AGENT_COLUMNS,
+          { key: "totalEligibleFyc", label: "Eligible FYC", align: "right" },
+          { key: "totalBonusEarned", label: "Bonus Earned", align: "right" },
         ],
       },
     ],
@@ -151,9 +208,45 @@ const FIELD_ALIASES: Record<string, string[]> = {
     "los category",
     "LOSCategory",
   ],
+  qualificationStatus: [
+    "agentQualificationStatus",
+    "qualificationStatus",
+    "status",
+    "Status",
+  ],
+  totalAnnualized: ["totalAnnualized", "annualized", "Annualized"],
+  total: [
+    "lifeTotal",
+    "annuityTotal",
+    "medSupTotal",
+    "specialtyTotal",
+    "total",
+  ],
+  placed: ["lifePlaced", "annuityPlaced", "medSupPlaced", "specialtyPlaced"],
+  bonusPotential: [
+    "lifeBonusPotential",
+    "annuityBonusPotential",
+    "medSupBonusPotential",
+    "specialtyBonusPotential",
+  ],
+  bonusEarned: [
+    "lifeBonusEarned",
+    "annuityBonusEarned",
+    "medSupBonusEarned",
+    "specialtyBonusEarned",
+    "totalBonusEarned",
+  ],
 };
 
-const CURRENCY_COLUMNS = new Set(["agentFyc", "totalEligibleFyc", "totalBonusEarned", "net"]);
+const CURRENCY_COLUMNS = new Set([
+  "agentFyc",
+  "totalEligibleFyc",
+  "totalBonusEarned",
+  "totalAnnualized",
+  "bonusPotential",
+  "bonusEarned",
+  "net",
+]);
 const PERCENT_COLUMNS = new Set(["agentPercentOfGoal"]);
 
 type SeedFile = {
@@ -188,26 +281,43 @@ function formatPercentCell(value: unknown): string {
   return `${rounded}%`;
 }
 
-function getCellValue(row: Record<string, unknown>, columnKey: string): string {
-  const aliases = FIELD_ALIASES[columnKey] ?? [columnKey];
+function formatNumberCell(value: unknown): string {
+  if (value == null || String(value).trim() === "") return "—";
+  const amount = Number(String(value).replace(/[$,\s]/g, ""));
+  if (Number.isNaN(amount)) return String(value);
+  return amount.toLocaleString("en-US", { maximumFractionDigits: 2 });
+}
+
+function getCellValue(
+  row: Record<string, unknown>,
+  column: CareerLeaderboardColumn | string,
+): string {
+  const resolved: CareerLeaderboardColumn =
+    typeof column === "string" ? { key: column, label: column } : column;
+  const aliases = FIELD_ALIASES[resolved.key] ?? [resolved.key];
   for (const alias of aliases) {
     if (row[alias] != null && String(row[alias]).trim() !== "") {
-      return formatCellValue(columnKey, row[alias]);
+      return formatCellValue(resolved, row[alias]);
     }
   }
 
-  const target = normalizeKey(columnKey);
+  const target = normalizeKey(resolved.key);
   for (const [key, value] of Object.entries(row)) {
     if (value == null || String(value).trim() === "") continue;
-    if (normalizeKey(key) === target) return formatCellValue(columnKey, value);
+    if (normalizeKey(key) === target) return formatCellValue(resolved, value);
   }
 
   return "—";
 }
 
-function formatCellValue(columnKey: string, value: unknown): string {
-  if (CURRENCY_COLUMNS.has(columnKey)) return formatCurrencyCell(value);
-  if (PERCENT_COLUMNS.has(columnKey)) return formatPercentCell(value);
+function formatCellValue(column: CareerLeaderboardColumn, value: unknown): string {
+  const format =
+    column.format ??
+    (CURRENCY_COLUMNS.has(column.key) ? "currency" : undefined) ??
+    (PERCENT_COLUMNS.has(column.key) ? "percent" : undefined);
+  if (format === "currency") return formatCurrencyCell(value);
+  if (format === "percent") return formatPercentCell(value);
+  if (format === "number") return formatNumberCell(value);
   return String(value);
 }
 
@@ -223,7 +333,7 @@ function mapPiperRows(
         mapped.rank = existing !== "—" ? existing : String(index + 1);
         continue;
       }
-      mapped[column.key] = getCellValue(raw, column.key);
+      mapped[column.key] = getCellValue(raw, column);
     }
     return mapped;
   });
