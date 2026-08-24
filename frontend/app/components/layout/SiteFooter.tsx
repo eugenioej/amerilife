@@ -123,6 +123,15 @@ export function SiteFooter({ primaryMenu, footerLogoUrl, certificationBadgeUrl }
                   Join Our Team
                 </UiLink>
               </li>
+              <li>
+                <UiLink
+                  href="/ideaxchange/"
+                  variant="nav"
+                  className="text-sm font-medium text-white/90 transition-colors hover:text-white"
+                >
+                  IdeaXchange
+                </UiLink>
+              </li>
             </ul>
           </div>
           <div className="flex items-start justify-start lg:justify-end">
