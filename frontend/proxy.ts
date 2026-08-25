@@ -151,6 +151,21 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const ua = (request.headers.get("user-agent") ?? "").toLowerCase();
 
+    // Handle common ideaXchange capitalization typo
+  if (
+    pathname === "/ideaXchange" ||
+    pathname.startsWith("/ideaXchange/")
+  ) {
+    const url = request.nextUrl.clone();
+
+    url.pathname = pathname.replace(
+      "/ideaXchange",
+      "/ideaxchange"
+    );
+
+    return NextResponse.redirect(url, 308);
+  }
+
   // 1. Block known vulnerability scanners by user-agent
   for (const token of BLOCKED_UA) {
     if (ua.includes(token)) {
