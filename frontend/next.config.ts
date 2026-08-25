@@ -64,6 +64,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     const wp = await getRedirectsFromWP();
     return [
+      { source: "/ideaXchange", destination: "/ideaxchange/home", permanent: true, },
       { source: "/fbtermsandpolicy", destination: "/privacy-policy/", permanent: true },
       { source: "/fbtermsandpolicy/", destination: "/privacy-policy/", permanent: true },
       { source: "/privacy", destination: "/privacy-policy/", permanent: true },

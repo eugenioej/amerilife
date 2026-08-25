@@ -3,6 +3,7 @@
 import { Link } from "@/app/components/ui/Link";
 import { IdeaXchangeLogoutButton } from "@/app/components/ideaxchange/IdeaXchangeLogoutButton";
 import { useContactPopup } from "./ContactPopupProvider";
+import { usePathname } from "next/navigation";
 
 const SOCIAL_LINKS = [
   { href: "https://www.facebook.com/AmeriLifeCorporate/", label: "Facebook", icon: "facebook" },
@@ -79,8 +80,13 @@ type TopBarProps = {
   inIdeaxchange?: boolean;
 };
 
-export function TopBar({ microsoftAuthEnabled = false, inIdeaxchange = false }: TopBarProps) {
+export function TopBar({ microsoftAuthEnabled = false }: TopBarProps) {
   const { openContactPopup } = useContactPopup();
+  const pathname = usePathname();
+
+  const isIdeaxchangeRoute =
+    pathname === "/ideaxchange" ||
+    pathname.startsWith("/ideaxchange/");
 
   return (
     <div
@@ -89,10 +95,10 @@ export function TopBar({ microsoftAuthEnabled = false, inIdeaxchange = false }: 
     >
       <div
         className={`mx-auto flex w-full max-w-[var(--container-max)] items-center gap-6 ${
-          inIdeaxchange ? "justify-between" : "justify-end"
+          isIdeaxchangeRoute ? "justify-between" : "justify-end"
         }`}
       >
-        {inIdeaxchange ? (
+        {isIdeaxchangeRoute ? (
           <div className="flex items-center gap-4 sm:gap-6">
             <Link
               href="/"
@@ -105,7 +111,7 @@ export function TopBar({ microsoftAuthEnabled = false, inIdeaxchange = false }: 
           </div>
         ) : null}
         <TopBarSocialLinks />
-        {!inIdeaxchange ? (
+        {!isIdeaxchangeRoute ? (
           <>
             <span className="text-white/60">|</span>
             <button
