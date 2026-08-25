@@ -46,10 +46,12 @@ export function SiteHeader({
   primaryMenu,
   ideaxchangePersona = null,
   ideaxchangeDevView = "off",
-  inIdeaxchange = false,
 }: SiteHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const isIdeaxchangeRoute =
+  pathname === "/ideaxchange" ||
+  pathname.startsWith("/ideaxchange/");
   const { openContactPopup } = useContactPopup();
 
   const isActiveNavHref = (href: string) => {
@@ -60,19 +62,30 @@ export function SiteHeader({
     );
   };
 
-  const navItems = inIdeaxchange
-    ? getIdeaxchangeNavForPersona(ideaxchangePersona ?? "brokerage", ideaxchangeDevView)
-    : primaryMenu;
-  const logoUrl = rewriteUploadsUrl(
-    inIdeaxchange
-      ? IDEAXCHANGE_LOGO_SRC
-      : "https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/01/amerilife.svg",
-  );
-  const logoHref = inIdeaxchange
-    ? getIdeaxchangeHomeForPersona(ideaxchangePersona ?? "brokerage")
-    : "/";
-  const logoAlt = inIdeaxchange ? "AmeriLife ideaXchange" : "AmeriLife";
-  const logoAriaLabel = inIdeaxchange ? "ideaXchange Home" : "AmeriLife Home";
+  const navItems = isIdeaxchangeRoute
+  ? getIdeaxchangeNavForPersona(
+      ideaxchangePersona ?? "brokerage",
+      ideaxchangeDevView,
+    )
+  : primaryMenu;
+
+const logoUrl = rewriteUploadsUrl(
+  isIdeaxchangeRoute
+    ? IDEAXCHANGE_LOGO_SRC
+    : "https://headlessameril.wpenginepowered.com/wp-content/uploads/2022/01/amerilife.svg",
+);
+
+const logoHref = isIdeaxchangeRoute
+  ? getIdeaxchangeHomeForPersona(ideaxchangePersona ?? "brokerage")
+  : "/";
+
+const logoAlt = isIdeaxchangeRoute
+  ? "AmeriLife ideaXchange"
+  : "AmeriLife";
+
+const logoAriaLabel = isIdeaxchangeRoute
+  ? "ideaXchange Home"
+  : "AmeriLife Home";
 
   return (
     <>
@@ -88,19 +101,23 @@ export function SiteHeader({
             <Image
               src={logoUrl}
               alt={logoAlt}
-              width={inIdeaxchange ? 160 : 140}
-              height={inIdeaxchange ? 48 : 40}
-              className={inIdeaxchange ? "h-7 w-auto max-w-[160px] object-contain lg:h-9" : "h-6 w-auto lg:h-8"}
+              width={isIdeaxchangeRoute ? 160 : 140}
+              height={isIdeaxchangeRoute ? 48 : 40}
+              className={
+                isIdeaxchangeRoute
+                  ? "h-7 w-auto max-w-[160px] object-contain lg:h-9"
+                  : "h-6 w-auto lg:h-8"
+              }
             />
           </Link>
 
           {/* Desktop nav */}
           <nav
             className="hidden items-center gap-8 lg:flex"
-            aria-label={inIdeaxchange ? "ideaXchange pillars" : "Main navigation"}
+            aria-label={isIdeaxchangeRoute ? "ideaXchange pillars" : "Main navigation"}
           >
             {navItems.map((item) => {
-              if (inIdeaxchange && item.disabled) {
+              if (isIdeaxchangeRoute && item.disabled) {
                 return (
                   <span
                     key={item.label}
@@ -112,7 +129,7 @@ export function SiteHeader({
                 );
               }
 
-              if (!inIdeaxchange && isContactNavItem(item)) {
+              if (!isIdeaxchangeRoute && isContactNavItem(item)) {
                 return (
                   <div key={item.href + item.label} className="relative">
                     <button
@@ -126,8 +143,8 @@ export function SiteHeader({
                 );
               }
 
-              const hasChildren = !inIdeaxchange && item.children && item.children.length > 0;
-              const isActive = inIdeaxchange && isActiveNavHref(item.href);
+              const hasChildren = !isIdeaxchangeRoute && item.children && item.children.length > 0;
+              const isActive = isIdeaxchangeRoute && isActiveNavHref(item.href);
               return (
                 <div key={item.href + item.label} className="relative group">
                   <Link
@@ -199,7 +216,7 @@ export function SiteHeader({
           </nav>
 
           <div className="flex items-center gap-4">
-            {inIdeaxchange ? (
+            {isIdeaxchangeRoute ? (
               <HeaderSearch
                 resultsPath="/ideaxchange/search"
                 placeholder="Search ideaXchange..."
@@ -226,7 +243,7 @@ export function SiteHeader({
         onClose={() => setMobileOpen(false)}
         items={navItems}
         onContactSelect={
-          inIdeaxchange
+          isIdeaxchangeRoute
             ? undefined
             : () => {
                 setMobileOpen(false);
