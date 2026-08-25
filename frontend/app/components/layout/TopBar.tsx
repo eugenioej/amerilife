@@ -1,9 +1,9 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { Link } from "@/app/components/ui/Link";
 import { IdeaXchangeLogoutButton } from "@/app/components/ideaxchange/IdeaXchangeLogoutButton";
 import { useContactPopup } from "./ContactPopupProvider";
-import { usePathname } from "next/navigation";
 
 const SOCIAL_LINKS = [
   { href: "https://www.facebook.com/AmeriLifeCorporate/", label: "Facebook", icon: "facebook" },
@@ -77,16 +77,13 @@ function TopBarSocialLinks() {
 
 type TopBarProps = {
   microsoftAuthEnabled?: boolean;
-  inIdeaxchange?: boolean;
 };
 
 export function TopBar({ microsoftAuthEnabled = false }: TopBarProps) {
   const { openContactPopup } = useContactPopup();
   const pathname = usePathname();
-
   const isIdeaxchangeRoute =
-    pathname === "/ideaxchange" ||
-    pathname.startsWith("/ideaxchange/");
+    pathname === "/ideaxchange" || pathname.startsWith("/ideaxchange/");
 
   return (
     <div

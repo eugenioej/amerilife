@@ -86,6 +86,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.groups = claims.groups;
         token.persona = persona;
 
+        const profileRecord = (profile ?? {}) as Record<string, unknown>;
+        const entraEmail = [
+          profileRecord.email,
+          profileRecord.preferred_username,
+          profileRecord.upn,
+        ].find((value) => typeof value === "string" && value.includes("@"));
+        if (typeof entraEmail === "string") {
+          token.email = entraEmail;
+        }
       }
 
       return token;
@@ -96,6 +105,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.persona = token.persona ?? "brokerage";
         session.user.roles = token.roles ?? [];
         session.user.groups = token.groups ?? [];
+        if (typeof token.email === "string") {
+          session.user.email = token.email;
+        }
       }
       return session;
     },

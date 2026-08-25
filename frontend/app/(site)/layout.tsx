@@ -3,8 +3,8 @@ import { LayoutShell } from "@/app/components/layout/LayoutShell";
 import { getIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import { isMicrosoftIdeaxchangeAuthEnabled } from "@/lib/ideaxchange-auth-config";
 import {
+  canUseIdeaxchangeDevView,
   getIdeaxchangeDevViewMode,
-  isIdeaxchangeDevUnlockEnabled,
 } from "@/lib/ideaxchange-dev";
 import { isIdeaxchangePath } from "@/lib/ideaxchange-nav";
 
@@ -25,9 +25,12 @@ export default async function SiteLayout({
   const ideaxchangeAuth = await getIdeaxchangeAuth();
   const pathname = (await headers()).get("x-pathname") ?? "";
   const inIdeaxchange = isIdeaxchangePath(pathname);
-  const ideaxchangeDevView = inIdeaxchange ? await getIdeaxchangeDevViewMode() : "off";
+  const ideaxchangeEmail = ideaxchangeAuth?.user?.email;
+  const ideaxchangeDevView = inIdeaxchange
+    ? await getIdeaxchangeDevViewMode(ideaxchangeEmail)
+    : "off";
   const showIdeaxchangeDevSwitcher =
-    inIdeaxchange && isIdeaxchangeDevUnlockEnabled() && Boolean(ideaxchangeAuth);
+    inIdeaxchange && canUseIdeaxchangeDevView(ideaxchangeEmail);
 
   return (
     <LayoutShell
@@ -35,7 +38,6 @@ export default async function SiteLayout({
       ideaxchangeDevView={ideaxchangeDevView}
       showIdeaxchangeDevSwitcher={showIdeaxchangeDevSwitcher}
       microsoftAuthEnabled={isMicrosoftIdeaxchangeAuthEnabled()}
-      inIdeaxchange={inIdeaxchange}
     >
       {children}
     </LayoutShell>

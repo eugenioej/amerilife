@@ -25,7 +25,6 @@ type SiteHeaderProps = {
   primaryMenu: NavItem[];
   ideaxchangePersona?: IdeaxchangePersona | null;
   ideaxchangeDevView?: IdeaxchangeDevViewMode;
-  inIdeaxchange?: boolean;
 };
 
 function HamburgerIcon({ open }: { open: boolean }) {
@@ -50,8 +49,7 @@ export function SiteHeader({
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const isIdeaxchangeRoute =
-  pathname === "/ideaxchange" ||
-  pathname.startsWith("/ideaxchange/");
+    pathname === "/ideaxchange" || pathname.startsWith("/ideaxchange/");
   const { openContactPopup } = useContactPopup();
 
   const isActiveNavHref = (href: string) => {

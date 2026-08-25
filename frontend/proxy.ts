@@ -197,7 +197,8 @@ export async function proxy(request: NextRequest) {
   ) {
     const token = await getToken(getIdeaxchangeJwtParams(request));
     const persona = (token?.persona ?? "brokerage") as IdeaxchangePersona;
-    const devView = getIdeaxchangeDevViewFromRequest(request);
+    const email = typeof token?.email === "string" ? token.email : null;
+    const devView = getIdeaxchangeDevViewFromRequest(request, email);
     if (!canAccessIdeaxchangePath(pathname, persona, devView)) {
       const home = getIdeaxchangeHomeForPersona(persona);
       return NextResponse.redirect(new URL(home, request.url));

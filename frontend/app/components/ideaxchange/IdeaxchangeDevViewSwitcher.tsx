@@ -1,8 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import type { IdeaxchangeDevViewMode } from "@/lib/ideaxchange-dev";
+import { isIdeaxchangePath } from "@/lib/ideaxchange-nav";
 
 type Props = {
   initialMode: IdeaxchangeDevViewMode;
@@ -15,6 +16,7 @@ const OPTIONS: { value: IdeaxchangeDevViewMode; label: string; hint: string }[] 
 ];
 
 export function IdeaxchangeDevViewSwitcher({ initialMode }: Props) {
+  const pathname = usePathname();
   const router = useRouter();
   const [mode, setMode] = useState<IdeaxchangeDevViewMode>(initialMode);
   const [pending, startTransition] = useTransition();
@@ -40,6 +42,8 @@ export function IdeaxchangeDevViewSwitcher({ initialMode }: Props) {
       }
     });
   };
+
+  if (!isIdeaxchangePath(pathname)) return null;
 
   return (
     <div

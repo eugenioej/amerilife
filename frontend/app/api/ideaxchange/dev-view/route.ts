@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import {
   IDEAXCHANGE_DEV_VIEW_COOKIE,
+  canUseIdeaxchangeDevView,
   devViewCookieOptions,
-  isIdeaxchangeDevUnlockEnabled,
   type IdeaxchangeDevViewMode,
 } from "@/lib/ideaxchange-dev";
 import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
@@ -10,11 +10,10 @@ import { requireIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 const VALID_MODES: IdeaxchangeDevViewMode[] = ["all", "brokerage", "career"];
 
 export async function POST(req: Request) {
-  if (!isIdeaxchangeDevUnlockEnabled()) {
+  const auth = await requireIdeaxchangeAuth();
+  if (!canUseIdeaxchangeDevView(auth.user?.email)) {
     return NextResponse.json({ error: "Dev unlock is not enabled" }, { status: 403 });
   }
-
-  await requireIdeaxchangeAuth();
 
   let mode: IdeaxchangeDevViewMode = "all";
   try {

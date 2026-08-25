@@ -19,14 +19,12 @@ export async function LayoutShell({
   ideaxchangeDevView = "off",
   showIdeaxchangeDevSwitcher = false,
   microsoftAuthEnabled = false,
-  inIdeaxchange = false,
 }: {
   children: React.ReactNode;
   ideaxchangePersona?: IdeaxchangePersona | null;
   ideaxchangeDevView?: IdeaxchangeDevViewMode;
   showIdeaxchangeDevSwitcher?: boolean;
   microsoftAuthEnabled?: boolean;
-  inIdeaxchange?: boolean;
 }) {
   const footerLogoUrl = rewriteUploadsUrl(FOOTER_LOGO_SRC);
   const certificationBadgeUrl = rewriteUploadsUrl(FOOTER_CERTIFICATION_BADGE_SRC);
@@ -43,12 +41,11 @@ export async function LayoutShell({
         Skip to main content
       </a>
       <div className="flex min-h-screen flex-col">
-        <TopBar microsoftAuthEnabled={microsoftAuthEnabled} inIdeaxchange={inIdeaxchange} />
+        <TopBar microsoftAuthEnabled={microsoftAuthEnabled} />
         <SiteHeader
           primaryMenu={primaryMenu}
           ideaxchangePersona={ideaxchangePersona}
           ideaxchangeDevView={ideaxchangeDevView}
-          inIdeaxchange={inIdeaxchange}
         />
         <main id="main-content" className="flex min-h-0 min-w-0 flex-1 flex-col">
           {children}

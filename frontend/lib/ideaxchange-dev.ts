@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
+import { getIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
 import type { IdeaxchangePersona } from "@/lib/ideaxchange-persona";
 import {
   canPersonaAccessPillar,
@@ -12,9 +13,27 @@ export type IdeaxchangeDevViewMode = "off" | "all" | "brokerage" | "career";
 
 const VALID_MODES = new Set<IdeaxchangeDevViewMode>(["off", "all", "brokerage", "career"]);
 
+/** Signed-in Microsoft emails allowed to use the ideaXchange persona preview switcher. */
+const IDEAXCHANGE_DEV_VIEW_ALLOWED_EMAILS = new Set([
+  "bjoseph@amerilife.com",
+  "cmccormack@amerilife.com",
+  "aallen@amerilife.com",
+  "cyounger@amerilife.com",
+  "eugenio.elizondo@amerilife.com",
+]);
+
 export function isIdeaxchangeDevUnlockEnabled(): boolean {
   if (process.env.NODE_ENV === "production") return false;
   return process.env.IDEAXCHANGE_DEV_UNLOCK === "1";
+}
+
+export function isIdeaxchangeDevViewEmailAllowed(email?: string | null): boolean {
+  if (!email) return false;
+  return IDEAXCHANGE_DEV_VIEW_ALLOWED_EMAILS.has(email.trim().toLowerCase());
+}
+
+export function canUseIdeaxchangeDevView(email?: string | null): boolean {
+  return isIdeaxchangeDevUnlockEnabled() && isIdeaxchangeDevViewEmailAllowed(email);
 }
 
 function parseDevViewMode(value: string | undefined): IdeaxchangeDevViewMode {
@@ -28,13 +47,19 @@ function parseDevViewMode(value: string | undefined): IdeaxchangeDevViewMode {
 
 export function getIdeaxchangeDevViewFromRequest(
   request: NextRequest,
+  email?: string | null,
 ): IdeaxchangeDevViewMode {
-  if (!isIdeaxchangeDevUnlockEnabled()) return "off";
+  if (!canUseIdeaxchangeDevView(email)) return "off";
   return parseDevViewMode(request.cookies.get(IDEAXCHANGE_DEV_VIEW_COOKIE)?.value);
 }
 
-export async function getIdeaxchangeDevViewMode(): Promise<IdeaxchangeDevViewMode> {
+export async function getIdeaxchangeDevViewMode(
+  email?: string | null,
+): Promise<IdeaxchangeDevViewMode> {
   if (!isIdeaxchangeDevUnlockEnabled()) return "off";
+  const resolvedEmail =
+    email !== undefined ? email : (await getIdeaxchangeAuth())?.user?.email;
+  if (!isIdeaxchangeDevViewEmailAllowed(resolvedEmail)) return "off";
   const store = await cookies();
   return parseDevViewMode(store.get(IDEAXCHANGE_DEV_VIEW_COOKIE)?.value);
 }
