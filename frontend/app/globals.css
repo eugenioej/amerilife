@@ -215,7 +215,9 @@ article.global-article h4 {
     letter-spacing: 0.06em !important;
     margin-bottom: 1rem !important;
 }
-
+.global-article a {
+    overflow-wrap: anywhere !important;
+}
 /* Article Title */
 article.global-article h1 {
     font-size: 2.3rem !important;
