@@ -85,15 +85,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.roles = claims.roles;
         token.groups = claims.groups;
         token.persona = persona;
-
-        const profileRecord = (profile ?? {}) as Record<string, unknown>;
-        const entraEmail = [
-          profileRecord.email,
-          profileRecord.preferred_username,
-          profileRecord.upn,
-        ].find((value) => typeof value === "string" && value.includes("@"));
-        if (typeof entraEmail === "string") {
-          token.email = entraEmail;
+        if (claims.email) {
+          token.email = claims.email;
         }
       }
 

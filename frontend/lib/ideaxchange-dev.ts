@@ -20,6 +20,7 @@ const IDEAXCHANGE_DEV_VIEW_ALLOWED_EMAILS = new Set([
   "aallen@amerilife.com",
   "cyounger@amerilife.com",
   "eugenio.elizondo@amerilife.com",
+  "eugenio@klemtek.com",
 ]);
 
 export function isIdeaxchangeDevUnlockEnabled(): boolean {
@@ -32,8 +33,10 @@ export function isIdeaxchangeDevViewEmailAllowed(email?: string | null): boolean
   return IDEAXCHANGE_DEV_VIEW_ALLOWED_EMAILS.has(email.trim().toLowerCase());
 }
 
+/** Marketing allowlist in production; env flag is a local-only fallback. */
 export function canUseIdeaxchangeDevView(email?: string | null): boolean {
-  return isIdeaxchangeDevUnlockEnabled() && isIdeaxchangeDevViewEmailAllowed(email);
+  if (isIdeaxchangeDevViewEmailAllowed(email)) return true;
+  return isIdeaxchangeDevUnlockEnabled();
 }
 
 function parseDevViewMode(value: string | undefined): IdeaxchangeDevViewMode {
@@ -56,10 +59,9 @@ export function getIdeaxchangeDevViewFromRequest(
 export async function getIdeaxchangeDevViewMode(
   email?: string | null,
 ): Promise<IdeaxchangeDevViewMode> {
-  if (!isIdeaxchangeDevUnlockEnabled()) return "off";
   const resolvedEmail =
     email !== undefined ? email : (await getIdeaxchangeAuth())?.user?.email;
-  if (!isIdeaxchangeDevViewEmailAllowed(resolvedEmail)) return "off";
+  if (!canUseIdeaxchangeDevView(resolvedEmail)) return "off";
   const store = await cookies();
   return parseDevViewMode(store.get(IDEAXCHANGE_DEV_VIEW_COOKIE)?.value);
 }

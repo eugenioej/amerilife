@@ -11,6 +11,7 @@ export type EntraAuthClaims = {
   claimKeys: string[];
   /** Custom persona claim value when IDEAXCHANGE_ENTRA_PERSONA_CLAIM is set. */
   personaClaimValue?: string;
+  email?: string;
 };
 
 function readStringArray(value: unknown): string[] {
@@ -42,6 +43,12 @@ function mergeClaimRecords(
       : {};
 
   return { ...fromIdToken, ...fromProfile };
+}
+
+function readEmailClaim(record: Record<string, unknown>): string | undefined {
+  const candidates = [record.email, record.preferred_username, record.upn, record.unique_name];
+  const found = candidates.find((value) => typeof value === "string" && value.includes("@"));
+  return typeof found === "string" ? found.trim().toLowerCase() : undefined;
 }
 
 function personaFromCustomClaim(value: unknown): IdeaxchangePersona | null {
@@ -89,6 +96,7 @@ export function extractEntraAuthClaims(
     tid: typeof record.tid === "string" ? record.tid : undefined,
     claimKeys: Object.keys(record).sort(),
     personaClaimValue,
+    email: readEmailClaim(record),
   };
 }
 
