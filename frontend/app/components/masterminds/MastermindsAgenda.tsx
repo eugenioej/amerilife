@@ -65,7 +65,7 @@ export default function MastermindsAgenda({agendaDays}:MastermindsAgendaProps) {
 
 {/* QR SECTION */}
 <div className="mt-12 text-center">
-  <Link href="/masterminds/agendas/" className="inline-block group">
+  <Link href="/masterminds/" className="inline-block group">
 
     {/* QR */}
     
