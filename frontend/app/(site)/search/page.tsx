@@ -83,7 +83,12 @@ function InsightCard({ node }: { node: InsightSearchNode }) {
   const excerpt = searchSnippet(node.excerpt);
   const truncated = excerpt.length > 200 ? excerpt.slice(0, 200) + "…" : excerpt;
   const slug = node.slug ?? "";
-  const href = slug ? `/insights/${slug}/` : "#";
+  const topicSlug =
+    node.insightTopics?.nodes?.[0]?.slug ?? "";
+  const href =
+    slug && topicSlug
+      ? `/insights/${topicSlug}/${slug}/`
+      : "#";
 
   return (
     <article className="group rounded-lg border border-[var(--color-border)] bg-white p-5 transition-shadow hover:shadow-md">
@@ -185,7 +190,14 @@ export default async function SearchPage({ searchParams }: Props) {
       searchInsightsLocal(q, 20),
       searchAgenciesLocal(q, 20),
     ]);
-    postNodes = postsData?.posts?.nodes ?? [];
+    postNodes = (postsData?.posts?.nodes ?? []).filter(
+  (node) =>
+    (node.categories?.nodes?.length ?? 0) > 0 &&
+    !node.uri?.startsWith("/ideaxchange-article/") &&
+    !node.uri?.startsWith("/insight/")
+);
+
+ 
     insightNodes = insightsLocal;
     agencyNodes = agencyLocal;
   }

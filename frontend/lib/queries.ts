@@ -732,6 +732,13 @@ export type InsightSearchNode = {
   title?: string | null;
   date?: string | null;
   excerpt?: string | null;
+
+  insightTopics?: {
+    nodes?: Array<{
+      name?: string | null;
+      slug?: string | null;
+    }>;
+  } | null;
 };
 
 export type InsightsSearchResult = {

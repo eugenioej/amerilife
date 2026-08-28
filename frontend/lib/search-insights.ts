@@ -100,6 +100,8 @@ function toSearchNode(node: InsightSearchBatchNode): InsightSearchNode {
     title: node.title,
     date: node.date,
     excerpt: node.excerpt,
+
+    insightTopics: node.insightTopics,
   };
 }
 
