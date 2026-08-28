@@ -64,8 +64,8 @@ export function RunThisCampaignSidebar({ assets, marketingCtaUrl }: Props) {
     <aside className="sticky top-24 space-y-6">
       {visible.length > 0 ? (
         <div className="overflow-hidden rounded-lg border border-[var(--color-border)] shadow-[0_4px_20px_rgba(36,66,96,0.06)]">
-          <div className="flex flex-col items-center bg-[var(--color-brand-dark)] px-6 py-8 text-center">
-            <div className="mb-5 p-5 flex items-center justify-center rounded-full bg-[var(--color-brand-primary)]">
+          <div className="flex flex-col items-center bg-[var(--color-brand-primary)] px-6 py-8 text-center">
+            <div className="p-5 flex items-center justify-center rounded-full bg-[var(--color-brand-dark)]">
               <Image 
                 alt="Run This Campaign" 
                 src={runCampaignIcon}
@@ -74,7 +74,7 @@ export function RunThisCampaignSidebar({ assets, marketingCtaUrl }: Props) {
                 />
             </div>
 
-            <h2 className="text-[15px] font-bold uppercase tracking-[0.12em] text-white">
+            <h2 className="text-[15px] font-bold uppercase tracking-[0.12em] text-white! mt-4! mb-0!">
               Run this campaign
             </h2>
           </div>

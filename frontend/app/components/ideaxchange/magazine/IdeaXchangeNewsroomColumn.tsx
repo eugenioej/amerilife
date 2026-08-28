@@ -176,7 +176,7 @@ export function IdeaXchangeNewsroomColumn({
             key={post.id}
             className="flex flex-col gap-4 border-b border-[var(--color-border)] py-8 first:pt-0 last:border-b-0 sm:flex-row sm:gap-6"
           >
-            <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-[var(--color-border)]/30 sm:w-[220px] md:w-[260px]">
+            <div className="mt-1 relative h-[180px] w-full shrink-0 overflow-hidden bg-[var(--color-border)]/30 sm:w-[220px] md:w-[260px]">
               <Link
                 href={href}
                 variant="button"

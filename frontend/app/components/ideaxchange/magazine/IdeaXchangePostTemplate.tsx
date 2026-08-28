@@ -38,10 +38,9 @@ function RelatedArticlesSidebar({ posts }: { posts: IdeaxchangeListItem[] }) {
   return (
     <div className="w-full">
       <div className="mb-4 flex items-center gap-3">
-        <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-brand-primary)]">
+        <h2 className="text-xs! font-bold! uppercase! tracking-[0.14em]! text-[var(--color-brand-primary)]! mb-0!">
           Related articles
         </h2>
-        <div className="h-px flex-1 bg-[var(--color-border)]" aria-hidden />
       </div>
       <ul className="divide-y divide-[var(--color-border)]">
         {posts.map((item) => {
@@ -90,7 +89,7 @@ function RelatedPostsGrid({ posts }: { posts: IdeaxchangeListItem[] }) {
   if (posts.length === 0) return null;
   return (
     <section className="border-t border-[var(--color-border)] pt-12 md:pt-16">
-      <h2 className="mb-8 text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-brand-primary)] md:mb-10">
+      <h2 className="mb-8! text-xs! font-bold! uppercase tracking-[0.14em]! text-[var(--color-brand-primary)]! md:mb-10!">
         Related posts
       </h2>
       <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
@@ -115,7 +114,7 @@ function RelatedPostsGrid({ posts }: { posts: IdeaxchangeListItem[] }) {
                 />
               </Link>
               <Link href={href} variant="button" className="text-left hover:no-underline">
-                <h3 className="font-sans text-lg font-bold leading-snug text-[var(--color-brand-dark)] transition-colors group-hover:text-[var(--color-brand-primary)]">
+                <h3 className="font-sans! text-lg! font-bold! leading-snug! text-[var(--color-brand-dark)]! transition-colors! group-hover:text-[var(--color-brand-primary)]! normal-case! mt-0! mb-0!">
                   {item.title}
                 </h3>
               </Link>

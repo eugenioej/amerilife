@@ -24,8 +24,8 @@ export function LegalPageLayout({
   children,
 }: LegalPageLayoutProps) {
   const headerTitleClass = amlPlainText
-    ? "text-[32px] font-semibold leading-[38px] text-[#244260] lg:text-[48px] lg:leading-[64px]"
-    : "text-3xl font-bold text-[var(--color-fg)] lg:text-4xl";
+    ? "text-[32px]! font-semibold! leading-[38px]! text-[#244260]! lg:text-[48px]! lg:leading-[64px]!"
+    : "text-3xl! font-bold! text-[var(--color-fg)]! lg:text-4xl!";
 
   const bodyClass = amlPlainText
     ? [

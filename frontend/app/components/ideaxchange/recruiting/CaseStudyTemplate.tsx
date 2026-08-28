@@ -111,7 +111,7 @@ export function CaseStudyTemplate({ post, relatedPosts }: Props) {
 
           {resultsHtml ? (
             <section className="mt-16 rounded-[28px] bg-[#f3f3f1] px-6 py-8 sm:px-8 md:mt-16 md:px-10 md:py-10">
-              <h2 className="mb-6 text-lg font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)] md:mb-8">
+              <h2 className="mb-6 mt-0! text-lg font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)] md:mb-8">
                 The Results
               </h2>
 

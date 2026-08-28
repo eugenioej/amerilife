@@ -428,7 +428,7 @@ export default function PrivacyPolicyPage() {
         </p>
         <h2>How to Contact Us</h2>
         <p>
-          You can reach us by telephone at (844) 340-9494, by email to <a href="mailto:privacy@amerilife.com">privacy@amerilife.com</a>, or by mail to:
+          You can reach us by telephone at <a href="tel:+18443409494">(844) 340-9494</a>, by email to <a href="mailto:privacy@amerilife.com">privacy@amerilife.com</a>, or by mail to:
           <br/>
           AmeriLife
           <br/>
@@ -452,7 +452,7 @@ export default function PrivacyPolicyPage() {
           letter-spacing: 0.06em !important;
           margin-bottom: 0.5rem !important;
            font-size: 1.5rem !important; 
-          margin-top: 3rem !important;
+          margin-top: 2.5rem !important;
         }
 
         .privacy p {

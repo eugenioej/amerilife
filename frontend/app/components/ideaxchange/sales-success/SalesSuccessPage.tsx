@@ -34,14 +34,13 @@ export function SalesSuccessPage({
       {featured.length ? <SalesSuccessFeaturedHero posts={featured} /> : null}
 
       <div className="mx-auto max-w-[var(--container-max)] px-[var(--container-padding-x)] py-10 md:py-14">
+        <IdeaxchangeHorizontalAdSlot
+          slot={ideaxchangeAds?.homePrimaryHorizontal}
+          className="mb-8"
+        />
         <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)]">
           Incentives
         </h2>
-
-        <IdeaxchangeHorizontalAdSlot
-          slot={ideaxchangeAds?.homePrimaryHorizontal}
-          className="mt-8"
-        />
 
         <div className="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-8">
