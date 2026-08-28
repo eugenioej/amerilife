@@ -21,6 +21,19 @@ const IDEAXCHANGE_DEV_VIEW_ALLOWED_EMAILS = new Set([
   "cyounger@amerilife.com",
   "eugenio.elizondo@amerilife.com",
   "eugenio@klemtek.com",
+  "bstewart@amerilife.com",
+  "SPWilson@Amerilife.com",
+  "MJones@Amerilife.com",
+  "PAthanason@Amerilife.com",
+  "AMcNatt@Amerilife.com",
+  "WDeCourcy@Amerilife.com",
+  "CCushing@AmeriLife.com",
+  "PZadorozny@AmeriLife.com",
+  "EDahms@AmeriLife.com",
+  "VGonsalves@Amerilife.com",
+  "CKing@AmeriLife.com",
+  "TPerko@AmeriLife.com",
+  "JBarker@Amerilife.com"
 ]);
 
 export function isIdeaxchangeDevUnlockEnabled(): boolean {
