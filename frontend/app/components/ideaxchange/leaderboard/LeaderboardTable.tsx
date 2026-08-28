@@ -66,7 +66,7 @@ export function LeaderboardTable({ id, title, rows, lastUpdated }: Props) {
   const [sort, setSort] = useState<LeaderboardSortState>(DEFAULT_LEADERBOARD_SORT);
   const [showAll, setShowAll] = useState(false);
   const formattedUpdated = formatLeaderboardUpdatedDate(lastUpdated);
-
+  const showThousandsNote = title !== "Medicare Advantage";
   const sortedRows = useMemo(() => sortLeaderboardRows(rows, sort), [rows, sort]);
   const hasMoreRows = sortedRows.length > INITIAL_VISIBLE_ROWS;
   const visibleRows = showAll ? sortedRows : sortedRows.slice(0, INITIAL_VISIBLE_ROWS);
@@ -85,10 +85,16 @@ export function LeaderboardTable({ id, title, rows, lastUpdated }: Props) {
       id={id}
       className="scroll-mt-[calc(var(--header-height)+1rem)] overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-[0_4px_20px_rgba(36,66,96,0.06)]"
     >
-      <div className="flex flex-col gap-3 border-b border-[var(--color-border)] bg-[var(--color-brand-primary)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div className="relative flex flex-col gap-3 border-b border-[var(--color-border)] bg-[var(--color-brand-primary)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <h3 className="text-center text-sm font-bold uppercase tracking-wider text-white sm:text-left">
           {title}
         </h3>
+
+        {showThousandsNote && (
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-white/80">
+            Numbers are in <span className="lowercase">(000s)</span>
+          </div>
+        )}
         <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-end">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-white/80">
             Sorted by {sortSummary}

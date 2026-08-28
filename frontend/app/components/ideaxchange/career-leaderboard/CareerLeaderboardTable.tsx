@@ -96,23 +96,30 @@ export function CareerLeaderboardTable({
       id={id}
       className="scroll-mt-[calc(var(--header-height)+1rem)] overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-[0_4px_20px_rgba(36,66,96,0.06)]"
     >
-      <div className="flex flex-col gap-2 border-b border-[var(--color-border)] bg-[var(--color-brand-primary)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div className="relative flex flex-col gap-2 border-b border-[var(--color-border)] bg-[var(--color-brand-primary)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div>
           <h3 className="text-center text-sm font-bold uppercase tracking-wider text-white sm:text-left">
             {title}
           </h3>
+        
           {periodLabel ? (
             <p className="mt-1 text-center text-[10px] font-semibold uppercase tracking-wider text-white/75 sm:text-left">
               {periodLabel}
             </p>
           ) : null}
         </div>
+        
+        <span className="text-center text-[11px] font-semibold tracking-wide text-white sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+          Numbers are in (000s)
+        </span>
+        
         <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-end">
           {isFallback ? (
             <span className="rounded-sm bg-white/15 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
               Demo data
             </span>
           ) : null}
+      
           <span className="text-[10px] font-semibold uppercase tracking-wider text-white/80">
             Sorted by {activeColumn?.label ?? sort.column} (
             {sort.direction === "asc" ? "low → high" : "high → low"})
