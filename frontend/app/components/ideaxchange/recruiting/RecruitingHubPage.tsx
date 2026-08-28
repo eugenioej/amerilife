@@ -160,7 +160,7 @@ export function RecruitingHubPage({
         <section>
           <IdeaXchangeLeaderboardCtaBanner
               className="mt-10 md:mt-12"
-              href={'#'}
+              href={'/national-recruiting'}
               heading={'Become part of the National Recruiting Campaign.'}
               buttonLabel={'Learn More'}
             />              
