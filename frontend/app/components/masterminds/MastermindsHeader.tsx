@@ -8,7 +8,7 @@ type MastermindsHeaderProps = {
 };
 
 
-export default function MastermindsHeader({note, eventtype}:MastermindsHeaderProps) {
+export default function MastermindsHeader({eventtype}:MastermindsHeaderProps) {
   return (
     <section className=" relative flex justify-center items-center overflow-hidden bg-[#091229] text-white px-5 pt-14 sm:pt-20 sm:px-6">
     
@@ -34,10 +34,6 @@ export default function MastermindsHeader({note, eventtype}:MastermindsHeaderPro
 
           <p className="mt-3 inline-block px-4 py-2 text-sm font-semibold tracking-wide text-white rounded-full border border-[#03f080]/40 bg-[#03f080]/20">
             September 15 – 17, 2026 Hilton St. Petersburg Bayfront, FL
-          </p>
-
-          <p className="mx-auto mt-3 max-w-[600px] text-xs text-white/60">
-            {note}
           </p>
 
         </div>

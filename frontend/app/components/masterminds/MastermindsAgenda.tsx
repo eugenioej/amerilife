@@ -1,7 +1,5 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
-import { IMAGES } from "./MastermindsConstants";
+
 import dynamic from "next/dynamic";
 
 const AddToHomeScreen = dynamic(
@@ -65,27 +63,16 @@ export default function MastermindsAgenda({agendaDays}:MastermindsAgendaProps) {
 
 {/* QR SECTION */}
 <div className="mt-12 text-center">
-  <Link href="/masterminds/" className="inline-block group">
+  
 
-    {/* QR */}
-    
-<div className="mx-auto mb-4 w-[140px]">
-  <Image
-    src={IMAGES.qrCode}
-    alt="QR Code"
-    width={140}
-    height={140}
-    className="w-full h-auto rounded-xl transition group-hover:scale-102"
-  />
-</div>
-
-
+    <p className="text-[white]">Attire is business casual for meetings and resort casual for group dinners. 
+  Attendees are responsible for their transportation to and from the airport</p>
     {/* GREEN TITLE */}
     <p className="text-base font-semibold text-[#03f080] tracking-wide">
-      Scan or Click for Agendas
+      Please note the agenda is subject to change.
     </p>
 
-  </Link>
+ 
 </div>
 
 
