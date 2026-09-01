@@ -66,7 +66,7 @@ export default function RootLayout({
           src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
           strategy="afterInteractive"
           data-document-language="true"
-          data-domain-script="019ae616-08df-7cc6-bd3a-4ecab492d976-test"
+          data-domain-script="019ae616-08df-7cc6-bd3a-4ecab492d976"
           charSet="UTF-8"
         />
         <Script id="onetrust-wrapper" strategy="afterInteractive">
