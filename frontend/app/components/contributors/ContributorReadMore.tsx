@@ -36,7 +36,7 @@ export async function ContributorReadMoreArticles() {
         <div className="mb-16 h-px bg-gray-200" />
 
         <h2 className="mb-20 text-center text-4xl font-bold text-[var(--color-fg)]">
-          Read More Articles
+          Recent Articles
         </h2>
 
         <div className="space-y-10">
