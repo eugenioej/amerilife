@@ -365,9 +365,7 @@ export function InsightPostTemplate({
               {isEditorialTeam ? (
                 <>
                   <p>
-                    AmeriLife Editorial Team is a professional writers and editors within
-                    the life, health insurance and financial services industry at AmeriLife
-                    company.
+                    The AmeriLife Editorial Team brings together experienced writers and editors with deep knowledge of the life and health insurance and financial services industries.
                   </p>
                 </>
 
