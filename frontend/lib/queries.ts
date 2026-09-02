@@ -1369,6 +1369,23 @@ export const GET_INSIGHTS_MINIMAL = `
 
 export type InsightDetail = InsightListItem & {
   content?: string | null;
+
+  author?: {
+    node?: {
+      firstName?: string | null;
+      lastName?: string | null;
+
+      userFields?: {
+        contributorSlug?: string | null;
+        email?: string | null;
+        jobTitle?: string | null;
+        company?: string | null;
+        companyWebsite?: string | null;
+        headshot?: string | null;
+      } | null;
+    } | null;
+  } | null;
+
   seo?: YoastSeoData | null;
 };
 
@@ -1399,6 +1416,20 @@ export const GET_INSIGHT_BY_SLUG = `
         node {
           sourceUrl
           altText
+        }
+      }
+      author {
+        node {
+          firstName
+          lastName
+          userFields {
+            contributorSlug
+            email
+            jobTitle
+            company
+            companyWebsite
+            headshot
+          }
         }
       }
       seo {
@@ -1444,6 +1475,20 @@ export const GET_INSIGHT_BY_SLUG_MINIMAL = `
         node {
           sourceUrl
           altText
+        }
+      }
+      author {
+        node {
+          firstName
+          lastName
+          userFields {
+            contributorSlug
+            email
+            jobTitle
+            company
+            companyWebsite
+            headshot
+          }
         }
       }
       seo {

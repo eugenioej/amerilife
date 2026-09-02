@@ -16,7 +16,7 @@ export function ContributorTeamCard({ member }: Props) {
 
           <div className="relative mb-4 h-[200px] w-[200px] overflow-hidden rounded-full bg-[#e2e5ed]">
             <Image
-              src={fields?.headshot || "/images/default-avatar.png"}
+              src={fields?.headshot || "https://headlessameril.wpenginepowered.com/wp-content/uploads/2021/11/cropped-favicon-blue-270x270.jpg"}
               alt={member.name || ""}
               fill
               className="object-cover object-top"

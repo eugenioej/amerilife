@@ -28,7 +28,7 @@ add_action('init', function () {
     'has_archive' => false,
     'show_in_rest' => true,
     'menu_icon' => 'dashicons-media-document',
-    'supports' => ['title', 'editor', 'thumbnail', 'excerpt', 'custom-fields', 'page-attributes'],
+    'supports' => ['title', 'editor', 'thumbnail', 'excerpt', 'author', 'custom-fields', 'page-attributes'],
     'rewrite' => ['slug' => 'insight', 'with_front' => false],
     'show_in_graphql' => true,
     'graphql_single_name' => 'insight',

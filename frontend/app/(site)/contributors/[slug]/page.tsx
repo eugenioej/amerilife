@@ -41,25 +41,6 @@ export default async function ContributorPage({
 
   const fields = contributor.userFields;
 
-  // const socialLinks = [
-  //   { label: "Company Website", value: fields?.companyWebsite },
-  //   { label: "Website", value: fields?.website },
-  //   { label: "LinkedIn", value: fields?.linkedin },
-  //   { label: "Facebook", value: fields?.facebook },
-  //   { label: "Instagram", value: fields?.instagram },
-  //   { label: "X", value: fields?.twitter ? `https://x.com/${fields.twitter}` : undefined },
-  //   { label: "YouTube", value: fields?.youtube },
-  //   { label: "Pinterest", value: fields?.pinterest },
-  //   { label: "SoundCloud", value: fields?.soundcloud },
-  //   { label: "Tumblr", value: fields?.tumblr },
-  //   { label: "Wikipedia", value: fields?.wikipedia },
-  // ];
-
-  // const filteredLinks: { label: string; value: string }[] = socialLinks.filter(
-  //   (link): link is { label: string; value: string } =>
-  //     typeof link.value === "string" && link.value.length > 0
-  // );
-
   return (
     <article className="py-16">
       <JsonLd
