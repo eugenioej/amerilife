@@ -69,7 +69,7 @@ export const GET_IDEAXCHANGE_ARTICLES = `
             slug
           }
         }
-        ideaxchangeTags {
+          ideaxchangeTags {
           nodes {
             name
             slug
@@ -176,6 +176,12 @@ export const GET_IDEAXCHANGE_BY_SLUG = `
           slug
         }
       }
+        ideaxchangeTags {
+          nodes {
+            name
+            slug
+          }
+        }
       featuredImage {
         node {
           sourceUrl
@@ -229,6 +235,12 @@ export const GET_IDEAXCHANGE_BY_SLUG_MINIMAL = `
           slug
         }
       }
+        ideaxchangeTags {
+          nodes {
+            name
+            slug
+          }
+        }
       featuredImage {
         node {
           sourceUrl
@@ -314,6 +326,12 @@ export const GET_IDEAXCHANGE_TOPIC_BY_SLUG = `
               slug
             }
           }
+            ideaxchangeTags {
+          nodes {
+            name
+            slug
+          }
+        }
           featuredImage {
             node {
               sourceUrl
@@ -365,6 +383,12 @@ export const GET_IDEAXCHANGE_TOPIC_BY_SLUG_MINIMAL = `
               slug
             }
           }
+            ideaxchangeTags {
+          nodes {
+            name
+            slug
+          }
+        }
           featuredImage {
             node {
               sourceUrl
@@ -416,6 +440,7 @@ export type IdeaxchangeTagBySlugResult = {
     id: string;
     name?: string | null;
     slug?: string | null;
+    count?: number | null;
     ideaxchangeArticles?: {
       nodes: IdeaxchangeListItem[];
       pageInfo: {
@@ -443,6 +468,12 @@ const IDEAXCHANGE_TAG_ARTICLE_FIELDS = `
       slug
     }
   }
+  ideaxchangeTags {
+        nodes {
+          name
+          slug 
+        }
+      }
   featuredImage {
     node {
       sourceUrl
@@ -465,6 +496,7 @@ export const GET_IDEAXCHANGE_TAG_BY_SLUG = `
       id
       name
       slug
+      count
       ideaxchangeArticles(
         first: $first
         after: $after
@@ -488,6 +520,7 @@ export const GET_IDEAXCHANGE_TAG_BY_SLUG_MINIMAL = `
       id
       name
       slug
+      count
       ideaxchangeArticles(
         first: $first
         after: $after
@@ -512,6 +545,12 @@ export const GET_IDEAXCHANGE_TAG_BY_SLUG_MINIMAL = `
               slug
             }
           }
+          ideaxchangeTags {
+            nodes {
+              name
+              slug
+            }
+          }
           featuredImage {
             node {
               sourceUrl
@@ -523,6 +562,26 @@ export const GET_IDEAXCHANGE_TAG_BY_SLUG_MINIMAL = `
     }
   }
 `;
+export const GET_IDEAXCHANGE_TAG_SLUGS = `
+  query GetIdeaxchangeTagSlugs($first: Int!) {
+    ideaxchangeTags(first: $first) {
+      nodes {
+        slug
+        name
+        count
+      }
+    }
+  }
+`;
+export type IdeaxchangeTagsSlugListResult = {
+  ideaxchangeTags?: {
+    nodes: Array<{
+      slug?: string | null;
+      name?: string | null;
+      count?: number | null;
+    }>;
+  } | null;
+};
 
 /** Paginated articles for server-side search (includes body + topics). */
 export type IdeaxchangeArticleSearchNode = {

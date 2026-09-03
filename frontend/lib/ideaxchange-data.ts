@@ -32,6 +32,8 @@ import {
   IDEAXCHANGE_RECRUIT_TAG_SLUG,
   IDEAXCHANGE_SALES_TAG_SLUG,
   IDEAXCHANGE_INITIATIVE_TAG_SLUG,
+  GET_IDEAXCHANGE_TAG_SLUGS,
+  type IdeaxchangeTagsSlugListResult,
   type IdeaxchangeBySlugResult,
   type IdeaxchangeConnectionResult,
   type IdeaxchangeDetail,
@@ -176,6 +178,47 @@ async function fetchIdeaxchangeTagBySlugResult(
     );
   }
 }
+export async function fetchIdeaxchangeTagAfterCursor(
+  tagSlug: string,
+  after: string,
+  first = IDEAXCHANGE_LOAD_MORE_FIRST,
+  persona: IdeaxchangePersona = "brokerage",
+): Promise<{
+  nodes: IdeaxchangeListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  try {
+    const data = await fetchIdeaxchangeTagBySlugResult(
+      tagSlug,
+      first,
+      after,
+    );
+
+    const conn = data?.ideaxchangeTag?.ideaxchangeArticles;
+
+    const personaFilteredPosts = filterArticles(
+      conn?.nodes ?? [],
+      persona,
+    );
+
+    const visiblePosts = excludeReservedIdeaxchangeArticles(
+      personaFilteredPosts,
+    );
+
+    return {
+      nodes: visiblePosts,
+      pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
+    };
+  } catch (err) {
+    console.error("[ideaxchange] fetchIdeaxchangeTagAfterCursor failed:", err);
+
+    return {
+      nodes: [],
+      pageInfo: EMPTY_PAGE_INFO,
+    };
+  }
+}
+
 
 export async function getIdeaxchangeList(
   persona: IdeaxchangePersona = "brokerage",
@@ -404,6 +447,21 @@ export async function getIdeaxchangeTopicSlugs(): Promise<string[]> {
     return [];
   }
 }
+export async function getIdeaxchangeTagSlugs(): Promise<string[]> {
+  try {
+    const data = await fetchGraphQL<IdeaxchangeTagsSlugListResult>(
+      GET_IDEAXCHANGE_TAG_SLUGS,
+      { first: 100 },
+    );
+
+    return (data?.ideaxchangeTags?.nodes ?? [])
+      .map((n) => n.slug?.trim())
+      .filter((s): s is string => Boolean(s));
+  } catch (err) {
+    console.error("[ideaxchange] getIdeaxchangeTagSlugs failed:", err);
+    return [];
+  }
+}
 
 export type IdeaxchangeCategoryPageData = {
   topicName: string | null;
@@ -418,6 +476,7 @@ export type IdeaxchangeCategoryPageData = {
 };
 
 const IDEAXCHANGE_TOPIC_CURSOR_BATCH = 80;
+const IDEAXCHANGE_TAG_CURSOR_BATCH = 80;
 
 async function fetchIdeaxchangeTopicBySlugResult(
   slug: string,
@@ -454,6 +513,27 @@ async function fetchIdeaxchangeTopicArticlesSlice(
     pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
   };
 }
+async function fetchIdeaxchangeTagArticlesSlice(
+  slug: string,
+  first: number,
+  after: string | null,
+): Promise<{
+  nodes: IdeaxchangeListItem[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}> {
+  const data = await fetchIdeaxchangeTagBySlugResult(
+    slug,
+    first,
+    after,
+  );
+
+  const conn = data?.ideaxchangeTag?.ideaxchangeArticles;
+
+  return {
+    nodes: conn?.nodes ?? [],
+    pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
+  };
+}
 
 async function cursorAfterSkippingIdeaxchangeTopicPosts(
   slug: string,
@@ -472,7 +552,47 @@ async function cursorAfterSkippingIdeaxchangeTopicPosts(
   }
   return { after: cursor, ok: true };
 }
+async function cursorAfterSkippingIdeaxchangeTagPosts(
+  slug: string,
+  skip: number,
+): Promise<{ after: string | null; ok: boolean }> {
+  if (skip <= 0) {
+    return { after: null, ok: true };
+  }
 
+  let cursor: string | null = null;
+  let remaining = skip;
+
+  while (remaining > 0) {
+    const batch = Math.min(
+      remaining,
+      IDEAXCHANGE_TAG_CURSOR_BATCH,
+    );
+
+    const { nodes, pageInfo } =
+      await fetchIdeaxchangeTagArticlesSlice(
+        slug,
+        batch,
+        cursor,
+      );
+
+    if (nodes.length === 0) {
+      return { after: null, ok: false };
+    }
+
+    remaining -= nodes.length;
+    cursor = pageInfo.endCursor ?? null;
+
+    if (!pageInfo.hasNextPage && remaining > 0) {
+      return { after: null, ok: false };
+    }
+  }
+
+  return {
+    after: cursor,
+    ok: true,
+  };
+}
 export const getIdeaxchangeCategoryPageData = cache(async function getIdeaxchangeCategoryPageData(
   slug: string,
   page: number,
@@ -694,6 +814,18 @@ export async function fetchIdeaxchangeRecruitAfterCursor(
   return { nodes: filterArticles(mock.nodes, persona), pageInfo: mock.pageInfo };
 }
 
+export type IdeaxchangeTagPageData = {
+  tagName: string | null;
+  tagSlug: string;
+  posts: IdeaxchangeListItem[];
+  totalCount: number;
+  currentPage: number;
+  pageSize: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  endCursor: string | null;
+};
+
 /** ideaXchange-tagged Initiative articles — Sales Success vertical. */
 async function fetchIdeaxchangeInitiativeTagBySlugResult(
   first: number,
@@ -724,6 +856,74 @@ async function fetchIdeaxchangeInitiativeTagBySlugResult(
     }
   }
 }
+export const getIdeaxchangeTagPageData = cache(
+  async function getIdeaxchangeTagPageData(
+    slug: string,
+    page: number,
+    persona: IdeaxchangePersona = "brokerage",
+  ): Promise<IdeaxchangeTagPageData | null> {
+    const trimmed = slug.trim();
+    if (!trimmed) return null;
+
+    const safePage =
+      Number.isFinite(page) && page >= 1
+        ? Math.min(Math.floor(page), 1_000_000)
+        : 1;
+
+    const pageSize = IDEAXCHANGE_CATEGORY_PAGE_FIRST;
+
+    try {
+      const skipOffset = (safePage - 1) * pageSize;
+
+      const { after: afterSkip, ok: skipOk } =
+        await cursorAfterSkippingIdeaxchangeTagPosts(
+          trimmed,
+          skipOffset,
+        );
+
+      if (!skipOk && skipOffset > 0) {
+        return null;
+      }
+
+      const data = await fetchIdeaxchangeTagBySlugResult(
+        trimmed,
+        pageSize,
+        afterSkip,
+      );
+      const tag = data?.ideaxchangeTag;
+
+      if (!tag?.slug) return null;
+
+      const conn = tag.ideaxchangeArticles;
+      const posts = conn?.nodes ?? [];
+      
+
+      const totalCount = tag.count ?? posts.length;
+      const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+      const personaFilteredPosts = filterArticles(posts, persona);
+      const visiblePosts = excludeReservedIdeaxchangeArticles(
+        personaFilteredPosts,
+      );
+
+      return {
+        tagName: tag.name?.trim() ?? null,
+        tagSlug: tag.slug.trim(),
+        posts: visiblePosts,
+        totalCount,
+        currentPage: safePage,
+        pageSize,
+        totalPages,
+        hasNextPage: conn?.pageInfo?.hasNextPage ?? false,
+        endCursor: conn?.pageInfo?.endCursor ?? null,
+      };
+    } catch (err) {
+      console.error("[ideaxchange] getIdeaxchangeTagPageData failed:", err);
+      return null;
+    }
+  },
+);
+
 
 export async function getIdeaxchangeInitiativeMagazineBundle(
   persona: IdeaxchangePersona = "brokerage",

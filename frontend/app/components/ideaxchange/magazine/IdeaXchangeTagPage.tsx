@@ -3,22 +3,22 @@ import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared
 import { IDEAXCHANGE_HOME_FEED_PATH } from "@/lib/ideaxchange-constants";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
 import type { IdeaxchangeAdSlot } from "@/lib/queries";
-import { IdeaXchangeCategoryArticlesSection } from "./IdeaXchangeCategoryArticlesSection";
-import { IdeaXchangeCategoryPagination } from "./IdeaXchangeCategoryPagination";
+import { IdeaXchangeTagArticlesSection } from "./IdeaXchangeTagArticlesSection";
+import { IdeaXchangeTagPagination } from "./IdeaXchangeTagPagination";
 import { IdeaXchangeNewsroomColumn } from "./IdeaXchangeNewsroomColumn";
 
 type Props = {
-  topicSlug: string;
-  topicName: string;
+  tagSlug: string;
+  tagName: string;
   posts: IdeaxchangeListItem[];
   currentPage: number;
   totalPages: number;
   adSlot?: IdeaxchangeAdSlot | null;
 };
 
-export function IdeaXchangeCategoryPage({
-  topicSlug,
-  topicName,
+export function IdeaXchangeTagPage({
+  tagSlug,
+  tagName,
   posts,
   currentPage,
   totalPages,
@@ -32,17 +32,17 @@ export function IdeaXchangeCategoryPage({
           items={[
             { label: "Home", href: "/" },
             { label: "ideaXchange", href: IDEAXCHANGE_HOME_FEED_PATH },
-            { label: topicName, className: "max-w-[min(100%,20rem)] truncate" },
+            { label: tagName, className: "max-w-[min(100%,20rem)] truncate" },
           ]}
         />
         <h1 className="font-sans text-3xl font-bold tracking-tight text-[var(--color-brand-dark)] md:text-4xl">
-          {topicName}
+          {tagName}
         </h1>
         <p className="mt-3 max-w-2xl text-lg text-[var(--color-muted)]">
-          Articles and resources in the {topicName} category.
+          Articles and resources tagged with {tagName}.
         </p>
 
-        <IdeaXchangeCategoryArticlesSection>
+        <IdeaXchangeTagArticlesSection>
           <IdeaXchangeNewsroomColumn
             initialPosts={posts}
             deferredBatchPosts={[]}
@@ -50,13 +50,13 @@ export function IdeaXchangeCategoryPage({
             initialHasNextPage={false}
             enableLoadMore={false}
           />
-          <IdeaXchangeCategoryPagination
-            topicSlug={topicSlug}
+          <IdeaXchangeTagPagination
+            tagSlug={tagSlug}
             currentPage={currentPage}
             totalPages={totalPages}
           />
           <IdeaxchangeHorizontalAdSlot slot={adSlot} className="mt-10" />
-        </IdeaXchangeCategoryArticlesSection>
+        </IdeaXchangeTagArticlesSection>
       </div>
     </div>
   );
