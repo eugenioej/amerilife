@@ -3,7 +3,7 @@
 
 import MastermindsHeader from "@/app/components/masterminds/MastermindsHeader";
 import MastermindsAgenda from "@/app/components/masterminds/MastermindsAgenda";
-import MastermindsAgendaFooter from "@/app/components/masterminds/MastermindsAgendaFooter";
+import MastermindsFooter from "@/app/components/masterminds/MastermindsFooter";
 
 /* ========================================
    CONSTANTS
@@ -295,7 +295,7 @@ export default function Page() {
         note="Please note the agenda is subject to change. Attire is business casual for meetings and resort casual for group dinners."/>
       <MastermindsAgenda 
         agendaDays={AgendaDays}/>
-      <MastermindsAgendaFooter/>
+      <MastermindsFooter/>
     </div>
   );
 }

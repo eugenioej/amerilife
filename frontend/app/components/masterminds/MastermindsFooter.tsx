@@ -36,7 +36,7 @@ function LogoBlock() {
         <img src={IMAGES.footerLogo} alt="" className="w-full h-auto" />
       </div>
       <p className="text-sm font-semibold tracking-wide text-[#03f080]">
-        June 15 – 17, 2026 | Grand Hyatt Tampa Bay, FL
+        September 15 – 17, 2026 Hilton St. Petersburg Bayfront, FL
       </p>
     </>
   );
@@ -79,12 +79,12 @@ function Contacts() {
 
       <div className="space-y-1.5 sm:space-y-2">
 
-        <p>
+       {/* <p>
           Megan Hill • Hotel<br />
           <a href="tel:17275055133" className="hover:underline">
             (727) 505-5133
           </a>
-        </p>
+        </p>*/}
 
         <p>
           Amanda Spadafora • Hotel<br />
@@ -93,12 +93,12 @@ function Contacts() {
           </a>
         </p>
 
-        <p>
+        {/*<p>
           Taylor Perko • All Other Inquiries<br />
           <a href="tel:17274039295" className="hover:underline">
             (727) 403-9295
           </a>
-        </p>
+        </p> */}
 
       </div>
     </div>
