@@ -13,6 +13,9 @@ export type IdeaxchangeDevViewMode = "off" | "all" | "brokerage" | "career";
 
 const VALID_MODES = new Set<IdeaxchangeDevViewMode>(["off", "all", "brokerage", "career"]);
 
+const normalizeEmail = (email: string) =>
+  email.trim().toLowerCase();
+
 /** Signed-in Microsoft emails allowed to use the ideaXchange persona preview switcher. */
 const IDEAXCHANGE_DEV_VIEW_ALLOWED_EMAILS = new Set([
   "bjoseph@amerilife.com",
@@ -27,15 +30,15 @@ const IDEAXCHANGE_DEV_VIEW_ALLOWED_EMAILS = new Set([
   "psthanason@amerilife.com",
   "amcNatt@amerilife.com",
   "wdeCourcy@amerilife.com",
-  "ccushing@ameriLife.com",
-  "pzadorozny@ameriLife.com",
-  "edahms@ameriLife.com",
+  "ccushing@amerilife.com",
+  "pzadorozny@amerilife.com",
+  "edahms@amerilife.com",
   "vgonsalves@amerilife.com",
-  "cking@ameriLife.com",
-  "tperko@ameriLife.com",
+  "cking@amerilife.com",
+  "tperko@amerilife.com",
   "jbarker@amerilife.com",
-  "ccushing@ameriLife.com"
-]);
+  "klove@amerilife.com"
+].map(normalizeEmail));
 
 export function isIdeaxchangeDevUnlockEnabled(): boolean {
   if (process.env.NODE_ENV === "production") return false;
@@ -44,7 +47,7 @@ export function isIdeaxchangeDevUnlockEnabled(): boolean {
 
 export function isIdeaxchangeDevViewEmailAllowed(email?: string | null): boolean {
   if (!email) return false;
-  return IDEAXCHANGE_DEV_VIEW_ALLOWED_EMAILS.has(email.trim().toLowerCase());
+  return IDEAXCHANGE_DEV_VIEW_ALLOWED_EMAILS.has(normalizeEmail(email));
 }
 
 /** Marketing allowlist in production; env flag is a local-only fallback. */

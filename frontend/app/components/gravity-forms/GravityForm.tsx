@@ -226,6 +226,7 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
 
   const [stringValues, setStringValues] = useState<Record<number, string>>({});
   const [frontendUrl, setFrontendUrl] = useState("");
+  const [website, setWebsite] = useState("");
   const [nameParts, setNameParts] = useState<Record<string, string>>({});
   const [checkboxChecked, setCheckboxChecked] = useState<Record<string, boolean>>({});
   const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null);
@@ -337,6 +338,12 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (website.trim()) {
+      setSuccessHtml("<p>Thank you — your message was sent.</p>");
+      return;
+    }
+
     setClientError(null);
     setFieldErrors({});
     setSuccessHtml(null);
@@ -445,6 +452,24 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
             "flex w-full min-w-0 flex-col overflow-hidden rounded-2xl bg-white shadow-[var(--shadow-lg)] sm:flex-row sm:items-stretch sm:rounded-[var(--radius-full)]"
           }
         >
+          <div
+            className="absolute -left-[9999px]"
+            aria-hidden="true"
+          >
+            <label htmlFor="website">
+              Leave this field empty
+            </label>
+
+            <input
+              name="website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
+          </div>
+
           {inlineFields.map((field, idx) => {
             const fid = field.databaseId;
             const label = decodeHtmlEntities(field.label?.trim() || "Field");
@@ -549,6 +574,25 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
       className={className ?? "space-y-5"}
       noValidate
     >
+
+      <div
+        className="absolute -left-[9999px]"
+        aria-hidden="true"
+      >
+        <label htmlFor="website">
+          Leave this field empty
+        </label>
+
+        <input
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
+        />
+      </div>
+
       {nodes.map((field) => {
         const fid = field.databaseId;
         const err = fieldErrors[String(fid)];
