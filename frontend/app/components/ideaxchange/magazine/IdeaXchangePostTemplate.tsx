@@ -237,7 +237,7 @@ export function IdeaXchangePostTemplate({
       </div>
       <div>
         {post.ideaxchangeTags?.nodes?.length ? (
-          <div className=" border-b border-[var(--color-border)] mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 pb-3 text-sm text-[var(--color-muted)]">
+          <div className=" border-b border-[var(--color-border)] mt-6 flex flex-wrap items-center gap-x-1 gap-y-2 pb-3 text-sm text-[var(--color-muted)]">
             {post.ideaxchangeTags.nodes.map((tag, index) => (
               <span key={tag.slug}>
               <Link href= {`/ideaxchange/tags/${tag.slug}`} className="text-sm text-[var(--color-muted)]">
@@ -298,7 +298,7 @@ export function IdeaXchangePostTemplate({
             </div>
               <div>
         {post.ideaxchangeTags?.nodes?.length ? (
-          <div className=" mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 pb-3 text-sm text-[var(--color-muted)]">
+          <div className=" mt-6 flex flex-wrap items-center gap-x-1 gap-y-2 pb-3 text-sm text-[var(--color-muted)]">
             {post.ideaxchangeTags.nodes.map((tag, index) => (
               <span key={tag.slug}>
               <Link href= {`/ideaxchange/tags/${tag.slug}`} className="text-sm text-[var(--color-muted)]">
