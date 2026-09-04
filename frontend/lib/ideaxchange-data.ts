@@ -513,27 +513,7 @@ async function fetchIdeaxchangeTopicArticlesSlice(
     pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
   };
 }
-async function fetchIdeaxchangeTagArticlesSlice(
-  slug: string,
-  first: number,
-  after: string | null,
-): Promise<{
-  nodes: IdeaxchangeListItem[];
-  pageInfo: { hasNextPage: boolean; endCursor: string | null };
-}> {
-  const data = await fetchIdeaxchangeTagBySlugResult(
-    slug,
-    first,
-    after,
-  );
 
-  const conn = data?.ideaxchangeTag?.ideaxchangeArticles;
-
-  return {
-    nodes: conn?.nodes ?? [],
-    pageInfo: conn?.pageInfo ?? EMPTY_PAGE_INFO,
-  };
-}
 
 async function cursorAfterSkippingIdeaxchangeTopicPosts(
   slug: string,
@@ -552,47 +532,8 @@ async function cursorAfterSkippingIdeaxchangeTopicPosts(
   }
   return { after: cursor, ok: true };
 }
-async function cursorAfterSkippingIdeaxchangeTagPosts(
-  slug: string,
-  skip: number,
-): Promise<{ after: string | null; ok: boolean }> {
-  if (skip <= 0) {
-    return { after: null, ok: true };
-  }
 
-  let cursor: string | null = null;
-  let remaining = skip;
 
-  while (remaining > 0) {
-    const batch = Math.min(
-      remaining,
-      IDEAXCHANGE_TAG_CURSOR_BATCH,
-    );
-
-    const { nodes, pageInfo } =
-      await fetchIdeaxchangeTagArticlesSlice(
-        slug,
-        batch,
-        cursor,
-      );
-
-    if (nodes.length === 0) {
-      return { after: null, ok: false };
-    }
-
-    remaining -= nodes.length;
-    cursor = pageInfo.endCursor ?? null;
-
-    if (!pageInfo.hasNextPage && remaining > 0) {
-      return { after: null, ok: false };
-    }
-  }
-
-  return {
-    after: cursor,
-    ok: true,
-  };
-}
 export const getIdeaxchangeCategoryPageData = cache(async function getIdeaxchangeCategoryPageData(
   slug: string,
   page: number,
@@ -863,7 +804,10 @@ export const getIdeaxchangeTagPageData = cache(
     persona: IdeaxchangePersona = "brokerage",
   ): Promise<IdeaxchangeTagPageData | null> {
     const trimmed = slug.trim();
-    if (!trimmed) return null;
+
+    if (!trimmed) {
+      return null;
+    }
 
     const safePage =
       Number.isFinite(page) && page >= 1
@@ -873,52 +817,78 @@ export const getIdeaxchangeTagPageData = cache(
     const pageSize = IDEAXCHANGE_CATEGORY_PAGE_FIRST;
 
     try {
-      const skipOffset = (safePage - 1) * pageSize;
+      let cursor: string | null = null;
+      let tagName: string | null = null;
 
-      const { after: afterSkip, ok: skipOk } =
-        await cursorAfterSkippingIdeaxchangeTagPosts(
+      const allVisiblePosts: IdeaxchangeListItem[] = [];
+
+      for (;;) {
+        const data = await fetchIdeaxchangeTagBySlugResult(
           trimmed,
-          skipOffset,
+          IDEAXCHANGE_TAG_CURSOR_BATCH,
+          cursor,
         );
 
-      if (!skipOk && skipOffset > 0) {
+        const tag = data?.ideaxchangeTag;
+
+        if (!tag?.slug) {
+          return null;
+        }
+
+        tagName = tag.name?.trim() ?? null;
+
+        const conn = tag.ideaxchangeArticles;
+
+        const visibleBatch = excludeReservedIdeaxchangeArticles(
+          filterArticles(conn?.nodes ?? [], persona),
+        );
+
+        allVisiblePosts.push(...visibleBatch);
+
+        if (!conn?.pageInfo?.hasNextPage || !conn?.pageInfo?.endCursor) {
+          break;
+        }
+
+        cursor = conn.pageInfo.endCursor;
+      }
+
+      const totalCount = allVisiblePosts.length;
+
+      if (totalCount === 0) {
         return null;
       }
 
-      const data = await fetchIdeaxchangeTagBySlugResult(
-        trimmed,
-        pageSize,
-        afterSkip,
+      const totalPages = Math.max(
+        1,
+        Math.ceil(totalCount / pageSize),
       );
-      const tag = data?.ideaxchangeTag;
 
-      if (!tag?.slug) return null;
+      if (safePage > totalPages) {
+        return null;
+      }
 
-      const conn = tag.ideaxchangeArticles;
-      const posts = conn?.nodes ?? [];
-      
+      const start = (safePage - 1) * pageSize;
+      const end = start + pageSize;
 
-      const totalCount = tag.count ?? posts.length;
-      const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-
-      const personaFilteredPosts = filterArticles(posts, persona);
-      const visiblePosts = excludeReservedIdeaxchangeArticles(
-        personaFilteredPosts,
-      );
+      const pagePosts = allVisiblePosts.slice(start, end);
 
       return {
-        tagName: tag.name?.trim() ?? null,
-        tagSlug: tag.slug.trim(),
-        posts: visiblePosts,
+        tagName,
+        tagSlug: trimmed,
+        posts: pagePosts,
         totalCount,
         currentPage: safePage,
         pageSize,
         totalPages,
-        hasNextPage: conn?.pageInfo?.hasNextPage ?? false,
-        endCursor: conn?.pageInfo?.endCursor ?? null,
+        hasNextPage: safePage < totalPages,
+        endCursor: null,
       };
     } catch (err) {
-      console.error("[ideaxchange] getIdeaxchangeTagPageData failed:", err);
+      console.error(
+        "[ideaxchange] getIdeaxchangeTagPageData failed:",
+        err,
+      );
+
       return null;
     }
   },

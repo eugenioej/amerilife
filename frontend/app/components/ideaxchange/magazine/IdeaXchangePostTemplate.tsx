@@ -237,13 +237,10 @@ export function IdeaXchangePostTemplate({
       </div>
       <div>
         {post.ideaxchangeTags?.nodes?.length ? (
-          <div className="pb-8 text-sm border-b border-[var(--color-border)]  text-[var(--color-muted)]">
-            <span className="font-semibold text-[var(--color-brand-dark)]">
-              Tags:
-            </span>{" "}
+          <div className=" border-b border-[var(--color-border)] mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 pb-3 text-sm text-[var(--color-muted)]">
             {post.ideaxchangeTags.nodes.map((tag, index) => (
               <span key={tag.slug}>
-              <Link href= {`/ideaxchange/tags/${tag.slug}`}>
+              <Link href= {`/ideaxchange/tags/${tag.slug}`} className="text-sm text-[var(--color-muted)]">
                   {tag.name}
                 </Link>
                 {index < tags.length - 1 ? ", " : ""}
@@ -299,15 +296,12 @@ export function IdeaXchangePostTemplate({
                 </span>
               )}
             </div>
-                   <div>
+              <div>
         {post.ideaxchangeTags?.nodes?.length ? (
-          <div className="pt-3 text-sm text-[var(--color-muted)]">
-            <span className="font-semibold text-[var(--color-brand-dark)]">
-              Tags:
-            </span>{" "}
+          <div className=" mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 pb-3 text-sm text-[var(--color-muted)]">
             {post.ideaxchangeTags.nodes.map((tag, index) => (
               <span key={tag.slug}>
-              <Link href= {`/ideaxchange/tags/${tag.slug}`}>
+              <Link href= {`/ideaxchange/tags/${tag.slug}`} className="text-sm text-[var(--color-muted)]">
                   {tag.name}
                 </Link>
                 {index < tags.length - 1 ? ", " : ""}
