@@ -182,6 +182,12 @@ export function IdeaXchangePostTemplate({
 
   const sidebarList = relatedPosts.slice(0, 5);
   const bottomGrid = relatedPosts.slice(0, 3);
+  const tags =
+  post.ideaxchangeTags?.nodes?.filter(
+    (tag) => tag.slug?.trim() && tag.name?.trim(),
+  ) ?? [];
+
+
 
   return (
     <InsightPostChrome>
@@ -211,7 +217,7 @@ export function IdeaXchangePostTemplate({
         {post.title}
       </h1>
 
-      <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-[var(--color-border)] pb-8 text-sm text-[var(--color-muted)]">
+      <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 pb-3 text-sm text-[var(--color-muted)]">
         {post.date ? (
           <time dateTime={post.date}>{formatBylineDate(post.date)}</time>
         ) : null}
@@ -227,7 +233,23 @@ export function IdeaXchangePostTemplate({
         <span className="text-[var(--color-border)]" aria-hidden>
           ·
         </span>
+        
       </div>
+      <div>
+        {post.ideaxchangeTags?.nodes?.length ? (
+          <div className=" border-b border-[var(--color-border)] mt-6 flex flex-wrap items-center gap-x-1 gap-y-2 pb-3 text-sm text-[var(--color-muted)]">
+            {post.ideaxchangeTags.nodes.map((tag, index) => (
+              <span key={tag.slug}>
+              <Link href= {`/ideaxchange/tags/${tag.slug}`} className="text-sm text-[var(--color-muted)]">
+                  {tag.name}
+                </Link>
+                {index < tags.length - 1 ? ", " : ""}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </div>
+      
 
       <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-10 lg:gap-x-12">
           <div className="lg:col-span-8">
@@ -274,7 +296,20 @@ export function IdeaXchangePostTemplate({
                 </span>
               )}
             </div>
-
+              <div>
+        {post.ideaxchangeTags?.nodes?.length ? (
+          <div className=" mt-6 flex flex-wrap items-center gap-x-1 gap-y-2 pb-3 text-sm text-[var(--color-muted)]">
+            {post.ideaxchangeTags.nodes.map((tag, index) => (
+              <span key={tag.slug}>
+              <Link href= {`/ideaxchange/tags/${tag.slug}`} className="text-sm text-[var(--color-muted)]">
+                  {tag.name}
+                </Link>
+                {index < tags.length - 1 ? ", " : ""}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </div>
           </div>
 
           <aside className="lg:col-span-4">
