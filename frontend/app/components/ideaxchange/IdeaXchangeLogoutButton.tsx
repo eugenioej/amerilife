@@ -1,9 +1,9 @@
 "use client";
 
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { IDEAXCHANGE_LOGIN_PATH } from "@/lib/ideaxchange-constants";
-import { signOutIdeaxchange } from "./ideaxchange-auth-actions";
 
 const buttonClassName =
   "text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60";
@@ -34,13 +34,26 @@ export function IdeaXchangeLogoutButton({
     }
   }
 
+  async function logoutMicrosoft() {
+    if (loading) return;
+    setLoading(true);
+    try {
+      await signOut({ redirectTo: IDEAXCHANGE_LOGIN_PATH });
+    } catch {
+      setLoading(false);
+    }
+  }
+
   if (microsoftAuthEnabled) {
     return (
-      <form action={signOutIdeaxchange}>
-        <button type="submit" className={`${className ?? buttonClassName} underline-offset-4 cursor-pointer text-sm font-medium text-white hover:text-[var(--color-link-hover)] hover:!underline transition-colors`} disabled={loading}>
-          {loading ? "Signing out…" : "Log out"}
-        </button>
-      </form>
+      <button
+        type="button"
+        className={`${className ?? buttonClassName} underline-offset-4 cursor-pointer text-sm font-medium text-white hover:text-[var(--color-link-hover)] hover:!underline transition-colors`}
+        disabled={loading}
+        onClick={logoutMicrosoft}
+      >
+        {loading ? "Signing out…" : "Log out"}
+      </button>
     );
   }
 

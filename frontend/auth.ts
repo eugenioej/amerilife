@@ -42,6 +42,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: getAuthProviders(),
   pages: {
     signIn: IDEAXCHANGE_LOGIN_PATH,
+    error: IDEAXCHANGE_LOGIN_PATH,
   },
   session: {
     strategy: "jwt",

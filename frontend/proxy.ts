@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import {
+  expireIdeaxchangeAuthCookies,
   getIdeaxchangeHomeFromRequest,
   isIdeaxchangeRequestAuthenticated,
 } from "@/lib/ideaxchange-auth-proxy";
@@ -178,6 +179,29 @@ export async function proxy(request: NextRequest) {
     return new NextResponse("Not Found", { status: 404 });
   }
 
+  // Auth.js error page (and stale cookies) — wipe Auth.js cookies, send to login.
+  // Does not touch Imperva / Cloudflare cookies.
+  if (pathname === "/api/auth/error" || pathname === "/api/auth/error/") {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = "/ideaxchange";
+    loginUrl.search = "";
+    const error = request.nextUrl.searchParams.get("error");
+    if (error && error !== "Configuration" && /^[A-Za-z0-9_-]{1,64}$/.test(error)) {
+      loginUrl.searchParams.set("error", error);
+    }
+    const response = NextResponse.redirect(loginUrl);
+    expireIdeaxchangeAuthCookies(request, response);
+    return response;
+  }
+
+  if (isIdeaxchangeLoginPath(pathname) && request.nextUrl.searchParams.get("reset") === "1") {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.searchParams.delete("reset");
+    const response = NextResponse.redirect(loginUrl);
+    expireIdeaxchangeAuthCookies(request, response);
+    return response;
+  }
+
   const ideaxchangeAuthed = await isIdeaxchangeRequestAuthenticated(request);
 
   // 3. Gated ideaXchange — require session (all routes under /ideaxchange/ except login)
@@ -214,7 +238,19 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(destination, request.url));
   }
 
-  return nextWithPathname(request);
+  const response = nextWithPathname(request);
+  if (isIdeaxchangeLoginPath(pathname)) {
+    const error = request.nextUrl.searchParams.get("error");
+    if (
+      error === "Configuration" ||
+      error === "OAuthCallback" ||
+      error === "OAuthSignin" ||
+      error === "Callback"
+    ) {
+      expireIdeaxchangeAuthCookies(request, response);
+    }
+  }
+  return response;
 }
 
 export const config = {
