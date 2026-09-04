@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IdeaXchangeLogo } from "./IdeaXchangeLogo";
 import {
   IDEAXCHANGE_HOME_PATH,
@@ -22,6 +22,7 @@ const AUTH_ERRORS: Record<string, string> = {
   OAuthSignin: "Could not start Microsoft sign-in. Please try again.",
   OAuthCallback: "Microsoft sign-in failed. Please try again.",
   Configuration: "Sign-in did not complete. Please try again.",
+  MissingCSRF: "Sign-in expired. Please try Sign in with Microsoft again.",
   Default: "Sign-in failed. Please try again.",
 };
 
@@ -37,7 +38,6 @@ export function IdeaXchangeLoginForm({
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [csrfToken, setCsrfToken] = useState("");
 
   const nextParam = searchParams.get("next");
   const nextPath =
@@ -51,31 +51,43 @@ export function IdeaXchangeLoginForm({
         ? AUTH_ERRORS.Default
         : null;
 
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/auth/csrf")
-      .then((res) => {
-        if (!res.ok) throw new Error("csrf");
-        return res.json() as Promise<{ csrfToken?: string }>;
-      })
-      .then((data) => {
-        if (!cancelled && typeof data.csrfToken === "string") {
-          setCsrfToken(data.csrfToken);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setError("Could not start Microsoft sign-in. Please refresh and try again.");
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  function signInWithMicrosoft() {
-    if (loading || !csrfToken) return;
+  async function signInWithMicrosoft(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (loading) return;
     setLoading(true);
+    setError(null);
+    try {
+      const csrfRes = await fetch("/api/auth/csrf", {
+        cache: "no-store",
+        credentials: "same-origin",
+      });
+      if (!csrfRes.ok) throw new Error("csrf");
+      const csrfJson = (await csrfRes.json()) as { csrfToken?: string };
+      if (!csrfJson.csrfToken) throw new Error("csrf");
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "/api/auth/signin/microsoft-entra-id";
+      form.acceptCharset = "UTF-8";
+
+      const csrfInput = document.createElement("input");
+      csrfInput.type = "hidden";
+      csrfInput.name = "csrfToken";
+      csrfInput.value = csrfJson.csrfToken;
+      form.appendChild(csrfInput);
+
+      const callbackInput = document.createElement("input");
+      callbackInput.type = "hidden";
+      callbackInput.name = "callbackUrl";
+      callbackInput.value = nextPath;
+      form.appendChild(callbackInput);
+
+      document.body.appendChild(form);
+      form.submit();
+    } catch {
+      setError("Could not start Microsoft sign-in. Please refresh and try again.");
+      setLoading(false);
+    }
   }
 
   async function signInWithPassword(e: React.FormEvent) {
@@ -118,18 +130,8 @@ export function IdeaXchangeLoginForm({
 
       {microsoftAuthEnabled ? (
         <div className="space-y-4">
-          <form
-            action="/api/auth/signin/microsoft-entra-id"
-            method="POST"
-            onSubmit={signInWithMicrosoft}
-          >
-            <input type="hidden" name="csrfToken" value={csrfToken} />
-            <input type="hidden" name="callbackUrl" value={nextPath} />
-            <button
-              type="submit"
-              className={microsoftButtonClassName}
-              disabled={loading || !csrfToken}
-            >
+          <form onSubmit={signInWithMicrosoft}>
+            <button type="submit" className={microsoftButtonClassName} disabled={loading}>
               {loading ? "Redirecting…" : "Sign in with Microsoft"}
             </button>
           </form>
