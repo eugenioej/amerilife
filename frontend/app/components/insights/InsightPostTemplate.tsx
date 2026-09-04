@@ -237,6 +237,16 @@ export function InsightPostTemplate({
   post.author?.node?.firstName === "AmeriLife" &&
   post.author?.node?.lastName === "Editorial Team";
 
+  const contributorLinkedIn =
+  post.author?.node?.userFields?.linkedin?.trim();
+
+const contributorName = [
+  post.author?.node?.firstName,
+  post.author?.node?.lastName,
+]
+  .filter(Boolean)
+  .join(" ");
+
   const proseClasses =
     "insight-article-body max-w-none font-sans text-[var(--color-fg)] [&_h1]:font-sans [&_h2]:font-sans [&_h3]:font-sans [&_h4]:font-sans [&_h5]:font-sans [&_h6]:font-sans [&_p]:mb-4 [&_p]:leading-relaxed [&_a]:text-[var(--color-link)] [&_a:hover]:text-[var(--color-link-hover)] [&_a]:underline [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-2 [&_iframe]:my-6 [&_iframe]:aspect-video [&_iframe]:w-full [&_iframe]:max-w-full [&_iframe]:rounded-md [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:scroll-mt-24 [&_h2]:text-base [&_h2]:font-bold [&_h2]:uppercase [&_h2]:tracking-wide [&_h2]:!text-[var(--color-brand-primary)] [&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:text-base [&_h3]:font-bold [&_h3]:uppercase [&_h3]:tracking-wide [&_h3]:!text-[var(--color-brand-primary)] [&_strong]:text-[var(--color-fg)]";
 
@@ -366,7 +376,18 @@ export function InsightPostTemplate({
                 ) : ( 
                 <>
                 <p>
-                  {post.author?.node?.firstName} {post.author?.node?.lastName}
+                  {contributorLinkedIn ? (
+                    <a
+                      href={contributorLinkedIn}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline transition-colors hover:text-[var(--color-brand-primary)]"
+                    >
+                      {contributorName}
+                    </a>
+                  ) : (
+                    contributorName
+                  )}
                   {" is "}
                   {post.author?.node?.userFields?.jobTitle}
                   {" at "}
@@ -406,23 +427,21 @@ export function InsightPostTemplate({
 
                 </p>
                 </>
-                
-)}
+              )}
 
-{post.author?.node?.userFields?.email ? (
-                        <p className="">
-                          <a
-                            href={`mailto:${post.author.node.userFields.email}`}
-                            className="underline transition-colors font-bold text-[var(--color-brand-primary)] hover:text-[var(--color-brand-dark)]"
-                          >
-                            {post.author.node.userFields.email}
-                          </a>
-                        </p>
-                      ): null}
-</div>
+              {post.author?.node?.userFields?.email ? (
+                <p className="">
+                  <a
+                    href={`mailto:${post.author.node.userFields.email}`}
+                    className="underline transition-colors font-bold text-[var(--color-brand-primary)] hover:text-[var(--color-brand-dark)]"
+                  >
+                    {post.author.node.userFields.email}
+                  </a>
+                </p>
+              ): null}
 
+              </div>
             </div>
-
           </div>
 
           <aside className="lg:col-span-4">

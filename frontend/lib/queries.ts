@@ -1382,6 +1382,7 @@ export type InsightDetail = InsightListItem & {
         company?: string | null;
         companyWebsite?: string | null;
         headshot?: string | null;
+        linkedin?: string | null;
       } | null;
     } | null;
   } | null;
@@ -1429,6 +1430,7 @@ export const GET_INSIGHT_BY_SLUG = `
             company
             companyWebsite
             headshot
+            linkedin
           }
         }
       }
@@ -1488,6 +1490,7 @@ export const GET_INSIGHT_BY_SLUG_MINIMAL = `
             company
             companyWebsite
             headshot
+            linkedin
           }
         }
       }
