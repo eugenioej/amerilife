@@ -25,22 +25,6 @@ export default function SupportSection() {
                 Any requests received after <strong>3:00 PM</strong> will be
                 processed on the following business day.
               </p>
-
-              <div className="my-4 h-px bg-[#3FA590]/25" />
-
-              <p className="font-semibold flex items-center gap-2 pb-2">
-                <CalendarDays className="h-4 w-4" />
-                Labor Day Office Closure
-              </p>
-         
-              <p className="leading-8">
-                Office will be closed <strong>12pm EST on 9/4</strong> and closed all day <strong>9/7</strong>
-                <br />
-                <span className="font-medium">
-                  Will resume regular hours on <strong>9/8</strong>
-                </span>
-              </p>
-
             </div>
           </div>
 
