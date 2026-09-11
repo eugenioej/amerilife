@@ -126,6 +126,364 @@ add_action('init', function () {
   }
 }, 9);
 
+/**
+ * Insight Flags Meta Box
+ *
+ * Controls:
+ * - is_featured
+ * - is_spotlight
+ *
+ * These values are consumed by GraphQL
+ * insightFields.isFeatured / isSpotlight
+ * and drive the Next.js Insights homepage.
+ */
+add_action('add_meta_boxes', function () {
+
+    add_meta_box(
+        'amerilife_insight_flags',
+        'Insight Flags',
+        function ($post) {
+
+            wp_nonce_field(
+                'amerilife_insight_flags',
+                'amerilife_insight_flags_nonce'
+            );
+
+            $featured = get_post_meta(
+                $post->ID,
+                'is_featured',
+                true
+            );
+
+            $spotlight = get_post_meta(
+                $post->ID,
+                'is_spotlight',
+                true
+            );
+
+            ?>
+            <p>
+                <label style="display:block;margin-bottom:6px;">
+                    <input
+                        type="checkbox"
+                        name="is_featured"
+                        value="1"
+                        <?php checked((bool) $featured); ?>
+                    />
+                    Featured Article
+                </label>
+            </p>
+
+            <p>
+                <label style="display:block;">
+                    <input
+                        type="checkbox"
+                        name="is_spotlight"
+                        value="1"
+                        <?php checked((bool) $spotlight); ?>
+                    />
+                    Spotlight Article
+                </label>
+            </p>
+            <?php
+        },
+        'insight',
+        'side',
+        'high'
+    );
+});
+
+add_action('save_post_insight', function ($post_id) {
+
+    $has_metabox_nonce =
+        isset($_POST['amerilife_insight_flags_nonce'])
+        && wp_verify_nonce(
+            $_POST['amerilife_insight_flags_nonce'],
+            'amerilife_insight_flags'
+        );
+    
+    $has_quick_edit =
+      isset($_POST['quick_is_featured_present'])
+      || isset($_POST['quick_is_spotlight_present']);
+    
+    if (
+        !$has_metabox_nonce &&
+        !$has_quick_edit
+    ) {
+        return;
+    }
+
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
+    if (isset($_POST['quick_is_featured_present'])) {
+
+        $featured =
+            !empty($_POST['quick_is_featured']);
+
+    } else {
+
+        $featured =
+            !empty($_POST['is_featured']);
+
+    }
+
+    if (isset($_POST['quick_is_spotlight_present'])) {
+
+        $spotlight =
+            !empty($_POST['quick_is_spotlight']);
+
+    } else {
+
+        $spotlight =
+            !empty($_POST['is_spotlight']);
+
+    }
+
+    update_post_meta(
+        $post_id,
+        'is_featured',
+        $featured ? '1' : '0'
+    );
+
+    update_post_meta(
+        $post_id,
+        'is_spotlight',
+        $spotlight ? '1' : '0'
+    );
+
+});
+
+add_filter('manage_insight_posts_columns', function ($columns) {
+
+    $columns['is_featured'] = '★';
+    $columns['is_spotlight'] = '👁';
+
+    return $columns;
+});
+
+add_action('admin_footer-edit.php', function () {
+
+    global $post_type;
+
+    if ($post_type !== 'insight') {
+        return;
+    }
+    ?>
+    <script>
+    jQuery(function ($) {
+
+        $('.column-is_featured').attr(
+            'title',
+            'Featured Article'
+        );
+
+        $('.column-is_spotlight').attr(
+            'title',
+            'Spotlight Article'
+        );
+
+    });
+    </script>
+    <?php
+});
+
+add_action(
+    'manage_insight_posts_custom_column',
+    function ($column, $post_id) {
+
+        if ($column === 'is_featured') {
+            echo get_post_meta($post_id, 'is_featured', true)
+                ? '<span style="color:#00a32a;font-size:20px;font-weight:700;">✓</span>'
+                : '';
+        }
+
+        if ($column === 'is_spotlight') {
+            echo get_post_meta($post_id, 'is_spotlight', true)
+                ? '<span style="color:#d63638;font-size:20px;font-weight:700;">✓</span>'
+                : '';
+        }
+    },
+    10,
+    2
+);
+
+add_action('admin_head', function () {
+
+    $screen = get_current_screen();
+
+    if (!$screen || $screen->post_type !== 'insight') {
+        return;
+    }
+
+    ?>
+    <style>
+        .column-is_featured,
+        .column-is_spotlight {
+            width: 60px !important;
+            text-align: center;
+        }
+
+        .manage-column.column-is_featured,
+        .manage-column.column-is_spotlight {
+          font-size: 20px;
+        }
+    </style>
+    <?php
+});
+
+add_action(
+    'quick_edit_custom_box',
+    function ($column_name, $post_type) {
+
+        if ($post_type !== 'insight') {
+            return;
+        }
+
+        if (
+            $column_name !== 'is_featured' &&
+            $column_name !== 'is_spotlight'
+        ) {
+            return;
+        }
+
+        static $rendered = false;
+
+        if ($rendered) {
+            return;
+        }
+
+        $rendered = true;
+        ?>
+
+        <fieldset class="inline-edit-col-right">
+            <div class="inline-edit-col">
+
+                <input
+                    type="hidden"
+                    name="quick_is_featured_present"
+                    value="1"
+                />
+
+                <label>
+                    <input
+                        type="checkbox"
+                        name="quick_is_featured"
+                        value="1"
+                    />
+                    Featured Article
+                </label>
+
+                <input
+                    type="hidden"
+                    name="quick_is_spotlight_present"
+                    value="1"
+                />
+                
+                <label>
+                    <input
+                        type="checkbox"
+                        name="quick_is_spotlight"
+                        value="1"
+                    />
+                    Spotlight Article
+                </label>
+
+            </div>
+        </fieldset>
+
+        <?php
+    },
+    10,
+    2
+);
+
+add_action(
+    'manage_insight_posts_custom_column',
+    function ($column, $post_id) {
+
+        if ($column !== 'is_spotlight') {
+            return;
+        }
+
+        ?>
+        <div
+            class="amerilife-insight-flags"
+            data-featured="<?php echo esc_attr(
+                get_post_meta($post_id, 'is_featured', true)
+            ); ?>"
+            data-spotlight="<?php echo esc_attr(
+                get_post_meta($post_id, 'is_spotlight', true)
+            ); ?>"
+            style="display:none;"
+        ></div>
+        <?php
+    },
+    20,
+    2
+);
+
+add_action('admin_footer-edit.php', function () {
+
+    global $post_type;
+
+    if ($post_type !== 'insight') {
+        return;
+    }
+
+    ?>
+    <script>
+    jQuery(function($){
+
+        const wpInlineEdit = inlineEditPost.edit;
+
+        inlineEditPost.edit = function(id) {
+
+            wpInlineEdit.apply(this, arguments);
+
+            let postId = 0;
+
+            if (typeof id === 'object') {
+                postId = parseInt(this.getId(id));
+            }
+
+            if (!postId) {
+                return;
+            }
+
+            const $row = $('#post-' + postId);
+
+            const flags =
+                $row.find('.amerilife-insight-flags');
+
+            const featured =
+                flags.data('featured');
+
+            const spotlight =
+                flags.data('spotlight');
+
+            const $editRow =
+                $('#edit-' + postId);
+
+            $editRow
+                .find('[name="quick_is_featured"]')
+                .prop('checked', featured == 1);
+
+            $editRow
+                .find('[name="quick_is_spotlight"]')
+                .prop('checked', spotlight == 1);
+        };
+
+    });
+    </script>
+    <?php
+});
+
 add_action('init', function () {
   if (!term_exists('featured', 'insight_tag')) {
     wp_insert_term('Featured', 'insight_tag', ['slug' => 'featured']);
@@ -179,6 +537,12 @@ add_action('graphql_register_types', function () {
       $spotlight = (bool) filter_var($raw_spot, FILTER_VALIDATE_BOOLEAN);
 
       $raw_feat = get_post_meta($id, 'is_featured', true);
+
+      // Primary source:
+      // is_featured post meta
+
+      // Legacy fallback:
+      // featured insight_tag
       $featured = (bool) filter_var($raw_feat, FILTER_VALIDATE_BOOLEAN);
       if (!$featured && taxonomy_exists('insight_tag')) {
         $featured = has_term('featured', 'insight_tag', $id);
