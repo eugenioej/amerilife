@@ -29,7 +29,7 @@ export function CarrierSpotlightHeroGrid({ carriers }: Props) {
             className="group relative flex min-h-[280px] flex-col items-center justify-center overflow-hidden md:min-h-[56vh]"
             style={{ backgroundColor: bg }}
           >
-            <div className="relative flex h-32 w-56 items-center justify-center px-8 md:h-40 md:w-72">
+            <div className="relative flex h-44 w-72 items-center justify-center px-4 md:h-56 md:w-[420px]">
               <Image
                 src={rewriteUploadsUrl(logo)}
                 alt=""
@@ -40,9 +40,6 @@ export function CarrierSpotlightHeroGrid({ carriers }: Props) {
                 priority={hi < 2}
               />
             </div>
-            <p className="absolute bottom-5 left-5 text-lg font-bold text-white md:bottom-6 md:left-6 md:text-xl">
-              {carrier.title}
-            </p>
           </Link>
         );
       })}

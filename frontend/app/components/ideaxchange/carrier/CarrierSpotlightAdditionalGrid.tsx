@@ -25,25 +25,32 @@ export function CarrierSpotlightAdditionalGrid({ carriers }: Props) {
           const bg = carrierBrandColor(carrier);
           const logo = ideaxchangeFeaturedImageSrc(carrier.featuredImage?.node?.sourceUrl);
           return (
-            <Link
-              key={carrier.id}
-              href={carrierHref(carrier.slug)}
-              variant="button"
-              className="group relative flex aspect-square items-center justify-center overflow-hidden p-6"
-              style={{ backgroundColor: bg }}
-            >
-              <div className="relative h-full w-full">
-                <Image
-                  src={rewriteUploadsUrl(logo)}
-                  alt=""
-                  fill
-                  className="object-contain transition-transform duration-300 group-hover:scale-[1.04]"
-                  sizes="(max-width:640px) 50vw, (max-width:1024px) 33vw, 25vw"
-                  quality={IDEAXCHANGE_IMG_QUALITY}
-                />
-              </div>
-              <span className="sr-only">{carrier.title}</span>
-            </Link>
+            <article key={carrier.id} className="group flex flex-col">
+              <Link
+                key={carrier.id}
+                href={carrierHref(carrier.slug)}
+                variant="button"
+                className="group relative flex aspect-square items-center justify-center overflow-hidden p-6"
+                style={{ backgroundColor: bg }}
+              >
+                <div className="relative h-full w-full">
+                  <Image
+                    src={rewriteUploadsUrl(logo)}
+                    alt=""
+                    fill
+                    className="object-contain transition-transform duration-300 group-hover:scale-[1.04]"
+                    sizes="(max-width:640px) 50vw, (max-width:1024px) 33vw, 25vw"
+                    quality={IDEAXCHANGE_IMG_QUALITY}
+                  />
+                </div>
+                <span className="sr-only">{carrier.title}</span>
+              </Link>
+              <Link href={carrierHref(carrier.slug)} variant="button" className="text-left hover:no-underline mt-5">
+                <h3 className="text-base font-bold leading-snug text-[var(--color-fg)] transition-colors group-hover:text-[var(--color-brand-primary)]">
+                  {carrier.title}
+                </h3>
+              </Link>
+            </article>
           );
         })}
       </div>
