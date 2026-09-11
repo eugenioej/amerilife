@@ -320,12 +320,76 @@ function amerilife_ideaxchange_ads_render_creative_card($slot_key, $index, $row)
   $field = 'amerilife_ideaxchange_ads[' . $slot_key . '][creatives][' . $index . ']';
   $visibility_options = amerilife_ideaxchange_ads_visibility_options();
 
-  echo '<div class="amerilife-ix-ad-creative" style="border:1px solid #dcdcde;padding:12px 14px;margin:0 0 12px;background:#fff;max-width:720px;">';
+  $filename = 'New Creative';
 
-  echo '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">';
-  echo '<strong class="amerilife-ix-ad-title">' . esc_html__('Creative', 'amerilife') . '</strong>';
-  echo '<button type="button" class="button-link-delete amerilife-ix-ad-remove">' . esc_html__('Remove creative', 'amerilife') . '</button>';
-  echo '</div>';
+  if ($aid > 0) {
+    $attached_file = get_attached_file($aid);
+
+    if ($attached_file) {
+      $filename = basename($attached_file);
+    }
+  }
+
+  echo '<div class="amerilife-ix-ad-creative" style="
+    position:relative;
+    border:1px solid #dcdcde;
+    padding:12px 14px 40px;
+    margin:0 0 12px;
+    background:#fff;
+    max-width:720px;
+  ">';
+
+  echo '<button
+    type="button"
+    class="amerilife-ix-ad-toggle"
+    style="
+      width:100%;
+      text-align:left;
+      background:none;
+      border:none;
+      padding:0;
+      cursor:pointer;
+      font-size:14px;
+      font-weight:600;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:8px;
+    "
+  >';
+
+  echo '<span class="amerilife-ix-chevron">▼</span>';
+
+  echo '<span class="amerilife-ix-ad-title">' .
+    esc_html($filename) .
+    '</span>';
+
+  echo '</button>';
+
+  echo '<button
+    type="button"
+    class="amerilife-ix-ad-remove"
+    style="
+      position:absolute;
+      right:12px;
+      bottom:12px;
+      border:none;
+      background:none;
+      color:#b32d2e;
+      cursor:pointer;
+      font-weight:bold;
+      font-size:20px;
+      background:#f6f7f7;
+      border:1px solid #dcdcde;
+      border-radius:4px;
+      padding:4px 8px;
+    "
+    title="Remove creative"
+  >
+    🗑
+  </button>';
+
+  echo '<div class="amerilife-ix-ad-body">';
 
   echo '<p>';
   echo '<img class="amerilife-ix-ad-preview" id="amerilife-ix-ad-preview-' . esc_attr($uid) . '" src="' . esc_url($preview) . '" style="max-width:280px;height:auto;' . ($preview ? '' : 'display:none;') . '" alt="" />';
@@ -365,6 +429,7 @@ function amerilife_ideaxchange_ads_render_creative_card($slot_key, $index, $row)
   echo '</p>';
 
   echo '</div>';
+  echo '</div>';
 }
 
 function amerilife_ideaxchange_ads_render_admin_page() {
@@ -394,6 +459,20 @@ function amerilife_ideaxchange_ads_render_admin_page() {
   wp_nonce_field('amerilife_ideaxchange_ads_save');
   echo '<input type="hidden" name="action" value="amerilife_ideaxchange_ads_save" />';
 
+  echo '<div class="amerilife-ix-tabs" style="margin:20px 0;">';
+
+  foreach ($meta as $key => $info) {
+    echo '<button
+    type="button"
+    class="button amerilife-ix-tab"
+    data-tab="' . esc_attr($key) . '"
+    style="margin-right:8px;">' .
+    esc_html($info['label']) .
+    '</button>';
+  }
+
+  echo '</div>';
+
   $current_group = null;
 
   foreach ($meta as $key => $info) {
@@ -410,6 +489,7 @@ function amerilife_ideaxchange_ads_render_admin_page() {
     $slot = isset($ads[$key]) && is_array($ads[$key]) ? $ads[$key] : $defaults[$key];
     $creatives = isset($slot['creatives']) && is_array($slot['creatives']) ? $slot['creatives'] : [];
 
+    echo '<tbody class="amerilife-ix-tab-panel" data-panel="' . esc_attr($key) . '">';
     echo '<tr>';
     echo '<th scope="row">';
     echo '<span>' . esc_html($info['label']) . '</span>';
@@ -441,6 +521,7 @@ function amerilife_ideaxchange_ads_render_admin_page() {
 
     echo '</td>';
     echo '</tr>';
+    echo '</tbody>';
   }
 
   if ($current_group !== null) {
@@ -455,8 +536,67 @@ function amerilife_ideaxchange_ads_render_admin_page() {
   $visibility_options = amerilife_ideaxchange_ads_visibility_options();
   ?>
 
+  <style>
+    .amerilife-ix-tab-panel {
+      display: none;
+    }
+  
+    .amerilife-ix-tab-panel.active {
+      display: table-row-group;
+    }
+    .amerilife-ix-tabs {
+      display:flex;
+      gap:8px;
+      margin:20px 0;
+    }
+  </style>
+
   <script>
   jQuery(function ($) {
+
+    $('.amerilife-ix-tab-panel:first').addClass('active');
+    $('.amerilife-ix-tab:first').addClass('button-primary');
+    
+    $('.amerilife-ix-ad-body').hide();
+    $('.amerilife-ix-ad-body:first').show();
+
+    $('.amerilife-ix-chevron').text('▶');
+    $('.amerilife-ix-chevron:first').text('▼');
+
+    $('.amerilife-ix-tab').on('click', function () {
+
+      var tab = $(this).data('tab');
+
+      $('.amerilife-ix-tab')
+        .removeClass('button-primary');
+
+      $(this)
+        .addClass('button-primary');
+
+      $('.amerilife-ix-tab-panel')
+        .removeClass('active');
+
+      $('.amerilife-ix-tab-panel[data-panel="' + tab + '"]')
+        .addClass('active');
+
+    });
+
+    $(document).on('click', '.amerilife-ix-ad-toggle', function () {
+
+      var $card = $(this).closest('.amerilife-ix-ad-creative');
+
+      $card.find('.amerilife-ix-ad-body').slideToggle(150);
+
+      var $chevron = $(this).find('.amerilife-ix-chevron');
+
+      $chevron.text(
+        $chevron.text() === '▼'
+          ? '▶'
+          : '▼'
+      );
+
+    });
+
     var visibilityOptions = <?php echo wp_json_encode($visibility_options); ?>;
     var chooseImageText = <?php echo wp_json_encode(__('Choose image', 'amerilife')); ?>;
     var chooseAdImageText = <?php echo wp_json_encode(__('Choose advertisement image', 'amerilife')); ?>;
@@ -494,11 +634,55 @@ function amerilife_ideaxchange_ads_render_admin_page() {
       var field = 'amerilife_ideaxchange_ads[' + slot + '][creatives][' + index + ']';
 
       return '' +
-        '<div class="amerilife-ix-ad-creative" style="border:1px solid #dcdcde;padding:12px 14px;margin:0 0 12px;background:#fff;max-width:720px;">' +
-          '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">' +
-            '<strong class="amerilife-ix-ad-title">' + escapeHtml(creativeText) + '</strong>' +
-            '<button type="button" class="button-link-delete amerilife-ix-ad-remove">' + escapeHtml(removeCreativeText) + '</button>' +
-          '</div>' +
+        '<div class="amerilife-ix-ad-creative" style="' +
+          'position:relative;' +
+          'border:1px solid #dcdcde;' +
+          'padding:12px 14px 40px;' +
+          'margin:0 0 12px;' +
+          'background:#fff;' +
+          'max-width:720px;' +
+        '">' +
+          '<button ' +
+            'type="button" ' +
+            'class="amerilife-ix-ad-toggle" ' +
+            'style="' +
+              'width:100%;' +
+              'text-align:left;' +
+              'background:none;' +
+              'border:none;' +
+              'padding:0;' +
+              'cursor:pointer;' +
+              'font-size:14px;' +
+              'font-weight:600;' +
+              'display:flex;' +
+              'align-items:center;' +
+              'gap:8px;' +
+              'margin-bottom:8px;' +
+            '"' +
+          '>' +
+            '<span class="amerilife-ix-chevron">▶</span>' +
+            '<span class="amerilife-ix-ad-title">New Creative</span>' +
+          '</button>' +
+
+          '<button ' +
+            'type="button" ' +
+            'class="amerilife-ix-ad-remove" ' +
+            'style="' +
+              'position:absolute;' +
+              'right:12px;' +
+              'bottom:12px;' +
+              'border:none;' +
+              'background:#f6f7f7;' +
+              'border:1px solid #dcdcde;' +
+              'border-radius:4px;' +
+              'padding:4px 8px;' +
+              'cursor:pointer;' +
+            '"' +
+          '>' +
+          '🗑' +
+          '</button>' +
+
+          '<div class="amerilife-ix-ad-body" style="display:none;">' +
 
           '<p>' +
             '<img class="amerilife-ix-ad-preview" id="amerilife-ix-ad-preview-' + escapeHtml(uid) + '" src="" style="max-width:280px;height:auto;display:none;" alt="" />' +
@@ -532,6 +716,7 @@ function amerilife_ideaxchange_ads_render_admin_page() {
             '<br />' +
             '<span class="description">' + escapeHtml(visibilityHelpText) + '</span>' +
           '</p>' +
+        '</div>' +
         '</div>';
     }
 
@@ -570,7 +755,14 @@ function amerilife_ideaxchange_ads_render_admin_page() {
         var att = frame.state().get('selection').first().toJSON();
 
         $('#amerilife-ix-ad-id-' + uid).val(att.id);
-        $('#amerilife-ix-ad-preview-' + uid).attr('src', att.url).show();
+        $('#amerilife-ix-ad-preview-' + uid)
+          .attr('src', att.url)
+          .show();
+
+        $('#amerilife-ix-ad-id-' + uid)
+          .closest('.amerilife-ix-ad-creative')
+          .find('.amerilife-ix-ad-title')
+          .text(att.filename || 'New Creative');
       });
 
       frame.open();
