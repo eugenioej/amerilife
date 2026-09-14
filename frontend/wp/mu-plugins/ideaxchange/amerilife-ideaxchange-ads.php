@@ -497,6 +497,18 @@ function amerilife_ideaxchange_ads_render_admin_page() {
     echo '</th>';
 
     echo '<td>';
+
+    echo '<div style="margin-bottom:12px;">';
+
+    echo '<button
+      type="button"
+      class="button amerilife-ix-toggle-all"
+    >
+      ' . esc_html__('Expand All', 'amerilife') . '
+    </button>';
+
+    echo '</div>';
+
     echo '<div class="amerilife-ix-ad-creatives" data-slot="' . esc_attr($key) . '">';
 
     foreach ($creatives as $i => $row) {
@@ -595,6 +607,42 @@ function amerilife_ideaxchange_ads_render_admin_page() {
           : '▼'
       );
 
+    });
+
+    $(document).on('click', '.amerilife-ix-toggle-all', function () {
+
+      var $button = $(this);
+    
+      var $panel = $button.closest('td');
+    
+      var $bodies = $panel.find('.amerilife-ix-ad-body');
+      var $chevrons = $panel.find('.amerilife-ix-chevron');
+    
+      var allOpen = true;
+    
+      $bodies.each(function () {
+        if (!$(this).is(':visible')) {
+          allOpen = false;
+          return false;
+        }
+      });
+    
+      if (allOpen) {
+    
+        $bodies.slideUp(150);
+        $chevrons.text('▶');
+    
+        $button.text('Expand All');
+    
+      } else {
+    
+        $bodies.slideDown(150);
+        $chevrons.text('▼');
+    
+        $button.text('Collapse All');
+    
+      }
+    
     });
 
     var visibilityOptions = <?php echo wp_json_encode($visibility_options); ?>;
