@@ -27,6 +27,12 @@ export const metadata: Metadata = {
   title: "AmeriLife | Insurance and Financial Solutions",
   description:
     "Delivering insurance and financial solutions to agents and advisors to help people live longer, healthier lives.",
+  verification: {
+    other: {
+      "facebook-domain-verification":
+        "hdtal5a8wj4xw4f26nsbsz4jr5ywc4",
+    },
+  },
   openGraph: {
     siteName: "AmeriLife",
     type: "website",
