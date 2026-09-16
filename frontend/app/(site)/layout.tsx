@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { LayoutShell } from "@/app/components/layout/LayoutShell";
 import { getIdeaxchangeAuth } from "@/lib/ideaxchange-auth";
+import BackToTop from "@/app/components/ui/BackToTop";
 import { isMicrosoftIdeaxchangeAuthEnabled } from "@/lib/ideaxchange-auth-config";
 import {
   canUseIdeaxchangeDevView,
@@ -39,6 +40,8 @@ export default async function SiteLayout({
       microsoftAuthEnabled={isMicrosoftIdeaxchangeAuthEnabled()}
     >
       {children}
+
+      <BackToTop />
     </LayoutShell>
   );
 }

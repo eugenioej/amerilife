@@ -306,7 +306,7 @@ export default function PrivacyPolicyPage() {
         </p>
         <p>
           Consumers or authorized agents of consumers who would like to exercise the consumer access, deletion, and correction rights described above can submit a 
-          verifiable request by calling us at (844) 340-9494 or by emailing us at <a href="mailto:privacy@amerilife.com">privacy@amerilife.com</a>.
+          verifiable request by calling us at <a href="tel:+18443409494">(844) 340-9494</a> or by emailing us at <a href="mailto:privacy@amerilife.com">privacy@amerilife.com</a>.
         </p>
         <p>
           Only you, or an agent that you authorize to act on your behalf, may make a verifiable consumer request related to your Personal Information.
@@ -417,7 +417,7 @@ export default function PrivacyPolicyPage() {
           </li>
         </ul>
         <p>
-          You can request to exercise the rights above by submitting an authenticated request by calling us at (844) 340-9494 or by emailing us at <a href="mailto:privacy@amerilife.com">privacy@amerilife.com</a>.
+          You can request to exercise the rights above by submitting an authenticated request by calling us at <a href="tel:+18443409494">(844) 340-9494</a> or by emailing us at <a href="mailto:privacy@amerilife.com">privacy@amerilife.com</a>.
         </p>
         <p>
           We will not discriminate against you for exercising these rights. 
