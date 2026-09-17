@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 
+
 const timelineItems = [
   {
     year: "1971",
@@ -62,6 +63,37 @@ export default function GivesBackTimeline() {
   const dragStartX = useRef(0);
   const dragStartScrollLeft = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
+
+  function measureMilestone(
+  element: HTMLDivElement | null,
+  isTop: boolean
+) {
+  if (!element) return;
+
+  const card = element.querySelector<HTMLElement>(
+    "[data-timeline-card]"
+  );
+
+  if (!card) return;
+
+  if (isTop) {
+    const connectorHeight =
+      timelineY - (element.offsetTop + card.offsetHeight);
+
+    element.style.setProperty(
+      "--connector-height",
+      `${connectorHeight}px`
+    );
+  } else {
+    const connectorHeight =
+      element.offsetTop - timelineY;
+
+    element.style.setProperty(
+      "--connector-height",
+      `${connectorHeight}px`
+    );
+  }
+}
 
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
   if (event.pointerType !== "mouse" || event.button !== 0) {
@@ -178,22 +210,28 @@ function stopDragging(event: React.PointerEvent<HTMLDivElement>) {
                 return (
                   <div
                     key={item.year}
+                    ref={(el) => measureMilestone(el, isTop)}
                     className={`relative flex h-fit w-[300px] flex-shrink-0 flex-col md:w-[350px] lg:w-[450px] ${
                       isTop ? "mb-[320px]" : "mt-[320px]"
                     }`}
-
                   >
                     {/* Connector */}
                     <div
-                      className={`absolute left-1/2 h-[70px] w-px -translate-x-1/2 border-l-2 border-dashed border-white/60 ${
-                        isTop ? "bottom-[-40px]" : "top-[-40px]"
+                      className={`absolute left-1/2 w-px -translate-x-1/2 border-l-2 border-dashed border-white/60 ${
+                        isTop
+                          ? "top-full"
+                          : "bottom-full"
                       }`}
+                      style={{
+                        height: "var(--connector-height)"
+                      }}
                     />
 
                     {/* Dot */}
                     <div
-                      className={`absolute left-1/2 -translate-x-1/2 ${
-                        isTop ? "bottom-[-56px]" : "top-[-52px]"
+                      style={isTop ? { top: timelineY } : undefined}
+                      className={`absolute left-1/2 -translate-x-1/2 -translate-y-1/2 ${
+                        isTop ? "" : "top-[-40px]"
                       }`}
                     >
                       <div className="flex h-6 w-6 items-center justify-center rounded-full border-[3px] border-[var(--color-brand-primary)] bg-white">
@@ -202,7 +240,11 @@ function stopDragging(event: React.PointerEvent<HTMLDivElement>) {
                     </div>
 
                     {/* Card */}
-                    <div className="rounded-[16px] bg-white p-6 shadow-lg">
+                    <div
+                      data-timeline-card
+                      className="rounded-[16px] bg-white p-6 shadow-lg"
+                    >
+
                       <div className="mb-6 inline-flex rounded-[3px] bg-[var(--color-brand-dark)] px-4 py-2 text-sm font-bold text-white">
                         {item.year}
                       </div>
