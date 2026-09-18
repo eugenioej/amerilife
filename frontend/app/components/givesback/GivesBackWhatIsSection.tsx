@@ -29,7 +29,9 @@ export default function GivesBackGivingTree() {
               <div className="flex justify-center lg:justify-start">
                 <Link
                  className="inline-flex h-[72px] w-[280px] items-center justify-center rounded-[8px] bg-[var(--color-brand-primary)] text-[18px] tracking-wide font-bold uppercase text-white shadow-lg transition-colors hover:bg-[#1d3650]"
-                 href="#"
+                 href="https://youtube.com/playlist?list=PLqhps7bJyvr7rnIQ0p8yrijjpibTLAmDl&si=RbrdfoHIAwQMxMGn"
+                 target="_blank"
+                 rel="noopener noreferrer"
                 >
                   Visit Our Playlist
                 </Link>
@@ -39,14 +41,16 @@ export default function GivesBackGivingTree() {
 
             {/* Video */}
             <div className="flex justify-center">
-              <Image
-                src="https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Rectangle-2-3.png"
-                alt="AmeriLife Gives Back Foundation"
-                width={430}
-                height={430}
-                priority
-                className="h-auto w-full max-w-[320px] lg:max-w-[600px]"
-              />
+              <div className="w-full overflow-hidden shadow-lg">
+                <div className="relative aspect-video">
+                  <iframe
+                    src="https://www.youtube.com/embed/GktWG8mZeMA"
+                    title="What is AmeriLife Gives Back?"
+                    className="absolute inset-0 h-full w-full"
+                    allow="accelerometer"
+                  />
+                </div>
+              </div>
             </div>
 
           </div>

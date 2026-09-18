@@ -6,6 +6,8 @@ import GivesBackCommunityPartners from "./GivesBackCommunityPartners";
 import GivesBackGivingTree from "./GivesBackGivingTree";
 import GivesBackWhatIsSection from "./GivesBackWhatIsSection";
 import GivesBackDonateCTA from "./GivesBackDonateCTA";
+import GivesBackBoardMembers from "@/app/components/givesback/GivesBackBoardMembers";
+import { fetchSponsorNodes } from "@/lib/sponsors";
 // import GivesBackBoardMemberCard from "@/app/components/givesback/GivesBackBoardMemberCard";
 // import GivesBackSectionContainer from "@/app/components/givesback/GivesBackSectionContainer";
 
@@ -17,6 +19,8 @@ import {
 
 export default async function GivesBackPage() {
   const affiliateNodes = await fetchAffiliateNodes();
+  const sponsorNodes = await fetchSponsorNodes();
+
   const communityPartnerLogos =
     affiliateNodesToCarouselLogos(
       affiliatesInCategory(
@@ -39,9 +43,13 @@ export default async function GivesBackPage() {
 
       <GivesBackGivingTree />
 
-      <GivesBackWhatIsSection />
+      <GivesBackDonorTierCarousel
+        sponsors={sponsorNodes}
+      />
 
-      <GivesBackDonorTierCarousel />
+      <GivesBackWhatIsSection />
+      
+      <GivesBackBoardMembers />
 
       <GivesBackDonateCTA />
     </main>

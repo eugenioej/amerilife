@@ -924,6 +924,36 @@ export type AffiliatesQueryResult = {
   } | null;
 };
 
+/**
+ * Gives Back Sponsors CPT
+ */
+export type SponsorListItem = {
+  databaseId: number;
+  title?: string | null;
+  menuOrder?: number | null;
+
+  featuredImage?: {
+    node?: {
+      sourceUrl?: string | null;
+      altText?: string | null;
+    };
+  } | null;
+
+  givesBackSponsorTiers?: {
+    nodes?: Array<{
+      name?: string | null;
+      slug?: string | null;
+    }>;
+  } | null;
+};
+
+export type SponsorsQueryResult = {
+  givesBackSponsors?: {
+    nodes: SponsorListItem[];
+  } | null;
+};
+
+
 export const GET_AFFILIATES = `
   query GetAffiliates {
     affiliates(first: 200, where: { orderby: { field: MENU_ORDER, order: ASC } }) {
@@ -941,6 +971,40 @@ export const GET_AFFILIATES = `
           websiteUrl
         }
         affiliateCategories {
+          nodes {
+            name
+            slug
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_SPONSORS = `
+  query GetSponsors {
+    givesBackSponsors(
+      first: 200
+      where: {
+        orderby: {
+          field: MENU_ORDER
+          order: ASC
+        }
+      }
+    ) {
+      nodes {
+        databaseId
+        title
+        menuOrder
+
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+
+        givesBackSponsorTiers {
           nodes {
             name
             slug
