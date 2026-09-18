@@ -22,7 +22,7 @@ export default function GivesBackHero() {
 
       <div className="relative z-10">
         <GivesBackSectionContainer>
-          <div className="grid min-h-[640px] items-center gap-12 py-12 lg:grid-cols-[460px_1fr] lg:gap-48">
+          <div className="grid min-h-[640px] items-center gap-12 py-12 lg:grid-cols-[460px_1fr] lg:gap-30">
             {/* Logo */}
             <div className="flex justify-center">
               <Image
@@ -52,7 +52,7 @@ export default function GivesBackHero() {
               </p>
               <div className="flex justify-center lg:justify-start">
                 <Link
-                 className="inline-flex h-[72px] w-[280px] items-center justify-center rounded-[8px] bg-[var(--color-brand-dark)] text-[18px] tracking-wide font-bold text-white shadow-lg transition-colors hover:bg-[#1d3650]"
+                 className="inline-flex h-[72px] w-[280px] items-center justify-center rounded-[8px] bg-[var(--color-brand-dark)] text-[18px] tracking-wide font-bold uppercase text-white shadow-lg transition-colors hover:bg-[#1d3650]"
                  href="#"
                 >
                   MAKE A DONATION

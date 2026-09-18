@@ -15,11 +15,12 @@ export interface LogoCarouselLogo {
 
 type LogoCarouselProps = {
   logos: ReadonlyArray<LogoCarouselLogo>;
-  /** When true, logos render in full color (default applies grayscale with color on hover). */
   colorLogos?: boolean;
+  variant?: "default" | "gives-back";
 };
 
-export function LogoCarousel({ logos, colorLogos = false }: LogoCarouselProps) {
+export function LogoCarousel({
+  logos, colorLogos = false, variant = "default", }: LogoCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -59,7 +60,11 @@ export function LogoCarousel({ logos, colorLogos = false }: LogoCarouselProps) {
         onClick={() => scroll("left")}
         disabled={!canScrollLeft}
         aria-label="Previous logos"
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)] text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed sm:h-12 sm:w-12"
+        className={
+          variant === "gives-back"
+            ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#d6ddd6] bg-white text-[var(--color-brand-primary)] transition-all hover:bg-[#f5f5f5] disabled:opacity-40 disabled:cursor-not-allowed"
+            : "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)] text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed sm:h-12 sm:w-12"
+        }
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -125,7 +130,11 @@ export function LogoCarousel({ logos, colorLogos = false }: LogoCarouselProps) {
         onClick={() => scroll("right")}
         disabled={!canScrollRight}
         aria-label="Next logos"
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)] text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed sm:h-12 sm:w-12"
+        className={
+          variant === "gives-back"
+            ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#d6ddd6] bg-white text-[var(--color-brand-primary)] transition-all hover:bg-[#f5f5f5] disabled:opacity-40 disabled:cursor-not-allowed"
+            : "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)] text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed sm:h-12 sm:w-12"
+        }
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
