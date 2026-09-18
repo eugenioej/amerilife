@@ -23,7 +23,7 @@ export default function GivesBackGivingTree() {
             {/* Logo */}
             <div className="flex justify-center">
               <Image
-                src="https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Rectangle-2-2.png"
+                src="https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/FTB-February-23-01-e1789763398940.jpg"
                 alt="AmeriLife Gives Back Foundation"
                 width={430}
                 height={430}

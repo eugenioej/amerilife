@@ -26,7 +26,7 @@ export default function GivesBackHero() {
             {/* Logo */}
             <div className="flex justify-center">
               <Image
-                src="https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Rectangle-2-1-e1789671162921.png"
+                src="https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/AGB-Foundation-061826-TM_Main-White.png"
                 alt="AmeriLife Gives Back Foundation"
                 width={430}
                 height={430}

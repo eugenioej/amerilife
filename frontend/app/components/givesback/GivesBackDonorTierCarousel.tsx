@@ -41,7 +41,7 @@ const sponsorTiers: ReadonlyArray<SponsorTier> = [
     descriptionClassName: "text-white/70",
     dividerClassName: "border-white/15",
     leafImage:
-      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Leaf-Icons-01-1-2.png",
+      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Leaf-Icons-03-e1789762694943.png",
     leafAlt: "",
   },
   {
@@ -57,7 +57,7 @@ const sponsorTiers: ReadonlyArray<SponsorTier> = [
     descriptionClassName: "text-[var(--color-brand-dark)]/70",
     dividerClassName: "border-[var(--color-brand-dark)]/15",
     leafImage:
-      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Leaf-Icons-01-1-1.png",
+      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Leaf-Icons-02-e1789762600609.png",
     leafAlt: "",
   },
   {
@@ -73,7 +73,7 @@ const sponsorTiers: ReadonlyArray<SponsorTier> = [
     descriptionClassName: "text-[var(--color-brand-dark)]/70",
     dividerClassName: "border-[var(--color-brand-dark)]/15",
     leafImage:
-      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Leaf-Icons-01-1.png",
+      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Leaf-Icons-01-e1789762655218.png",
     leafAlt: "",
   },
 ];
@@ -86,7 +86,7 @@ function sponsorsToLogos(
   for (const sponsor of sponsors) {
     const src =
       sponsor.featuredImage?.node?.sourceUrl ||
-      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/AGB-Foundation-061826-TM_Main-Color-1-7.png";
+      "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/AGB-Foundation-061826-TM_Main-Color.png";
 
     const imageAlt = sponsor.featuredImage?.node?.altText?.trim();
     const sponsorTitle = sponsor.title?.trim();

@@ -3,13 +3,13 @@ import Image from "next/image";
 import GivesBackSectionContainer from "@/app/components/givesback/GivesBackSectionContainer";
 
 const heroImage =
-  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Rectangle-26.png";
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/st-joseph.jpg";
 
 const communityImages = [
-  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Rectangle-23.png",
-  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Rectangle-21.png",
-  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Rectangle-20-2.png",
-  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/Rectangle-22.png",
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/FTB-February-23-09-e1789763438997.jpg",
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/465868566_1146014237534492_4440192696149091911_n.jpg",
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/FTB-February-23-06-e1789763419233.jpg",
+  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/09/ChristmasInJuly400-8.jpg",
 ];
 
 export default function GivesBackContentFeatureSection() {
