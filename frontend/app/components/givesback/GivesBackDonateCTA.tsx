@@ -23,7 +23,7 @@ export default function GivesBackDonateCTA() {
               <div className="flex justify-center">
                 <Link
                  className="inline-flex h-[72px] w-[280px] items-center justify-center rounded-[8px] bg-[var(--color-brand-dark)] text-[18px] tracking-wide font-bold uppercase text-white shadow-lg transition-colors hover:bg-[#1d3650]"
-                 href="#"
+                 href="https://buy.stripe.com/eVa2bi8vObFP9u83cc"
                 >
                   Make a Donation
                 </Link>
