@@ -2,9 +2,7 @@ import { IdeaXchangeNewsroomColumn } from "@/app/components/ideaxchange/magazine
 import {
   INSIGHTS_NEWSROOM_INITIAL,
   partitionNewsroomWithSidebar,
-  resolveIdeaxchangeBadge,
 } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
-import { IdeaXchangeHeroGrid } from "@/app/components/ideaxchange/shared/IdeaXchangeHeroGrid";
 import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/IdeaXchangePillarBanner";
 import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
@@ -18,6 +16,7 @@ import {
 import { LeaderboardQuickNav } from "./LeaderboardQuickNav";
 import { LeaderboardSection } from "./LeaderboardSection";
 import { IdeaxchangeHorizontalAdSlot } from "@/app/components/ideaxchange/shared/IdeaxchangeHorizontalAdSlot";
+import { Link } from "@/app/components/ui/Link";
 
 type Props = {
   heroStories: IdeaxchangeCardItem[];
@@ -31,43 +30,16 @@ type Props = {
 };
 
 export function SalesLeaderboardPage({
-  heroStories,
   tableData,
   salesPosts,
   salesListPageInfo,
   ideaxchangeAds,
 }: Props) {
-  const { spotlight, recentSidebar, newsroomRest } =
+  const { newsroomRest } =
     partitionNewsroomWithSidebar(salesPosts);
-
-  const salesHeroItems: IdeaxchangeCardItem[] = salesPosts
-  .slice(0, 3)
-  .map((post) => {
-    const badge = resolveIdeaxchangeBadge(post);
-  
-    return {
-      id: post.id,
-      slug: post.slug,
-      title: post.title,
-      date: post.date,
-      excerpt: post.excerpt,
-      href:
-        post.slug && post.ideaxchangeTopics?.nodes?.[0]?.slug
-          ? `/ideaxchange/${post.ideaxchangeTopics.nodes[0].slug}/${post.slug}/`
-          : IDEAXCHANGE_LEADERBOARD_PATH,
-      featuredImage: post.featuredImage,
-      badgeLabel: badge.label,
-      badgeHref: badge.href,
-    };
-  });
 
   return (
     <div className="bg-white pb-16 md:pb-20">
-      <IdeaXchangePillarBanner title="Sales Leaderboard" />
-      <IdeaXchangeHeroGrid
-        items={salesHeroItems.length > 0 ? salesHeroItems : heroStories}
-        defaultBadge="SALES"
-      />
 
       <IdeaXchangePillarBanner
         title="The Health and Wealth Distribution Standings"
@@ -103,6 +75,27 @@ export function SalesLeaderboardPage({
 
           </div>
         </section>
+
+        <section className="mt-16 border-t border-[var(--color-border)] pt-12 md:mt-20 md:pt-16">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)]">
+                Wealth Best in Class standings
+              </h2>
+              <p className="mt-2 text-sm text-[var(--color-muted)]">
+                Stay up to date with the current leaderboard and qualifying sales associates.
+              </p>
+            </div>
+            <Link
+              href="/ideaxchange/sales-success/best-in-class-wealth"
+              variant="button"
+              className="inline-flex min-h-[44px] items-center justify-center rounded-sm bg-[var(--color-brand-primary)] px-6 text-sm font-bold uppercase tracking-wide text-white hover:bg-[var(--color-brand-primary-hover)]"
+            >
+              View standings
+            </Link>
+          </div>
+        </section>
+
       </div>
     </div>
   );

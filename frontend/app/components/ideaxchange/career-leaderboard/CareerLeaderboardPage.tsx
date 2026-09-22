@@ -1,9 +1,7 @@
 import { Link } from "@/app/components/ui/Link";
 import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/IdeaXchangePillarBanner";
-import { IdeaXchangeHeroGrid } from "@/app/components/ideaxchange/shared/IdeaXchangeHeroGrid";import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/ideaxchange-card-types";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
 import {
-  IDEAXCHANGE_LEADERBOARD_PATH,
   IDEAXCHANGE_RECRUITING_HUB_PATH,
 } from "@/lib/ideaxchange-constants";
 import {
@@ -12,46 +10,20 @@ import {
 } from "@/lib/ideaxchange-career-leaderboard-data";
 import { CareerLeaderboardQuickNav } from "./CareerLeaderboardQuickNav";
 import { CareerLeaderboardSection } from "./CareerLeaderboardSection";
-import { resolveIdeaxchangeBadge } from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
 
 type Props = {
   data: CareerLeaderboardPageData;
   careerSalesPosts: IdeaxchangeListItem[];
 };
-export function CareerLeaderboardPage({ data, careerSalesPosts }: Props) {
+export function CareerLeaderboardPage({ data }: Props) {
   const tablesBySlug = getCareerLeaderboardTablesBySlug(data.tables);
 
-const careerSalesHeroItems: IdeaxchangeCardItem[] = careerSalesPosts
-  .slice(0, 3)
-  .map((post) => {
-    const badge = resolveIdeaxchangeBadge(post);
-
-    return {
-      id: post.id,
-      slug: post.slug,
-      title: post.title,
-      date: post.date,
-      excerpt: post.excerpt,
-      href: post.slug
-        ? `/ideaxchange/article/${post.slug}/`
-        : IDEAXCHANGE_LEADERBOARD_PATH,
-      featuredImage: post.featuredImage,
-      badgeLabel: badge.label,
-      badgeHref: badge.href,
-    };
-  });
 
   return (
     <div className="bg-white pb-16 md:pb-20">
-      <IdeaXchangePillarBanner title="Career Leaderboard" />
-
-      <IdeaXchangeHeroGrid
-        items={careerSalesHeroItems}
-        defaultBadge="SALES"
-      />
 
       <IdeaXchangePillarBanner
-        title="Career Agency Incentive Standings"
+        title="Career Agency Standings"
         className="mt-0 min-h-[100px] md:min-h-[120px]"
       />
 
