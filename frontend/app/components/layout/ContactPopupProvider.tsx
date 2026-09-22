@@ -12,6 +12,8 @@ import { ContactFormDialog } from "./ContactFormDialog";
 
 type ContactPopupContextValue = {
   openContactPopup: () => void;
+  hideContactButton: boolean;
+  setHideContactButton: (hide: boolean) => void;
 };
 
 const ContactPopupContext = createContext<ContactPopupContextValue | null>(null);
@@ -31,10 +33,17 @@ type Props = {
 
 export function ContactPopupProvider({ children, contactPopupForm }: Props) {
   const [open, setOpen] = useState(false);
+  const [hideContactButton, setHideContactButton] = useState(false);
   const openContactPopup = useCallback(() => setOpen(true), []);
 
   return (
-    <ContactPopupContext.Provider value={{ openContactPopup }}>
+    <ContactPopupContext.Provider
+      value={{
+        openContactPopup,
+        hideContactButton,
+        setHideContactButton,
+      }}
+    >
       {children}
       <ContactFormDialog open={open} onClose={() => setOpen(false)} form={contactPopupForm} />
     </ContactPopupContext.Provider>
