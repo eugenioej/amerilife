@@ -35,7 +35,20 @@ export default function PrivacyPolicyPage() {
         <Link href="#california-info-10">Right to Correct Inaccuracies</Link><br/>
         <Link href="#california-info-11">Right to Opt Out of Sales of California Personal Information and Sharing of California Personal Information for Cross-Context Behavioral Advertising</Link><br/>
         <Link href="#california-info-12">Exercising California Personal Information Access, Deletion, and Correction Rights and Choices</Link><br/>
-        <h2>Notice at Collection for California Residents</h2>
+        <Link href="#california-info-13">Notice at Collection for California Residents</Link><br/>
+        <Link href="#california-info-14">Personal Information Collection</Link><br/>
+        <Link href="#california-info-15">Purposes for Which We Collect, Use, and Disclose Your Personal Information</Link><br/>
+        <Link href="#california-info-16">How We Disclose Your Personal Information</Link><br/>
+        <Link href="#california-info-17">Your Choices</Link><br/>
+        <Link href="#california-info-18">Additional Information for Residents of Certain US States</Link><br/>
+        <Link href="#california-info-19">Sensitive Data</Link><br/>
+        <Link href="#california-info-20">Deidentified Information</Link><br/>
+        <Link href="#california-info-21">Consumer Rights and Choices</Link><br/>
+        <Link href="#california-info-22">Third-Party Links</Link><br/>
+        <Link href="#california-info-23">Children&apos;s Privacy</Link><br/>
+        <Link href="#california-info-24">Changes and Applicable Law</Link><br/>
+        <Link href="#california-info-25">How to Contact Us</Link><br/>
+        <h2 className="toc-heading" id="california-info-13">Notice at Collection for California Residents</h2>
         <p>
           If you are a California resident, the sections below include additional information that 
           we provide pursuant to the California Consumer Privacy Act of 2018 as amended from time to time 
@@ -45,7 +58,7 @@ export default function PrivacyPolicyPage() {
           on the links above.
         </p>
 
-        <h2>Personal Information Collection</h2>
+        <h2 className="toc-heading" id="california-info-14">Personal Information Collection</h2>
         <p>
         We may collect personal information directly from you and automatically when you use the Website, as described below.
         </p>
@@ -96,7 +109,7 @@ export default function PrivacyPolicyPage() {
           their organization, or their other customers, including delivering interest-based advertising.
         </p>
 
-        <h2>Purposes for Which We Collect, Use, and Disclose Your Personal Information</h2>
+        <h2 className="toc-heading" id="california-info-15">Purposes for Which We Collect, Use, and Disclose Your Personal Information</h2>
         <p>
           We may use, disclose, transmit, transfer, store, and otherwise process your personal information for various purposes, including:
         </p>
@@ -123,7 +136,7 @@ export default function PrivacyPolicyPage() {
             or other sale or transfer of some or all of our assets; and</li>
           <li>For any other purpose, as you may authorize or direct or as we otherwise disclose, when you provide the information.</li>
         </ul>
-        <h2>How We Disclose Your Personal Information </h2>
+        <h2 className="toc-heading" id="california-info-16">How We Disclose Your Personal Information </h2>
         <p>
           We may disclose your information to third parties, including to:
         </p>
@@ -147,7 +160,7 @@ export default function PrivacyPolicyPage() {
           <li>For the purposes described in the “Purposes for Which We Collect, Use, and Disclose Your Personal Information” section above; and</li>
           <li>Any other parties as you may authorize or direct, or as we otherwise disclose, when you provide the information.</li>
         </ul>
-        <h2>Your Choices</h2>
+        <h2 className="toc-heading" id="california-info-17">Your Choices</h2>
         <p>
           You may choose not to provide the personal information we request. However, not providing information we request may restrict your ability 
           to use certain features on our Website. For example, you may use the cookie manager on our site to restrict the collection of personal information 
@@ -170,7 +183,7 @@ export default function PrivacyPolicyPage() {
           your interests.
         </p>
 
-        <h2 id="california-info-1">Additional Information for Residents of California</h2>
+        <h2 className="toc-heading" id="california-info-1">Additional Information for Residents of California</h2>
         <p>
           This section of the Privacy Policy applies only to consumers who reside in California (as used in this section, “consumers” or “you”) 
           and to our processing of personal information of particular consumers or consumer households&apos; personal information (“California Personal Information”) 
@@ -178,7 +191,7 @@ export default function PrivacyPolicyPage() {
           is subject to exceptions from the California Consumer Privacy Act of 2018 (“CCPA”), such as deidentified information. 
         </p>
         <p className="privacy-subheading">
-          <em id="california-info-2">California Personal Information We Collect</em>
+          <em className="toc-heading" id="california-info-2">California Personal Information We Collect</em>
         </p>
         <p>
           We may collect, and may have collected in the preceding 12 months, the categories of California Personal Information described in the 
@@ -195,21 +208,21 @@ export default function PrivacyPolicyPage() {
           <li>Sensitive personal information in the form of payment card information described in the “Personal Information Collection” section above.</li>
         </ul>
         <p className="privacy-subheading">
-          <em id="california-info-3">Retention of California Personal Information We Collect</em>
+          <em className="toc-heading" id="california-info-3">Retention of California Personal Information We Collect</em>
         </p>
         <p>
           Unless an applicable law dictates a different retention period, we retain Personal Information for as long as reasonably necessary to carry out 
           the purposes described in this Policy. 
         </p>
         <p className="privacy-subheading">
-          <em id="california-info-4">Sources of California Personal Information </em>
+          <em className="toc-heading" id="california-info-4">Sources of California Personal Information </em>
         </p>
         <p>
           We may collect California Personal Information directly from consumers, automatically and indirectly from consumers as described in the “Information 
           We Collect Automatically” subsection above, or from third parties. 
         </p>
         <p className="privacy-subheading">
-          <em id="california-info-5">Use and Disclosure of California Personal Information </em>
+          <em className="toc-heading" id="california-info-5">Use and Disclosure of California Personal Information </em>
         </p>
         <p>
           We may use California Personal Information for the purposes described in the “Purposes for Which We Collect, Use, and Disclose Your Personal Information” 
@@ -238,7 +251,7 @@ export default function PrivacyPolicyPage() {
             our affiliates, subsidiaries, service providers, and contractors.</li>
         </ul>
         <p className="privacy-subheading">
-          <em id="california-info-6">California Personal Information Sales and Sharing for Cross-context Behavioral Advertising </em>
+          <em className="toc-heading" id="california-info-6">California Personal Information Sales and Sharing for Cross-context Behavioral Advertising </em>
         </p>
         <p>
           We do not sell California Personal Information in exchange for monetary consideration. However, the CCPA defines “sale” very broadly in a manner 
@@ -263,7 +276,7 @@ export default function PrivacyPolicyPage() {
           consumers under the age of 16 for cross-context behavioral advertising purposes.
         </p>
         <p className="privacy-subheading">
-          <em id="california-info-7">California Personal Information Rights and Choices </em>
+          <em className="toc-heading" id="california-info-7">California Personal Information Rights and Choices </em>
         </p>
         <p>
           The CCPA provides consumers with specific rights regarding California Personal Information. This section describes those rights.
@@ -288,11 +301,11 @@ export default function PrivacyPolicyPage() {
           to transmit your Personal Information to another person or entity.
         </p>
         <ul style={{ listStyleType: "disc", paddingLeft: "2rem" }}>
-          <li><em  id="california-info-9" className="privacy-subheading">Right to Deletion.</em> You may request that we delete your California Personal Information, 
+          <li><em  id="california-info-9" className="privacy-subheading toc-heading">Right to Deletion.</em> You may request that we delete your California Personal Information, 
           subject to certain exceptions.</li>
-          <li><em  id="california-info-10" className="privacy-subheading">Right to Correct Inaccuracies.</em> You may request that we correct California Personal Information
+          <li><em  id="california-info-10" className="privacy-subheading toc-heading">Right to Correct Inaccuracies.</em> You may request that we correct California Personal Information
           about you that is inaccurate. We will consider the nature of the California Personal Information and the purposes of our processing when we address your request.</li>
-          <li><em  id="california-info-11" className="privacy-subheading">Right to Opt Out of Sales of California Personal Information and Sharing of California Personal Information
+          <li><em  id="california-info-11" className="privacy-subheading toc-heading">Right to Opt Out of Sales of California Personal Information and Sharing of California Personal Information
             for Cross-Context Behavioral Advertising.</em> You may request that we not sell your California Personal Information or share your California Personal Information for cross-context behavioral advertising. You may make this request through the cookie manager available on our site. 
               We have also configured our Website to process opt-out preference signals that may allow you to inform us of your desire to opt out of sales or sharing as described in the above paragraph. Opt-out preference signals must be in a format commonly used and recognized by businesses and be delivered by a platform, technology, or mechanism that makes clear to consumers that the use of the signal is meant to have the effect of opting the consumer out of sales and sharing of California Personal Information as described above. If you do not have an account with us or are not logged into your account, your opt-out preference signal will be linked to your browser identifier only and may not be linked to other California Personal Information, such as account information, about you that we process that is not associated with your browser identifier. 
               If we receive an opt-out preference signal from you, we may offer you the option to provide additional information to help facilitate your opt-out request. We may also notify you if an opt-out preference signal we receive from you conflicts with your privacy settings or participation in certain programs we offer, and request your consent to sales or sharing of California Personal Information or to affirm your intent to withdraw from any relevant programs.  
@@ -302,7 +315,7 @@ export default function PrivacyPolicyPage() {
           
         </ul>
       <p className="privacy-subheading">
-          <em id="california-info-12">Exercising California Personal Information Access, Deletion, and Correction Rights and Choices </em>
+          <em className="toc-heading" id="california-info-12">Exercising California Personal Information Access, Deletion, and Correction Rights and Choices </em>
         </p>
         <p>
           Consumers or authorized agents of consumers who would like to exercise the consumer access, deletion, and correction rights described above can submit a 
@@ -333,7 +346,7 @@ export default function PrivacyPolicyPage() {
           <p>
             Subject to certain exceptions, you have the right to not to be retaliated against for exercising the rights described above.
           </p>
-          <h2>Additional Information for Residents of Certain US States</h2>
+          <h2 className="toc-heading" id="california-info-18">Additional Information for Residents of Certain US States</h2>
           <p>
             Certain US states have enacted consumer privacy laws that may apply to AmeriLife and require additional privacy information disclosures to residents 
             of those states who interact with us in an individual or household context and where an exception does not apply.
@@ -342,20 +355,20 @@ export default function PrivacyPolicyPage() {
             This section supplements the rest of our Privacy Policy by providing additional information and describing certain rights that apply only to those 
             individuals. It does not apply to information that is subject to exceptions from those laws, such as deidentified information.
           </p>
-        <p className="privacy-subheading">
+        <p id="california-info-19" className="privacy-subheading toc-heading">
           <em>Sensitive Data </em>
         </p>
         <p>
           The payment card information described in the “Personal Information Collection” section above may be defined as sensitive data, depending on the state of residence.
         </p>
-        <p className="privacy-subheading">
+        <p id="california-info-20" className="privacy-subheading toc-heading">
           <em>Deidentified Information</em>
         </p>
         <p>
           If we process personal information to create deidentified information, we will maintain and use such deidentified information in deidentified form 
           and will not attempt to reidentify such deidentified information except to the extent permitted by applicable law.
         </p>
-        <p className="privacy-subheading">
+        <p id="california-info-21" className="privacy-subheading toc-heading">
           <em>Consumer Rights and Choices </em>
         </p>
         <p>
@@ -422,24 +435,24 @@ export default function PrivacyPolicyPage() {
         <p>
           We will not discriminate against you for exercising these rights. 
         </p>
-        <h2>Third-Party Links</h2>
+        <h2 className="toc-heading" id="california-info-22">Third-Party Links</h2>
         <p>
           This website contains links to other sites that may be helpful to our users. AmeriLife provides these links for your convenience and is 
           not responsible for the accuracy or completeness of these external sites. AmeriLife is not responsible for the content or privacy practices 
           of external sites and encourages you to review the privacy policies of those sites before you use them.
         </p>
-        <h2>Children&apos;s Privacy </h2>
+        <h2 className="toc-heading" id="california-info-23">Children&apos;s Privacy </h2>
         <p>
           The Website does not direct content to children under the age of eighteen and does not intend to collect personal information from children 
           under the age of eighteen. If you believe we have collected personal information from a child under the age of eighteen, please contact us as 
           described in the “How to Contact Us” section below.
         </p>
-        <h2>Changes and Applicable Law</h2>
+        <h2 className="toc-heading" id="california-info-24">Changes and Applicable Law</h2>
         <p>
           We may update this Policy at any time, for any reason or for no reason, and with or without notice to you. We encourage you to review this Policy 
           periodically for any updates or changes. We will post the date that the Policy has been updated so you will know when it has been changed. 
         </p>
-        <h2>How to Contact Us</h2>
+        <h2 className="toc-heading" id="california-info-25">How to Contact Us</h2>
         <p>
           You can reach us by telephone at <a href="tel:+18443409494">(844) 340-9494</a>, by email to <a href="mailto:privacy@amerilife.com">privacy@amerilife.com</a>, or by mail to:
           <br/>
@@ -483,6 +496,9 @@ export default function PrivacyPolicyPage() {
         .privacy-subheading {
           text-decoration: underline;
           font-weight: bold;
+        }
+        .toc-heading {
+          scroll-margin-top: 100px;
         }
 
        
