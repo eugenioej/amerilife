@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { Link as UiLink } from "../ui/Link";
 import type { NavItem } from "@/lib/wp-menus";
+import { useContactPopup } from "../layout/ContactPopupProvider";
+import { AgencyFooterDisclaimer } from "../layout/AgencyFooterDisclaimer";
 
 const BOTTOM_LINKS = [
   { label: "Privacy Policy", href: "/privacy-policy/" },
@@ -22,6 +26,8 @@ type SiteFooterProps = {
 };
 
 export function SiteFooter({ primaryMenu, footerLogoUrl, certificationBadgeUrl }: SiteFooterProps) {
+  const { showAgencyFooterDisclaimer } = useContactPopup();
+  
   const aboutUs = primaryMenu.find((i) => i.label.toLowerCase().includes("about"));
   const ourSolutions = primaryMenu.find((i) => i.label.toLowerCase().includes("solutions"));
 
