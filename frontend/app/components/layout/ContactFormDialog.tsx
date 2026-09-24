@@ -106,9 +106,9 @@ export function ContactFormDialog({ open, onClose, form }: ContactFormDialogProp
         {form ? (
           <div className="mb-6">
             <p className="mb-4 text-sm leading-relaxed text-[var(--color-fg)]">
-              Please use the form below to get in touch with us and
-              <br />
-              we will respond within 24 hours.
+              Please use the form below to get in touch with us! 
+              {/*<br />
+              and we will respond within 24 hours.*/}
             </p>
             <GravityForm form={form} className="space-y-4" />
           </div>
