@@ -18,7 +18,7 @@ export function LocationPageTemplate({ location, connectForm }: LocationPageTemp
   return (
     <>
       <HideContactButton />
-
+      
       <AgencyFooterDisclaimerSetter
         disclaimer={location.footerDisclaimer}
       />

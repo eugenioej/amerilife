@@ -148,13 +148,11 @@ add_action('save_post_agency', function ($post_id) {
     } elseif ($key === 'map_search_url') {
       update_post_meta($post_id, $key, $raw !== '' ? esc_url_raw($raw) : '');
     } elseif ($key === 'footer_disclaimer') {
-
       update_post_meta(
         $post_id,
         $key,
         wp_kses_post($raw)
       );
-    
     } elseif (
       $key === 'features_json' ||
       $key === 'hours'
@@ -199,7 +197,26 @@ add_action('graphql_register_types', function () {
   register_graphql_field('Agency', 'agencyFields', [
     'type' => 'AgencyFields',
     'resolve' => function ($post) {
+      
       $id = amerilife_graphql_post_id($post);
+
+      error_log(
+  'GRAPHQL ID: ' . $id
+);
+
+error_log(
+  'ALL FOOTER META: ' .
+  print_r(
+    get_post_meta(
+      $id,
+      'footer_disclaimer',
+      false
+    ),
+    true
+  )
+);
+
+
       if (!$id) {
         return amerilife_empty_agency_fields();
       }

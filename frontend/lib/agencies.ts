@@ -173,10 +173,16 @@ export async function fetchAgencyBySlug(slug: string): Promise<LocationData | nu
     const data = await fetchGraphQL<AgencyBySlugResult>(GET_AGENCY_BY_SLUG, { slug });
     
     const a = data.agency;
-    console.log(
-  JSON.stringify(data.agency?.agencyFields, null, 2)
-);
+
+//     console.log(
+//   JSON.stringify(data.agency?.agencyFields, null, 2)
+// );
+
     if (!a?.slug) return null;
+    console.log(
+  "Agency object:",
+  JSON.stringify(a, null, 2)
+);
     return agencyGraphqlToLocationData(a);
   } catch {
     return null;
