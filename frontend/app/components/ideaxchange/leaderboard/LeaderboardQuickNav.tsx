@@ -40,6 +40,23 @@ export function LeaderboardQuickNav() {
               </ul>
             </div>
           ))}
+
+          <div className="text-center">
+              <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)]">
+                Best in Class standings
+              </h2>
+              <ul className="mt-4 flex flex-wrap justify-center gap-2 sm:gap-3">
+                  <li >
+                    <button
+                      type="button"
+                      onClick={() => window.location.href = '/ideaxchange/sales-success/best-in-class-wealth'}
+                      className="rounded-sm border border-[var(--color-brand-primary)] bg-white px-4 py-2 text-xs font-bold uppercase tracking-wide text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary)] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)] focus-visible:ring-offset-2"
+                    >
+                      Wealth
+                    </button>
+                  </li>
+              </ul>
+            </div>
         </div>
       </div>
     </nav>
