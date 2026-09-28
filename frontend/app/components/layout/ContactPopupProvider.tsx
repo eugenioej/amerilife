@@ -17,6 +17,9 @@ type ContactPopupContextValue = {
 
   showAgencyFooterDisclaimer: boolean;
   setShowAgencyFooterDisclaimer: (show: boolean) => void;
+
+  agencyFooterDisclaimer: string | null;
+  setAgencyFooterDisclaimer: (value: string | null) => void;
 };
 
 const ContactPopupContext = createContext<ContactPopupContextValue | null>(null);
@@ -39,6 +42,8 @@ export function ContactPopupProvider({ children, contactPopupForm }: Props) {
   const [hideContactButton, setHideContactButton] = useState(false);
   const [showAgencyFooterDisclaimer, setShowAgencyFooterDisclaimer] =
   useState(false);
+  const [agencyFooterDisclaimer, setAgencyFooterDisclaimer] =
+  useState<string | null>(null);
   const openContactPopup = useCallback(() => setOpen(true), []);
 
   return (
@@ -47,9 +52,12 @@ export function ContactPopupProvider({ children, contactPopupForm }: Props) {
         openContactPopup,
         hideContactButton,
         setHideContactButton,
-      
+            
         showAgencyFooterDisclaimer,
         setShowAgencyFooterDisclaimer,
+            
+        agencyFooterDisclaimer,
+        setAgencyFooterDisclaimer,
       }}
     >
       {children}

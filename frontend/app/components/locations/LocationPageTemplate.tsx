@@ -4,6 +4,8 @@ import { FeaturesGrid } from "./FeaturesGrid";
 import type { LocationData } from "@/lib/locations-data";
 import type { GfFormData } from "@/lib/gf-types";
 import { HideContactButton } from "@/app/components/layout/HideContactButton";
+import { AgencyFooterDisclaimerSetter } from "./AgencyFooterDisclaimerSetter";
+
 
 type LocationPageTemplateProps = {
   location: LocationData;
@@ -16,6 +18,10 @@ export function LocationPageTemplate({ location, connectForm }: LocationPageTemp
   return (
     <>
       <HideContactButton />
+
+      <AgencyFooterDisclaimerSetter
+        disclaimer={location.footerDisclaimer}
+      />
     
       <article className="bg-white agency-page">
         <OfficeInfoHero location={location} connectForm={connectForm} />

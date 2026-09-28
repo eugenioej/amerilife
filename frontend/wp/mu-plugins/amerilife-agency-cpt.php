@@ -53,6 +53,7 @@ add_action('init', function () {
       'features_json' => 'string',
       'gravity_form_id' => 'integer',
       'map_search_url' => 'string',
+      'footer_disclaimer' => 'string',
     ] as $key => $type
   ) {
     register_post_meta('agency', $key, [
@@ -88,12 +89,33 @@ function amerilife_agency_details_metabox($post) {
     'features_json' => 'Features (JSON array: [{"heading","body","icon"}] icon: medicare|health|life|annuity)',
     'gravity_form_id' => 'Gravity Form ID (Connect with an Agent)',
     'map_search_url' => 'Map (Google Maps search URL)',
+    'footer_disclaimer' => 'Footer disclaimer (replaces the default footer disclaimer)',
   ];
   foreach ($fields as $key => $label) {
     $val = get_post_meta($post->ID, $key, true);
     echo '<p><label for="agency_' . esc_attr($key) . '"><strong>' . esc_html($label) . '</strong></label></p>';
-    if ($key === 'hours' || $key === 'features_json') {
-      echo '<textarea id="agency_' . esc_attr($key) . '" name="' . esc_attr($key) . '" class="large-text" rows="' . ($key === 'features_json' ? 12 : 6) . '">' . esc_textarea((string) $val) . '</textarea>';
+
+    if ($key === 'footer_disclaimer') {
+
+      wp_editor(
+        $val,
+        'agency_footer_disclaimer',
+        [
+          'textarea_name' => 'footer_disclaimer',
+          'media_buttons' => false,
+          'textarea_rows' => 8,
+          'teeny' => true,
+        ]
+      );
+    } elseif (
+      $key === 'hours' ||
+      $key === 'features_json'
+    ) {
+      $rows = $key === 'features_json'
+        ? 12
+        : ($key === 'footer_disclaimer' ? 8 : 6);
+    
+      echo '<textarea id="agency_' . esc_attr($key) . '" name="' . esc_attr($key) . '" class="large-text" rows="' . esc_attr($rows) . '">' . esc_textarea((string) $val) . '</textarea>';
     } elseif ($key === 'gravity_form_id') {
       echo '<input type="number" id="agency_' . esc_attr($key) . '" name="' . esc_attr($key) . '" class="small-text" step="1" min="0" value="' . esc_attr((string) $val) . '" />';
     } elseif ($key === 'map_search_url') {
@@ -114,7 +136,7 @@ add_action('save_post_agency', function ($post_id) {
   if (!current_user_can('edit_post', $post_id)) {
     return;
   }
-  $keys = ['phone', 'address_line1', 'address_line2', 'address_city', 'address_state', 'address_zip', 'hours', 'features_json', 'gravity_form_id', 'map_search_url'];
+  $keys = ['phone', 'address_line1', 'address_line2', 'address_city', 'address_state', 'address_zip', 'hours', 'features_json', 'gravity_form_id', 'map_search_url','footer_disclaimer',];
   foreach ($keys as $key) {
     if (!isset($_POST[$key])) {
       continue;
@@ -125,10 +147,25 @@ add_action('save_post_agency', function ($post_id) {
       update_post_meta($post_id, $key, $n > 0 ? $n : '');
     } elseif ($key === 'map_search_url') {
       update_post_meta($post_id, $key, $raw !== '' ? esc_url_raw($raw) : '');
-    } elseif ($key === 'features_json') {
-      update_post_meta($post_id, $key, sanitize_textarea_field($raw));
-    } elseif ($key === 'hours') {
-      update_post_meta($post_id, $key, sanitize_textarea_field($raw));
+    } elseif ($key === 'footer_disclaimer') {
+
+      update_post_meta(
+        $post_id,
+        $key,
+        wp_kses_post($raw)
+      );
+    
+    } elseif (
+      $key === 'features_json' ||
+      $key === 'hours'
+    ) {
+    
+      update_post_meta(
+        $post_id,
+        $key,
+        sanitize_textarea_field($raw)
+      );
+    
     } else {
       update_post_meta($post_id, $key, sanitize_text_field($raw));
     }
@@ -153,6 +190,7 @@ add_action('graphql_register_types', function () {
       'featuresJson' => ['type' => 'String'],
       'gravityFormId' => ['type' => 'Int'],
       'mapSearchUrl' => ['type' => 'String'],
+      'footerDisclaimer' => ['type' => 'String'],
       /** Direct URL from _thumbnail_id — works when featuredImage { node } is null for public GraphQL. */
       'heroImageUrl' => ['type' => 'String'],
     ],
@@ -182,6 +220,7 @@ add_action('graphql_register_types', function () {
         'featuresJson' => amerilife_meta_str($id, 'features_json'),
         'gravityFormId' => amerilife_meta_int($id, 'gravity_form_id'),
         'mapSearchUrl' => amerilife_meta_str($id, 'map_search_url'),
+        'footerDisclaimer' => amerilife_meta_str($id, 'footer_disclaimer'),
         'heroImageUrl' => $hero_url,
       ];
     },
@@ -229,6 +268,7 @@ function amerilife_empty_agency_fields() {
     'featuresJson' => null,
     'gravityFormId' => null,
     'mapSearchUrl' => null,
+    'footerDisclaimer' => null,
     'heroImageUrl' => null,
   ];
 }
