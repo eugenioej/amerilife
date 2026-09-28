@@ -16,6 +16,8 @@ import Script from "next/script";
 /** Google Tag Manager container ID */
 export const GTM_CONTAINER_ID = "GTM-KW8T4HP";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const gtmInline = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -24,13 +26,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 /** GTM loader — `beforeInteractive` so it runs from the initial document like the standard <head> snippet. */
 export function GoogleTagManagerScript() {
+  if (!isProduction) return null;
+
   return (
-    <Script id="google-tag-manager" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: gtmInline }} />
+    <Script
+      id="google-tag-manager"
+      strategy="beforeInteractive"
+      dangerouslySetInnerHTML={{ __html: gtmInline }}
+    />
   );
 }
 
 /** Crazy Egg heatmaps / session replay */
 export function CrazyEggScript() {
+  if (!isProduction) return null;
+
   return (
     <Script
       id="crazy-egg"
@@ -42,6 +52,8 @@ export function CrazyEggScript() {
 
 /** GTM noscript fallback — must be first content inside `<body>` per Google’s install snippet. */
 export function GoogleTagManagerNoScript() {
+  if (!isProduction) return null;
+
   return (
     <noscript>
       <iframe
