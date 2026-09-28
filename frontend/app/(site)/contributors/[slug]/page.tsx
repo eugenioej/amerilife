@@ -50,7 +50,7 @@ export default async function ContributorPage({
         ])}
       />
 
-      <div className="mx-auto max-w-5xl bg-white p-8 flex flex-col md:flex-row gap-8">
+      <div className="mx-auto max-w-5xl bg-white p-8 pb-16 flex flex-col md:flex-row gap-8">
         {/* IMAGE */}
         <div className="w-full md:w-[300px] flex-shrink-0">
           <Image
@@ -143,7 +143,9 @@ export default async function ContributorPage({
       </div>
 
       <FadeInOnView direction="up" className="w-full">
-        <ContributorReadMoreArticles />
+        <ContributorReadMoreArticles
+          contributor={contributor}
+        />
       </FadeInOnView>
 
       <FadeInOnView direction="up" className="w-full">

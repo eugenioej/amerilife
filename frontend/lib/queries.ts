@@ -101,6 +101,14 @@ query GetLatestInsightsByTopics {
       title
       excerpt
       date
+    
+      author {
+        node {
+          userFields {
+            contributorSlug
+          }
+        }
+      }
       insightTopics {
         nodes {
           name
@@ -1619,6 +1627,50 @@ export type InsightTopicBySlugResult = {
       };
     } | null;
   } | null;
+};
+
+export const GET_CONTRIBUTOR_INSIGHTS = `
+  query GetContributorInsights(
+    $contributorSlug: String!
+  ) {
+    insights(
+      first: 3
+      where: {
+        contributorSlug: $contributorSlug
+        orderby: {
+          field: DATE
+          order: DESC
+        }
+      }
+    ) {
+      nodes {
+        id
+        slug
+        title
+        excerpt
+        date
+
+        insightTopics {
+          nodes {
+            name
+            slug
+          }
+        }
+
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
+      }
+    }
+  }
+`;
+
+export type ContributorInsightsResult = {
+  insights: {
+    nodes: InsightListItem[];
+  };
 };
 
 export const GET_INSIGHT_TOPIC_BY_SLUG = `

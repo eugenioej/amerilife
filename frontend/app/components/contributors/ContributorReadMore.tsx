@@ -1,34 +1,39 @@
 import Link from "next/link";
 import Image from "next/image";
 import { fetchGraphQL } from "@/lib/wp-client";
-import { GET_LATEST_INSIGHTS_BY_TOPICS } from "@/lib/queries";
-import type {
-  LatestInsightsByTopicsResult,
-  InsightListItem,
+import {
+  GET_CONTRIBUTOR_INSIGHTS,
 } from "@/lib/queries";
 
-export async function ContributorReadMoreArticles() {
-    
-    const data = await fetchGraphQL<LatestInsightsByTopicsResult>(
-      GET_LATEST_INSIGHTS_BY_TOPICS
-    );
+import type {
+  ContributorInsightsResult,
+  InsightListItem,
+  Contributor,
+} from "@/lib/queries";
 
-    const allPosts: InsightListItem[] = data?.insights?.nodes ?? [];
+type Props = {
+  contributor: Contributor;
+};
 
-    const getFirstByTopic = (topicSlug: string) =>
-      allPosts.find((post) =>
-        post.insightTopics?.nodes?.some(
-          (t) => t.slug === topicSlug
-        )
-    );
+export async function ContributorReadMoreArticles({
+  contributor,
+}: Props) {
+  
+ const data =
+  await fetchGraphQL<ContributorInsightsResult>(
+    GET_CONTRIBUTOR_INSIGHTS,
+    {
+      contributorSlug: contributor.slug,
+    }
+  );
 
-    const posts = [
-      getFirstByTopic("wealth"),
-      getFirstByTopic("health"),
-      getFirstByTopic("life"),
-    ].filter((post): post is InsightListItem => Boolean(post));
+ const posts: InsightListItem[] =
+  data?.insights?.nodes ?? [];
 
-
+  if (posts.length === 0) {
+    return null;
+  }
+  
   return (
     <section className="pb-40 pt-8">
       <div className="mx-auto max-w-5xl">
