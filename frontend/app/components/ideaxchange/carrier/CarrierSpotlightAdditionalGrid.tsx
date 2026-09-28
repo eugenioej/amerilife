@@ -18,7 +18,7 @@ export function CarrierSpotlightAdditionalGrid({ carriers }: Props) {
   return (
     <section className="mt-12 md:mt-16">
       <h2 className="mb-6 text-xs font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)] md:mb-8">
-        Additional carrier spotlights
+        Additional Med Supp Carriers
       </h2>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 lg:gap-5">
         {carriers.map((carrier) => {
