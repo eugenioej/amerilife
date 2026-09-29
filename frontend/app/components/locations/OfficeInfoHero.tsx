@@ -278,7 +278,7 @@ export function OfficeInfoHero({ location, connectForm }: OfficeInfoHeroProps) {
 
                 <div className="mt-10 border-t border-[var(--color-border)] pt-9">
                   <h3 className="mb-7 text-[0.95625rem] font-bold uppercase tracking-[0.085em] text-[var(--color-brand-primary)]">
-                    Connect With an Agent
+                    Connect With a Licensed Insurance Agent
                   </h3>
                   {connectForm ? (
                     <GravityForm form={connectForm} />
