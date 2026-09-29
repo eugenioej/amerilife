@@ -37,7 +37,7 @@ export function FindAgentContent({ locations, connectForm }: Props) {
   
             <div className="w-full min-w-0 max-w-3xl text-center">
               <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl">
-                Find An Licensed Insurance Agent Near You
+                Find A Licensed Insurance Agent Near You
               </h1>
               <p className="mb-10 text-lg leading-relaxed text-white/80">
                 Find a Licensed Insurance Agent in your area for Medicare, health
@@ -60,11 +60,7 @@ export function FindAgentContent({ locations, connectForm }: Props) {
                 Agents committed to your wellbeing
               </h2>
               <p className="text-base leading-relaxed text-[var(--color-muted)]">
-                Since 1971, AmeriLife has opened agency locations across the
-                country to connect consumers with the right coverage. Our licensed
-                agents take the time to understand your unique needs and guide you
-                to Medicare, health, life, and retirement solutions
-                available — so you can live a longer, healthier, more secure life.
+                Since 1971, AmeriLife has opened agency locations across the country to connect consumers with the right coverage. Our licensed insurance agents take the time to understand your unique needs and guide you to Medicare, health, life, and retirement solutions available — so you can live a longer, healthier, more secure life.
               </p>
             </div>
           </div>
