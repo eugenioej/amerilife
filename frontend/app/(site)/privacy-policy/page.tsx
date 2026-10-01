@@ -22,7 +22,7 @@ export default function PrivacyPolicyPage() {
           This Privacy Policy outlines how the AmeriLife® family of companies (“AmeriLife,” “we,” “us,” or “our”) 
           collect and use personal information through AmeriLife.com (the “Website”). 
         </p>
-        <h2>Table of Content</h2>
+        <h2>Table of Contents</h2>
         <Link href="#california-info-1">Additional Information for Residents of California</Link><br/>
         <Link href="#california-info-2">California Personal Information We Collect</Link><br/>
         <Link href="#california-info-3">Retention of California Personal Information We Collect</Link><br/>
