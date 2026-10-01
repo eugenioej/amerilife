@@ -20,6 +20,7 @@ $ideaxchange_mu_plugins = [
   'amerilife-ideaxchange-carrier-cpt.php',
   'amerilife-ideaxchange-leaderboard-cpt.php',
   'amerilife-ideaxchange-ads.php',
+  'ideaxchange-dev-view-access.php',
 ];
 
 foreach ($ideaxchange_mu_plugins as $file) {
