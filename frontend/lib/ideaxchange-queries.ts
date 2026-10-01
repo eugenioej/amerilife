@@ -609,6 +609,18 @@ export type IdeaxchangeArticlesSearchBatchResult = {
   } | null;
 };
 
+export type IdeaxchangeDevViewAccessResult = {
+  ideaxchangeDevViewEmailAllowed?: boolean | null;
+};
+
+export const GET_IDEAXCHANGE_DEV_VIEW_ACCESS = `
+  query CheckIdeaXchangeDevAccess($email: String!) {
+    ideaxchangeDevViewEmailAllowed(
+      email: $email
+    )
+  }
+`;
+
 export const GET_IDEAXCHANGE_ARTICLES_SEARCH_BATCH = `
   query GetIdeaxchangeArticlesSearchBatch($first: Int!, $after: String) {
     ideaxchangeArticles(
