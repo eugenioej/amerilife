@@ -11,7 +11,7 @@ const VALID_MODES: IdeaxchangeDevViewMode[] = ["all", "brokerage", "career"];
 
 export async function POST(req: Request) {
   const auth = await requireIdeaxchangeAuth();
-  if (!canUseIdeaxchangeDevView(auth.user?.email)) {
+  if (!(await canUseIdeaxchangeDevView(auth.user?.email))) {
     return NextResponse.json({ error: "Dev unlock is not enabled" }, { status: 403 });
   }
 

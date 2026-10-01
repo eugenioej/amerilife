@@ -30,7 +30,7 @@ export default async function SiteLayout({
   const ideaxchangeDevView = inIdeaxchange
     ? await getIdeaxchangeDevViewMode(ideaxchangeEmail)
     : "off";
-  const showIdeaxchangeDevSwitcher = canUseIdeaxchangeDevView(ideaxchangeEmail);
+  const showIdeaxchangeDevSwitcher = await canUseIdeaxchangeDevView(ideaxchangeEmail);
 
   return (
     <LayoutShell

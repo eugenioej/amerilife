@@ -15,10 +15,7 @@ export type IdeaxchangeDevViewMode = "off" | "all" | "brokerage" | "career";
 const VALID_MODES = new Set<IdeaxchangeDevViewMode>(["off", "all", "brokerage", "career"]);
 
 export function isIdeaxchangeDevUnlockEnabled(): boolean {
-  if (process.env.NODE_ENV === "production") {
-    return false;
-  }
-
+  if (process.env.NODE_ENV === "production") return false;
   return process.env.IDEAXCHANGE_DEV_UNLOCK === "1";
 }
 
