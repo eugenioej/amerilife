@@ -355,23 +355,47 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
     }
 
     let captchaToken = "";
-    if (nodes.some((f) => f.type === "CAPTCHA")) {
-      if (!siteKey) {
-        setClientError("reCAPTCHA site key is missing. Set NEXT_PUBLIC_RECAPTCHA_SITE_KEY.");
-        return;
-      }
-      if (recaptchaWidgetId == null || !window.grecaptcha) {
-        setClientError("reCAPTCHA is still loading. Try again in a moment.");
-        return;
-      }
-      captchaToken = window.grecaptcha.getResponse(recaptchaWidgetId);
-      if (!captchaToken) {
-        setClientError("Please complete the reCAPTCHA.");
-        return;
-      }
+
+const usesRecaptcha =
+  !inline &&
+  nodes.some((field) => field.type === "CAPTCHA");
+
+  if (usesRecaptcha) {
+    if (!siteKey) {
+      setClientError(
+        "reCAPTCHA site key is missing. Set NEXT_PUBLIC_RECAPTCHA_SITE_KEY.",
+      );
+      return;
     }
 
-    const payload = buildFieldValuesPayload(nodes, stringValues, nameParts, checkboxChecked, captchaToken);
+    if (recaptchaWidgetId == null || !window.grecaptcha) {
+      setClientError(
+        "reCAPTCHA is still loading. Try again in a moment.",
+      );
+      return;
+    }
+
+    captchaToken =
+      window.grecaptcha.getResponse(recaptchaWidgetId);
+
+    if (!captchaToken) {
+      setClientError("Please complete the reCAPTCHA.");
+      return;
+    }
+  }
+
+    const submissionNodes = inline
+      ? nodes.filter((field) => field.type !== "CAPTCHA")
+      : nodes;
+    
+    const payload = buildFieldValuesPayload(
+      submissionNodes,
+      stringValues,
+      nameParts,
+      checkboxChecked,
+      captchaToken,
+    );
+
     setSubmitting(true);
     try {
       const result = await submitGravityForm(form.databaseId, payload);
