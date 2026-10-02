@@ -249,6 +249,18 @@ article.global-article h4 {
     margin-bottom: 0.75rem;
 }
 
+/* Gives Back timeline: hide the native scrollbar */
+.timeline-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+}
+
+.timeline-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 
 @media (max-width: 639px) {
   .home-hero-fold {
