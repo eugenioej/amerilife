@@ -129,7 +129,7 @@ export function SiteFooter({ primaryMenu, footerLogoUrl, certificationBadgeUrl }
                   variant="nav"
                   className="text-sm font-medium text-white/90 transition-colors hover:text-white"
                 >
-                  IdeaXchange
+                  ideaXchange
                 </UiLink>
               </li>
             </ul>
