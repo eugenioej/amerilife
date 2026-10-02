@@ -78,11 +78,6 @@ function partitionPosts(posts: CaseStudyListItem[]) {
 
 
 function toCardItem(post: CaseStudyListItem): IdeaxchangeCardItem {
-  console.log(
-    "CASE STUDY",
-    post.title,
-    post.ideaxchangeCaseStudyFields
-  );
 
   return {
     id: post.id,
