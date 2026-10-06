@@ -4,7 +4,7 @@ import NationalRecruitingFooter from "@/app/components/national-recruiting/Natio
 
 export default function Page() {
   return (
-    <div className="request-support-page min-h-screen bg-white">
+    <div className="hide-header-footer min-h-screen bg-white">
       <NationalRecruitingHeader/>
       <QualityPage />
       <NationalRecruitingFooter/>

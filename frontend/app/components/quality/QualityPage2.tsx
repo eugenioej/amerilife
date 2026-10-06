@@ -10,9 +10,6 @@ import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/Ide
 const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 const BANNER_3 = `${UPLOADS}/2021/12/banner-10.png`;
 
-const QUALITY_HERO_BG =
-  "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AML-Wealth-II-Announcement-040532023-HERO-1024x358-1.png";
-
 const FadeInOnView = dynamic(
   () => import("@/app/components/ui/FadeInOnView"),
   { ssr: true }
