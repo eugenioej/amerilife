@@ -164,14 +164,25 @@ export function agencyGraphqlToLocationData(agency: AgencyDetailGql): LocationDa
     features: features.length > 0 ? features : [],
     mapSearchUrl: af?.mapSearchUrl?.trim() || undefined,
     gravityFormId: af?.gravityFormId ?? undefined,
+    footerDisclaimer: af?.footerDisclaimer ?? undefined,
   };
 }
 
 export async function fetchAgencyBySlug(slug: string): Promise<LocationData | null> {
   try {
     const data = await fetchGraphQL<AgencyBySlugResult>(GET_AGENCY_BY_SLUG, { slug });
+    
     const a = data.agency;
+
+//     console.log(
+//   JSON.stringify(data.agency?.agencyFields, null, 2)
+// );
+
     if (!a?.slug) return null;
+    console.log(
+  "Agency object:",
+  JSON.stringify(a, null, 2)
+);
     return agencyGraphqlToLocationData(a);
   } catch {
     return null;
