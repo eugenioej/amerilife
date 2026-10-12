@@ -45,11 +45,6 @@ export function CarrierSpotlightAdditionalGrid({ carriers }: Props) {
                 </div>
                 <span className="sr-only">{carrier.title}</span>
               </Link>
-              <Link href={carrierHref(carrier.slug)} variant="button" className="text-left hover:no-underline mt-5">
-                <h3 className="text-base font-bold leading-snug text-[var(--color-fg)] transition-colors group-hover:text-[var(--color-brand-primary)]">
-                  {carrier.title}
-                </h3>
-              </Link>
             </article>
           );
         })}
