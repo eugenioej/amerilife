@@ -105,8 +105,8 @@ export default function QualityPage() {
             <h1 className="mb-5 max-w-[min(100%,48rem)] text-balance text-xl font-bold leading-snug text-white drop-shadow-sm sm:mb-6 sm:text-2xl sm:leading-tight md:text-3xl md:leading-tight lg:text-4xl xl:text-5xl">
               Your Quality Partner
             </h1>
-            <p className="max-w-3xl text-base leading-relaxed text-white/95">
-              Your Quality Partner (YQP) is the shared framework that highlights the commitment to quality, ethics, and beneficiary-first service that has always been part of how AmeriLife operates.
+            <p className="max-w-4xl text-base leading-relaxed text-white/95">
+              Your Quality Partner (YQP) is that name: a shared expression for the commitment to quality and ethics that already defines how we operate. It&apos;s not a new program or a new mandate. It highlights the standard we&apos;ve earned and provides a framework to make it more visible and consistent across every affiliate, team, and touchpoint.
             </p>
             
           </div>
