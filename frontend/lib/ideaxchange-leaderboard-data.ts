@@ -16,7 +16,7 @@ import type { IdeaxchangePersona } from "@/lib/ideaxchange-persona";
 import { isItemVisibleToPersona } from "@/lib/ideaxchange-visibility";
 import leaderboardSeed from "../wp/mu-plugins/ideaxchange/seed/ideaxchange-leaderboard-seed.json";
 
-export type LeaderboardSchema = "standard" | "eo";
+export type LeaderboardSchema = "standard" | "eo" | "aep";
 
 export type LeaderboardRow = {
   rank?: string;
@@ -71,6 +71,17 @@ export const LEADERBOARD_TABLE_CONFIG: LeaderboardSectionConfig[] = [
     slug: "eo",
     title: "E&O",
     tables: [{ slug: "oe", title: "E&O", schema: "eo" }],
+  },
+  {
+    slug: "aep-production",
+    title: "AEP Production",
+    tables: [
+      {
+        slug: "aep-2027-production",
+        title: "AEP 2027 Production",
+        schema: "aep",
+      },
+    ],
   },
 ];
 
