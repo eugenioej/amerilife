@@ -36,7 +36,7 @@ export type IdeaxchangePillarDef = {
  * Sales Leaderboard → brokerage only. Career Leaderboard → career only.
  */
 export const IDEAXCHANGE_PILLARS: IdeaxchangePillarDef[] = [
-  { key: "home", label: "Home", href: IDEAXCHANGE_HOME_FEED_PATH, audiences: "both" },
+  // { key: "home", label: "Home", href: IDEAXCHANGE_HOME_FEED_PATH, audiences: "both" },
   {
     key: "recruiting-hub",
     label: "Recruiting Hub",
