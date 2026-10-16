@@ -51,6 +51,45 @@
         { "rank": "2", "affiliate": "Jack Schroeder and Associates, Inc.", "ytd": 8, "lytd": 0, "vs_lytd": 0, "vs_lqtd": 0, "vs_lmtd": 0, "trend": "flat" },
         { "rank": "3", "affiliate": "Vertical Vision", "ytd": 6, "lytd": 0, "vs_lytd": 0, "vs_lqtd": 0, "vs_lmtd": 0, "trend": "flat" }
       ]
+    },
+    {
+      "table_slug": "aep-2027-production",
+      "schema": "aep",
+      "rows": [
+        {
+          "affiliate": "AmeriLife Marketing Group",
+          "current_year_new_sales": 18308,
+          "prior_year_new_sales": 15001,
+          "plan": 20000,
+          "forecast": 22000,
+          "new_sales_vs_prior_year": 22.1,
+          "percent_to_plan": 91.5,
+          "percent_of_forecast": 83.2,
+          "kpi_value": 18308
+        },
+        {
+          "affiliate": "Pinnacle Financial Services Group",
+          "current_year_new_sales": 15232,
+          "prior_year_new_sales": 14665,
+          "plan": 17500,
+          "forecast": 19000,
+          "new_sales_vs_prior_year": 3.9,
+          "percent_to_plan": 87.0,
+          "percent_of_forecast": 80.2,
+          "kpi_value": 15232
+        },
+        {
+          "affiliate": "Jack Schroeder & Associates",
+          "current_year_new_sales": 9761,
+          "prior_year_new_sales": 13057,
+          "plan": 12000,
+          "forecast": 14000,
+          "new_sales_vs_prior_year": -25.2,
+          "percent_to_plan": 81.3,
+          "percent_of_forecast": 69.7,
+          "kpi_value": 9761
+        }
+      ]
     }
   ]
 }

@@ -21,12 +21,22 @@ export type LeaderboardSchema = "standard" | "eo" | "aep";
 export type LeaderboardRow = {
   rank?: string;
   affiliate: string;
+
   ytd: string;
   lytd: string;
   vsLytd: string;
   vsLqtd: string;
   vsLmtd: string;
   trend: string;
+
+  currentYearNewSales?: string;
+  priorYearNewSales?: string;
+  plan?: string;
+  forecast?: string;
+  newSalesVsPriorYear?: string;
+  percentToPlan?: string;
+  percentOfForecast?: string;
+  kpiValue?: string;
 };
 
 export type LeaderboardTableData = {
@@ -92,20 +102,49 @@ export const LEADERBOARD_TABLE_SLUGS = LEADERBOARD_TABLE_CONFIG.flatMap((section
 type SeedTable = {
   table_slug?: string;
   schema?: string;
-  rows?: LeaderboardSeedRow[];
+  rows?: Array<LeaderboardSeedRow | AepLeaderboardSeedRow>;
+};
+
+type AepLeaderboardSeedRow = {
+  affiliate: string;
+  current_year_new_sales?: string | number;
+  prior_year_new_sales?: string | number;
+  plan?: string | number;
+  forecast?: string | number;
+  new_sales_vs_prior_year?: string | number;
+  percent_to_plan?: string | number;
+  percent_of_forecast?: string | number;
+  kpi_value?: string | number;
 };
 
 const SEED_TABLES = (leaderboardSeed.tables ?? []) as SeedTable[];
+
+function isStandardSeedRow(
+  row: LeaderboardSeedRow | AepLeaderboardSeedRow,
+): row is LeaderboardSeedRow {
+  return (
+    "ytd" in row &&
+    "lytd" in row &&
+    "vs_lytd" in row &&
+    "vs_lqtd" in row &&
+    "vs_lmtd" in row &&
+    "trend" in row
+  );
+}
 
 const FALLBACK_STANDARD_ROWS: LeaderboardRow[] = (
   SEED_TABLES.find((t) => t.table_slug === "life")?.rows ??
   SEED_TABLES[0]?.rows ??
   []
-).map(mapSeedRowToDisplay);
+)
+  .filter(isStandardSeedRow)
+  .map(mapSeedRowToDisplay);
 
 const FALLBACK_EO_ROWS: LeaderboardRow[] = (
   SEED_TABLES.find((t) => t.table_slug === "oe")?.rows ?? []
-).map((row) => {
+)
+  .filter(isStandardSeedRow)
+  .map((row) => {
   const mapped = mapSeedRowToDisplay(row);
   return {
     ...mapped,
@@ -117,22 +156,74 @@ const FALLBACK_EO_ROWS: LeaderboardRow[] = (
   };
 });
 
+const FALLBACK_AEP_ROWS: LeaderboardRow[] = (
+  SEED_TABLES.find((table) => table.table_slug === "aep-2027-production")?.rows ?? []
+).map((row) => {
+  const aepRow = row as AepLeaderboardSeedRow;
+
+  return {
+    affiliate: aepRow.affiliate,
+
+    // Required standard properties are unused by the AEP renderer.
+    ytd: "—",
+    lytd: "—",
+    vsLytd: "—",
+    vsLqtd: "—",
+    vsLmtd: "—",
+    trend: "—",
+
+    currentYearNewSales: String(aepRow.current_year_new_sales ?? ""),
+    priorYearNewSales: String(aepRow.prior_year_new_sales ?? ""),
+    plan: String(aepRow.plan ?? ""),
+    forecast: String(aepRow.forecast ?? ""),
+    newSalesVsPriorYear: String(aepRow.new_sales_vs_prior_year ?? ""),
+    percentToPlan: String(aepRow.percent_to_plan ?? ""),
+    percentOfForecast: String(aepRow.percent_of_forecast ?? ""),
+    kpiValue: String(aepRow.kpi_value ?? ""),
+  };
+});
+
 const FALLBACK_REPORT_DATE =
   typeof leaderboardSeed.report_date === "string" ? leaderboardSeed.report_date : null;
 
 const FALLBACK_BY_TABLE: Record<string, LeaderboardTableData> = Object.fromEntries(
-  LEADERBOARD_TABLE_SLUGS.map((slug) => {
-    const isEo = slug === "oe";
-    return [
-      slug,
-      {
-        rows: isEo ? FALLBACK_EO_ROWS : FALLBACK_STANDARD_ROWS,
-        lastUpdated: FALLBACK_REPORT_DATE,
-        schema: isEo ? "eo" : "standard",
-      } satisfies LeaderboardTableData,
-    ];
-  }),
+  LEADERBOARD_TABLE_CONFIG.flatMap((section) =>
+    section.tables.map((table) => {
+      const schema = table.schema ?? "standard";
+
+      let rows: LeaderboardRow[];
+
+      if (schema === "eo") {
+        rows = FALLBACK_EO_ROWS;
+      } else if (schema === "aep") {
+        rows = FALLBACK_AEP_ROWS;
+      } else {
+        rows = FALLBACK_STANDARD_ROWS;
+      }
+
+      return [
+        table.slug,
+        {
+          rows,
+          lastUpdated: FALLBACK_REPORT_DATE,
+          schema,
+        } satisfies LeaderboardTableData,
+      ];
+    }),
+  ),
 );
+
+function getConfiguredTableSchema(slug: string): LeaderboardSchema {
+  for (const section of LEADERBOARD_TABLE_CONFIG) {
+    const table = section.tables.find((item) => item.slug === slug);
+
+    if (table) {
+      return table.schema ?? "standard";
+    }
+  }
+
+  return "standard";
+}
 
 function mapGraphqlRow(row: {
   rank?: string | null;
@@ -143,20 +234,41 @@ function mapGraphqlRow(row: {
   vsLqtd?: string | null;
   vsLmtd?: string | null;
   trend?: string | null;
+
+  currentYearNewSales?: string | null;
+  priorYearNewSales?: string | null;
+  plan?: string | null;
+  forecast?: string | null;
+  newSalesVsPriorYear?: string | null;
+  percentToPlan?: string | null;
+  percentOfForecast?: string | null;
+  kpiValue?: string | null;
 }): LeaderboardRow | null {
   const affiliate = row.affiliate?.trim() ?? "";
   if (!affiliate) return null;
+
   return {
     rank: row.rank?.trim() || undefined,
     affiliate,
+
     ytd: row.ytdAmount?.trim() || "—",
     lytd: row.lytdAmount?.trim() || "—",
     vsLytd: row.vsLytd?.trim() || "—",
     vsLqtd: row.vsLqtd?.trim() || "—",
     vsLmtd: row.vsLmtd?.trim() || "—",
     trend: formatLeaderboardTrendSymbol(row.trend?.trim() || ""),
+
+    currentYearNewSales: row.currentYearNewSales?.trim() || "",
+    priorYearNewSales: row.priorYearNewSales?.trim() || "",
+    plan: row.plan?.trim() || "",
+    forecast: row.forecast?.trim() || "",
+    newSalesVsPriorYear: row.newSalesVsPriorYear?.trim() || "",
+    percentToPlan: row.percentToPlan?.trim() || "",
+    percentOfForecast: row.percentOfForecast?.trim() || "",
+    kpiValue: row.kpiValue?.trim() || "",
   };
 }
+
 
 function mapTableNode(
   node: LeaderboardTableGraphql,
@@ -165,8 +277,14 @@ function mapTableNode(
   if (!isItemVisibleToPersona(node, persona)) return null;
   const slug = node.slug?.trim();
   if (!slug) return null;
+  const graphqlSchema = node.ideaxchangeLbTableFields?.schema?.trim();
+
   const schema: LeaderboardSchema =
-    node.ideaxchangeLbTableFields?.schema === "eo" || slug === "oe" ? "eo" : "standard";
+    graphqlSchema === "standard" ||
+    graphqlSchema === "eo" ||
+    graphqlSchema === "aep"
+      ? graphqlSchema
+      : getConfiguredTableSchema(slug);
   const rows = (node.ideaxchangeLbTableFields?.rows ?? [])
     .map((row) => mapGraphqlRow(row))
     .filter(Boolean) as LeaderboardRow[];
