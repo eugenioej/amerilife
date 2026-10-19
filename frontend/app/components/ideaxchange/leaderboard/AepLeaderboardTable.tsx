@@ -85,7 +85,7 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
       id={id}
       className="scroll-mt-[calc(var(--header-height)+1rem)] overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-[0_4px_20px_rgba(36,66,96,0.06)]"
     >
-      <div className="relative flex flex-col gap-3 border-b border-[var(--color-border)] bg-[var(--color-brand-primary)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      {/* <div className="relative flex flex-col gap-3 border-b border-[var(--color-border)] bg-[var(--color-brand-primary)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <h3 className="text-center text-sm font-bold uppercase tracking-wider text-white sm:text-left">
           {title}
         </h3>
@@ -110,7 +110,23 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
             </button>
           )}
         </div>
+      </div> */}
+
+      <div className="border-b border-[var(--color-border)]">
+        <picture>
+          <source
+            media="(max-width: 768px)"
+            srcSet="https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/10/AEP27-iX-SurgeBanner-101526-EM_Mobile-2-scaled.jpg"
+          />
+      
+          <img
+            src="https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/10/AEP27-iX-SurgeBanner-101526-EM_Desktop-2.jpg"
+            alt="AEP 2027 Production Leaderboard"
+            className="block w-full h-auto"
+          />
+        </picture>
       </div>
+
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse text-left text-sm">
           <thead>
