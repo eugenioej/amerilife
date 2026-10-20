@@ -15,11 +15,12 @@ export interface LogoCarouselLogo {
 
 type LogoCarouselProps = {
   logos: ReadonlyArray<LogoCarouselLogo>;
-  /** When true, logos render in full color (default applies grayscale with color on hover). */
   colorLogos?: boolean;
+  variant?: "default" | "gives-back" | "gives-back-sponsors";
 };
 
-export function LogoCarousel({ logos, colorLogos = false }: LogoCarouselProps) {
+export function LogoCarousel({
+  logos, colorLogos = false, variant = "default", }: LogoCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -52,6 +53,13 @@ export function LogoCarousel({ logos, colorLogos = false }: LogoCarouselProps) {
     el.scrollBy({ left: direction === "left" ? -step : step, behavior: "smooth" });
   };
 
+  const cardClassName =
+  variant === "gives-back-sponsors"
+    ? "motion-card flex aspect-square w-[140px] shrink-0 items-center justify-center rounded-lg bg-white p-4 opacity-100 transition-[opacity,transform,box-shadow] duration-300 snap-start sm:w-[180px]"
+    : colorLogos
+      ? "motion-card flex h-[100px] min-w-[140px] shrink-0 items-center justify-center rounded-lg bg-white p-3 opacity-100 transition-[opacity,transform,box-shadow] duration-300 snap-start sm:h-[120px] sm:min-w-[200px] sm:p-4"
+      : "motion-card flex h-[100px] min-w-[140px] shrink-0 items-center justify-center rounded-lg bg-white p-3 grayscale opacity-80 transition-[opacity,transform,box-shadow] duration-300 hover:grayscale-0 hover:opacity-100 snap-start sm:h-[120px] sm:min-w-[200px] sm:p-4";
+
   return (
     <div className="relative flex items-center gap-2 py-2 sm:gap-4 sm:py-3">
       <button
@@ -59,7 +67,11 @@ export function LogoCarousel({ logos, colorLogos = false }: LogoCarouselProps) {
         onClick={() => scroll("left")}
         disabled={!canScrollLeft}
         aria-label="Previous logos"
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)] text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed sm:h-12 sm:w-12"
+        className={
+          variant === "gives-back" || "gives-back-sponsors"
+            ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#d6ddd6] bg-white text-[var(--color-brand-primary)] transition-all hover:bg-[#f5f5f5] disabled:opacity-40 disabled:cursor-not-allowed"
+            : "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)] text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed sm:h-12 sm:w-12"
+        }
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -84,11 +96,7 @@ export function LogoCarousel({ logos, colorLogos = false }: LogoCarouselProps) {
           {logos.map((logo, i) => (
             <div
               key={`${logo.alt}-${i}`}
-              className={
-                colorLogos
-                  ? "motion-card flex h-[100px] min-w-[140px] shrink-0 items-center justify-center rounded-lg bg-white p-3 opacity-100 transition-[opacity,transform,box-shadow] duration-300 snap-start sm:h-[120px] sm:min-w-[200px] sm:p-4"
-                  : "motion-card flex h-[100px] min-w-[140px] shrink-0 items-center justify-center rounded-lg bg-white p-3 grayscale opacity-80 transition-[opacity,transform,box-shadow] duration-300 hover:grayscale-0 hover:opacity-100 snap-start sm:h-[120px] sm:min-w-[200px] sm:p-4"
-              }
+              className={cardClassName}
             >
               {logo.href ? (
                 <a
@@ -102,7 +110,12 @@ export function LogoCarousel({ logos, colorLogos = false }: LogoCarouselProps) {
                     alt={logo.alt}
                     width={LOGO_SIZE.w}
                     height={LOGO_SIZE.h}
-                    className="h-full w-auto object-contain"
+                    className={
+                      variant === "gives-back-sponsors"
+                        ? "max-h-[65%] w-auto object-contain"
+                        : "h-full w-auto object-contain"
+                    }
+
                     sizes="200px"
                   />
                 </a>
@@ -112,7 +125,12 @@ export function LogoCarousel({ logos, colorLogos = false }: LogoCarouselProps) {
                   alt={logo.alt}
                   width={LOGO_SIZE.w}
                   height={LOGO_SIZE.h}
-                  className="h-full w-auto object-contain"
+                  className={
+                    variant === "gives-back-sponsors"
+                      ? "max-h-[65%] w-auto object-contain"
+                      : "h-full w-auto object-contain"
+                  }
+
                   sizes="200px"
                 />
               )}
@@ -125,7 +143,11 @@ export function LogoCarousel({ logos, colorLogos = false }: LogoCarouselProps) {
         onClick={() => scroll("right")}
         disabled={!canScrollRight}
         aria-label="Next logos"
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)] text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed sm:h-12 sm:w-12"
+        className={
+          variant === "gives-back" || "gives-back-sponsors"
+            ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#d6ddd6] bg-white text-[var(--color-brand-primary)] transition-all hover:bg-[#f5f5f5] disabled:opacity-40 disabled:cursor-not-allowed"
+            : "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)] text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed sm:h-12 sm:w-12"
+        }
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
