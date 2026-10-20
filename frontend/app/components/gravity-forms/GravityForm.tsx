@@ -213,9 +213,21 @@ type GravityFormProps = {
   inline?: boolean;
   /** Dark surrounding panel: light labels, white input fields */
   onDarkPanel?: boolean;
+  /** Display the required TCPA / 1:1 consent language above the submit button */
+  showTcpaDisclaimer?: boolean;
+  agencyName?: string;
+  agencyPhone?: string;
 };
 
-export function GravityForm({ form, className, inline = false, onDarkPanel = false }: GravityFormProps) {
+export function GravityForm({
+  form,
+  className,
+  inline = false,
+  onDarkPanel = false,
+  showTcpaDisclaimer = false,
+  agencyName = "[Agency Name]",
+  agencyPhone = "xxx-xxx-xxxx",
+}: GravityFormProps) {
   const nodes = useMemo(() => nodesList(form), [form]);
   const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY?.trim() ?? "";
   const submitBtn = form.submitButton;
@@ -965,6 +977,35 @@ export function GravityForm({ form, className, inline = false, onDarkPanel = fal
             );
         }
       })}
+
+      {showTcpaDisclaimer ? (
+        <p
+          className={
+            "tcpa-office-disclaimer text-base leading-relaxed " +
+            (onDarkPanel ? "text-white" : "text-[var(--color-fg)]")
+          }
+        >
+          By providing my information above, I am providing my express written
+          consent agreement to permit {agencyName} to contact me at the number
+          provided for marketing purposes, including through the use of automated
+          technology, SMS/MMS messages, AI generated voice, and pre-recorded and/or
+          artificial voice messages. The consumer can change his or her permission
+          preferences at any time by contacting {agencyName}. I acknowledge my
+          consent is not required to obtain any good or service and to be connected
+          without providing consent I can call{" "}
+          <a
+            href={`tel:${agencyPhone.replace(/[^\d+]/g, "")}`}
+            className={
+              onDarkPanel
+                ? "font-semibold text-white underline"
+                : "font-semibold text-[var(--color-link)] underline"
+            }
+          >
+            {agencyPhone}
+          </a>
+          .
+        </p>
+      ) : null}
 
       {clientError ? (
         <p className="text-sm text-red-600" role="alert">
