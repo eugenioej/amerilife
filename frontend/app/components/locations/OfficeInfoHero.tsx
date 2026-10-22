@@ -56,12 +56,14 @@ function TealOfficeBlock({
       </h1>
 
       {officeTelHref ? (
-        <a
-          className="mt-5 inline-block text-left text-xl font-bold leading-snug underline-offset-4 transition-opacity hover:opacity-95 sm:mt-6 sm:text-2xl xl:text-[1.75rem]"
-          href={officeTelHref}
-        >
-          {location.phone}
-        </a>
+        <span className="text-left leading-snug sm:text-2xl xl:text-[1.25rem]">
+          <a
+            className="mt-5 inline-block text-left text-xl font-bold leading-snug underline-offset-4 transition-opacity hover:opacity-95 sm:mt-6 sm:text-2xl xl:text-[1.75rem]"
+            href={officeTelHref}
+          >
+            {location.phone} 
+          </a> Licensed Insurance Agent
+        </span>
       ) : (
         <p className="mt-5 text-xl font-bold sm:mt-6">{location.phone}</p>
       )}
@@ -234,12 +236,14 @@ export function OfficeInfoHero({ location, connectForm }: OfficeInfoHeroProps) {
                       </a>
                     ) : null}
                     {agentTelHref ? (
+                      <span>
                       <a
                         className="w-fit text-[var(--color-brand-dark)] underline decoration-[1.6px] underline-offset-[5px]"
                         href={agentTelHref}
                       >
-                        {displayPhoneAgent}
-                      </a>
+                        {displayPhoneAgent} 
+                      </a> Licensed Insurance Agent
+                      </span>
                     ) : null}
                   </div>
                 </div>
