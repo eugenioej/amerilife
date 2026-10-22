@@ -87,7 +87,13 @@ export function ConnectAgentBanner({
           {showForm ? (
             <div className="min-w-0">
               {connectForm ? (
-                <GravityForm form={connectForm} />
+                <GravityForm
+                  form={connectForm}
+                  showTcpaDisclaimer
+                  agencyName={location.officeName}
+                  agencyPhone={location.phone}
+                />
+
               ) : (
                 <p className="text-sm text-[var(--color-muted)]">
                   The contact form could not be loaded. Please try again later

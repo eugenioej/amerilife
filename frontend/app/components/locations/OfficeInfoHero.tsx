@@ -56,12 +56,14 @@ function TealOfficeBlock({
       </h1>
 
       {officeTelHref ? (
-        <a
-          className="mt-5 inline-block text-left text-xl font-bold leading-snug underline-offset-4 transition-opacity hover:opacity-95 sm:mt-6 sm:text-2xl xl:text-[1.75rem]"
-          href={officeTelHref}
-        >
-          {location.phone}
-        </a>
+        <span className="text-left leading-snug sm:text-2xl xl:text-[1.25rem]">
+          <a
+            className="mt-5 inline-block text-left text-xl font-bold leading-snug underline-offset-4 transition-opacity hover:opacity-95 sm:mt-6 sm:text-2xl xl:text-[1.75rem]"
+            href={officeTelHref}
+          >
+            {location.phone} 
+          </a> Licensed Insurance Agent
+        </span>
       ) : (
         <p className="mt-5 text-xl font-bold sm:mt-6">{location.phone}</p>
       )}
@@ -234,12 +236,14 @@ export function OfficeInfoHero({ location, connectForm }: OfficeInfoHeroProps) {
                       </a>
                     ) : null}
                     {agentTelHref ? (
+                      <span>
                       <a
                         className="w-fit text-[var(--color-brand-dark)] underline decoration-[1.6px] underline-offset-[5px]"
                         href={agentTelHref}
                       >
-                        {displayPhoneAgent}
-                      </a>
+                        {displayPhoneAgent} 
+                      </a> Licensed Insurance Agent
+                      </span>
                     ) : null}
                   </div>
                 </div>
@@ -278,10 +282,15 @@ export function OfficeInfoHero({ location, connectForm }: OfficeInfoHeroProps) {
 
                 <div className="mt-10 border-t border-[var(--color-border)] pt-9">
                   <h3 className="mb-7 text-[0.95625rem] font-bold uppercase tracking-[0.085em] text-[var(--color-brand-primary)]">
-                    Connect With an Agent
+                    Connect With a Licensed Insurance Agent
                   </h3>
                   {connectForm ? (
-                    <GravityForm form={connectForm} />
+                    <GravityForm
+                      form={connectForm}
+                      showTcpaDisclaimer
+                      agencyName={location.officeName}
+                      agencyPhone={location.phone}
+                    />
                   ) : (
                     <p className="text-sm text-[var(--color-muted)]">
                       The contact form could not be loaded. Please try again later

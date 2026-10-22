@@ -3,6 +3,9 @@ import { AgentsGrid } from "./AgentsGrid";
 import { FeaturesGrid } from "./FeaturesGrid";
 import type { LocationData } from "@/lib/locations-data";
 import type { GfFormData } from "@/lib/gf-types";
+import { HideContactButton } from "@/app/components/layout/HideContactButton";
+import { AgencyFooterDisclaimerSetter } from "./AgencyFooterDisclaimerSetter";
+
 
 type LocationPageTemplateProps = {
   location: LocationData;
@@ -13,12 +16,20 @@ export function LocationPageTemplate({ location, connectForm }: LocationPageTemp
   const showAgentsGrid = location.agents.length > 1;
 
   return (
-    <article className="bg-white">
-      <OfficeInfoHero location={location} connectForm={connectForm} />
-      {showAgentsGrid ? (
-        <AgentsGrid agents={location.agents} locationSlug={location.slug} />
-      ) : null}
-      <FeaturesGrid features={location.features} />
-    </article>
+    <>
+      <HideContactButton />
+      
+      <AgencyFooterDisclaimerSetter
+        disclaimer={location.footerDisclaimer}
+      />
+    
+      <article className="bg-white agency-page">
+        <OfficeInfoHero location={location} connectForm={connectForm} />
+        {showAgentsGrid ? (
+          <AgentsGrid agents={location.agents} locationSlug={location.slug} />
+        ) : null}
+        <FeaturesGrid features={location.features} />
+      </article>
+    </>
   );
 }
