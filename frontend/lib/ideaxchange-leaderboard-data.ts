@@ -59,6 +59,17 @@ export type LeaderboardSectionConfig = {
 
 export const LEADERBOARD_TABLE_CONFIG: LeaderboardSectionConfig[] = [
   {
+    slug: "aep-production",
+    title: "AEP Production",
+    tables: [
+      {
+        slug: "aep-2027-production",
+        title: "AEP 2027 Production",
+        schema: "aep",
+      },
+    ],
+  },
+  {
     slug: "life-production",
     title: "Life Production",
     tables: [
@@ -81,17 +92,6 @@ export const LEADERBOARD_TABLE_CONFIG: LeaderboardSectionConfig[] = [
     slug: "eo",
     title: "E&O",
     tables: [{ slug: "oe", title: "E&O", schema: "eo" }],
-  },
-  {
-    slug: "aep-production",
-    title: "AEP Production",
-    tables: [
-      {
-        slug: "aep-2027-production",
-        title: "AEP 2027 Production",
-        schema: "aep",
-      },
-    ],
   },
 ];
 

@@ -130,15 +130,15 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse text-left text-sm">
           <thead>
-            <tr className="bg-[var(--color-brand-dark)] text-white">
+            <tr className="bg-[#0d0f24] text-white">
               <th className="px-4 py-3 sm:px-6 text-left">Carrier / Affiliate</th>
-              <th className="px-4 py-3 sm:px-6 text-right">Current Year New Sales</th>
-              <th className="px-4 py-3 sm:px-6 text-right">Prior Year New Sales</th>
+              <th className="px-4 py-3 sm:px-6 text-right">CY New Sales</th>
+              <th className="px-4 py-3 sm:px-6 text-right">PY New Sales</th>
               <th className="px-4 py-3 sm:px-6 text-right">Plan</th>
               <th className="px-4 py-3 sm:px-6 text-right">Forecast</th>
-              <th className="px-4 py-3 sm:px-6 text-right">New Sales vs Prior Year</th>
-              <th className="px-4 py-3 sm:px-6 text-right">% To Plan</th>
-              <th className="px-4 py-3 sm:px-6 text-right">% Of Forecast</th>
+              <th className="px-4 py-3 sm:px-6 text-right">NS vs PY</th>
+              <th className="px-4 py-3 sm:px-6 text-right">% Plan</th>
+              <th className="px-4 py-3 sm:px-6 text-right">% Forecast</th>
               <th className="px-4 py-3 sm:px-6 text-right">KPI</th>
             </tr>
           </thead>
@@ -147,7 +147,7 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
             {visibleRows.map((row, i) => (
               <tr
                 key={`${row.affiliate}-${i}`}
-                className={i % 2 === 0 ? "bg-white" : "bg-[#f7faf9]"}
+                className={i % 2 === 0 ? "bg-white" : "bg-[rgba(186,181,237,0.15)]"}
               >
                 <td className="px-4 py-3.5 font-semibold sm:px-6">
                   {row.affiliate}
@@ -190,12 +190,12 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
         </table>
       </div>
       {hasMoreRows ? (
-        <div className="flex justify-center border-t border-[var(--color-border)] bg-[#f7faf9] px-4 py-4 sm:px-6">
+        <div className="flex justify-center border-t border-[var(--color-border)] bg-[rgba(186,181,237,0.15)] px-4 py-4 sm:px-6">
           <Button
             type="button"
-            variant="secondary"
             onClick={() => setShowAll((current) => !current)}
             aria-expanded={showAll}
+            className="bg-white !text-[#8c298f] !border-[#8c298f] hover:!bg-white hover:!border-[#5f1b61] hover:!text-[#5f1b61]"
           >
             {showAll ? "View less" : `View more (${hiddenCount})`}
           </Button>
@@ -203,7 +203,7 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
       ) : null}
 
       {formattedUpdated ? (
-        <div className="border-t border-[var(--color-border)] bg-[#f7faf9] px-4 py-3 text-center text-xs text-[var(--color-muted)] sm:px-6 sm:text-right">
+        <div className="border-t border-[var(--color-border)] bg-[rgba(186,181,237,0.15)] px-4 py-3 text-center text-xs text-[var(--color-muted)] sm:px-6 sm:text-right">
           Data last updated on {formattedUpdated}
         </div>
       ) : null}

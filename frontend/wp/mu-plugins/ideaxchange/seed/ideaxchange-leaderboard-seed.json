@@ -74,7 +74,7 @@
           "plan": 17500,
           "forecast": 19000,
           "new_sales_vs_prior_year": 3.9,
-          "percent_to_plan": 87.0,
+          "percent_to_plan": 87,
           "percent_of_forecast": 80.2,
           "kpi_value": 15232
         },
@@ -88,6 +88,105 @@
           "percent_to_plan": 81.3,
           "percent_of_forecast": 69.7,
           "kpi_value": 9761
+        },
+        {
+          "affiliate": "Gordon Marketing",
+          "current_year_new_sales": 9100,
+          "prior_year_new_sales": 8500,
+          "plan": 10000,
+          "forecast": 11000,
+          "new_sales_vs_prior_year": 7.1,
+          "percent_to_plan": 91,
+          "percent_of_forecast": 82.7,
+          "kpi_value": 9100
+        },
+        {
+          "affiliate": "Network Insurance",
+          "current_year_new_sales": 8750,
+          "prior_year_new_sales": 7900,
+          "plan": 9500,
+          "forecast": 10500,
+          "new_sales_vs_prior_year": 10.8,
+          "percent_to_plan": 92.1,
+          "percent_of_forecast": 83.3,
+          "kpi_value": 8750
+        },
+        {
+          "affiliate": "Career Group",
+          "current_year_new_sales": 8300,
+          "prior_year_new_sales": 8100,
+          "plan": 9000,
+          "forecast": 9800,
+          "new_sales_vs_prior_year": 2.5,
+          "percent_to_plan": 92.2,
+          "percent_of_forecast": 84.7,
+          "kpi_value": 8300
+        },
+        {
+          "affiliate": "Senior Market Advisors",
+          "current_year_new_sales": 7900,
+          "prior_year_new_sales": 7300,
+          "plan": 8500,
+          "forecast": 9200,
+          "new_sales_vs_prior_year": 8.2,
+          "percent_to_plan": 92.9,
+          "percent_of_forecast": 85.9,
+          "kpi_value": 7900
+        },
+        {
+          "affiliate": "Insurance Services LLC",
+          "current_year_new_sales": 7450,
+          "prior_year_new_sales": 6900,
+          "plan": 8000,
+          "forecast": 8700,
+          "new_sales_vs_prior_year": 8.0,
+          "percent_to_plan": 93.1,
+          "percent_of_forecast": 85.6,
+          "kpi_value": 7450
+        },
+        {
+          "affiliate": "MCC Brokerage",
+          "current_year_new_sales": 7000,
+          "prior_year_new_sales": 6400,
+          "plan": 7600,
+          "forecast": 8200,
+          "new_sales_vs_prior_year": 9.4,
+          "percent_to_plan": 92.1,
+          "percent_of_forecast": 85.4,
+          "kpi_value": 7000
+        },
+        {
+          "affiliate": "Premier Insurance Partners",
+          "current_year_new_sales": 6600,
+          "prior_year_new_sales": 6100,
+          "plan": 7200,
+          "forecast": 7900,
+          "new_sales_vs_prior_year": 8.2,
+          "percent_to_plan": 91.7,
+          "percent_of_forecast": 83.5,
+          "kpi_value": 6600
+        },
+        {
+          "affiliate": "Bobby Brock Insurance",
+          "current_year_new_sales": 6200,
+          "prior_year_new_sales": 5800,
+          "plan": 7000,
+          "forecast": 7600,
+          "new_sales_vs_prior_year": 6.9,
+          "percent_to_plan": 88.6,
+          "percent_of_forecast": 81.6,
+          "kpi_value": 6200
+        },
+        {
+          "affiliate": "ORCA Life",
+          "current_year_new_sales": 5800,
+          "prior_year_new_sales": 5400,
+          "plan": 6500,
+          "forecast": 7200,
+          "new_sales_vs_prior_year": 7.4,
+          "percent_to_plan": 89.2,
+          "percent_of_forecast": 80.5,
+          "kpi_value": 5800
         }
       ]
     }
