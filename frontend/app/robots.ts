@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getSiteUrl } from "@/lib/seo";
+import { DISALLOWED_SITEMAP_PATHS } from "@/lib/sitemap-config";
 
 export default function robots(): MetadataRoute.Robots {
   const base = getSiteUrl().replace(/\/$/, "");
@@ -7,15 +8,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: [
-        "/test",
-        "/search",
-        "/thankyou",
-        "/existinglead",
-        "/worksite/lead",
-        "/career/findanagentthankyou",
-        "/about/affiliates/thank-you",
-      ],
+      disallow: [...DISALLOWED_SITEMAP_PATHS],
     },
     sitemap: `${base}/sitemap.xml`,
   };

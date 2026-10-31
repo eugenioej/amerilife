@@ -58,4 +58,6 @@ export const DISALLOWED_SITEMAP_PATHS = new Set([
   "/worksite/lead",
   "/career/findanagentthankyou",
   "/about/affiliates/thank-you",
+  "/request-support",
+  "/national-recruiting",
 ]);
