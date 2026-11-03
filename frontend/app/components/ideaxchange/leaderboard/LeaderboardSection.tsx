@@ -60,9 +60,9 @@ export function LeaderboardSection({ section, tableData }: Props) {
             return <EoLeaderboardTable key={table.slug} {...shared} />;
           }
 
-          // if (schema === "aep") {
-          //   return <AepLeaderboardTable key={table.slug} {...shared} />;
-          // }
+          if (schema === "aep") {
+            return <AepLeaderboardTable key={table.slug} {...shared} />;
+          }
           return <LeaderboardTable key={table.slug} {...shared} />;
         })}
       </div>
