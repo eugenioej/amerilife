@@ -43,6 +43,8 @@ const PRODUCT_MAP = {
   MedSup: "medicare-supplement",
   MA: "medicare-advantage",
   "Health-Specialty": "health-specialty",
+  AEP: "aep-2027-production",
+  aep: "aep-2027-production",
   // Brooke: one more O&E file coming. EO_*.csv is present today with a different schema.
   EO: "oe",
   OE: "oe",
@@ -61,6 +63,9 @@ const STANDARD_PRODUCTS = new Set([
 
 /** E&O / O&E uses Affiliate + New Policies (ranked names), not YTD/%. */
 const EO_PRODUCTS = new Set(["oe"]);
+
+/** AEP uses its own production schema and may arrive on a separate cadence. */
+const AEP_PRODUCTS = new Set(["aep-2027-production"]);
 
 function loadEnv(p) {
   if (!existsSync(p)) return;
@@ -193,13 +198,15 @@ function headerIndices(rawHeader) {
     return null;
   };
 
-  const affiliate = find(
+    const affiliate = find(
     "affiliate",
     "affiliate_name",
     "affiliate_group",
     "name",
     "company",
+    "reporting_entity",
   );
+
   let trend = find(
     "trend",
     "trend_indicator",
@@ -231,20 +238,59 @@ function headerIndices(rawHeader) {
     "policy_count",
   );
 
-  return {
+    return {
     affiliate,
+
+    // Standard production fields.
     ytd: find("ytd", "ytd_amount", "ytd_production"),
     lytd: find("lytd", "lytd_amount", "lytd_production"),
     vs_lytd: vsLytd,
     vs_lqtd: find("vs_lqtd", "vslqtd", "vs_last_quarter", "vs_lq"),
     vs_lmtd: find("vs_lmtd", "vslmtd", "vs_last_month", "vs_lm"),
     trend,
+
+    // E&O field.
     new_policies: newPolicies,
+
+    // AEP production fields.
+    current_year_new_sales: find(
+      "current_year_cy",
+      "current_year",
+      "current_year_new_sales",
+    ),
+    prior_year_new_sales: find(
+      "prior_year_py",
+      "prior_year",
+      "prior_year_new_sales",
+    ),
+    plan: find("plan_15", "plan"),
+    forecast: find("forecast"),
+    new_sales_vs_prior_year: find(
+      "vs_py",
+      "new_sales_vs_prior_year",
+    ),
+    percent_to_plan: find(
+      "vs_plan_15",
+      "vs_plan",
+      "percent_to_plan",
+    ),
+    percent_of_forecast: find(
+      "vs_forecast",
+      "percent_of_forecast",
+    ),
   };
 }
 
 function isEoSchema(idx) {
   return idx.new_policies !== null && idx.ytd === null;
+}
+
+function isAepSchema(idx) {
+  return (
+    idx.current_year_new_sales !== null &&
+    idx.prior_year_new_sales !== null &&
+    idx.forecast !== null
+  );
 }
 
 /** "1. Pinnacle Financial Services" → { rank: "1", affiliate: "Pinnacle Financial Services" } */
@@ -275,6 +321,42 @@ function rowsFromCsv(text) {
     idx[key] !== null && idx[key] !== undefined
       ? String(cells[idx[key]] ?? "").trim()
       : "";
+
+        // AEP schema: Reporting Entity + CY/PY/Plan/Forecast comparisons.
+  if (isAepSchema(idx)) {
+    const out = [];
+
+    for (const cells of rows) {
+      const affiliate = String(cells[idx.affiliate] ?? "").trim();
+      if (!affiliate) continue;
+
+      out.push({
+        affiliate,
+        current_year_new_sales: cell(cells, "current_year_new_sales"),
+        prior_year_new_sales: cell(cells, "prior_year_new_sales"),
+        plan: cell(cells, "plan"),
+        forecast: cell(cells, "forecast"),
+        new_sales_vs_prior_year: cell(
+          cells,
+          "new_sales_vs_prior_year",
+        ),
+        percent_to_plan: cell(cells, "percent_to_plan"),
+        percent_of_forecast: cell(
+          cells,
+          "percent_of_forecast",
+        ),
+        kpi_value: "",
+        schema: "aep",
+      });
+    }
+
+    return {
+      error: null,
+      rows: out,
+      header,
+      schema: "aep",
+    };
+  }
 
   // E&O schema: Affiliate + New Policies (names often ranked "1. Name").
   if (isEoSchema(idx)) {
@@ -512,6 +594,53 @@ async function main() {
     }
     if (latestEo) latestTables.push(latestEo);
 
+        // AEP may arrive on a different date than the standard production files.
+    // Attach the newest valid AEP file separately, similar to E&O.
+    let latestAep = null;
+
+    for (const rd of reportDates) {
+      const files = byReportDate.get(rd) || [];
+      const aepFile = files.find((f) => AEP_PRODUCTS.has(f.slug));
+
+      if (!aepFile) continue;
+
+      const src =
+        aepFile.localPath ||
+        join(archiveRoot, rd, aepFile.name);
+
+      if (!existsSync(src)) continue;
+
+      const text = readFileSync(src, "utf8");
+      const parsed = aepFile.parsed || rowsFromCsv(text);
+
+      if (
+        parsed.error ||
+        parsed.schema !== "aep" ||
+        parsed.rows.length === 0
+      ) {
+        continue;
+      }
+
+      if (!dryRun) {
+        copyFileSync(src, join(latestRoot, aepFile.name));
+      }
+
+      latestAep = {
+        slug: aepFile.slug,
+        productKey: aepFile.productKey,
+        filename: aepFile.name,
+        report_date: rd,
+        schema: "aep",
+        rows: parsed.rows,
+      };
+
+      break;
+    }
+
+    if (latestAep) {
+      latestTables.push(latestAep);
+    }
+
     if (!dryRun && latestTables.length) {
       const tablesPath = join(latestRoot, "tables.json");
       writeFileSync(
@@ -520,6 +649,7 @@ async function main() {
           {
             source: "sftp.amerilife.com/outbound",
             report_date: latestReportDate,
+            aep_report_date: latestAep?.report_date ?? null,
             eo_report_date: latestEo?.report_date ?? null,
             pulled_at: isoNow(),
             tables: latestTables,

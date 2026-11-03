@@ -126,27 +126,113 @@ function amerilife_ideaxchange_leaderboard_header_indices($header, $raw_header =
     return null;
   };
 
-  $affiliate_i = $idx(['affiliate', 'affiliate_name', 'affiliate_group', 'name', 'company']);
+  /*
+   * Detect the AEP schema from its unique source headers.
+   *
+   * Normalized source headers:
+   * Reporting Entity    -> reporting_entity
+   * Current Year (CY)   -> current_year_cy
+   * Prior Year (PY)     -> prior_year_py
+   * Plan (+15%)         -> plan_15
+   * Forecast            -> forecast
+   * vs PY               -> vs_py
+   * vs Plan (+15%)      -> vs_plan_15
+   * vs Forecast         -> vs_forecast
+   */
+  $is_aep = (
+    $idx(['reporting_entity']) !== null
+    && $idx(['current_year_cy']) !== null
+    && $idx(['prior_year_py']) !== null
+  );
+
+  if ($is_aep) {
+    return [
+      'affiliate' => $idx(['reporting_entity']),
+      'schema' => 'aep',
+      'map' => [
+        'current_year_new_sales' => $idx([
+          'current_year_cy',
+          'current_year',
+          'current_year_new_sales',
+        ]),
+        'prior_year_new_sales' => $idx([
+          'prior_year_py',
+          'prior_year',
+          'prior_year_new_sales',
+        ]),
+        'plan' => $idx([
+          'plan_15',
+          'plan',
+        ]),
+        'forecast' => $idx([
+          'forecast',
+        ]),
+        'new_sales_vs_prior_year' => $idx([
+          'vs_py',
+          'new_sales_vs_prior_year',
+        ]),
+        'percent_to_plan' => $idx([
+          'vs_plan_15',
+          'vs_plan',
+          'percent_to_plan',
+        ]),
+        'percent_of_forecast' => $idx([
+          'vs_forecast',
+          'percent_of_forecast',
+        ]),
+      ],
+    ];
+  }
+
+  $affiliate_i = $idx([
+    'affiliate',
+    'affiliate_name',
+    'affiliate_group',
+    'name',
+    'company',
+  ]);
+
   if ($affiliate_i === null) {
-    return new WP_Error('leaderboard_header_invalid', 'File must include an "affiliate" column', ['status' => 400]);
+    return new WP_Error(
+      'leaderboard_header_invalid',
+      'File must include an "affiliate" or "Reporting Entity" column',
+      ['status' => 400]
+    );
   }
 
   // Prefer literal "vs LYTD" over a symbol header that normalizes to the same key.
   $vs_lytd_i = null;
+
   if (is_array($raw_header)) {
     foreach ($raw_header as $i => $cell) {
       $norm = amerilife_ideaxchange_leaderboard_normalize_header_cell($cell);
+
       if ($norm === 'vs_lytd' && !preg_match('/[▲▼⬤]/u', (string) $cell)) {
         $vs_lytd_i = (int) $i;
         break;
       }
     }
   }
+
   if ($vs_lytd_i === null) {
-    $vs_lytd_i = $idx(['vs_lytd', 'vslytd', 'vs_ly', 'vs_last_year', 'vs_last_ytd']);
+    $vs_lytd_i = $idx([
+      'vs_lytd',
+      'vslytd',
+      'vs_ly',
+      'vs_last_year',
+      'vs_last_ytd',
+    ]);
   }
 
-  $trend_i = $idx(['trend', 'trend_indicator', 'indicator', 'arrow', 'direction', 'status']);
+  $trend_i = $idx([
+    'trend',
+    'trend_indicator',
+    'indicator',
+    'arrow',
+    'direction',
+    'status',
+  ]);
+
   if ($trend_i === null && is_array($raw_header)) {
     foreach ($raw_header as $i => $cell) {
       if (preg_match('/[▲▼⬤]/u', (string) $cell)) {
@@ -156,22 +242,51 @@ function amerilife_ideaxchange_leaderboard_header_indices($header, $raw_header =
     }
   }
 
-  $ytd_i = $idx(['ytd', 'ytd_amount', 'ytd_production']);
-  $new_policies_i = $idx(['new_policies', 'new_policy', 'newpolicies', 'policies', 'policy_count']);
-  // E&O files use "New Policies" instead of YTD — map into ytd for storage.
+  $ytd_i = $idx([
+    'ytd',
+    'ytd_amount',
+    'ytd_production',
+  ]);
+
+  $new_policies_i = $idx([
+    'new_policies',
+    'new_policy',
+    'newpolicies',
+    'policies',
+    'policy_count',
+  ]);
+
+  // E&O files use "New Policies" instead of YTD. Map into YTD for storage.
   if ($ytd_i === null && $new_policies_i !== null) {
     $ytd_i = $new_policies_i;
   }
 
   return [
     'affiliate' => $affiliate_i,
-    'schema' => ($new_policies_i !== null && $idx(['ytd', 'ytd_amount', 'ytd_production']) === null) ? 'eo' : 'standard',
+    'schema' => (
+      $new_policies_i !== null
+      && $idx(['ytd', 'ytd_amount', 'ytd_production']) === null
+    ) ? 'eo' : 'standard',
     'map' => [
       'ytd' => $ytd_i,
-      'lytd' => $idx(['lytd', 'lytd_amount', 'lytd_production']),
+      'lytd' => $idx([
+        'lytd',
+        'lytd_amount',
+        'lytd_production',
+      ]),
       'vs_lytd' => $vs_lytd_i,
-      'vs_lqtd' => $idx(['vs_lqtd', 'vslqtd', 'vs_last_quarter', 'vs_lq']),
-      'vs_lmtd' => $idx(['vs_lmtd', 'vslmtd', 'vs_last_month', 'vs_lm']),
+      'vs_lqtd' => $idx([
+        'vs_lqtd',
+        'vslqtd',
+        'vs_last_quarter',
+        'vs_lq',
+      ]),
+      'vs_lmtd' => $idx([
+        'vs_lmtd',
+        'vslmtd',
+        'vs_last_month',
+        'vs_lm',
+      ]),
       'trend' => $trend_i,
     ],
   ];
@@ -241,7 +356,20 @@ function amerilife_ideaxchange_leaderboard_rows_from_grid($indices, $grid, $from
     }
     foreach ($indices['map'] as $key => $col) {
       $val = ($col !== null && isset($cells[$col])) ? $cells[$col] : '';
-      if (in_array($key, ['vs_lytd', 'vs_lqtd', 'vs_lmtd'], true)) {
+      if (
+        in_array(
+          $key,
+          [
+            'vs_lytd',
+            'vs_lqtd',
+            'vs_lmtd',
+            'new_sales_vs_prior_year',
+            'percent_to_plan',
+            'percent_of_forecast',
+          ],
+          true
+        )
+      ) {
         $row[$key] = amerilife_ideaxchange_leaderboard_format_percent_value($val, $from_excel);
       } else {
         $row[$key] = is_scalar($val) ? trim((string) $val) : '';
