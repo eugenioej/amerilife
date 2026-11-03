@@ -56,7 +56,7 @@ export default async function ConnectPage() {
         </div>
 
         {/* Secondary section - Connect with an Agent */}
-        <div className="mt-16 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-8">
+        {/* <div className="mt-16 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-8">
           <h2 className="mb-4 text-xl font-bold text-[var(--color-fg)]">
             Connect with an Agent
           </h2>
@@ -72,7 +72,7 @@ export default async function ConnectPage() {
           >
             Contact Us
           </Link>
-        </div>
+        </div> */}
       </div>
     </section>
   );
