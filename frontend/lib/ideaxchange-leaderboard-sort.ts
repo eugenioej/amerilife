@@ -7,7 +7,14 @@ export type LeaderboardSortColumn =
   | "vsLytd"
   | "vsLqtd"
   | "vsLmtd"
-  | "trend";
+  | "trend"
+  | "currentYearNewSales"
+  | "priorYearNewSales"
+  | "plan"
+  | "forecast"
+  | "newSalesVsPriorYear"
+  | "percentToPlan"
+  | "percentOfForecast";
 
 export type LeaderboardSortDirection = "asc" | "desc";
 
@@ -21,12 +28,16 @@ export const DEFAULT_LEADERBOARD_SORT: LeaderboardSortState = {
   direction: "desc",
 };
 
-function parseCount(value: string): number {
+function parseCount(value?: string): number {
+  if (!value) return Number.NEGATIVE_INFINITY;
+
   const n = Number.parseFloat(value.replace(/,/g, ""));
   return Number.isNaN(n) ? Number.NEGATIVE_INFINITY : n;
 }
 
-function parsePercent(value: string): number {
+function parsePercent(value?: string): number {
+  if (!value) return Number.NEGATIVE_INFINITY;
+
   const n = Number.parseFloat(value.replace("%", ""));
   return Number.isNaN(n) ? Number.NEGATIVE_INFINITY : n;
 }
@@ -61,6 +72,20 @@ function sortValue(row: LeaderboardRow, column: LeaderboardSortColumn): number |
       return parsePercent(row.vsLmtd);
     case "trend":
       return parseTrend(row.trend);
+    case "currentYearNewSales":
+      return parseCount(row.currentYearNewSales);
+    case "priorYearNewSales":
+      return parseCount(row.priorYearNewSales);
+    case "plan":
+      return parseCount(row.plan);
+    case "forecast":
+      return parseCount(row.forecast);
+    case "newSalesVsPriorYear":
+      return parsePercent(row.newSalesVsPriorYear);
+    case "percentToPlan":
+      return parsePercent(row.percentToPlan);
+    case "percentOfForecast":
+      return parsePercent(row.percentOfForecast);
   }
 }
 
@@ -100,4 +125,13 @@ export const LEADERBOARD_SORT_LABELS: Record<LeaderboardSortColumn, string> = {
   vsLqtd: "vs LQTD",
   vsLmtd: "vs LMTD",
   trend: "Trend",
+
+  // AEP
+  currentYearNewSales: "CY New Sales",
+  priorYearNewSales: "PY New Sales",
+  plan: "Plan",
+  forecast: "Forecast",
+  newSalesVsPriorYear: "NS vs PY",
+  percentToPlan: "% Plan",
+  percentOfForecast: "% Forecast",
 };

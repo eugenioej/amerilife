@@ -1,10 +1,10 @@
 // lib/wp-client.ts
 
 /** Default Next.js Data Cache TTL for GraphQL GET queries (1 hour). */
-export const GRAPHQL_REVALIDATE_SECONDS = 3600;
+export const GRAPHQL_REVALIDATE_SECONDS = 1;//3600;
 
 /** TTL for layout-global data (menus, header form schema). */
-export const LAYOUT_REVALIDATE_SECONDS = 3600;
+export const LAYOUT_REVALIDATE_SECONDS = 1;//3600;
 
 /** WordPress origin for building `/graphql` (server scripts often set `WORDPRESS_URL` only). */
 function getWpBaseUrl(): string | undefined {

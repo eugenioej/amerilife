@@ -63,10 +63,13 @@ function SortableHeader({
 }
 
 export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
-  const [sort, setSort] = useState<LeaderboardSortState>(DEFAULT_LEADERBOARD_SORT);
+  const [sort, setSort] = useState<LeaderboardSortState>({
+    column: "currentYearNewSales",
+    direction: "desc",
+  });
   const [showAll, setShowAll] = useState(false);
   const formattedUpdated = formatLeaderboardUpdatedDate(lastUpdated);
-  const showThousandsNote = title !== "Medicare Advantage";
+  // const showThousandsNote = title !== "Medicare Advantage";
   const sortedRows = useMemo(() => sortLeaderboardRows(rows, sort), [rows, sort]);
   const hasMoreRows = sortedRows.length > INITIAL_VISIBLE_ROWS;
   const visibleRows = showAll ? sortedRows : sortedRows.slice(0, INITIAL_VISIBLE_ROWS);
@@ -76,7 +79,11 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
     setSort((current) => nextLeaderboardSort(current, column));
   };
 
-  const resetSort = () => setSort(DEFAULT_LEADERBOARD_SORT);
+  const resetSort = () =>
+  setSort({
+    column: "currentYearNewSales",
+    direction: "desc",
+  });
 
   const sortSummary = `${LEADERBOARD_SORT_LABELS[sort.column]} (${sort.direction === "asc" ? "low → high" : "high → low"})`;
 
@@ -85,16 +92,16 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
       id={id}
       className="scroll-mt-[calc(var(--header-height)+1rem)] overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-[0_4px_20px_rgba(36,66,96,0.06)]"
     >
-      {/* <div className="relative flex flex-col gap-3 border-b border-[var(--color-border)] bg-[var(--color-brand-primary)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div className="relative flex flex-col gap-3 border-b border-[var(--color-border)] bg-[#0d0f24] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <h3 className="text-center text-sm font-bold uppercase tracking-wider text-white sm:text-left">
           {title}
         </h3>
 
-        {showThousandsNote && (
+        {/* {showThousandsNote && (
           <div className="text-[10px] font-semibold uppercase tracking-wider text-white/80">
             Numbers are in <span className="lowercase">(000s)</span>
           </div>
-        )}
+        )} */}
         <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-end">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-white/80">
             Sorted by {sortSummary}
@@ -110,7 +117,7 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
             </button>
           )}
         </div>
-      </div> */}
+      </div>
 
       <div className="border-b border-[var(--color-border)]">
         <picture>
@@ -131,15 +138,66 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
         <table className="min-w-full border-collapse text-left text-sm">
           <thead>
             <tr className="bg-[#0d0f24] text-white">
-              <th className="px-4 py-3 sm:px-6 text-left">Carrier / Affiliate</th>
-              <th className="px-4 py-3 sm:px-6 text-right">CY New Sales</th>
-              <th className="px-4 py-3 sm:px-6 text-right">PY New Sales</th>
-              <th className="px-4 py-3 sm:px-6 text-right">Plan</th>
-              <th className="px-4 py-3 sm:px-6 text-right">Forecast</th>
-              <th className="px-4 py-3 sm:px-6 text-right">NS vs PY</th>
-              <th className="px-4 py-3 sm:px-6 text-right">% Plan</th>
-              <th className="px-4 py-3 sm:px-6 text-right">% Forecast</th>
-              <th className="px-4 py-3 sm:px-6 text-right">KPI</th>
+              
+              <th className="px-4 py-3 sm:px-6 text-left text-xs font-bold tracking-wider text-white">
+                Carrier / Affiliate
+              </th>
+
+              <SortableHeader
+                column="currentYearNewSales"
+                label="CY New Sales"
+                align="right"
+                sort={sort}
+                onSort={handleSort}
+              />
+
+              <SortableHeader
+                column="priorYearNewSales"
+                label="PY New Sales"
+                align="right"
+                sort={sort}
+                onSort={handleSort}
+              />
+
+              <SortableHeader
+                column="plan"
+                label="Plan"
+                align="right"
+                sort={sort}
+                onSort={handleSort}
+              />
+
+              <SortableHeader
+                column="forecast"
+                label="Forecast"
+                align="right"
+                sort={sort}
+                onSort={handleSort}
+              />
+
+              <SortableHeader
+                column="newSalesVsPriorYear"
+                label="NS vs PY"
+                align="right"
+                sort={sort}
+                onSort={handleSort}
+              />
+
+              <SortableHeader
+                column="percentToPlan"
+                label="% Plan"
+                align="right"
+                sort={sort}
+                onSort={handleSort}
+              />
+
+              <SortableHeader
+                column="percentOfForecast"
+                label="% Forecast"
+                align="right"
+                sort={sort}
+                onSort={handleSort}
+              />
             </tr>
           </thead>
 
@@ -180,10 +238,7 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
                 <td className="px-4 py-3.5 text-right sm:px-6">
                   {row.percentOfForecast || "—"}
                 </td>
-            
-                <td className="px-4 py-3.5 text-right sm:px-6">
-                  {row.kpiValue || "—"}
-                </td>
+        
               </tr>
             ))}
           </tbody>
