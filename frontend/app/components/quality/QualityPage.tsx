@@ -12,6 +12,8 @@ const BANNER_3 = `${UPLOADS}/2021/12/banner-10.png`;
 const QUALITY_HERO_BG =
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AML-Wealth-II-Announcement-040532023-HERO-1024x358-1.png";
 
+const QUALITYLOGO = "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/11/White.png";
+
 const FadeInOnView = dynamic(
   () => import("@/app/components/ui/FadeInOnView"),
   { ssr: true }
@@ -21,7 +23,7 @@ const faqs = [
   {
     question: 'What is YQP?',
     answer:
-      'Your Quality Partner (YQP) is a shared name and framework for the commitment to quality and ethics that has always defined how AmeriLife operates. It is not a new program, policy or mandate. It spotlights the work already happening across every affiliate, team and touchpoint and makes that work more visible and consistent.',
+      'YourQualityPartner (YQP) is a shared name and framework for the commitment to quality and ethics that has always defined how AmeriLife operates. It is not a new program, policy or mandate. It spotlights the work already happening across every affiliate, team and touchpoint and makes that work more visible and consistent.',
   },
   {
     question: 'Is YQP a new initiative or a new quality commitment?',
@@ -102,11 +104,15 @@ export default function QualityPage() {
           />
           {/* Centered title + button */}
           <div className="absolute inset-0 flex flex-col items-center justify-center px-4 py-8 text-center sm:px-6 sm:py-10">
-            <h1 className="mb-5 max-w-[min(100%,48rem)] text-balance text-xl font-bold leading-snug text-white drop-shadow-sm sm:mb-6 sm:text-2xl sm:leading-tight md:text-3xl md:leading-tight lg:text-4xl xl:text-5xl">
-              Your Quality Partner
-            </h1>
-            <p className="max-w-4xl text-base leading-relaxed text-white/95">
-              Your Quality Partner (YQP) is that name: a shared expression for the commitment to quality and ethics that already defines how we operate. It&apos;s not a new program or a new mandate. It highlights the standard we&apos;ve earned and provides a framework to make it more visible and consistent across every affiliate, team, and touchpoint.
+            <Image
+                src={rewriteUploadsUrl(QUALITYLOGO)}
+                alt="Your Quality Partner"
+                width={1200}
+                height={300}
+                className="-mb-4 h-auto w-full max-w-[650px]"
+              />
+            <p className="-mt-5 max-w-4xl text-base leading-relaxed text-white/95">
+              YourQualityPartner (YQP) is that name: a shared expression for the commitment to quality and ethics that already defines how we operate. It&apos;s not a new program or a new mandate. It highlights the standard we&apos;ve earned and provides a framework to make it more visible and consistent across every affiliate, team, and touchpoint.
             </p>
             
           </div>
