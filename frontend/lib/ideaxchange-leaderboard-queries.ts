@@ -1,12 +1,22 @@
 export type LeaderboardRowGraphql = {
   rank?: string | null;
   affiliate?: string | null;
+
   ytdAmount?: string | null;
   lytdAmount?: string | null;
   vsLytd?: string | null;
   vsLqtd?: string | null;
   vsLmtd?: string | null;
   trend?: string | null;
+
+  currentYearNewSales?: string | null;
+  priorYearNewSales?: string | null;
+  plan?: string | null;
+  forecast?: string | null;
+  newSalesVsPriorYear?: string | null;
+  percentToPlan?: string | null;
+  percentOfForecast?: string | null;
+  kpiValue?: string | null;
 };
 
 export type LeaderboardTableGraphql = {
@@ -47,6 +57,14 @@ export const GET_LEADERBOARD_TABLES = `
             vsLqtd
             vsLmtd
             trend
+            currentYearNewSales
+            priorYearNewSales
+            plan
+            forecast
+            newSalesVsPriorYear
+            percentToPlan
+            percentOfForecast
+            kpiValue
           }
         }
       }

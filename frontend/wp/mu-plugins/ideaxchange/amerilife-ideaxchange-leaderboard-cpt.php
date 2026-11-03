@@ -1,6 +1,6 @@
 <?php
 /**
- * ideaXchange Leaderboard — fixed table posts (7 production + E&O); upload CSV/JSON/Excel per table.
+ * ideaXchange Leaderboard — fixed table posts (7 production + AEP + E&O); upload CSV/JSON/Excel per table.
  */
 
 if (!defined('ABSPATH')) {
@@ -27,6 +27,7 @@ function amerilife_ideaxchange_leaderboard_table_catalog() {
     'medicare-supplement' => ['name' => 'Medicare Supplement', 'section' => 'Submitted Production', 'schema' => 'standard'],
     'medicare-advantage' => ['name' => 'Medicare Advantage', 'section' => 'Submitted Production', 'schema' => 'standard'],
     'health-specialty' => ['name' => 'Health Specialty', 'section' => 'Submitted Production', 'schema' => 'standard'],
+    'aep-2027-production' => ['name' => 'AEP 2027 Production', 'section' => 'AEP Production', 'schema' => 'aep',],
     // E&O / O&E: Affiliate + New Policies (ranked names), not YTD/%.
     'oe' => ['name' => 'E&O', 'section' => 'E&O', 'schema' => 'eo'],
   ];
@@ -125,27 +126,113 @@ function amerilife_ideaxchange_leaderboard_header_indices($header, $raw_header =
     return null;
   };
 
-  $affiliate_i = $idx(['affiliate', 'affiliate_name', 'affiliate_group', 'name', 'company']);
+  /*
+   * Detect the AEP schema from its unique source headers.
+   *
+   * Normalized source headers:
+   * Reporting Entity    -> reporting_entity
+   * Current Year (CY)   -> current_year_cy
+   * Prior Year (PY)     -> prior_year_py
+   * Plan (+15%)         -> plan_15
+   * Forecast            -> forecast
+   * vs PY               -> vs_py
+   * vs Plan (+15%)      -> vs_plan_15
+   * vs Forecast         -> vs_forecast
+   */
+  $is_aep = (
+    $idx(['reporting_entity']) !== null
+    && $idx(['current_year_cy']) !== null
+    && $idx(['prior_year_py']) !== null
+  );
+
+  if ($is_aep) {
+    return [
+      'affiliate' => $idx(['reporting_entity']),
+      'schema' => 'aep',
+      'map' => [
+        'current_year_new_sales' => $idx([
+          'current_year_cy',
+          'current_year',
+          'current_year_new_sales',
+        ]),
+        'prior_year_new_sales' => $idx([
+          'prior_year_py',
+          'prior_year',
+          'prior_year_new_sales',
+        ]),
+        'plan' => $idx([
+          'plan_15',
+          'plan',
+        ]),
+        'forecast' => $idx([
+          'forecast',
+        ]),
+        'new_sales_vs_prior_year' => $idx([
+          'vs_py',
+          'new_sales_vs_prior_year',
+        ]),
+        'percent_to_plan' => $idx([
+          'vs_plan_15',
+          'vs_plan',
+          'percent_to_plan',
+        ]),
+        'percent_of_forecast' => $idx([
+          'vs_forecast',
+          'percent_of_forecast',
+        ]),
+      ],
+    ];
+  }
+
+  $affiliate_i = $idx([
+    'affiliate',
+    'affiliate_name',
+    'affiliate_group',
+    'name',
+    'company',
+  ]);
+
   if ($affiliate_i === null) {
-    return new WP_Error('leaderboard_header_invalid', 'File must include an "affiliate" column', ['status' => 400]);
+    return new WP_Error(
+      'leaderboard_header_invalid',
+      'File must include an "affiliate" or "Reporting Entity" column',
+      ['status' => 400]
+    );
   }
 
   // Prefer literal "vs LYTD" over a symbol header that normalizes to the same key.
   $vs_lytd_i = null;
+
   if (is_array($raw_header)) {
     foreach ($raw_header as $i => $cell) {
       $norm = amerilife_ideaxchange_leaderboard_normalize_header_cell($cell);
+
       if ($norm === 'vs_lytd' && !preg_match('/[▲▼⬤]/u', (string) $cell)) {
         $vs_lytd_i = (int) $i;
         break;
       }
     }
   }
+
   if ($vs_lytd_i === null) {
-    $vs_lytd_i = $idx(['vs_lytd', 'vslytd', 'vs_ly', 'vs_last_year', 'vs_last_ytd']);
+    $vs_lytd_i = $idx([
+      'vs_lytd',
+      'vslytd',
+      'vs_ly',
+      'vs_last_year',
+      'vs_last_ytd',
+    ]);
   }
 
-  $trend_i = $idx(['trend', 'trend_indicator', 'indicator', 'arrow', 'direction', 'status']);
+  $trend_i = $idx([
+    'trend',
+    'trend_indicator',
+    'indicator',
+    'arrow',
+    'direction',
+    'status',
+  ]);
+
   if ($trend_i === null && is_array($raw_header)) {
     foreach ($raw_header as $i => $cell) {
       if (preg_match('/[▲▼⬤]/u', (string) $cell)) {
@@ -155,22 +242,51 @@ function amerilife_ideaxchange_leaderboard_header_indices($header, $raw_header =
     }
   }
 
-  $ytd_i = $idx(['ytd', 'ytd_amount', 'ytd_production']);
-  $new_policies_i = $idx(['new_policies', 'new_policy', 'newpolicies', 'policies', 'policy_count']);
-  // E&O files use "New Policies" instead of YTD — map into ytd for storage.
+  $ytd_i = $idx([
+    'ytd',
+    'ytd_amount',
+    'ytd_production',
+  ]);
+
+  $new_policies_i = $idx([
+    'new_policies',
+    'new_policy',
+    'newpolicies',
+    'policies',
+    'policy_count',
+  ]);
+
+  // E&O files use "New Policies" instead of YTD. Map into YTD for storage.
   if ($ytd_i === null && $new_policies_i !== null) {
     $ytd_i = $new_policies_i;
   }
 
   return [
     'affiliate' => $affiliate_i,
-    'schema' => ($new_policies_i !== null && $idx(['ytd', 'ytd_amount', 'ytd_production']) === null) ? 'eo' : 'standard',
+    'schema' => (
+      $new_policies_i !== null
+      && $idx(['ytd', 'ytd_amount', 'ytd_production']) === null
+    ) ? 'eo' : 'standard',
     'map' => [
       'ytd' => $ytd_i,
-      'lytd' => $idx(['lytd', 'lytd_amount', 'lytd_production']),
+      'lytd' => $idx([
+        'lytd',
+        'lytd_amount',
+        'lytd_production',
+      ]),
       'vs_lytd' => $vs_lytd_i,
-      'vs_lqtd' => $idx(['vs_lqtd', 'vslqtd', 'vs_last_quarter', 'vs_lq']),
-      'vs_lmtd' => $idx(['vs_lmtd', 'vslmtd', 'vs_last_month', 'vs_lm']),
+      'vs_lqtd' => $idx([
+        'vs_lqtd',
+        'vslqtd',
+        'vs_last_quarter',
+        'vs_lq',
+      ]),
+      'vs_lmtd' => $idx([
+        'vs_lmtd',
+        'vslmtd',
+        'vs_last_month',
+        'vs_lm',
+      ]),
       'trend' => $trend_i,
     ],
   ];
@@ -240,7 +356,20 @@ function amerilife_ideaxchange_leaderboard_rows_from_grid($indices, $grid, $from
     }
     foreach ($indices['map'] as $key => $col) {
       $val = ($col !== null && isset($cells[$col])) ? $cells[$col] : '';
-      if (in_array($key, ['vs_lytd', 'vs_lqtd', 'vs_lmtd'], true)) {
+      if (
+        in_array(
+          $key,
+          [
+            'vs_lytd',
+            'vs_lqtd',
+            'vs_lmtd',
+            'new_sales_vs_prior_year',
+            'percent_to_plan',
+            'percent_of_forecast',
+          ],
+          true
+        )
+      ) {
         $row[$key] = amerilife_ideaxchange_leaderboard_format_percent_value($val, $from_excel);
       } else {
         $row[$key] = is_scalar($val) ? trim((string) $val) : '';
@@ -286,6 +415,32 @@ function amerilife_ideaxchange_leaderboard_normalize_rows($rows) {
       'vs_lqtd' => amerilife_ideaxchange_leaderboard_format_percent_value($row['vs_lqtd'] ?? ''),
       'vs_lmtd' => amerilife_ideaxchange_leaderboard_format_percent_value($row['vs_lmtd'] ?? ''),
       'trend' => amerilife_ideaxchange_leaderboard_normalize_trend($row['trend'] ?? ''),
+
+      // AEP Production fields.
+      'current_year_new_sales' => amerilife_ideaxchange_leaderboard_format_count(
+        $row['current_year_new_sales'] ?? ''
+      ),
+      'prior_year_new_sales' => amerilife_ideaxchange_leaderboard_format_count(
+        $row['prior_year_new_sales'] ?? ''
+      ),
+      'plan' => amerilife_ideaxchange_leaderboard_format_count(
+        $row['plan'] ?? ''
+      ),
+      'forecast' => amerilife_ideaxchange_leaderboard_format_count(
+        $row['forecast'] ?? ''
+      ),
+      'new_sales_vs_prior_year' => amerilife_ideaxchange_leaderboard_format_percent_value(
+        $row['new_sales_vs_prior_year'] ?? ''
+      ),
+      'percent_to_plan' => amerilife_ideaxchange_leaderboard_format_percent_value(
+        $row['percent_to_plan'] ?? ''
+      ),
+      'percent_of_forecast' => amerilife_ideaxchange_leaderboard_format_percent_value(
+        $row['percent_of_forecast'] ?? ''
+      ),
+      'kpi_value' => sanitize_text_field(
+        (string) ($row['kpi_value'] ?? '')
+      ),
     ];
     if ($rank !== '') {
       $meta['rank'] = $rank;
@@ -491,7 +646,7 @@ add_action('init', function () {
       'singular_name' => 'Leaderboard Table',
       'edit_item' => 'Edit table data',
       'menu_name' => 'ideaXchange Leaderboard',
-      'all_items' => 'Leaderboard tables (8)',
+      'all_items' => 'Leaderboard tables (9)',
     ],
     'public' => true,
     'publicly_queryable' => true,
@@ -719,12 +874,24 @@ add_action('graphql_register_types', function () {
     'fields' => [
       'rank' => ['type' => 'String'],
       'affiliate' => ['type' => 'String'],
+
+      // Standard production fields.
       'ytdAmount' => ['type' => 'String'],
       'lytdAmount' => ['type' => 'String'],
       'vsLytd' => ['type' => 'String'],
       'vsLqtd' => ['type' => 'String'],
       'vsLmtd' => ['type' => 'String'],
       'trend' => ['type' => 'String'],
+
+      // AEP Production fields.
+      'currentYearNewSales' => ['type' => 'String'],
+      'priorYearNewSales' => ['type' => 'String'],
+      'plan' => ['type' => 'String'],
+      'forecast' => ['type' => 'String'],
+      'newSalesVsPriorYear' => ['type' => 'String'],
+      'percentToPlan' => ['type' => 'String'],
+      'percentOfForecast' => ['type' => 'String'],
+      'kpiValue' => ['type' => 'String'],
     ],
   ]);
 
@@ -753,12 +920,24 @@ add_action('graphql_register_types', function () {
         return [
           'rank' => (string) ($row['rank'] ?? ''),
           'affiliate' => (string) ($row['affiliate'] ?? ''),
+          
+          // Standard production fields.
           'ytdAmount' => (string) ($row['ytd'] ?? ''),
           'lytdAmount' => (string) ($row['lytd'] ?? ''),
           'vsLytd' => (string) ($row['vs_lytd'] ?? ''),
           'vsLqtd' => (string) ($row['vs_lqtd'] ?? ''),
           'vsLmtd' => (string) ($row['vs_lmtd'] ?? ''),
           'trend' => (string) ($row['trend'] ?? ''),
+          
+          // AEP Production fields.
+          'currentYearNewSales' => (string) ($row['current_year_new_sales'] ?? ''),
+          'priorYearNewSales' => (string) ($row['prior_year_new_sales'] ?? ''),
+          'plan' => (string) ($row['plan'] ?? ''),
+          'forecast' => (string) ($row['forecast'] ?? ''),
+          'newSalesVsPriorYear' => (string) ($row['new_sales_vs_prior_year'] ?? ''),
+          'percentToPlan' => (string) ($row['percent_to_plan'] ?? ''),
+          'percentOfForecast' => (string) ($row['percent_of_forecast'] ?? ''),
+          'kpiValue' => (string) ($row['kpi_value'] ?? ''),
         ];
       }, $stored);
 
@@ -837,9 +1016,13 @@ function amerilife_ideaxchange_leaderboard_seed_demo($force = false) {
       $rows = $seed['rows_by_slug'][$slug] ?? null;
       // Don't paste Life production demo rows into the E&O table.
       if ($rows === null) {
-        if (($info['schema'] ?? 'standard') === 'eo') {
+        $schema = $info['schema'] ?? 'standard';
+
+        // Do not use standard Life demo rows for special-schema tables.
+        if ($schema === 'eo' || $schema === 'aep') {
           continue;
         }
+
         $rows = $seed['rows'];
       }
       amerilife_ideaxchange_leaderboard_save_rows((int) $post->ID, $rows);

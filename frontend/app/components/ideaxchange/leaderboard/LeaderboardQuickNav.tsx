@@ -20,7 +20,9 @@ export function LeaderboardQuickNav() {
           Jump to table
         </p>
         <div className="mt-6 flex flex-col gap-8 md:gap-10">
-          {LEADERBOARD_TABLE_CONFIG.map((section) => (
+          {LEADERBOARD_TABLE_CONFIG
+            .filter((section) => section.slug !== "aep-production")
+            .map((section) => (
             <div key={section.slug} className="text-center">
               <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-brand-primary)]">
                 {section.title}
