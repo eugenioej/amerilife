@@ -12,7 +12,7 @@ const BANNER_3 = `${UPLOADS}/2021/12/banner-10.png`;
 const QUALITY_HERO_BG =
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AML-Wealth-II-Announcement-040532023-HERO-1024x358-1.png";
 
-const QUALITYLOGO = "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/11/White.png";
+const QUALITYLOGO = "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/11/White-1.png";
 
 const FadeInOnView = dynamic(
   () => import("@/app/components/ui/FadeInOnView"),
@@ -123,9 +123,9 @@ export default function QualityPage() {
       <section className="py-16 md:py-24 bg-[#f0f0f0]">
         <div className="mx-auto max-w-6xl px-6">
           <div className="mb-10 text-center">
-            <h2 className="mb-6 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+            <h1 className="mb-6 text-center text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
               Hear from Scotty Elliott
-            </h2>
+            </h1>
           </div>
 
           <div className="overflow-hidden rounded-3xl shadow-xl">
