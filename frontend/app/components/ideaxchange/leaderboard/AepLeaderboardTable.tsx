@@ -16,6 +16,11 @@ import { ChevronDownIcon } from "@/app/components/ui/ChevronDownIcon";
 
 const INITIAL_VISIBLE_ROWS = 10;
 
+const DEFAULT_AEP_SORT: LeaderboardSortState = {
+  column: "currentYearNewSales",
+  direction: "desc",
+};
+
 type Props = {
   id?: string;
   title: string;
@@ -63,10 +68,7 @@ function SortableHeader({
 }
 
 export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
-  const [sort, setSort] = useState<LeaderboardSortState>({
-    column: "currentYearNewSales",
-    direction: "desc",
-  });
+  const [sort, setSort] = useState<LeaderboardSortState>(DEFAULT_AEP_SORT);
   const [showAll, setShowAll] = useState(false);
   const formattedUpdated = formatLeaderboardUpdatedDate(lastUpdated);
   // const showThousandsNote = title !== "Medicare Advantage";
@@ -79,11 +81,7 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
     setSort((current) => nextLeaderboardSort(current, column));
   };
 
-  const resetSort = () =>
-  setSort({
-    column: "currentYearNewSales",
-    direction: "desc",
-  });
+  const resetSort = () => setSort(DEFAULT_AEP_SORT);
 
   const sortSummary = `${LEADERBOARD_SORT_LABELS[sort.column]} (${sort.direction === "asc" ? "low → high" : "high → low"})`;
 
@@ -106,8 +104,9 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
           <span className="text-[10px] font-semibold uppercase tracking-wider text-white/80">
             Sorted by {sortSummary}
           </span>
-          {(sort.column !== DEFAULT_LEADERBOARD_SORT.column ||
-            sort.direction !== DEFAULT_LEADERBOARD_SORT.direction) && (
+          {(sort.column !== DEFAULT_AEP_SORT.column ||
+            sort.direction !== DEFAULT_AEP_SORT.direction) && (
+
             <button
               type="button"
               onClick={resetSort}
