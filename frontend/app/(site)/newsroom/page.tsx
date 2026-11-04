@@ -21,7 +21,7 @@ export const metadata: Metadata = staticPageMetadata(
 
 const UPLOADS = "https://headlessameril.wpenginepowered.com/wp-content/uploads";
 /** Fixed hero background — always this asset from headless WP (not the featured post image). */
-const NEWSROOM_HERO_BG =
+const DEFAULT_NEWSROOM_HERO_BG =
   "https://headlessameril.wpenginepowered.com/wp-content/uploads/2026/04/AML-Wealth-II-Announcement-040532023-HERO-1024x358-1.png";
 const ANNOUNCEMENTS_COUNT = 12;
 
@@ -67,6 +67,14 @@ export default async function NewsroomPage() {
   const featured = allPosts[0] ?? null;
   const announcements = allPosts.slice(1, 1 + ANNOUNCEMENTS_COUNT);
 
+  const hasFeaturedImage = Boolean(
+    featured?.featuredImage?.node?.sourceUrl
+  );
+
+  const heroBackground =
+    featured?.featuredImage?.node?.sourceUrl ??
+    DEFAULT_NEWSROOM_HERO_BG;
+
   return (
     <>
       <div className="mx-auto max-w-[1080px] px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
@@ -86,7 +94,7 @@ export default async function NewsroomPage() {
           {/* Taller framing on narrow screens so long headlines + CTA fit; wide screens keep cinematic strip */}
           <div className="relative flex min-h-[min(72vh,520px)] w-full items-stretch sm:aspect-[21/9] sm:min-h-[280px] lg:min-h-[320px]">
             <Image
-              src={rewriteUploadsUrl(NEWSROOM_HERO_BG)}
+              src={rewriteUploadsUrl(heroBackground)}
               alt=""
               fill
               className="object-cover object-center"
@@ -94,14 +102,16 @@ export default async function NewsroomPage() {
               priority
             />
             {/* Dark gradient overlay for contrast - blue/teal left → green/teal right */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(90deg, rgba(14,50,80,0.92) 0%, rgba(0,58,116,0.88) 40%, rgba(0,155,124,0.78) 100%)",
-              }}
-              aria-hidden
-            />
+            {!hasFeaturedImage && (
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(90deg, rgba(14,50,80,0.92) 0%, rgba(0,58,116,0.88) 40%, rgba(0,155,124,0.78) 100%)",
+                }}
+                aria-hidden
+              />
+            )}
             {/* Centered title + button */}
             <div className="absolute inset-0 flex flex-col items-center justify-center px-4 py-8 text-center sm:px-6 sm:py-10">
               <h2 className="mb-5 max-w-[min(100%,48rem)] text-balance text-xl font-bold leading-snug text-white drop-shadow-sm sm:mb-6 sm:text-2xl sm:leading-tight md:text-3xl md:leading-tight lg:text-4xl xl:text-5xl">
