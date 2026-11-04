@@ -1,6 +1,12 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import {
+  useMemo,
+  useState,
+  useRef,
+  useEffect,
+  type ReactNode,
+} from "react";
 import type { LeaderboardRow } from "@/lib/ideaxchange-leaderboard-data";
 import { formatLeaderboardUpdatedDate } from "@/lib/ideaxchange-leaderboard-format";
 import {
@@ -35,7 +41,162 @@ type SortableHeaderProps = {
   sort: LeaderboardSortState;
   onSort: (column: LeaderboardSortColumn) => void;
   className?: string;
+  tooltip?: {
+    description: string;
+    formula?: string;
+  };
 };
+
+type HeaderTooltipProps = {
+  title: string;
+  description: string;
+  formula?: string;
+};
+
+function HeaderTooltip({
+  title,
+  description,
+  formula,
+}: HeaderTooltipProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState({
+    top: 0,
+    left: 0,
+    arrowLeft: 0,
+  });
+
+  const updatePosition = () => {
+    if (!buttonRef.current) return;
+
+    const rect = buttonRef.current.getBoundingClientRect();
+
+    const tooltipWidth = Math.min(320, window.innerWidth - 24);
+    const screenPadding = 12;
+
+    // Start by centering tooltip under icon
+    let left = rect.left + rect.width / 2 - tooltipWidth / 2;
+
+    // Keep tooltip inside left side of viewport
+    left = Math.max(screenPadding, left);
+
+    // Keep tooltip inside right side of viewport
+    left = Math.min(
+      left,
+      window.innerWidth - tooltipWidth - screenPadding
+    );
+
+    // Position arrow over the icon
+    const iconCenter = rect.left + rect.width / 2;
+    const arrowLeft = iconCenter - left;
+
+    setPosition({
+      top: rect.bottom + 10,
+      left,
+      arrowLeft,
+    });
+  };
+
+  const showTooltip = () => {
+    updatePosition();
+    setOpen(true);
+  };
+
+  const hideTooltip = () => {
+    setOpen(false);
+  };
+
+  const toggleTooltip = () => {
+    if (!open) {
+      updatePosition();
+    }
+
+    setOpen((current) => !current);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+
+    const reposition = () => updatePosition();
+
+    window.addEventListener("resize", reposition);
+    window.addEventListener("scroll", reposition, true);
+
+    return () => {
+      window.removeEventListener("resize", reposition);
+      window.removeEventListener("scroll", reposition, true);
+    };
+  }, [open]);
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        type="button"
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
+        onFocus={showTooltip}
+        onBlur={hideTooltip}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleTooltip();
+        }}
+        className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-white/60 text-[10px] font-bold leading-none text-white/80 transition-colors hover:border-white hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+        aria-label={`More information about ${title}`}
+        aria-expanded={open}
+      >
+        i
+      </button>
+
+      {open && (
+        <div
+          role="tooltip"
+          className="
+            fixed z-[9999]
+            w-[min(320px,calc(100vw-24px))]
+            rounded-lg
+            border border-[#555b96]
+            bg-[#202442]
+            px-5 py-4
+            text-left
+            shadow-xl
+          "
+          style={{
+            top: position.top,
+            left: position.left,
+          }}
+        >
+          <span
+            className="
+              absolute -top-[7px]
+              h-3.5 w-3.5
+              -translate-x-1/2 rotate-45
+              border-l border-t border-[#555b96]
+              bg-[#202442]
+            "
+            style={{
+              left: position.arrowLeft,
+            }}
+          />
+
+          <span className="block text-sm font-bold tracking-normal text-white">
+            {title}
+          </span>
+
+          <span className="mt-2 block text-sm font-normal leading-relaxed tracking-normal text-[#d4d6eb]">
+            {description}
+          </span>
+
+          {formula && (
+            <span className="mt-3 block rounded-md bg-[#141832] px-3 py-2 font-mono text-sm font-normal tracking-normal text-[#c7b8ff]">
+              {formula}
+            </span>
+          )}
+        </div>
+      )}
+    </>
+  );
+}
 
 function SortableHeader({
   column,
@@ -44,25 +205,47 @@ function SortableHeader({
   sort,
   onSort,
   className = "",
+  tooltip,
 }: SortableHeaderProps) {
   const active = sort.column === column;
   const alignClass =
     align === "right" ? "justify-end text-right" : align === "center" ? "justify-center text-center" : "text-left";
 
-  return (
-    <th className={`px-4 py-3 sm:px-6 ${className}`} aria-sort={active ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}>
+      return (
+        <th className={`px-4 py-3 sm:px-6 ${className}`} aria-sort={active ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}>
+          <div className="flex items-center gap-1">
       <button
         type="button"
         onClick={() => onSort(column)}
-        className={`group inline-flex w-full items-center gap-1 text-xs font-bold tracking-wider text-white transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 ${alignClass}`}
-        aria-label={`Sort by ${LEADERBOARD_SORT_LABELS[column]}${active ? `, ${sort.direction === "asc" ? "ascending" : "descending"}` : ""}`}
+        className="group inline-flex items-center text-xs font-bold tracking-wider text-white"
       >
         <span>{label}</span>
+      </button>
+      
+      {tooltip && (
+        <HeaderTooltip
+          title={String(label)}
+          description={tooltip.description}
+          formula={tooltip.formula}
+        />
+      )}
+    
+      <button
+        type="button"
+        onClick={() => onSort(column)}
+        className="group flex items-center"
+        aria-label={`Sort by ${LEADERBOARD_SORT_LABELS[column]}`}
+      >
         <ChevronDownIcon
           size={14}
-          className={`shrink-0 transition-transform ${active ? "opacity-100" : "opacity-40 group-hover:opacity-70"} ${active && sort.direction === "asc" ? "rotate-180" : ""}`}
+          className={`shrink-0 transition-transform ${
+            active ? "opacity-100" : "opacity-40"
+          } ${
+            active && sort.direction === "asc" ? "rotate-180" : ""
+          }`}
         />
       </button>
+    </div>
     </th>
   );
 }
@@ -138,8 +321,15 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
           <thead>
             <tr className="bg-[#0d0f24] text-white">
               
-              <th className="px-4 py-3 sm:px-6 text-left text-xs font-bold tracking-wider text-white">
-                Carrier / Affiliate
+              <th className="px-4 py-3 text-left text-xs font-bold tracking-wider text-white sm:px-6">
+                <div className="flex items-center gap-1">
+                  <span>Affiliate</span>
+
+                  <HeaderTooltip
+                    title="Affiliate"
+                    description="The AmeriLife affiliate agency that the sales are attributed to."
+                  />
+                </div>
               </th>
 
               <SortableHeader
@@ -148,6 +338,10 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
                 align="right"
                 sort={sort}
                 onSort={handleSort}
+                tooltip={{
+                  description:
+                    "Current-year new sales: new Medicare applications submitted in the selected period this year.",
+                }}
               />
 
               <SortableHeader
@@ -156,6 +350,10 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
                 align="right"
                 sort={sort}
                 onSort={handleSort}
+                tooltip={{
+                  description:
+                    "Prior-year new sales: new Medicare applications for the same period last year, so you can compare like for like.",
+                }}
               />
 
               <SortableHeader
@@ -164,7 +362,12 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
                 align="right"
                 sort={sort}
                 onSort={handleSort}
+                tooltip={{
+                  description:
+                    "The new-sales target (budget) set for the selected period.",
+                }}
               />
+
 
               <SortableHeader
                 column="forecast"
@@ -172,6 +375,10 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
                 align="right"
                 sort={sort}
                 onSort={handleSort}
+                tooltip={{
+                  description:
+                    "The latest projected new sales for the selected period, based on current run-rate and pipeline. It’s updated more often than Plan.",
+                }}
               />
 
               <SortableHeader
@@ -180,6 +387,10 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
                 align="right"
                 sort={sort}
                 onSort={handleSort}
+                tooltip={{
+                  description:
+                    "Year-over-year growth in new sales. Formula: (CY New Sales − PY New Sales) ÷ PY New Sales. Positive means ahead of last year.",
+                }}
               />
 
               <SortableHeader
@@ -188,6 +399,10 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
                 align="right"
                 sort={sort}
                 onSort={handleSort}
+                tooltip={{
+                  description:
+                    "Attainment against Plan. Formula: CY New Sales ÷ Plan. 100% means the target was met.",
+                }}
               />
 
               <SortableHeader
@@ -196,6 +411,10 @@ export function AepLeaderboardTable({ id, title, rows, lastUpdated }: Props) {
                 align="right"
                 sort={sort}
                 onSort={handleSort}
+                tooltip={{
+                  description:
+                    "Attainment against Forecast. Formula: CY New Sales ÷ Forecast. It shows whether results are tracking to the latest projection.",
+                }}
               />
             </tr>
           </thead>
