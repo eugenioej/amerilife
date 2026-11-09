@@ -37,7 +37,7 @@ export default async function ConnectPage() {
         </h2>
 
         <p className="mb-10 text-base leading-relaxed text-[var(--color-fg)]">
-          Connect with a licensed insurance representative. Please fill out the form below and
+          Connect with a licensed insurance agent. Please fill out the form below and
           choose a topic you would like more information about.
         </p>
 
