@@ -43,7 +43,12 @@ export default async function ConnectPage() {
 
         <div className="rounded-lg bg-[#f7f8f9] p-6 sm:p-8">
           {connectForm ? (
-            <GravityForm form={connectForm} />
+            <GravityForm 
+              form={connectForm}
+              showTcpaDisclaimer
+              agencyName="AmeriLife"
+              agencyPhone="(800) 458-7112"
+             />
           ) : (
             <p className="text-sm text-[var(--color-muted)]">
               The contact form is temporarily unavailable. Please try again later or{" "}
