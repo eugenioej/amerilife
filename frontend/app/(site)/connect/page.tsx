@@ -6,7 +6,7 @@ import { fetchGravityForm } from "@/lib/gf-client";
 import { staticPageMetadata } from "@/lib/seo";
 
 /** Gravity Forms form ID for the Connect With Us page. */
-const CONNECT_FORM_ID = 8;
+const CONNECT_FORM_ID = 75;
 
 export const metadata: Metadata = staticPageMetadata(
   "Connect With Us | AmeriLife",
