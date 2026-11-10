@@ -1,5 +1,6 @@
 import Script from "next/script";
 import { CalendarDays } from "lucide-react";
+import DisclaimerMessage from "../request-support/DisclaimerMessage";
 
 export default function SupportSection() {
   return (
@@ -25,6 +26,7 @@ export default function SupportSection() {
                 Any requests received after <strong>3:00 PM</strong> will be
                 processed on the following business day.
               </p>
+              <DisclaimerMessage />
             </div>
           </div>
 
