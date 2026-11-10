@@ -65,6 +65,7 @@ export type LocationData = {
   mapSearchUrl?: string;
   /** Gravity Forms form ID on headless WP (Connect with an Agent). */
   gravityFormId?: number;
+  footerDisclaimer?: string;
 };
 
 const POLK_FEATURES: FeatureBlock[] = [

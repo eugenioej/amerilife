@@ -1014,6 +1014,7 @@ export type AgencyFieldsGql = {
   gravityFormId?: number | null;
   /** Google Maps search URL for office location (from import enrichment). */
   mapSearchUrl?: string | null;
+  footerDisclaimer?: string | null;
   /** Set by MU plugin `amerilife-agency-cpt.php` when `heroImageUrl` is added to queries. */
   heroImageUrl?: string | null;
 };
@@ -1171,6 +1172,7 @@ export const GET_AGENCY_BY_SLUG = `
         featuresJson
         gravityFormId
         mapSearchUrl
+        footerDisclaimer
         heroImageUrl
       }
       officeAgents {
@@ -1226,6 +1228,7 @@ export const GET_AGENT_PAGE_DATA = `
         featuresJson
         gravityFormId
         mapSearchUrl
+        footerDisclaimer
         heroImageUrl
       }
     }

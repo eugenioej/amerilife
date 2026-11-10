@@ -1,6 +1,10 @@
+"use client";
+/* eslint-disable @next/next/no-img-element */
+
 import Link from "next/link";
 import { Link as UiLink } from "../ui/Link";
 import type { NavItem } from "@/lib/wp-menus";
+import { useContactPopup } from "../layout/ContactPopupProvider";
 
 const BOTTOM_LINKS = [
   { label: "Privacy Policy", href: "/privacy-policy/" },
@@ -22,6 +26,8 @@ type SiteFooterProps = {
 };
 
 export function SiteFooter({ primaryMenu, footerLogoUrl, certificationBadgeUrl }: SiteFooterProps) {
+  const { agencyFooterDisclaimer } = useContactPopup();
+  
   const aboutUs = primaryMenu.find((i) => i.label.toLowerCase().includes("about"));
   const ourSolutions = primaryMenu.find((i) => i.label.toLowerCase().includes("solutions"));
 
@@ -161,30 +167,44 @@ export function SiteFooter({ primaryMenu, footerLogoUrl, certificationBadgeUrl }
         {/* Row 3: Legal disclaimer (left) + Policy links (right) */}
         <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex-1 max-w-2xl">
-            <p className="text-sm leading-relaxed text-white/80">
-              AmeriLife ©{" "}
-              <span suppressHydrationWarning>{new Date().getFullYear()}</span>. Not affiliated with the U.S. government or
-              federal Medicare program. We do not offer every plan available in your area. Any
-              information we provide is limited to those plans we do offer in your area. Please
-              contact{" "}
-              <a
-                href="https://www.medicare.gov/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white underline hover:text-white/90"
-              >
-                Medicare.gov
-              </a>{" "}
-              or{" "}
-              <a
-                href="tel:1-800-633-4227"
-                className="text-white underline hover:text-white/90"
-              >
-                1-800-MEDICARE
-              </a>{" "}
-              to get information on all of your options.
-            </p>
+            {agencyFooterDisclaimer?.trim() ? (
+              <div
+                className="text-sm leading-relaxed text-white/80 [&_a]:text-white [&_a]:underline [&_a:hover]:\]:text-white/90"
+                dangerouslySetInnerHTML={{
+                  __html: agencyFooterDisclaimer,
+                }}
+              />
+            ) : (
+              <p className="text-sm leading-relaxed text-white/80">
+                AmeriLife ©{" "}
+                <span suppressHydrationWarning>
+                  {new Date().getFullYear()}
+                </span>
+                . Not affiliated with the U.S. government or federal Medicare
+                program. We do not offer every plan available in your area. Any
+                information we provide is limited to those plans we do offer in
+                your area. Please contact{" "}
+                <a
+                  href="https://www.medicare.gov/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white underline hover:text-white/90"
+                >
+                  Medicare.gov
+                </a>{" "}
+                or{" "}
+                <a
+                  href="tel:1-800-633-4227"
+                  className="text-white underline hover:text-white/90"
+                >
+                  1-800-MEDICARE
+                </a>{" "}
+                to get information on all of your options.
+              </p>
+            )}
           </div>
+
+
           <div className="flex flex-wrap gap-6 shrink-0 lg:gap-8">
             {BOTTOM_LINKS.map((item) => (
               <UiLink
