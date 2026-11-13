@@ -164,21 +164,6 @@ export function RecruitingHubPage({
             slot={ideaxchangeAds?.homeSecondaryHorizontal}
             className="mt-10"
           />
-
-          <div className="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
-            <div className="lg:col-span-8">
-              <IdeaXchangeNewsroomColumn
-                initialPosts={newsroomRest.slice(0, INSIGHTS_NEWSROOM_INITIAL)}
-                deferredBatchPosts={newsroomRest.slice(INSIGHTS_NEWSROOM_INITIAL)}
-                initialHasNextPage={recruitListPageInfo?.hasNextPage ?? false}
-                initialEndCursor={recruitListPageInfo?.endCursor ?? null}
-                tagSlug={IDEAXCHANGE_RECRUIT_TAG_SLUG}
-                badgeLabel="RECRUIT"
-                badgeHref={IDEAXCHANGE_RECRUITING_HUB_PATH}
-              />
-            </div>
-
-          </div>
         </section>
       </div>
     </div>
