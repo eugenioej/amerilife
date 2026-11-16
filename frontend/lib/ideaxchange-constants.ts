@@ -6,6 +6,7 @@ export const IDEAXCHANGE_HOME_FEED_PATH = "/ideaxchange/home/";
 export const IDEAXCHANGE_MAGAZINE_PATH = "/ideaxchange/magazine/";
 /** Topic taxonomy archives — `/ideaxchange/magazine/category/[slug]/`. */
 export const IDEAXCHANGE_RECRUITING_HUB_PATH = "/ideaxchange/recruiting-hub/";
+export const IDEAXCHANGE_RESOURCES_PATH = "/ideaxchange/resources/";
 export const IDEAXCHANGE_CAREER_LEADERBOARD_PATH = "/ideaxchange/career-leaderboard/";
 export const IDEAXCHANGE_LEADERBOARD_PATH = "/ideaxchange/leaderboard/";
 export const IDEAXCHANGE_CARRIER_SPOTLIGHT_PATH = "/ideaxchange/carrier-spotlight/";

@@ -1,8 +1,3 @@
-import { IdeaXchangeNewsroomColumn } from "@/app/components/ideaxchange/magazine/IdeaXchangeNewsroomColumn";
-import {
-  INSIGHTS_NEWSROOM_INITIAL,
-  partitionNewsroomWithSidebar,
-} from "@/app/components/ideaxchange/magazine/ideaxchange-utils";
 import { IdeaXchangeFeaturedGrid } from "@/app/components/ideaxchange/shared/IdeaXchangeFeaturedGrid";
 import { IdeaXchangeHeroGrid } from "@/app/components/ideaxchange/shared/IdeaXchangeHeroGrid";
 import { IdeaXchangePillarBanner } from "@/app/components/ideaxchange/shared/IdeaXchangePillarBanner";
@@ -10,8 +5,7 @@ import type { IdeaxchangeCardItem } from "@/app/components/ideaxchange/shared/id
 import type { CaseStudyListItem } from "@/lib/ideaxchange-recruiting-queries";
 import type { IdeaxchangeListItem } from "@/lib/ideaxchange-queries";
 import type { IdeaxchangeAdsSettings } from "@/lib/queries";
-import { IDEAXCHANGE_RECRUITING_HUB_PATH } from "@/lib/ideaxchange-constants";
-import { IDEAXCHANGE_RECRUIT_TAG_SLUG } from "@/lib/ideaxchange-data";
+
 import {
   caseStudyHref,
   isCaseStudyFeatured,
@@ -98,8 +92,6 @@ function toCardItem(post: CaseStudyListItem): IdeaxchangeCardItem {
 export function RecruitingHubPage({
   posts,
   allCampaigns,
-  recruitPosts,
-  recruitListPageInfo,
   ideaxchangeAds,
 }: Props) {
   const { hero, featured } = partitionPosts(posts);
@@ -116,8 +108,7 @@ export function RecruitingHubPage({
       )
   );
   const campaignRows = tableCampaigns.map(toCampaignTableRow);
-  const { newsroomRest } =
-    partitionNewsroomWithSidebar(recruitPosts);
+
 
   return (
     <div className="bg-white pb-16 md:pb-20">
