@@ -80,7 +80,7 @@ type TopBarProps = {
 };
 
 export function TopBar({ microsoftAuthEnabled = false }: TopBarProps) {
-  const { openContactPopup } = useContactPopup();
+  const { openContactPopup, hideContactButton } = useContactPopup();
   const pathname = usePathname();
   const isIdeaxchangeRoute =
     pathname === "/ideaxchange" || pathname.startsWith("/ideaxchange/");
@@ -108,7 +108,7 @@ export function TopBar({ microsoftAuthEnabled = false }: TopBarProps) {
           </div>
         ) : null}
         <TopBarSocialLinks />
-        {!isIdeaxchangeRoute ? (
+        {!isIdeaxchangeRoute && !hideContactButton ? (
           <>
             <span className="text-white/60">|</span>
             <button

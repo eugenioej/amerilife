@@ -6,7 +6,7 @@ import { fetchGravityForm } from "@/lib/gf-client";
 import { staticPageMetadata } from "@/lib/seo";
 
 /** Gravity Forms form ID for the Connect With Us page. */
-const CONNECT_FORM_ID = 8;
+const CONNECT_FORM_ID = 75;
 
 export const metadata: Metadata = staticPageMetadata(
   "Connect With Us | AmeriLife",
@@ -37,13 +37,18 @@ export default async function ConnectPage() {
         </h2>
 
         <p className="mb-10 text-base leading-relaxed text-[var(--color-fg)]">
-          Connect with a licensed insurance representative. Please fill out the form below and
+          Connect with a licensed insurance agent. Please fill out the form below and
           choose a topic you would like more information about.
         </p>
 
         <div className="rounded-lg bg-[#f7f8f9] p-6 sm:p-8">
           {connectForm ? (
-            <GravityForm form={connectForm} />
+            <GravityForm 
+              form={connectForm}
+              showTcpaDisclaimer
+              agencyName="AmeriLife"
+              agencyPhone="(800) 458-7112"
+             />
           ) : (
             <p className="text-sm text-[var(--color-muted)]">
               The contact form is temporarily unavailable. Please try again later or{" "}
@@ -56,7 +61,7 @@ export default async function ConnectPage() {
         </div>
 
         {/* Secondary section - Connect with an Agent */}
-        <div className="mt-16 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-8">
+        {/* <div className="mt-16 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-8">
           <h2 className="mb-4 text-xl font-bold text-[var(--color-fg)]">
             Connect with an Agent
           </h2>
@@ -72,7 +77,7 @@ export default async function ConnectPage() {
           >
             Contact Us
           </Link>
-        </div>
+        </div> */}
       </div>
     </section>
   );
